@@ -15,7 +15,7 @@ import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { LayoutComponent } from './common/layout/layout.component';
 import { LoginComponent } from './pages/login/login.component';
-
+import { RegistroDocentesComponent } from './pages/registro-docentes/registro-docentes.component';
 registerLocaleData(en);
 
 @NgModule({
@@ -23,6 +23,7 @@ registerLocaleData(en);
     AppComponent,
     LayoutComponent,
     LoginComponent,
+    RegistroDocentesComponent,
   ],
   imports: [
     BrowserModule,
