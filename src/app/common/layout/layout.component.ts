@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
   styleUrl: './layout.component.css'
 })
 export class LayoutComponent {
-  // menuTitle = `<i class="fas fa-user"></i> RR. HH`;
+  menuTitle = `<i class="fas fa-user"></i> RR. HH`;
   isCollapsed = false
 }

@@ -81,14 +81,30 @@ nz-sider {
   flex-shrink: 0;
 }
 
+nz-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+nz-sider {
+  height: 100vh;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
 nz-content {
   flex: 1;
+  flex: 1;
   margin: 24px;
+  overflow: auto;
   overflow: auto;
 }
 
 .inner-content {
   padding: 24px;
+  background: #ffffff;
+  min-height: 100%;
   background: #ffffff;
   min-height: 100%;
 }
