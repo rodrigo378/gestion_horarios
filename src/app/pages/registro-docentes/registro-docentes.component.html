@@ -398,8 +398,70 @@
           </div>
         </div>
       </div>
+      <!-- Contacto de emergencia -->
+      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 5">
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label for="familyName" class="mb-3 block text-base font-medium text-[#07074D]">
+              Nombre
+            </label>
+            <input
+              type="text"
+              formControlName="familyName"
+              id="familyName"
+              placeholder="Ej. Juan Pérez"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
 
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="relationship" class="mb-3 block text-base font-medium text-[#07074D]">
+              Relación
+            </label>
+            <input
+              type="text"
+              formControlName="relationship"
+              id="relationship"
+              placeholder="Ej. Padre, Madre, Hermano"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
 
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="phone1" class="mb-3 block text-base font-medium text-[#07074D]">
+              Teléfono 1
+            </label>
+            <input
+              type="tel"
+              formControlName="phone1"
+              id="phone1"
+              placeholder="Ej. 987654321"
+              pattern="[0-9]{9}"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="phone2" class="mb-3 block text-base font-medium text-[#07074D]">
+              Teléfono 2 (Opcional)
+            </label>
+            <input
+              type="tel"
+              formControlName="phone2"
+              id="phone2"
+              placeholder="Ej. 912345678"
+              pattern="[0-9]{9}"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+      </div>
 
 
 
