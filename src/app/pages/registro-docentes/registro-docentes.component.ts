@@ -10,6 +10,7 @@ export class RegistroDocentesComponent {
   currentStep =  1;
   totalSteps = 10;
   domicilios: any [] = [{}];
+  formacion_complementaria: any [] = [{}]
 
   nextStep() {
     if (this.currentStep < this.totalSteps) {
@@ -30,6 +31,15 @@ export class RegistroDocentesComponent {
   eliminarDomicilio(index: number): void{
     if (this.domicilios.length > 1){
       this.domicilios.splice(index , 1)
+    }
+  }
+  agregarFormCom(){
+    this.formacion_complementaria.push({})
+  }
+
+  eliminarFormCom(index: number): void{
+    if (this.formacion_complementaria.length > 1){
+      this.formacion_complementaria.splice(index , 1)
     }
   }
 }

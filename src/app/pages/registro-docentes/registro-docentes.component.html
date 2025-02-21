@@ -160,7 +160,6 @@
             </label>
             <input
               type="text"
-              formControlName="familyName"
               id="familyName"
               placeholder="Ej. Juan Pérez"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -175,7 +174,6 @@
             </label>
             <input
               type="text"
-              formControlName="relationship"
               id="relationship"
               placeholder="Ej. Padre, Madre, Hermano"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -190,7 +188,6 @@
             </label>
             <input
               type="tel"
-              formControlName="phone1"
               id="phone1"
               placeholder="Ej. 987654321"
               pattern="[0-9]{9}"
@@ -206,7 +203,6 @@
             </label>
             <input
               type="tel"
-              formControlName="phone2"
               id="phone2"
               placeholder="Ej. 912345678"
               pattern="[0-9]{9}"
@@ -217,229 +213,235 @@
       </div>
 
       <!-- Domicilio del Docente -->
-      <div class="flex items-center justify-between" *ngIf="currentStep === 3">
-        <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6">
-          Domicilio del Docente
-        </h2>
-        <button
-          type="button"
-          (click)="agregarDomicilio()"
-          class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
-        >
-          Agregar
-        </button>
-      </div>
-      <div *ngFor="let domicilio of domicilios; let i = index">
-        <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 3">
-          <div class="w-full px-3 sm:w-1/2">
-            <div class="mb-5">
-              <label for="department" class="mb-3 block text-base font-medium text-[#07074D]">
-                Departamento
-              </label>
-              <select
-                name="department"
-                id="department"
-                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-              >
-                <option value="" disabled selected>Selecciona un departamento</option>
-                <option value="lima">Lima</option>
-                <option value="arequipa">Arequipa</option>
-                <option value="cusco">Cusco</option>
-              </select>
+      <form>
+        <div class="flex items-center justify-between" *ngIf="currentStep === 3">
+          <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 3">
+            Domicilio del Docente
+          </h2>
+        </div>
+        <div *ngFor="let domicilio of domicilios; let i = index">
+          <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 3">
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label for="department" class="mb-3 block text-base font-medium text-[#07074D]">
+                  Departamento
+                </label>
+                <select
+                  name="department"
+                  id="department"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                >
+                  <option value="" disabled selected>Selecciona un departamento</option>
+                  <option value="lima">Lima</option>
+                  <option value="arequipa">Arequipa</option>
+                  <option value="cusco">Cusco</option>
+                </select>
+              </div>
             </div>
-          </div>
-  
-          <div class="w-full px-3 sm:w-1/2">
-            <div class="mb-5">
-              <label for="province" class="mb-3 block text-base font-medium text-[#07074D]">
-                Provincia
-              </label>
-              <select
-                name="province"
-                id="province"
-                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-              >
-                <option value="" disabled selected>Selecciona una provincia</option>
-                <option value="lima">Lima</option>
-                <option value="huaral">Huaral</option>
-                <option value="barranca">Barranca</option>
-              </select>
+    
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label for="province" class="mb-3 block text-base font-medium text-[#07074D]">
+                  Provincia
+                </label>
+                <select
+                  name="province"
+                  id="province"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                >
+                  <option value="" disabled selected>Selecciona una provincia</option>
+                  <option value="lima">Lima</option>
+                  <option value="huaral">Huaral</option>
+                  <option value="barranca">Barranca</option>
+                </select>
+              </div>
             </div>
-          </div>
-  
-          <div class="w-full px-3 sm:w-1/2">
-            <div class="mb-5">
-              <label for="district" class="mb-3 block text-base font-medium text-[#07074D]">
-                Distrito
-              </label>
-              <select
-                name="district"
-                id="district"
-                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-              >
-                <option value="" disabled selected>Selecciona un distrito</option>
-                <option value="miraflores">Miraflores</option>
-                <option value="san-isidro">San Isidro</option>
-                <option value="surco">Surco</option>
-              </select>
+    
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label for="district" class="mb-3 block text-base font-medium text-[#07074D]">
+                  Distrito
+                </label>
+                <select
+                  name="district"
+                  id="district"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                >
+                  <option value="" disabled selected>Selecciona un distrito</option>
+                  <option value="miraflores">Miraflores</option>
+                  <option value="san-isidro">San Isidro</option>
+                  <option value="surco">Surco</option>
+                </select>
+              </div>
             </div>
-          </div>
-  
-          <div class="w-full px-3">
-            <div class="mb-5">
-              <label for="address" class="mb-3 block text-base font-medium text-[#07074D]">
-                Dirección
-              </label>
-              <textarea
-                name="address"
-                id="address"
-                placeholder="Dirección completa"
-                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-              ></textarea>
+    
+            <div class="w-full px-3">
+              <div class="mb-5">
+                <label for="address" class="mb-3 block text-base font-medium text-[#07074D]">
+                  Dirección
+                </label>
+                <textarea
+                  name="address"
+                  id="address"
+                  placeholder="Dirección completa"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                ></textarea>
+              </div>
             </div>
-          </div>
-  
-          <div class="w-full px-3 sm:w-1/2">
-            <div class="mb-5">
-              <label for="reference" class="mb-3 block text-base font-medium text-[#07074D]">
-                Referencia
-              </label>
-              <input
-                type="text"
-                name="reference"
-                id="reference"
-                placeholder="Referencia"
-                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-              />
+    
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label for="reference" class="mb-3 block text-base font-medium text-[#07074D]">
+                  Referencia
+                </label>
+                <input
+                  type="text"
+                  name="reference"
+                  id="reference"
+                  placeholder="Referencia"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                />
+              </div>
             </div>
-          </div>
-  
-          <div class="w-full px-3 sm:w-1/2">
-            <div class="mb-5">
-              <label for="mz" class="mb-3 block text-base font-medium text-[#07074D]">
-                Mz
-              </label>
-              <input
-                type="text"
-                name="mz"
-                id="mz"
-                placeholder="Manzana"
-                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-              />
+    
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label for="mz" class="mb-3 block text-base font-medium text-[#07074D]">
+                  Mz
+                </label>
+                <input
+                  type="text"
+                  name="mz"
+                  id="mz"
+                  placeholder="Manzana"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                />
+              </div>
             </div>
-          </div>
-  
-          <div class="w-full px-3 sm:w-1/2">
-            <div class="mb-5">
-              <label for="lot" class="mb-3 block text-base font-medium text-[#07074D]">
-                Lote
-              </label>
-              <input
-                type="text"
-                name="lot"
-                id="lot"
-                placeholder="Lote"
-                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-              />
+    
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label for="lot" class="mb-3 block text-base font-medium text-[#07074D]">
+                  Lote
+                </label>
+                <input
+                  type="text"
+                  name="lot"
+                  id="lot"
+                  placeholder="Lote"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                />
+              </div>
             </div>
-          </div>
-
-          <div class="w-full px-3 flex justify-end" *ngIf=" domicilios.length > 1" >
-            <button
-              type="button"
-              (click)="eliminarDomicilio(i)"
-              class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
-            >
-              Eliminar
-            </button>
           </div>
         </div>
-      </div>
+      </form>
 
-      <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 4">
-        Formación Académica
-      </h2>
       <!-- Formacion Academica del Docente -->
-      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 4">
-        <div class="w-full px-3 sm:w-1/2">
-          <div class="mb-5">
-            <label for="academicDegree" class="mb-3 block text-base font-medium text-[#07074D]">
-              Grado Académico
-            </label>
-            <select
-              formControlName="academicDegree"
-              id="academicDegree"
-              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-            >
-              <option value="" disabled selected>Selecciona tu grado académico</option>
-              <option value="bachiller">Bachiller</option>
-              <option value="licenciado">Licenciado</option>
-              <option value="maestria">Maestría</option>
-              <option value="doctorado">Doctorado</option>
-            </select>
-          </div>
+      <form>
+        <div class="flex items-center justify-between" *ngIf="currentStep === 4">
+          <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6">
+            Formación Académica
+          </h2>
+          <button
+            type="button"
+            (click)="agregarFormCom()"
+            class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
+          >
+            Agregar <i class="fa-solid fa-plus"></i>
+          </button>
         </div>
 
-        <div class="w-full px-3 sm:w-1/2">
-          <div class="mb-5">
-            <label for="university" class="mb-3 block text-base font-medium text-[#07074D]">
-              Universidad
-            </label>
-            <input
-              type="text"
-              formControlName="university"
-              id="university"
-              placeholder="Ej. Universidad Nacional Mayor de San Marcos"
-              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-            />
+        <div *ngFor="let formacion of formacion_complementaria; let i = index">
+          <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 4">
+            <div class="w-full px-3 flex items-center justify-between mb-4" *ngIf="formacion_complementaria.length > 1 && i > 0">
+              <span class="text-lg font-semibold text-blue-700 flex items-center">
+                📚 Formación Complementaria {{ i + 1 }}
+              </span>
+              <button
+                type="button"
+                (click)="eliminarFormCom(i)"
+                class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
+              >
+                Eliminar <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label for="academicDegree" class="mb-3 block text-base font-medium text-[#07074D]">
+                  Grado Académico
+                </label>
+                <select
+                  id="academicDegree"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                >
+                  <option value="" disabled selected>Selecciona tu grado académico</option>
+                  <option value="bachiller">Bachiller</option>
+                  <option value="licenciado">Licenciado</option>
+                  <option value="maestria">Maestría</option>
+                  <option value="doctorado">Doctorado</option>
+                </select>
+              </div>
+            </div>
+    
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label for="university" class="mb-3 block text-base font-medium text-[#07074D]">
+                  Universidad
+                </label>
+                <input
+                  type="text"
+                  id="university"
+                  placeholder="Ej. Universidad Nacional Mayor de San Marcos"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                />
+              </div>
+            </div>
+    
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label for="specialty" class="mb-3 block text-base font-medium text-[#07074D]">
+                  Especialidad
+                </label>
+                <input
+                  type="text"
+                  id="specialty"
+                  placeholder="Ej. Ingeniería de Software"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                />
+              </div>
+            </div>
+    
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label for="country" class="mb-3 block text-base font-medium text-[#07074D]">
+                  País
+                </label>
+                <input
+                  type="text"
+                  id="country"
+                  placeholder="Ej. Perú"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                />
+              </div>
+            </div>
+    
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label for="suneduResolution" class="mb-3 block text-base font-medium text-[#07074D]">
+                  Resolución SUNEDU
+                </label>
+                <input
+                  type="text"
+                  id="suneduResolution"
+                  placeholder="Número de resolución"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                />
+              </div>
+            </div>
           </div>
         </div>
-
-        <div class="w-full px-3 sm:w-1/2">
-          <div class="mb-5">
-            <label for="specialty" class="mb-3 block text-base font-medium text-[#07074D]">
-              Especialidad
-            </label>
-            <input
-              type="text"
-              formControlName="specialty"
-              id="specialty"
-              placeholder="Ej. Ingeniería de Software"
-              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-            />
-          </div>
-        </div>
-
-        <div class="w-full px-3 sm:w-1/2">
-          <div class="mb-5">
-            <label for="country" class="mb-3 block text-base font-medium text-[#07074D]">
-              País
-            </label>
-            <input
-              type="text"
-              formControlName="country"
-              id="country"
-              placeholder="Ej. Perú"
-              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-            />
-          </div>
-        </div>
-
-        <div class="w-full px-3 sm:w-1/2">
-          <div class="mb-5">
-            <label for="suneduResolution" class="mb-3 block text-base font-medium text-[#07074D]">
-              Resolución SUNEDU
-            </label>
-            <input
-              type="text"
-              formControlName="suneduResolution"
-              id="suneduResolution"
-              placeholder="Número de resolución"
-              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-            />
-          </div>
-        </div>
-      </div>
+      </form>
 
       <!-- Títulos Profesionales (Licenciatura / Título) -->
       <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 5">
@@ -455,7 +457,6 @@
             </label>
             <input
               type="text"
-              formControlName="title"
               id="title"
               placeholder="Ej. Ingeniero de Sistemas"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -471,7 +472,6 @@
             </label>
             <input
               type="text"
-              formControlName="university"
               id="university"
               placeholder="Ej. Universidad Nacional Mayor de San Marcos"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -487,7 +487,6 @@
             </label>
             <input
               type="text"
-              formControlName="specialty"
               id="specialty"
               placeholder="Ej. Desarrollo de Software"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -509,7 +508,6 @@
             </label>
             <input
               type="text"
-              formControlName="denomination"
               id="denomination"
               placeholder="Ej. Diplomado en Gestión de Proyectos"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -524,7 +522,6 @@
             </label>
             <input
               type="text"
-              formControlName="specialty"
               id="specialty"
               placeholder="Ej. Gestión Ágil de Proyectos"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -539,7 +536,6 @@
             </label>
             <input
               type="text"
-              formControlName="institution"
               id="institution"
               placeholder="Ej. Universidad Nacional Mayor de San Marcos"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -561,7 +557,6 @@
               Tipo de Experiencia
             </label>
             <select
-              formControlName="experienceType"
               id="experienceType"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             >
@@ -579,7 +574,6 @@
             </label>
             <input
               type="text"
-              formControlName="institution"
               id="institution"
               placeholder="Ej. Universidad Nacional Mayor de San Marcos"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -594,7 +588,6 @@
             </label>
             <input
               type="text"
-              formControlName="course"
               id="course"
               placeholder="Ej. Programación en Java"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -609,7 +602,6 @@
             </label>
             <input
               type="text"
-              formControlName="semester"
               id="semester"
               placeholder="Ej. 2023-II"
               pattern="^[0-9]{4}-(I{1,2})$"
@@ -625,7 +617,6 @@
             </label>
             <input
               type="text"
-              formControlName="country"
               id="country"
               placeholder="Ej. Perú"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -651,7 +642,6 @@
             </label>
             <input
               type="text"
-              formControlName="articleTitle"
               id="articleTitle"
               placeholder="Ej. Inteligencia Artificial en la Educación"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -666,7 +656,6 @@
             </label>
             <input
               type="text"
-              formControlName="journalName"
               id="journalName"
               placeholder="Ej. Journal of Artificial Intelligence"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -681,7 +670,6 @@
             </label>
             <input
               type="text"
-              formControlName="indexing"
               id="indexing"
               placeholder="Ej. Scopus, Web of Science, Latindex"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -696,7 +684,6 @@
             </label>
             <input
               type="number"
-              formControlName="year"
               id="year"
               placeholder="Ej. 2023"
               min="1900"
@@ -714,7 +701,6 @@
             </label>
             <input
               type="url"
-              formControlName="link"
               id="link"
               placeholder="Ej. https://doi.org/xxxxxxxx"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -1045,16 +1031,13 @@
 
       <!-- Disponibilidad Horaria -->
 
-
-
-
-          <!-- Botones de Navegación -->
+      <!-- Botones de Navegación -->
       <div class="flex justify-between mt-6">
         <button *ngIf="currentStep > 1" type="button" (click)="prevStep()" class="btn btn-secondary">
-          Anterior
+          <i class="fa-solid fa-arrow-left"></i> Anterior 
         </button>
         <button *ngIf="currentStep < totalSteps" type="button" (click)="nextStep()" class="btn btn-primary">
-          Siguiente
+          Siguiente <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
       <!-- <div>

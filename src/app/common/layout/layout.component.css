@@ -43,7 +43,13 @@
   height: 32px;
   width: 32px;
   vertical-align: middle;
+  transition: transform 0.6s ease-in-out;
 }
+
+.sidebar-logo:hover img {
+  transform: rotate(360deg);
+}
+
 
 .sidebar-logo h1 {
   display: inline-block;
