@@ -5,6 +5,9 @@
     <form action="" method="POST">
 
       <!-- Informacion del Docente -->
+      <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 1">
+        Información Personal del Docente
+      </h2>
       <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 1">
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
@@ -145,91 +148,21 @@
         </div>
       </div>
 
-      <!-- Domicilio del Docente -->
+      <!-- Contacto de emergencia -->
+      <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 2">
+        Contacto de emergencia
+      </h2>
       <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 2">
-        <div class="w-full px-3 sm:w-1/2">
-          <div class="mb-5">
-            <label for="department" class="mb-3 block text-base font-medium text-[#07074D]">
-              Departamento
-            </label>
-            <select
-              name="department"
-              id="department"
-              formControlName="department"
-              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-            >
-              <option value="" disabled selected>Selecciona un departamento</option>
-              <option value="lima">Lima</option>
-              <option value="arequipa">Arequipa</option>
-              <option value="cusco">Cusco</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="w-full px-3 sm:w-1/2">
-          <div class="mb-5">
-            <label for="province" class="mb-3 block text-base font-medium text-[#07074D]">
-              Provincia
-            </label>
-            <select
-              name="province"
-              id="province"
-              formControlName="province"
-              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-            >
-              <option value="" disabled selected>Selecciona una provincia</option>
-              <option value="lima">Lima</option>
-              <option value="huaral">Huaral</option>
-              <option value="barranca">Barranca</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="w-full px-3 sm:w-1/2">
-          <div class="mb-5">
-            <label for="district" class="mb-3 block text-base font-medium text-[#07074D]">
-              Distrito
-            </label>
-            <select
-              name="district"
-              id="district"
-              formControlName="district"
-              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-            >
-              <option value="" disabled selected>Selecciona un distrito</option>
-              <option value="miraflores">Miraflores</option>
-              <option value="san-isidro">San Isidro</option>
-              <option value="surco">Surco</option>
-            </select>
-          </div>
-        </div>
-
         <div class="w-full px-3">
           <div class="mb-5">
-            <label for="address" class="mb-3 block text-base font-medium text-[#07074D]">
-              Dirección
-            </label>
-            <textarea
-              name="address"
-              id="address"
-              placeholder="Dirección completa"
-              formControlName="address"
-              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-            ></textarea>
-          </div>
-        </div>
-
-        <div class="w-full px-3 sm:w-1/2">
-          <div class="mb-5">
-            <label for="reference" class="mb-3 block text-base font-medium text-[#07074D]">
-              Referencia
+            <label for="familyName" class="mb-3 block text-base font-medium text-[#07074D]">
+              Nombre
             </label>
             <input
               type="text"
-              name="reference"
-              id="reference"
-              placeholder="Referencia"
-              formControlName="reference"
+              formControlName="familyName"
+              id="familyName"
+              placeholder="Ej. Juan Pérez"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
@@ -237,15 +170,14 @@
 
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="mz" class="mb-3 block text-base font-medium text-[#07074D]">
-              Mz
+            <label for="relationship" class="mb-3 block text-base font-medium text-[#07074D]">
+              Relación
             </label>
             <input
               type="text"
-              name="mz"
-              id="mz"
-              placeholder="Manzana"
-              formControlName="mz"
+              formControlName="relationship"
+              id="relationship"
+              placeholder="Ej. Padre, Madre, Hermano"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
@@ -253,22 +185,182 @@
 
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="lot" class="mb-3 block text-base font-medium text-[#07074D]">
-              Lote
+            <label for="phone1" class="mb-3 block text-base font-medium text-[#07074D]">
+              Teléfono 1
             </label>
             <input
-              type="text"
-              name="lot"
-              id="lot"
-              placeholder="Lote"
-              formControlName="lot"
+              type="tel"
+              formControlName="phone1"
+              id="phone1"
+              placeholder="Ej. 987654321"
+              pattern="[0-9]{9}"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="phone2" class="mb-3 block text-base font-medium text-[#07074D]">
+              Teléfono 2 (Opcional)
+            </label>
+            <input
+              type="tel"
+              formControlName="phone2"
+              id="phone2"
+              placeholder="Ej. 912345678"
+              pattern="[0-9]{9}"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
         </div>
       </div>
+
+      <!-- Domicilio del Docente -->
+      <div class="flex items-center justify-between" *ngIf="currentStep === 3">
+        <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6">
+          Domicilio del Docente
+        </h2>
+        <button
+          type="button"
+          (click)="agregarDomicilio()"
+          class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
+        >
+          Agregar
+        </button>
+      </div>
+      <div *ngFor="let domicilio of domicilios; let i = index">
+        <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 3">
+          <div class="w-full px-3 sm:w-1/2">
+            <div class="mb-5">
+              <label for="department" class="mb-3 block text-base font-medium text-[#07074D]">
+                Departamento
+              </label>
+              <select
+                name="department"
+                id="department"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+              >
+                <option value="" disabled selected>Selecciona un departamento</option>
+                <option value="lima">Lima</option>
+                <option value="arequipa">Arequipa</option>
+                <option value="cusco">Cusco</option>
+              </select>
+            </div>
+          </div>
+  
+          <div class="w-full px-3 sm:w-1/2">
+            <div class="mb-5">
+              <label for="province" class="mb-3 block text-base font-medium text-[#07074D]">
+                Provincia
+              </label>
+              <select
+                name="province"
+                id="province"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+              >
+                <option value="" disabled selected>Selecciona una provincia</option>
+                <option value="lima">Lima</option>
+                <option value="huaral">Huaral</option>
+                <option value="barranca">Barranca</option>
+              </select>
+            </div>
+          </div>
+  
+          <div class="w-full px-3 sm:w-1/2">
+            <div class="mb-5">
+              <label for="district" class="mb-3 block text-base font-medium text-[#07074D]">
+                Distrito
+              </label>
+              <select
+                name="district"
+                id="district"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+              >
+                <option value="" disabled selected>Selecciona un distrito</option>
+                <option value="miraflores">Miraflores</option>
+                <option value="san-isidro">San Isidro</option>
+                <option value="surco">Surco</option>
+              </select>
+            </div>
+          </div>
+  
+          <div class="w-full px-3">
+            <div class="mb-5">
+              <label for="address" class="mb-3 block text-base font-medium text-[#07074D]">
+                Dirección
+              </label>
+              <textarea
+                name="address"
+                id="address"
+                placeholder="Dirección completa"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+              ></textarea>
+            </div>
+          </div>
+  
+          <div class="w-full px-3 sm:w-1/2">
+            <div class="mb-5">
+              <label for="reference" class="mb-3 block text-base font-medium text-[#07074D]">
+                Referencia
+              </label>
+              <input
+                type="text"
+                name="reference"
+                id="reference"
+                placeholder="Referencia"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+              />
+            </div>
+          </div>
+  
+          <div class="w-full px-3 sm:w-1/2">
+            <div class="mb-5">
+              <label for="mz" class="mb-3 block text-base font-medium text-[#07074D]">
+                Mz
+              </label>
+              <input
+                type="text"
+                name="mz"
+                id="mz"
+                placeholder="Manzana"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+              />
+            </div>
+          </div>
+  
+          <div class="w-full px-3 sm:w-1/2">
+            <div class="mb-5">
+              <label for="lot" class="mb-3 block text-base font-medium text-[#07074D]">
+                Lote
+              </label>
+              <input
+                type="text"
+                name="lot"
+                id="lot"
+                placeholder="Lote"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+              />
+            </div>
+          </div>
+
+          <div class="w-full px-3 flex justify-end" *ngIf=" domicilios.length > 1" >
+            <button
+              type="button"
+              (click)="eliminarDomicilio(i)"
+              class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
+            >
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 4">
+        Formación Académica
+      </h2>
       <!-- Formacion Academica del Docente -->
-      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 3">
+      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 4">
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
             <label for="academicDegree" class="mb-3 block text-base font-medium text-[#07074D]">
@@ -348,8 +440,294 @@
           </div>
         </div>
       </div>
-      <!-- Libro Docente -->
-      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 4">
+
+      <!-- Títulos Profesionales (Licenciatura / Título) -->
+      <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 5">
+        Títulos Profesionales (Licenciatura / Título)
+      </h2>
+
+      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 5">
+        <!-- Título -->
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label for="title" class="mb-3 block text-base font-medium text-[#07074D]">
+              Título
+            </label>
+            <input
+              type="text"
+              formControlName="title"
+              id="title"
+              placeholder="Ej. Ingeniero de Sistemas"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+      
+        <!-- Universidad -->
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="university" class="mb-3 block text-base font-medium text-[#07074D]">
+              Universidad
+            </label>
+            <input
+              type="text"
+              formControlName="university"
+              id="university"
+              placeholder="Ej. Universidad Nacional Mayor de San Marcos"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+      
+        <!-- Especialidad -->
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="specialty" class="mb-3 block text-base font-medium text-[#07074D]">
+              Especialidad
+            </label>
+            <input
+              type="text"
+              formControlName="specialty"
+              id="specialty"
+              placeholder="Ej. Desarrollo de Software"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Formación Complementaria -->
+      <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 5">
+        Formación Complementaria
+      </h2>
+
+      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 5">
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label for="denomination" class="mb-3 block text-base font-medium text-[#07074D]">
+              Denominación
+            </label>
+            <input
+              type="text"
+              formControlName="denomination"
+              id="denomination"
+              placeholder="Ej. Diplomado en Gestión de Proyectos"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="specialty" class="mb-3 block text-base font-medium text-[#07074D]">
+              Especialidad
+            </label>
+            <input
+              type="text"
+              formControlName="specialty"
+              id="specialty"
+              placeholder="Ej. Gestión Ágil de Proyectos"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="institution" class="mb-3 block text-base font-medium text-[#07074D]">
+              Institución
+            </label>
+            <input
+              type="text"
+              formControlName="institution"
+              id="institution"
+              placeholder="Ej. Universidad Nacional Mayor de San Marcos"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Experiencia Docente -->
+      <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 6">
+        Experiencia Docente
+      </h2>
+
+      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 6">
+        <!-- Tipo de Experiencia -->
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label for="experienceType" class="mb-3 block text-base font-medium text-[#07074D]">
+              Tipo de Experiencia
+            </label>
+            <select
+              formControlName="experienceType"
+              id="experienceType"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            >
+              <option value="" disabled selected>Selecciona el tipo de experiencia</option>
+              <option value="universitaria">Universitaria</option>
+              <option value="no_universitaria">No Universitaria</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="institution" class="mb-3 block text-base font-medium text-[#07074D]">
+              Institución
+            </label>
+            <input
+              type="text"
+              formControlName="institution"
+              id="institution"
+              placeholder="Ej. Universidad Nacional Mayor de San Marcos"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="course" class="mb-3 block text-base font-medium text-[#07074D]">
+              Curso Dictado
+            </label>
+            <input
+              type="text"
+              formControlName="course"
+              id="course"
+              placeholder="Ej. Programación en Java"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="semester" class="mb-3 block text-base font-medium text-[#07074D]">
+              Semestre
+            </label>
+            <input
+              type="text"
+              formControlName="semester"
+              id="semester"
+              placeholder="Ej. 2023-II"
+              pattern="^[0-9]{4}-(I{1,2})$"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="country" class="mb-3 block text-base font-medium text-[#07074D]">
+              País
+            </label>
+            <input
+              type="text"
+              formControlName="country"
+              id="country"
+              placeholder="Ej. Perú"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+      </div>
+      <!-- Experiencia Investigadora -->
+      <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 7">
+        Experiencia Investigadora
+      </h2>
+
+      <!-- Artículos Científicos -->
+      <h3 class="text-lg font-medium text-[#5A5A8A] border-l-4 border-[#6A64F1] pl-3 mb-4" *ngIf="currentStep === 7">
+        Artículos Científicos
+      </h3>
+
+      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 7">
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label for="articleTitle" class="mb-3 block text-base font-medium text-[#07074D]">
+              Título del Artículo
+            </label>
+            <input
+              type="text"
+              formControlName="articleTitle"
+              id="articleTitle"
+              placeholder="Ej. Inteligencia Artificial en la Educación"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="journalName" class="mb-3 block text-base font-medium text-[#07074D]">
+              Nombre de la Revista / Publicación
+            </label>
+            <input
+              type="text"
+              formControlName="journalName"
+              id="journalName"
+              placeholder="Ej. Journal of Artificial Intelligence"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="indexing" class="mb-3 block text-base font-medium text-[#07074D]">
+              Indización
+            </label>
+            <input
+              type="text"
+              formControlName="indexing"
+              id="indexing"
+              placeholder="Ej. Scopus, Web of Science, Latindex"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="year" class="mb-3 block text-base font-medium text-[#07074D]">
+              Año de Publicación
+            </label>
+            <input
+              type="number"
+              formControlName="year"
+              id="year"
+              placeholder="Ej. 2023"
+              min="1900"
+              max="2099"
+              step="1"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label for="link" class="mb-3 block text-base font-medium text-[#07074D]">
+              Enlace de la Publicación
+            </label>
+            <input
+              type="url"
+              formControlName="link"
+              id="link"
+              placeholder="Ej. https://doi.org/xxxxxxxx"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Libros -->
+      <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 8">
+        Libros
+      </h2>
+      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 8">
         <div class="w-full px-3">
           <div class="mb-5">
             <label for="title" class="mb-3 block text-base font-medium text-[#07074D]">
@@ -398,18 +776,22 @@
           </div>
         </div>
       </div>
-      <!-- Contacto de emergencia -->
-      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 5">
+
+      <!-- Proyecto de Investigación -->
+      <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 8">
+        Proyecto de Investigación
+      </h2>
+      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 8">
         <div class="w-full px-3">
           <div class="mb-5">
-            <label for="familyName" class="mb-3 block text-base font-medium text-[#07074D]">
-              Nombre
+            <label for="projectName" class="mb-3 block text-base font-medium text-[#07074D]">
+              Nombre del Proyecto
             </label>
             <input
               type="text"
-              formControlName="familyName"
-              id="familyName"
-              placeholder="Ej. Juan Pérez"
+              formControlName="projectName"
+              id="projectName"
+              placeholder="Ej. Desarrollo de un Modelo de IA para Diagnóstico Médico"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
@@ -417,14 +799,14 @@
 
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="relationship" class="mb-3 block text-base font-medium text-[#07074D]">
-              Relación
+            <label for="fundingEntity" class="mb-3 block text-base font-medium text-[#07074D]">
+              Entidad Financiera
             </label>
             <input
               type="text"
-              formControlName="relationship"
-              id="relationship"
-              placeholder="Ej. Padre, Madre, Hermano"
+              formControlName="fundingEntity"
+              id="fundingEntity"
+              placeholder="Ej. BCP, Interback, BBVA "
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
@@ -432,37 +814,236 @@
 
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="phone1" class="mb-3 block text-base font-medium text-[#07074D]">
-              Teléfono 1
+            <label for="year" class="mb-3 block text-base font-medium text-[#07074D]">
+              Año del Proyecto
             </label>
             <input
-              type="tel"
-              formControlName="phone1"
-              id="phone1"
-              placeholder="Ej. 987654321"
-              pattern="[0-9]{9}"
-              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-            />
-          </div>
-        </div>
-
-        <div class="w-full px-3 sm:w-1/2">
-          <div class="mb-5">
-            <label for="phone2" class="mb-3 block text-base font-medium text-[#07074D]">
-              Teléfono 2 (Opcional)
-            </label>
-            <input
-              type="tel"
-              formControlName="phone2"
-              id="phone2"
-              placeholder="Ej. 912345678"
-              pattern="[0-9]{9}"
+              type="number"
+              formControlName="year"
+              id="year"
+              placeholder="Ej. 2023"
+              min="1900"
+              max="2099"
+              step="1"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
         </div>
       </div>
 
+      <!-- Asesorías y Jurados -->
+      <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 9">
+        Asesorías y Jurados
+      </h2>
+      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 9">
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label for="advisoryType" class="mb-3 block text-base font-medium text-[#07074D]">
+              Tipo de Asesoría / Jurado
+            </label>
+            <select
+              formControlName="advisoryType"
+              id="advisoryType"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            >
+              <option value="" disabled selected>Selecciona un tipo</option>
+              <option value="asesorias_jurados">Asesorías y Jurados</option>
+              <option value="jurados_tesis">Jurados de Tesis / Trabajo de Investigación</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label for="thesisTitle" class="mb-3 block text-base font-medium text-[#07074D]">
+              Título de la Tesis
+            </label>
+            <input
+              type="text"
+              formControlName="thesisTitle"
+              id="thesisTitle"
+              placeholder="Ej. Análisis de Algoritmos de Machine Learning en la Industria"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="university" class="mb-3 block text-base font-medium text-[#07074D]">
+              Universidad
+            </label>
+            <input
+              type="text"
+              formControlName="university"
+              id="university"
+              placeholder="Ej. Universidad Nacional Mayor de San Marcos"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="level" class="mb-3 block text-base font-medium text-[#07074D]">
+              Nivel
+            </label>
+            <select
+              formControlName="level"
+              id="level"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            >
+              <option value="" disabled selected>Selecciona el nivel</option>
+              <option value="pregrado">Pregrado</option>
+              <option value="maestria">Maestría</option>
+              <option value="doctorado">Doctorado</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+          <div class="mb-5">
+            <label for="year" class="mb-3 block text-base font-medium text-[#07074D]">
+              Año
+            </label>
+            <input
+              type="number"
+              formControlName="year"
+              id="year"
+              placeholder="Ej. 2023"
+              min="1900"
+              max="2099"
+              step="1"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Otros -->
+      <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 10">
+        Otros
+      </h2>
+      <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 10">
+        <!-- Idioma -->
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label for="language" class="mb-3 block text-base font-medium text-[#07074D]">
+              Idioma
+            </label>
+            <input
+              type="text"
+              formControlName="language"
+              id="language"
+              placeholder="Ej. Inglés, Francés, Alemán"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <!-- Nivel de Idioma -->
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label class="mb-3 block text-base font-medium text-[#07074D]">
+              Nivel de Idioma
+            </label>
+            <div class="flex gap-4">
+              <label class="flex items-center">
+                <input type="radio" formControlName="languageLevel" value="basico" class="mr-2" />
+                Básico
+              </label>
+              <label class="flex items-center">
+                <input type="radio" formControlName="languageLevel" value="intermedio" class="mr-2" />
+                Intermedio
+              </label>
+              <label class="flex items-center">
+                <input type="radio" formControlName="languageLevel" value="avanzado" class="mr-2" />
+                Avanzado
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Office -->
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label for="officeType" class="mb-3 block text-base font-medium text-[#07074D]">
+              Tipo de Office
+            </label>
+            <input
+              type="text"
+              formControlName="officeType"
+              id="officeType"
+              placeholder="Ej. Microsoft Office, Google Workspace"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <!-- Nivel de Office -->
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label class="mb-3 block text-base font-medium text-[#07074D]">
+              Nivel de Office
+            </label>
+            <div class="flex gap-4">
+              <label class="flex items-center">
+                <input type="radio" formControlName="officeLevel" value="basico" class="mr-2" />
+                Básico
+              </label>
+              <label class="flex items-center">
+                <input type="radio" formControlName="officeLevel" value="intermedio" class="mr-2" />
+                Intermedio
+              </label>
+              <label class="flex items-center">
+                <input type="radio" formControlName="officeLevel" value="avanzado" class="mr-2" />
+                Avanzado
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- E-learning -->
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label for="elearningType" class="mb-3 block text-base font-medium text-[#07074D]">
+              Tipo de E-learning
+            </label>
+            <input
+              type="text"
+              formControlName="elearningType"
+              id="elearningType"
+              placeholder="Ej. Moodle, Blackboard, Google Classroom"
+              class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+        </div>
+
+        <!-- Nivel de E-learning -->
+        <div class="w-full px-3">
+          <div class="mb-5">
+            <label class="mb-3 block text-base font-medium text-[#07074D]">
+              Nivel de E-learning
+            </label>
+            <div class="flex gap-4">
+              <label class="flex items-center">
+                <input type="radio" formControlName="elearningLevel" value="basico" class="mr-2" />
+                Básico
+              </label>
+              <label class="flex items-center">
+                <input type="radio" formControlName="elearningLevel" value="intermedio" class="mr-2" />
+                Intermedio
+              </label>
+              <label class="flex items-center">
+                <input type="radio" formControlName="elearningLevel" value="avanzado" class="mr-2" />
+                Avanzado
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disponibilidad Horaria -->
 
 
 

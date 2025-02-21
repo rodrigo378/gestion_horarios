@@ -9,6 +9,7 @@ import { Component } from '@angular/core';
 export class RegistroDocentesComponent {
   currentStep =  1;
   totalSteps = 10;
+  domicilios: any [] = [{}];
 
   nextStep() {
     if (this.currentStep < this.totalSteps) {
@@ -19,6 +20,16 @@ export class RegistroDocentesComponent {
   prevStep() {
     if (this.currentStep > 1) {
       this.currentStep--;
+    }
+  }
+
+  agregarDomicilio(){
+    this.domicilios.push({})
+  }
+
+  eliminarDomicilio(index: number): void{
+    if (this.domicilios.length > 1){
+      this.domicilios.splice(index , 1)
     }
   }
 }
