@@ -177,7 +177,7 @@
                 id="telefono_fijo"
                 placeholder="012345678"
                 formControlName="telefono_fijo"
-                pattern="[0-9]{7,10}"
+                maxlength="7"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />
               <div *ngIf="docenteForm.controls['telefono_fijo'].invalid && docenteForm.controls['telefono_fijo'].touched" class="text-red-500 text-sm">
@@ -640,7 +640,6 @@
         </div>
       </div>
       
-
       <!-- Experiencia Docente -->
       <div *ngIf="currentStep === 6">
         <div class="flex items-center justify-between">
@@ -648,519 +647,503 @@
             Experiencia Docente
           </h2>
           <button
-          type="button"
-          (click)="agregarexp()"
-          class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
-        >
-          Agregar <i class="fa-solid fa-plus"></i>
-        </button>
+            type="button"
+            (click)="agregarExperienciaDocente()"
+            class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
+          >
+            Agregar <i class="fa-solid fa-plus"></i>
+          </button>
         </div>
-
-        <div *ngFor="let experiencia of exp_docentes; let i = index ">
+      
+        <div *ngFor="let experiencia of experienciasDocentes.controls; let i = index" [formGroup]="getFormGroup(experiencia)">
           <div class="-mx-3 flex flex-wrap">
-            <div class="w-full px-3 flex items-center justify-between mb-4" *ngIf="exp_docentes.length > 1 && i > 0">
+            <div class="w-full px-3 flex items-center justify-between mb-4" *ngIf="experienciasDocentes.length > 1 && i > 0">
               <span class="text-lg font-semibold text-blue-700 flex items-center">
-                🧑‍💼 Experiencia del Docente {{ i + 1 }}
+                🧑‍🏫 Experiencia Docente {{ i + 1 }}
               </span>
               <button
                 type="button"
-                (click)="eliminarexp(i)"
+                (click)="eliminarExperienciaDocente(i)"
                 class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
               >
                 Eliminar <i class="fa-solid fa-trash"></i>
               </button>
             </div>
+      
             <!-- Tipo de Experiencia -->
             <div class="w-full px-3">
               <div class="mb-5">
-                <label for="experienceType" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Tipo de Experiencia
-                </label>
-                <select
-                  id="experienceType"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                >
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Tipo de Experiencia</label>
+                <select formControlName="tipo_experiencia"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">
                   <option value="" disabled selected>Selecciona el tipo de experiencia</option>
-                  <option value="universitaria">Universitaria</option>
-                  <option value="no_universitaria">No Universitaria</option>
+                  <option value="0">Universitaria</option>
+                  <option value="1">No Universitaria</option>
                 </select>
+                <div *ngIf="experiencia.get('tipo_experiencia')?.invalid && experiencia.get('tipo_experiencia')?.touched" class="text-red-500 text-sm">
+                  ⚠ Este campo es obligatorio.
+                </div>
               </div>
             </div>
-
+      
+            <!-- Institución -->
             <div class="w-full px-3 sm:w-1/2">
               <div class="mb-5">
-                <label for="institution" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Institución
-                </label>
-                <input
-                  type="text"
-                  id="institution"
-                  placeholder="Ej. Universidad Nacional Mayor de San Marcos"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Institución</label>
+                <input type="text" formControlName="nombre_universidad" placeholder="Ej. Universidad Nacional Mayor de San Marcos"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                  <div *ngIf="experiencia.get('nombre_universidad')?.invalid && experiencia.get('nombre_universidad')?.touched" class="text-red-500 text-sm">
+                    ⚠ Este campo es obligatorio.
+                  </div>
+                </div>
+            </div>
+      
+            <!-- Curso Dictado -->
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Curso Dictado</label>
+                <input type="text" formControlName="curso_dictado" placeholder="Ej. Programación en Java"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                  <div *ngIf="experiencia.get('curso_dictado')?.invalid && experiencia.get('curso_dictado')?.touched" class="text-red-500 text-sm">
+                    ⚠ Este campo es obligatorio.
+                  </div>
+                </div>
+            </div>
+      
+            <!-- Semestre -->
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Semestre</label>
+                <input type="text" formControlName="semestre" placeholder="Ej. 2023-II"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                  <div *ngIf="experiencia.get('semestre')?.invalid && experiencia.get('semestre')?.touched" class="text-red-500 text-sm">
+                    ⚠ Este campo es obligatorio.
+                  </div>
+                </div>
+            </div>
+      
+            <!-- País -->
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">País</label>
+                <input type="text" formControlName="pais" placeholder="Ej. Perú"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                  <div *ngIf="experiencia.get('pais')?.invalid && experiencia.get('pais')?.touched" class="text-red-500 text-sm">
+                    ⚠ Este campo es obligatorio.
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Experiencia Investigadora -->
+      <div *ngIf="currentStep === 7">
+        <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6">
+          Experiencia Investigadora
+        </h2>
+      
+        <!-- Artículos Científicos -->
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-medium text-[#5A5A8A] border-l-4 border-[#6A64F1] pl-3 mb-4">
+            Artículos Científicos
+          </h3>
+          <button
+            type="button"
+            (click)="agregarArticuloCientifico()"
+            class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
+          >
+            Agregar <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+      
+        <div *ngFor="let articulo of articulosCientificos.controls; let i = index" [formGroup]="getFormGroup(articulo)">
+          <div class="-mx-3 flex flex-wrap">
+            <div class="w-full px-3 flex items-center justify-between mb-4" *ngIf="articulosCientificos.length > 1 && i > 0">
+              <span class="text-lg font-semibold text-blue-700 flex items-center">
+                📑 Artículo Científico {{ i + 1 }}
+              </span>
+              <button
+                type="button"
+                (click)="eliminarArticuloCientifico(i)"
+                class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
+              >
+                Eliminar <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+      
+            <!-- Título del Artículo -->
+            <div class="w-full px-3">
+              <div class="mb-5">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Título del Artículo</label>
+                <input type="text" formControlName="titulo_articulo" placeholder="Ej. Inteligencia Artificial en la Educación"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                  <div *ngIf="articulo.get('titulo_articulo')?.invalid && articulo.get('titulo_articulo')?.touched" class="text-red-500 text-sm">
+                    ⚠ Este campo es obligatorio.
+                  </div>
+                </div>
+            </div>
+      
+            <!-- Nombre de la Revista -->
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Nombre de la Revista / Publicación</label>
+                <input type="text" formControlName="nombre_revista" placeholder="Ej. Journal of Artificial Intelligence"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                  <div *ngIf="articulo.get('nombre_revista')?.invalid && articulo.get('nombre_revista')?.touched" class="text-red-500 text-sm">
+                    ⚠ Este campo es obligatorio.
+                  </div>
+                </div>
+            </div>
+      
+            <!-- Indización -->
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Indización</label>
+                <input type="text" formControlName="indizado" placeholder="Ej. Scopus, Web of Science, Latindex"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                  <div *ngIf="articulo.get('indizado')?.invalid && articulo.get('indizado')?.touched" class="text-red-500 text-sm">
+                    ⚠ Este campo es obligatorio.
+                  </div>
+                </div>
+            </div>
+      
+            <!-- Año de Publicación -->
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Año de Publicación</label>
+                <input type="number" formControlName="año" placeholder="Ej. 2023" min="1900" max="2099" step="1"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                  <div *ngIf="articulo.get('año')?.invalid && articulo.get('año')?.touched" class="text-red-500 text-sm">
+                    ⚠ Este campo es obligatorio.
+                  </div>
+                </div>
+            </div>
+      
+            <!-- Enlace de la Publicación -->
+            <div class="w-full px-3">
+              <div class="mb-5">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Enlace de la Publicación</label>
+                <input type="url" formControlName="enlace" placeholder="Ej. https://doi.org/xxxxxxxx"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                  <div *ngIf="articulo.get('enlace')?.invalid && articulo.get('enlace')?.touched" class="text-red-500 text-sm">
+                    ⚠ Este campo es obligatorio.
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Libros -->
+      <div *ngIf="currentStep === 8">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6">
+            Libros
+          </h2>
+          <button
+            type="button"
+            (click)="agregarLibro()"
+            class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
+          >
+            Agregar <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+      
+        <div *ngFor="let libro of libros.controls; let i = index" [formGroup]="getFormGroup(libro)">
+          <div class="-mx-3 flex flex-wrap">
+            <div class="w-full px-3 flex items-center justify-between mb-4" *ngIf="libros.length > 1 && i > 0">
+              <span class="text-lg font-semibold text-blue-700 flex items-center">
+                📕 Libro {{ i + 1 }}
+              </span>
+              <button
+                type="button"
+                (click)="eliminarLibro(i)"
+                class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
+              >
+                Eliminar <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+      
+            <!-- Título del Libro -->
+            <div class="w-full px-3">
+              <div class="mb-5">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Título del Libro</label>
+                <input type="text" formControlName="libro_titulo" placeholder="Ej. El Principito"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                <div *ngIf="libro.get('libro_titulo')?.invalid && libro.get('libro_titulo')?.touched" class="text-red-500 text-sm">
+                  ⚠ El título del libro es obligatorio.
+                </div>
               </div>
             </div>
-
+      
+            <!-- Nombre de la Editorial -->
             <div class="w-full px-3 sm:w-1/2">
               <div class="mb-5">
-                <label for="course" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Curso Dictado
-                </label>
-                <input
-                  type="text"
-                  id="course"
-                  placeholder="Ej. Programación en Java"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Nombre de la Editorial</label>
+                <input type="text" formControlName="nombre_editorial" placeholder="Ej. Santillana"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                <div *ngIf="libro.get('nombre_editorial')?.invalid && libro.get('nombre_editorial')?.touched" class="text-red-500 text-sm">
+                  ⚠ La editorial es obligatoria.
+                </div>
               </div>
             </div>
-
+      
+            <!-- Año de Publicación -->
             <div class="w-full px-3 sm:w-1/2">
               <div class="mb-5">
-                <label for="semester" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Semestre
-                </label>
-                <input
-                  type="text"
-                  id="semester"
-                  placeholder="Ej. 2023-II"
-                  pattern="^[0-9]{4}-(I{1,2})$"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Año de Publicación</label>
+                <input type="text" formControlName="año" placeholder="Ej. 1943" min="1000" max="2099" step="1"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                <div *ngIf="libro.get('año')?.invalid && libro.get('año')?.touched" class="text-red-500 text-sm">
+                  ⚠ Campo obligatorio
+                </div>
               </div>
             </div>
-
+          </div>
+        </div>
+      
+        <!-- Proyecto de Investigación -->
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6">
+            Proyecto de Investigación
+          </h2>
+          <button
+            type="button"
+            (click)="agregarProyectoInvestigacion()"
+            class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
+          >
+            Agregar <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+      
+        <div *ngFor="let proyecto of proyectosInvestigacion.controls; let i = index" [formGroup]="getFormGroup(proyecto)">
+          <div class="-mx-3 flex flex-wrap">
+            <div class="w-full px-3 flex items-center justify-between mb-4" *ngIf="proyectosInvestigacion.length > 1 && i > 0">
+              <span class="text-lg font-semibold text-blue-700 flex items-center">
+                🔬 Proyecto de Investigación {{ i + 1 }}
+              </span>
+              <button
+                type="button"
+                (click)="eliminarProyectoInvestigacion(i)"
+                class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
+              >
+                Eliminar <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+      
+            <!-- Nombre del Proyecto -->
+            <div class="w-full px-3">
+              <div class="mb-5">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Nombre del Proyecto</label>
+                <input type="text" formControlName="proyecto" placeholder="Ej. Desarrollo de un Modelo de IA para Diagnóstico Médico"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                <div *ngIf="proyecto.get('proyecto')?.invalid && proyecto.get('proyecto')?.touched" class="text-red-500 text-sm">
+                  ⚠ El nombre del proyecto es obligatorio.
+                </div>
+              </div>
+            </div>
+      
+            <!-- Entidad Financiera -->
             <div class="w-full px-3 sm:w-1/2">
               <div class="mb-5">
-                <label for="country" class="mb-3 block text-base font-medium text-[#07074D]">
-                  País
-                </label>
-                <input
-                  type="text"
-                  id="country"
-                  placeholder="Ej. Perú"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Entidad Financiera</label>
+                <input type="text" formControlName="entidad_financiera" placeholder="Ej. CONCYTEC, FONDECYT"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                <div *ngIf="proyecto.get('entidad_financiera')?.invalid && proyecto.get('entidad_financiera')?.touched" class="text-red-500 text-sm">
+                  ⚠ La entidad financiera es obligatoria.
+                </div>
+              </div>
+            </div>
+      
+            <!-- Año del Proyecto -->
+            <div class="w-full px-3 sm:w-1/2">
+              <div class="mb-5">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">Año del Proyecto</label>
+                <input type="number" formControlName="año_adjudicacion" placeholder="Ej. 2023" min="1900" max="2099" step="1"
+                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                <div *ngIf="proyecto.get('año_adjudicacion')?.invalid && proyecto.get('año_adjudicacion')?.touched" class="text-red-500 text-sm">
+                  ⚠ Campo obligatorio.
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Experiencia Investigadora -->
-      <form>
-        <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 7">
-          Experiencia Investigadora
-        </h2>
-
-        <!-- Artículos Científicos -->
-        <div class="flex items-center justify-between" *ngIf="currentStep === 7" >
-          <h3 class="text-lg font-medium text-[#5A5A8A] border-l-4 border-[#6A64F1] pl-3 mb-4">
-            Artículos Científicos
-          </h3>
-          <button
-          type="button"
-          (click)="agregarexpinvestigadora()"
-          class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
-        >
-          Agregar <i class="fa-solid fa-plus"></i>
-        </button>
-        </div>
-
-        <div *ngFor="let Investigadora of exp_investigadora; let i = index">
-          <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 7">
-            <div class="w-full px-3 flex items-center justify-between mb-4" *ngIf="exp_investigadora.length > 1 && i > 0">
-              <span class="text-lg font-semibold text-blue-700 flex items-center">
-                📑 Experiencia investigadora{{ i + 1 }}
-              </span>
-              <button
-                type="button"
-                (click)="eliminarexpinvestigadora(i)"
-                class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
-              >
-                Eliminar <i class="fa-solid fa-trash"></i>
-              </button>
-            </div>
-            <div class="w-full px-3">
-              <div class="mb-5">
-                <label for="articleTitle" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Título del Artículo
-                </label>
-                <input
-                  type="text"
-                  id="articleTitle"
-                  placeholder="Ej. Inteligencia Artificial en la Educación"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div>
-
-            <div class="w-full px-3 sm:w-1/2">
-              <div class="mb-5">
-                <label for="journalName" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Nombre de la Revista / Publicación
-                </label>
-                <input
-                  type="text"
-                  id="journalName"
-                  placeholder="Ej. Journal of Artificial Intelligence"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div>
-
-            <div class="w-full px-3 sm:w-1/2">
-              <div class="mb-5">
-                <label for="indexing" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Indización
-                </label>
-                <input
-                  type="text"
-                  id="indexing"
-                  placeholder="Ej. Scopus, Web of Science, Latindex"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div>
-
-            <div class="w-full px-3 sm:w-1/2">
-              <div class="mb-5">
-                <label for="year" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Año de Publicación
-                </label>
-                <input
-                  type="number"
-                  id="year"
-                  placeholder="Ej. 2023"
-                  min="1900"
-                  max="2099"
-                  step="1"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div>
-
-            <div class="w-full px-3">
-              <div class="mb-5">
-                <label for="link" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Enlace de la Publicación
-                </label>
-                <input
-                  type="url"
-                  id="link"
-                  placeholder="Ej. https://doi.org/xxxxxxxx"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-
-      <!-- Libros -->
-      <form>
-        <div class="flex items-center justify-between" *ngIf="currentStep === 8">
-          <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6">
-            Libros
-          </h2>
-          <button
-            type="button"
-            (click)="agregarlibro()"
-            class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
-          >
-            Agregar <i class="fa-solid fa-plus"></i>
-          </button>
-        </div>
-
-        <div *ngFor="let libros of libro; let i = index">
-          <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 8">
-            <div class="w-full px-3 flex items-center justify-between mb-4" *ngIf="libro.length > 1 && i > 0">
-              <span class="text-lg font-semibold text-blue-700 flex items-center">
-                📕 Libro {{ i + 1 }}
-              </span>
-              <button
-                type="button"
-                (click)="eliminarlibro(i)"
-                class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
-              >
-                Eliminar <i class="fa-solid fa-trash"></i>
-              </button>
-            </div>
-            <div class="w-full px-3">
-              <div class="mb-5">
-                <label for="title" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Título del Libro
-                </label>
-                <input
-                  type="text"
-                  id="title"
-                  placeholder="Ej. El Principito"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div>
-
-            <div class="w-full px-3 sm:w-1/2">
-              <div class="mb-5">
-                <label for="publisher" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Nombre de la Editorial
-                </label>
-                <input
-                  type="text"
-                  id="publisher"
-                  placeholder="Ej. Santillana"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div>
-
-            <div class="w-full px-3 sm:w-1/2">
-              <div class="mb-5">
-                <label for="year" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Año de Publicación
-                </label>
-                <input
-                  type="number"
-                  id="year"
-                  placeholder="Ej. 1943"
-                  min="1000"
-                  max="2099"
-                  step="1"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-      <!-- Proyecto de Investigación -->
-        <div class="flex items-center justify-between" *ngIf="currentStep === 8">
-          <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6">
-            Proyecto de Investigación
-          </h2>
-          <button
-          type="button"
-          (click)="agregarproyec()"
-          class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
-        >
-          Agregar <i class="fa-solid fa-plus"></i>
-        </button>
-        </div>
-        <div *ngFor="let proyecto of proyecto_investigacion; let i = index" >
-          <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 8">
-            <div class="w-full px-3 flex items-center justify-between mb-4" *ngIf="proyecto_investigacion.length > 1 && i > 0">
-              <span class="text-lg font-semibold text-blue-700 flex items-center">
-                🔬 Proyceto de investicacion {{ i + 1 }}
-              </span>
-              <button
-                type="button"
-                (click)="eliminarproyec(i)"
-                class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
-              >
-                Eliminar <i class="fa-solid fa-trash"></i>
-              </button>
-            </div>
-            <div class="w-full px-3">
-              <div class="mb-5">
-                <label for="projectName" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Nombre del Proyecto
-                </label>
-                <input
-                  type="text"
-                  id="projectName"
-                  placeholder="Ej. Desarrollo de un Modelo de IA para Diagnóstico Médico"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div>
-
-            <div class="w-full px-3 sm:w-1/2">
-              <div class="mb-5">
-                <label for="fundingEntity" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Entidad Financiera
-                </label>
-                <input
-                  type="text"
-                  id="fundingEntity"
-                  placeholder="Ej. BCP, Interback, BBVA "
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div>
-
-            <div class="w-full px-3 sm:w-1/2">
-              <div class="mb-5">
-                <label for="year" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Año del Proyecto
-                </label>
-                <input
-                  type="number"
-                  id="year"
-                  placeholder="Ej. 2023"
-                  min="1900"
-                  max="2099"
-                  step="1"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-
       <!-- Asesorías y Jurados -->
-      <form>
-        <div class="flex items-center justify-between" *ngIf="currentStep === 9">
+      <div *ngIf="currentStep === 9">
+        <div class="flex items-center justify-between">
           <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6">
             Asesorías y Jurados
           </h2>
           <button
             type="button"
-            (click)="agregarasejura()"
+            (click)="agregarAsesoriaJurado()"
             class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
           >
             Agregar <i class="fa-solid fa-plus"></i>
           </button>
         </div>
-        <div *ngFor="let asesorias of asesoria_jurado; let i = index" >
-          <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 9">
-            <div class="w-full px-3 flex items-center justify-between mb-4" *ngIf="asesoria_jurado.length > 1 && i > 0">
+      
+        <div *ngFor="let asesoria of asesoriasJurados.controls; let i = index" [formGroup]="getFormGroup(asesoria)">
+          <div class="-mx-3 flex flex-wrap">
+            <div class="w-full px-3 flex items-center justify-between mb-4" *ngIf="asesoriasJurados.length > 1 && i > 0">
               <span class="text-lg font-semibold text-blue-700 flex items-center">
-                ⚖️ asesorias y jurados {{ i + 1 }}
+                ⚖️ Asesoría/Jurado {{ i + 1 }}
               </span>
               <button
                 type="button"
-                (click)="eliminarasejura(i)"
+                (click)="eliminarAsesoriaJurado(i)"
                 class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
               >
                 Eliminar <i class="fa-solid fa-trash"></i>
               </button>
             </div>
+      
+            <!-- Tipo de Asesoría / Jurado -->
             <div class="w-full px-3">
               <div class="mb-5">
-                <label for="advisoryType" class="mb-3 block text-base font-medium text-[#07074D]">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">
                   Tipo de Asesoría / Jurado
                 </label>
-                <select
-                  id="advisoryType"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                >
+                <select formControlName="tipo" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">
                   <option value="" disabled selected>Selecciona un tipo</option>
-                  <option value="asesorias_jurados">Asesorías y Jurados</option>
-                  <option value="jurados_tesis">Jurados de Tesis / Trabajo de Investigación</option>
+                  <option value="0">Asesorías y Jurados</option>
+                  <option value="1">Jurados de Tesis / Trabajo de Investigación</option>
                 </select>
+                <div *ngIf="asesoria.get('tipo')?.invalid && asesoria.get('tipo')?.touched" class="text-red-500 text-sm">
+                  ⚠ Debes seleccionar un tipo.
+                </div>
               </div>
             </div>
-
+      
+            <!-- Título de la Tesis -->
             <div class="w-full px-3">
               <div class="mb-5">
-                <label for="thesisTitle" class="mb-3 block text-base font-medium text-[#07074D]">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">
                   Título de la Tesis
                 </label>
                 <input
                   type="text"
-                  id="thesisTitle"
+                  formControlName="titulo_tesis"
                   placeholder="Ej. Análisis de Algoritmos de Machine Learning en la Industria"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 />
+                <div *ngIf="asesoria.get('titulo_tesis')?.invalid && asesoria.get('titulo_tesis')?.touched" class="text-red-500 text-sm">
+                  ⚠ El título de la tesis es obligatorio.
+                </div>
               </div>
             </div>
-
+      
+            <!-- Universidad -->
             <div class="w-full px-3 sm:w-1/2">
               <div class="mb-5">
-                <label for="university" class="mb-3 block text-base font-medium text-[#07074D]">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">
                   Universidad
                 </label>
                 <input
                   type="text"
-                  id="university"
+                  formControlName="universidad"
                   placeholder="Ej. Universidad Nacional Mayor de San Marcos"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 />
+                <div *ngIf="asesoria.get('universidad')?.invalid && asesoria.get('universidad')?.touched" class="text-red-500 text-sm">
+                  ⚠ La universidad es obligatoria.
+                </div>
               </div>
             </div>
-
+      
+            <!-- Nivel -->
             <div class="w-full px-3 sm:w-1/2">
               <div class="mb-5">
-                <label for="level" class="mb-3 block text-base font-medium text-[#07074D]">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">
                   Nivel
                 </label>
-                <select
-                  id="level"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                >
+                <select formControlName="nivel_tesis" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">
                   <option value="" disabled selected>Selecciona el nivel</option>
                   <option value="pregrado">Pregrado</option>
                   <option value="maestria">Maestría</option>
                   <option value="doctorado">Doctorado</option>
                 </select>
+                <div *ngIf="asesoria.get('nivel_tesis')?.invalid && asesoria.get('nivel_tesis')?.touched" class="text-red-500 text-sm">
+                  ⚠ Debes seleccionar un nivel.
+                </div>
               </div>
             </div>
-
+      
+            <!-- Año -->
             <div class="w-full px-3 sm:w-1/2">
               <div class="mb-5">
-                <label for="year" class="mb-3 block text-base font-medium text-[#07074D]">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">
                   Año
                 </label>
                 <input
                   type="number"
-                  id="year"
+                  formControlName="año"
                   placeholder="Ej. 2023"
                   min="1900"
                   max="2099"
                   step="1"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 />
+                <div *ngIf="asesoria.get('año')?.invalid && asesoria.get('año')?.touched" class="text-red-500 text-sm">
+                  ⚠ Campo obligatorio
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </form>
+      </div>
 
       <!-- Otros -->
-      <form>
-        <div class="flex items-center justify-between" *ngIf="currentStep === 10">
+      <div *ngIf="currentStep === 10">
+        <div class="flex items-center justify-between">
           <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6">
-            Otros
+            Otros Conocimientos
           </h2>
           <button
             type="button"
-            (click)="agregarotros()"
+            (click)="agregarOtros()"
             class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
           >
             Agregar <i class="fa-solid fa-plus"></i>
-        </button>
+          </button>
         </div>
-
-        <div *ngFor="let otro of otros; let i = index">
-          <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 10">
+      
+        <div *ngFor="let otro of otros.controls; let i = index" [formGroup]="getFormGroup(otro)">
+          <div class="-mx-3 flex flex-wrap">
             <div class="w-full px-3 flex items-center justify-between mb-4" *ngIf="otros.length > 1 && i > 0">
               <span class="text-lg font-semibold text-blue-700 flex items-center">
-                📌 otros {{ i + 1 }}
+                📌 Otros {{ i + 1 }}
               </span>
               <button
                 type="button"
-                (click)="eliminarotros(i)"
+                (click)="eliminarOtros(i)"
                 class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md"
               >
                 Eliminar <i class="fa-solid fa-trash"></i>
               </button>
             </div>
+      
             <!-- Idioma -->
             <div class="w-full px-3">
               <div class="mb-5">
-                <label for="language" class="mb-3 block text-base font-medium text-[#07074D]">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">
                   Idioma
                 </label>
                 <input
                   type="text"
-                  id="language"
+                  formControlName="idioma"
                   placeholder="Ej. Inglés, Francés, Alemán"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 />
+                <div *ngIf="otro.get('idioma')?.invalid && otro.get('idioma')?.touched" class="text-red-500 text-sm">
+                  ⚠ El idioma es obligatorio.
+                </div>
               </div>
             </div>
-
+      
             <!-- Nivel de Idioma -->
             <div class="w-full px-3">
               <div class="mb-5">
@@ -1169,36 +1152,39 @@
                 </label>
                 <div class="flex gap-4">
                   <label class="flex items-center">
-                    <input type="radio" value="basico" class="mr-2" />
+                    <input type="radio" formControlName="nivel_idioma" value="basico" class="mr-2" />
                     Básico
                   </label>
                   <label class="flex items-center">
-                    <input type="radio" value="intermedio" class="mr-2" />
+                    <input type="radio" formControlName="nivel_idioma" value="intermedio" class="mr-2" />
                     Intermedio
                   </label>
                   <label class="flex items-center">
-                    <input type="radio" value="avanzado" class="mr-2" />
+                    <input type="radio" formControlName="nivel_idioma" value="avanzado" class="mr-2" />
                     Avanzado
                   </label>
                 </div>
+                <div *ngIf="otro.get('nivel_idioma')?.invalid && otro.get('nivel_idioma')?.touched" class="text-red-500 text-sm">
+                  ⚠ Selecciona un nivel de idioma.
+                </div>
               </div>
             </div>
-
+      
             <!-- Office -->
             <div class="w-full px-3">
               <div class="mb-5">
-                <label for="officeType" class="mb-3 block text-base font-medium text-[#07074D]">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">
                   Tipo de Office
                 </label>
                 <input
                   type="text"
-                  id="officeType"
+                  formControlName="office"
                   placeholder="Ej. Microsoft Office, Google Workspace"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 />
               </div>
             </div>
-
+      
             <!-- Nivel de Office -->
             <div class="w-full px-3">
               <div class="mb-5">
@@ -1207,36 +1193,36 @@
                 </label>
                 <div class="flex gap-4">
                   <label class="flex items-center">
-                    <input type="radio" value="basico" class="mr-2" />
+                    <input type="radio" formControlName="nivel_office" value="basico" class="mr-2" />
                     Básico
                   </label>
                   <label class="flex items-center">
-                    <input type="radio" value="intermedio" class="mr-2" />
+                    <input type="radio" formControlName="nivel_office" value="intermedio" class="mr-2" />
                     Intermedio
                   </label>
                   <label class="flex items-center">
-                    <input type="radio" value="avanzado" class="mr-2" />
+                    <input type="radio" formControlName="nivel_office" value="avanzado" class="mr-2" />
                     Avanzado
                   </label>
                 </div>
               </div>
             </div>
-
+      
             <!-- E-learning -->
             <div class="w-full px-3">
               <div class="mb-5">
-                <label for="elearningType" class="mb-3 block text-base font-medium text-[#07074D]">
+                <label class="mb-3 block text-base font-medium text-[#07074D]">
                   Tipo de E-learning
                 </label>
                 <input
                   type="text"
-                  id="elearningType"
+                  formControlName="learning"
                   placeholder="Ej. Moodle, Blackboard, Google Classroom"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 />
               </div>
             </div>
-
+      
             <!-- Nivel de E-learning -->
             <div class="w-full px-3">
               <div class="mb-5">
@@ -1245,15 +1231,15 @@
                 </label>
                 <div class="flex gap-4">
                   <label class="flex items-center">
-                    <input type="radio" value="basico" class="mr-2" />
+                    <input type="radio" formControlName="nivel_learning" value="basico" class="mr-2" />
                     Básico
                   </label>
                   <label class="flex items-center">
-                    <input type="radio" value="intermedio" class="mr-2" />
+                    <input type="radio" formControlName="nivel_learning" value="intermedio" class="mr-2" />
                     Intermedio
                   </label>
                   <label class="flex items-center">
-                    <input type="radio" value="avanzado" class="mr-2" />
+                    <input type="radio" formControlName="nivel_learning" value="avanzado" class="mr-2" />
                     Avanzado
                   </label>
                 </div>
@@ -1261,7 +1247,8 @@
             </div>
           </div>
         </div>
-      </form>
+      </div>
+      
 
       <!-- Disponibilidad Horaria -->
 
@@ -1274,13 +1261,16 @@
           Siguiente <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
-      <!-- <div>
+      <div>
+        <!-- Botón de guardar -->
         <button
+          type="button"
+          (click)="registrarDocente()"
           class="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-center text-base font-semibold text-white outline-none"
         >
-          Submit
+          Guardar <i class="fa-solid fa-save"></i>
         </button>
-      </div> -->
+      </div>
     </form>
   </div>
 </div>

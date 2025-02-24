@@ -9,16 +9,9 @@ import { AbstractControl, Form, FormArray, FormBuilder, FormGroup, Validators } 
   styleUrl: './registro-docentes.component.css'
 })
 export class RegistroDocentesComponent implements OnInit{
-  currentStep =  6;
+  currentStep =  1;
   totalSteps = 10;
   
-  exp_docentes: any [] = [{}]
-  exp_investigadora: any [] = [{}]
-  libro: any [] = [{}]
-  proyecto_investigacion: any [] = [{}]
-  asesoria_jurado: any [] = [{}]
-  otros: any [] = [{}]
-
   docenteForm: FormGroup;
   departamentos: any[] = [];
   provincias: any[] = [];
@@ -62,11 +55,32 @@ export class RegistroDocentesComponent implements OnInit{
       titulosProfesionales: this.fb.array([]),
       formacionComplementaria: this.fb.array([]),
 
+      //Exp Docente
+      experienciasDocentes:this.fb.array([]),
+      
+      //Exp_inves Articulos Cientifos
+      articulosCientificos:this.fb.array([]),
+
+      //Libro/Proyerto/Investigaciones
+      libros: this.fb.array([]),
+      proyectosInvestigacion: this.fb.array([]),
+
+      //Asesorias y jurados
+      asesoriasJurados:this.fb.array([]),
+
+      //otros
+      otros: this.fb.array([])
     });
 
     this.agregarFormacionAcademica();
     this.agregarTituloProfesional();
     this.agregarFormacionComplementaria();
+    this.agregarExperienciaDocente();
+    this.agregarArticuloCientifico();
+    this.agregarLibro();
+    this.agregarProyectoInvestigacion();
+    this.agregarAsesoriaJurado();
+    this.agregarOtros()
   }
 
   ngOnInit(): void {
@@ -81,21 +95,38 @@ export class RegistroDocentesComponent implements OnInit{
   }
   get formacionesComplementarias(): FormArray {
     return this.docenteForm.get('formacionComplementaria') as FormArray;
-  }  
+  }
+  get experienciasDocentes(): FormArray {
+    return this.docenteForm.get('experienciasDocentes') as FormArray;
+  }
+  get articulosCientificos(): FormArray {
+    return this.docenteForm.get('articulosCientificos') as FormArray;
+  }
+  get libros(): FormArray {
+    return this.docenteForm.get('libros') as FormArray;
+  }
+  get proyectosInvestigacion(): FormArray {
+    return this.docenteForm.get('proyectosInvestigacion') as FormArray;
+  }
+  get asesoriasJurados(): FormArray {
+    return this.docenteForm.get('asesoriasJurados') as FormArray;
+  }
+  get otros(): FormArray {
+    return this.docenteForm.get('otros') as FormArray;
+  }
 
-  // Método para castear AbstractControl a FormGroup
+  //#region Método para convertir un AbstractControl
   getFormGroup(control: AbstractControl): FormGroup {
     return control as FormGroup;
   }
-  // Método para convertir un AbstractControl de titulosProfesionales a FormGroup
-getTituloProfesionalFormGroup(control: AbstractControl): FormGroup {
-  return control as FormGroup;
-}
+  getTituloProfesionalFormGroup(control: AbstractControl): FormGroup {
+    return control as FormGroup;
+  }
 
-// Método para convertir un AbstractControl de formacionesComplementarias a FormGroup
-getFormacionComplementariaFormGroup(control: AbstractControl): FormGroup {
-  return control as FormGroup;
-}
+  getFormacionComplementariaFormGroup(control: AbstractControl): FormGroup {
+    return control as FormGroup;
+  }
+  //#endregion
 
 //#region siquiente y volver
   nextStep() {
@@ -112,7 +143,6 @@ getFormacionComplementariaFormGroup(control: AbstractControl): FormGroup {
   //#endregion
 
   //#region agregar
-
   agregarFormacionAcademica() {
     const formacion = this.fb.group({
       grado_academico: ['', Validators.required],
@@ -163,63 +193,119 @@ getFormacionComplementariaFormGroup(control: AbstractControl): FormGroup {
     }
   }
 
-  agregarexp(){
-    this.exp_docentes.push({})
+  crearExperienciaDocente(): FormGroup {
+    return this.fb.group({
+      tipo_experiencia: ['', Validators.required],
+      nombre_universidad: ['', Validators.required],
+      curso_dictado: ['', Validators.required],
+      semestre: ['', Validators.required],
+      pais: ['', Validators.required]
+    });
   }
-
-  eliminarexp(index: number): void{
-    if (this.exp_docentes.length > 1){
-      this.exp_docentes.splice(index , 1)
+  
+  agregarExperienciaDocente() {
+    this.experienciasDocentes.push(this.crearExperienciaDocente());
+  }
+  
+  eliminarExperienciaDocente(index: number) {
+    if (this.experienciasDocentes.length > 1) {
+      this.experienciasDocentes.removeAt(index);
     }
   }
 
-  agregarexpinvestigadora(){
-    this.exp_investigadora.push({})
+  crearArticuloCientifico(): FormGroup {
+    return this.fb.group({
+      titulo_articulo: ['', Validators.required],
+      nombre_revista: ['', Validators.required],
+      indizado: ['', Validators.required],
+      año: ['', Validators.required],
+      enlace: ['', [Validators.required, Validators.pattern('https?://.+')]]
+    });
   }
-
-  eliminarexpinvestigadora(index: number): void{
-    if (this.exp_investigadora.length > 1){
-      this.exp_investigadora.splice(index , 1)
+  
+  agregarArticuloCientifico() {
+    this.articulosCientificos.push(this.crearArticuloCientifico());
+  }
+  
+  eliminarArticuloCientifico(index: number) {
+    if (this.articulosCientificos.length > 1) {
+      this.articulosCientificos.removeAt(index);
     }
   }
 
-  agregarlibro(){
-    this.libro.push({})
+  crearLibro(): FormGroup {
+    return this.fb.group({
+      libro_titulo: ['', Validators.required],
+      nombre_editorial: ['', Validators.required],
+      año: ['', [Validators.required, Validators.min(1000), Validators.max(new Date().getFullYear())]]
+    });
   }
-
-  eliminarlibro(index: number): void{
-    if (this.libro.length > 1){
-      this.libro.splice(index , 1)
+  
+  agregarLibro() {
+    this.libros.push(this.crearLibro());
+  }
+  
+  eliminarLibro(index: number) {
+    if (this.libros.length > 1) {
+      this.libros.removeAt(index);
+    }
+  }
+  
+  crearProyectoInvestigacion(): FormGroup {
+    return this.fb.group({
+      proyecto: ['', Validators.required],
+      entidad_financiera: ['', Validators.required],
+      año_adjudicacion: ['', [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear())]]
+    });
+  }
+  
+  agregarProyectoInvestigacion() {
+    this.proyectosInvestigacion.push(this.crearProyectoInvestigacion());
+  }
+  
+  eliminarProyectoInvestigacion(index: number) {
+    if (this.proyectosInvestigacion.length > 1) {
+      this.proyectosInvestigacion.removeAt(index);
     }
   }
 
-  agregarproyec(){
-    this.proyecto_investigacion.push({})
+  agregarAsesoriaJurado() {
+    const asesoria = this.fb.group({
+      tipo: ['', Validators.required],
+      titulo_tesis: ['', Validators.required],
+      universidad: ['', Validators.required],
+      nivel_tesis: ['', Validators.required],
+      año: [
+        '',
+        [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear())]
+      ]
+    });
+
+    this.asesoriasJurados.push(asesoria);
   }
 
-  eliminarproyec(index: number): void{
-    if (this.proyecto_investigacion.length > 1){
-      this.proyecto_investigacion.splice(index , 1)
+  eliminarAsesoriaJurado(index: number) {
+    if (this.asesoriasJurados.length > 1) {
+      this.asesoriasJurados.removeAt(index);
     }
   }
 
-  agregarasejura(){
-    this.asesoria_jurado.push({})
+  agregarOtros() {
+    const otro = this.fb.group({
+      idioma: ['', Validators.required],
+      nivel_idioma: ['', Validators.required],
+      office: ['', Validators.required],
+      nivel_office: ['', Validators.required],
+      learning: ['', Validators.required],
+      nivel_learning: ['', Validators.required]
+    });
+  
+    this.otros.push(otro);
   }
-
-  eliminarasejura(index: number): void{
-    if (this.asesoria_jurado.length > 1){
-      this.asesoria_jurado.splice(index , 1)
-    }
-  }
-
-  agregarotros(){
-    this.otros.push({})
-  }
-
-  eliminarotros(index: number): void{
-    if (this.otros.length > 1){
-      this.otros.splice(index , 1)
+  
+  eliminarOtros(index: number) {
+    if (this.otros.length > 1) {
+      this.otros.removeAt(index);
     }
   }
   //#endregion
@@ -264,6 +350,8 @@ getFormacionComplementariaFormGroup(control: AbstractControl): FormGroup {
   //#region boton registroDocentes
   registrarDocente() {
     if (this.docenteForm.valid) {
+      console.log('Datos enviados al backend:', this.docenteForm.value); // 🔍 Verificar los datos antes de enviar
+
       this.docenteService.createDocente(this.docenteForm.value).subscribe(
         response => {
           console.log('Docente registrado:', response);
