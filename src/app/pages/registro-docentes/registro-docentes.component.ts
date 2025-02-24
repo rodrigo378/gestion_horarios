@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DocenteService } from '../../services/docente.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, Form, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-registro-docentes',
@@ -9,11 +9,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrl: './registro-docentes.component.css'
 })
 export class RegistroDocentesComponent implements OnInit{
-  currentStep =  1;
+  currentStep =  4;
   totalSteps = 10;
   
-  domicilios: any [] = [{}];
-  formacion_academica: any [] = [{}]
   titulo_profesional: any [] = [{}]
   formacion_complementaria: any [] = [{}]
   exp_docentes: any [] = [{}]
@@ -57,14 +55,28 @@ export class RegistroDocentesComponent implements OnInit{
       direccion: ['', Validators.required],
       referencia: ['', Validators.required],
       mz: ['', Validators.required],
-      lote: ['', Validators.required]
+      lote: ['', Validators.required],
+
+      formacionAcademica: this.fb.array([])
 
     });
+
+    this.agregarFormacionAcademica();
   }
 
   ngOnInit(): void {
     this.cargarDepartamentos();
   }
+
+  get formacionesAcademicas(): FormArray {
+    return this.docenteForm.get('formacionAcademica') as FormArray;
+  }
+
+  // Método para castear AbstractControl a FormGroup
+  getFormGroup(control: AbstractControl): FormGroup {
+    return control as FormGroup;
+  }
+
 //#region siquiente y volver
   nextStep() {
     if (this.currentStep < this.totalSteps) {
@@ -80,24 +92,26 @@ export class RegistroDocentesComponent implements OnInit{
   //#endregion
 
   //#region agregar
-  agregarDomicilio(){
-    this.domicilios.push({})
+
+  agregarFormacionAcademica() {
+    const formacion = this.fb.group({
+      grado_academico: ['', Validators.required],
+      universidad: ['', Validators.required],
+      especialidad: ['', Validators.required],
+      pais: ['', Validators.required],
+      revalidacion: ['', Validators.required]
+    });
+
+    this.formacionesAcademicas.push(formacion);
   }
 
-  eliminarDomicilio(index: number): void{
-    if (this.domicilios.length > 1){
-      this.domicilios.splice(index , 1)
+  // Método para eliminar una formación académica
+  eliminarFormacionAcademica(index: number) {
+    if (this.formacionesAcademicas.length > 1) {
+      this.formacionesAcademicas.removeAt(index);
     }
-  }
-  agregarForaca(){
-    this.formacion_academica.push({})
   }
 
-  eliminarFormaca(index: number): void{
-    if (this.formacion_academica.length > 1){
-      this.formacion_academica.splice(index , 1)
-    }
-  }
   agregarTitoprof(){
     this.titulo_profesional.push({})
   }
