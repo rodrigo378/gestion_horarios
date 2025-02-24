@@ -9,7 +9,7 @@ export interface Docente {
   email: string;
   celular: string;
   telefono_fijo: string;
-  estado: string; // 0 default
+  estado?: string; // 0 default
 
   contactoEmergencia: ContactoEmergencia;
 
@@ -125,7 +125,7 @@ export interface Libro {
 export interface ProyectoInvestigacion {
   id?: number;
 
-  nombre: string;
+  proyecto: string;
   entidad_financiadora: string;
   año: string;
 
