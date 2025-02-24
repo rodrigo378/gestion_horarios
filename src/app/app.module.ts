@@ -16,6 +16,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { LayoutComponent } from './common/layout/layout.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegistroDocentesComponent } from './pages/registro-docentes/registro-docentes.component';
+import { ReactiveFormsModule } from '@angular/forms';
 registerLocaleData(en);
 
 @NgModule({
@@ -31,7 +32,8 @@ registerLocaleData(en);
     FormsModule,
     IconsProviderModule,
     NzLayoutModule,
-    NzMenuModule
+    NzMenuModule,
+    ReactiveFormsModule
   ],
   providers: [
     provideNzI18n(en_US),
