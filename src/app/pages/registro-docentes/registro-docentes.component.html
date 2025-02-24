@@ -193,76 +193,76 @@
         <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6">
           Contacto de emergencia
         </h2>
-  
-        <div class="-mx-3 flex flex-wrap">
+      
+        <div class="-mx-3 flex flex-wrap" formGroupName="contactoEmergencia">
           <!-- Nombre -->
           <div class="w-full px-3">
             <div class="mb-5">
-              <label for="nombre_emergencia" class="mb-3 block text-base font-medium text-[#07074D]">
+              <label for="nombre" class="mb-3 block text-base font-medium text-[#07074D]">
                 Nombre
               </label>
               <input
                 type="text"
-                id="nombre_emergencia"
-                formControlName="nombre_emergencia"
+                id="nombre"
+                formControlName="nombre"
                 placeholder="Ej. Juan Pérez"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />
-              <div *ngIf="docenteForm.controls['nombre_emergencia'].invalid && docenteForm.controls['nombre_emergencia'].touched" class="text-red-500 text-sm">
+              <div *ngIf="docenteForm.get('contactoEmergencia.nombre')?.invalid && docenteForm.get('contactoEmergencia.nombre')?.touched" class="text-red-500 text-sm">
                 ⚠ El nombre es obligatorio.
               </div>
             </div>
           </div>
-  
+      
           <!-- Relación -->
           <div class="w-full px-3 sm:w-1/2">
             <div class="mb-5">
-              <label for="relacion_emergencia" class="mb-3 block text-base font-medium text-[#07074D]">
+              <label for="relacion" class="mb-3 block text-base font-medium text-[#07074D]">
                 Relación
               </label>
               <input
                 type="text"
-                id="relacion_emergencia"
-                formControlName="relacion_emergencia"
+                id="relacion"
+                formControlName="relacion"
                 placeholder="Ej. Padre, Madre, Hermano"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />
-              <div *ngIf="docenteForm.controls['relacion_emergencia'].invalid && docenteForm.controls['relacion_emergencia'].touched" class="text-red-500 text-sm">
+              <div *ngIf="docenteForm.get('contactoEmergencia.relacion')?.invalid && docenteForm.get('contactoEmergencia.relacion')?.touched" class="text-red-500 text-sm">
                 ⚠ Debes ingresar la relación con el contacto de emergencia.
               </div>
             </div>
           </div>
-  
+      
           <!-- Teléfono 1 -->
           <div class="w-full px-3 sm:w-1/2">
             <div class="mb-5">
-              <label for="telefono_emergencia" class="mb-3 block text-base font-medium text-[#07074D]">
+              <label for="telefono_1" class="mb-3 block text-base font-medium text-[#07074D]">
                 Teléfono 1
               </label>
               <input
                 type="tel"
-                id="telefono_emergencia"
-                formControlName="telefono_emergencia"
+                id="telefono_1"
+                formControlName="telefono_1"
                 placeholder="Ej. 987654321"
                 pattern="[0-9]{9}"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />
-              <div *ngIf="docenteForm.controls['telefono_emergencia'].invalid && docenteForm.controls['telefono_emergencia'].touched" class="text-red-500 text-sm">
+              <div *ngIf="docenteForm.get('contactoEmergencia.telefono_1')?.invalid && docenteForm.get('contactoEmergencia.telefono_1')?.touched" class="text-red-500 text-sm">
                 ⚠ El teléfono debe tener 9 dígitos.
               </div>
             </div>
           </div>
-  
+      
           <!-- Teléfono 2 (Opcional) -->
           <div class="w-full px-3 sm:w-1/2">
             <div class="mb-5">
-              <label for="telefono_emergencia2" class="mb-3 block text-base font-medium text-[#07074D]">
+              <label for="telefono_2" class="mb-3 block text-base font-medium text-[#07074D]">
                 Teléfono 2 (Opcional)
               </label>
               <input
                 type="tel"
-                id="telefono_emergencia2"
-                formControlName="telefono_emergencia2"
+                id="telefono_2"
+                formControlName="telefono_2"
                 placeholder="Ej. 912345678"
                 pattern="[0-9]{9}"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -277,9 +277,9 @@
         <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6">
           Domicilio del Docente
         </h2>
-
-        <div class="-mx-3 flex flex-wrap">
-
+      
+        <div class="-mx-3 flex flex-wrap" formGroupName="domicilio">
+      
           <!-- Departamento -->
           <div class="w-full px-3 sm:w-1/2">
             <div class="mb-5">
@@ -291,12 +291,13 @@
                 <option value="" disabled selected>Selecciona un departamento</option>
                 <option *ngFor="let depto of departamentos" [value]="depto.id">{{ depto.nombre }}</option>
               </select>
-              <div *ngIf="docenteForm.controls['departamento_id'].invalid && docenteForm.controls['departamento_id'].touched" class="text-red-500 text-sm">
+              <div *ngIf="docenteForm.get('domicilio.departamento_id')?.invalid && docenteForm.get('domicilio.departamento_id')?.touched"
+                class="text-red-500 text-sm">
                 ⚠ El departamento es obligatorio.
               </div>
             </div>
           </div>
-
+      
           <!-- Provincia -->
           <div class="w-full px-3 sm:w-1/2">
             <div class="mb-5">
@@ -308,12 +309,13 @@
                 <option value="" disabled selected>Selecciona una provincia</option>
                 <option *ngFor="let prov of provincias" [value]="prov.id">{{ prov.nombre }}</option>
               </select>
-              <div *ngIf="docenteForm.controls['provincia_id'].invalid && docenteForm.controls['provincia_id'].touched" class="text-red-500 text-sm">
-                ⚠ La provincia es obligatorio.
+              <div *ngIf="docenteForm.get('domicilio.provincia_id')?.invalid && docenteForm.get('domicilio.provincia_id')?.touched"
+                class="text-red-500 text-sm">
+                ⚠ La provincia es obligatoria.
               </div>
             </div>
           </div>
-
+      
           <!-- Distrito -->
           <div class="w-full px-3 sm:w-1/2">
             <div class="mb-5">
@@ -325,12 +327,13 @@
                 <option value="" disabled selected>Selecciona un distrito</option>
                 <option *ngFor="let dist of distritos" [value]="dist.id">{{ dist.nombre }}</option>
               </select>
-              <div *ngIf="docenteForm.controls['distrito_id'].invalid && docenteForm.controls['distrito_id'].touched" class="text-red-500 text-sm">
+              <div *ngIf="docenteForm.get('domicilio.distrito_id')?.invalid && docenteForm.get('domicilio.distrito_id')?.touched"
+                class="text-red-500 text-sm">
                 ⚠ El distrito es obligatorio.
               </div>
             </div>
           </div>
-
+      
           <!-- Dirección -->
           <div class="w-full px-3">
             <div class="mb-5">
@@ -338,14 +341,14 @@
                 Dirección
               </label>
               <textarea id="direccion" formControlName="direccion" placeholder="Dirección completa"
-                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">
-              </textarea>
-              <div *ngIf="docenteForm.controls['direccion'].invalid && docenteForm.controls['direccion'].touched" class="text-red-500 text-sm">
-                ⚠ La direccion es obligatorio.
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"></textarea>
+              <div *ngIf="docenteForm.get('domicilio.direccion')?.invalid && docenteForm.get('domicilio.direccion')?.touched"
+                class="text-red-500 text-sm">
+                ⚠ La dirección es obligatoria.
               </div>
             </div>
           </div>
-
+      
           <!-- Referencia -->
           <div class="w-full px-3">
             <div class="mb-5">
@@ -354,12 +357,13 @@
               </label>
               <input type="text" id="referencia" formControlName="referencia" placeholder="Referencia"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                <div *ngIf="docenteForm.controls['referencia'].invalid && docenteForm.controls['referencia'].touched" class="text-red-500 text-sm">
-                  ⚠ El referencia es obligatorio.
-                </div>
+              <div *ngIf="docenteForm.get('domicilio.referencia')?.invalid && docenteForm.get('domicilio.referencia')?.touched"
+                class="text-red-500 text-sm">
+                ⚠ La referencia es obligatoria.
               </div>
+            </div>
           </div>
-
+      
           <!-- Mz (Manzana) -->
           <div class="w-full px-3 sm:w-1/2">
             <div class="mb-5">
@@ -368,12 +372,13 @@
               </label>
               <input type="text" id="mz" formControlName="mz" placeholder="Ej. Mz A"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                <div *ngIf="docenteForm.controls['mz'].invalid && docenteForm.controls['mz'].touched" class="text-red-500 text-sm">
-                  ⚠ La Mz es obligatorio.
-                </div>
+              <div *ngIf="docenteForm.get('domicilio.mz')?.invalid && docenteForm.get('domicilio.mz')?.touched"
+                class="text-red-500 text-sm">
+                ⚠ La Mz es obligatoria.
               </div>
+            </div>
           </div>
-
+      
           <!-- Lote -->
           <div class="w-full px-3 sm:w-1/2">
             <div class="mb-5">
@@ -382,13 +387,15 @@
               </label>
               <input type="text" id="lote" formControlName="lote" placeholder="Ej. Lote 12"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                <div *ngIf="docenteForm.controls['lote'].invalid && docenteForm.controls['lote'].touched" class="text-red-500 text-sm">
-                  ⚠ El lote es obligatorio.
-                </div>
+              <div *ngIf="docenteForm.get('domicilio.lote')?.invalid && docenteForm.get('domicilio.lote')?.touched"
+                class="text-red-500 text-sm">
+                ⚠ El lote es obligatorio.
               </div>
+            </div>
           </div>
         </div>
       </div>
+      
       
       <!-- Formacion Academica del Docente -->
       <div *ngIf="currentStep === 4">
@@ -488,12 +495,12 @@
             <!-- Resolución SUNEDU -->
             <div class="w-full px-3 sm:w-1/2">
               <div class="mb-5">
-                <label for="revalidacion" class="mb-3 block text-base font-medium text-[#07074D]">
+                <label for="resolucion_sunedu" class="mb-3 block text-base font-medium text-[#07074D]">
                   Resolución SUNEDU
                 </label>
-                <input type="text" id="revalidacion" formControlName="revalidacion" placeholder="Número de resolución"
+                <input type="text" id="revalidacion" formControlName="resolucion_sunedu" placeholder="Número de resolución"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                  <div *ngIf="formacion.get('revalidacion')?.invalid && formacion.get('revalidacion')?.touched"
+                  <div *ngIf="formacion.get('resolucion_sunedu')?.invalid && formacion.get('resolucion_sunedu')?.touched"
                     class="text-red-500 text-sm mt-1">
                     ⚠ La resolución SUNEDU es obligatoria.
                   </div>
@@ -776,12 +783,12 @@
             <div class="w-full px-3">
               <div class="mb-5">
                 <label class="mb-3 block text-base font-medium text-[#07074D]">Título del Artículo</label>
-                <input type="text" formControlName="titulo_articulo" placeholder="Ej. Inteligencia Artificial en la Educación"
+                <input type="text" formControlName="nombre_articulo" placeholder="Ej. Inteligencia Artificial en la Educación"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                  <div *ngIf="articulo.get('titulo_articulo')?.invalid && articulo.get('titulo_articulo')?.touched" class="text-red-500 text-sm">
-                    ⚠ Este campo es obligatorio.
-                  </div>
+                <div *ngIf="articulo.get('nombre_articulo')?.invalid && (articulo.get('nombre_articulo')?.touched || articulo.get('nombre_articulo')?.dirty)" class="text-red-500 text-sm">
+                  ⚠ Este campo es obligatorio.
                 </div>
+              </div>
             </div>
       
             <!-- Nombre de la Revista -->
@@ -812,12 +819,12 @@
             <div class="w-full px-3 sm:w-1/2">
               <div class="mb-5">
                 <label class="mb-3 block text-base font-medium text-[#07074D]">Año de Publicación</label>
-                <input type="number" formControlName="año" placeholder="Ej. 2023" min="1900" max="2099" step="1"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                  <div *ngIf="articulo.get('año')?.invalid && articulo.get('año')?.touched" class="text-red-500 text-sm">
-                    ⚠ Este campo es obligatorio.
-                  </div>
+                <input type="text" formControlName="año" placeholder="Ej. 2023"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                <div *ngIf="articulo.get('año')?.invalid && (articulo.get('año')?.touched || articulo.get('año')?.dirty)" class="text-red-500 text-sm">
+                  ⚠ Este campo es obligatorio.
                 </div>
+              </div>
             </div>
       
             <!-- Enlace de la Publicación -->
@@ -826,10 +833,10 @@
                 <label class="mb-3 block text-base font-medium text-[#07074D]">Enlace de la Publicación</label>
                 <input type="url" formControlName="enlace" placeholder="Ej. https://doi.org/xxxxxxxx"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                  <div *ngIf="articulo.get('enlace')?.invalid && articulo.get('enlace')?.touched" class="text-red-500 text-sm">
-                    ⚠ Este campo es obligatorio.
-                  </div>
+                <div *ngIf="articulo.get('enlace')?.invalid && (articulo.get('enlace')?.touched || articulo.get('enlace')?.dirty)" class="text-red-500 text-sm">
+                  ⚠ Este campo es obligatorio.
                 </div>
+              </div>
             </div>
           </div>
         </div>
@@ -960,7 +967,7 @@
             <div class="w-full px-3 sm:w-1/2">
               <div class="mb-5">
                 <label class="mb-3 block text-base font-medium text-[#07074D]">Año del Proyecto</label>
-                <input type="number" formControlName="año_adjudicacion" placeholder="Ej. 2023" min="1900" max="2099" step="1"
+                <input type="text" formControlName="año_adjudicacion" placeholder="Ej. 2023" min="1900" max="2099" step="1"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 <div *ngIf="proyecto.get('año_adjudicacion')?.invalid && proyecto.get('año_adjudicacion')?.touched" class="text-red-500 text-sm">
                   ⚠ Campo obligatorio.
