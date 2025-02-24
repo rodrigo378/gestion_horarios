@@ -41,7 +41,7 @@ export interface ContactoEmergencia {
   telefono_1: string;
   telefono_2: string;
 
-  docente_id: number;
+  docente_id?: number;
 }
 
 export interface Domicilio {
@@ -55,7 +55,7 @@ export interface Domicilio {
   mz: string;
   lote: string;
 
-  docente_id: number;
+  docente_id?: number;
 }
 
 export interface FormacionAcademica {
@@ -66,7 +66,7 @@ export interface FormacionAcademica {
   pais: string;
   resolucion_sunedu: string; // Número de resolución en caso de revalidación
 
-  docente_id: number;
+  docente_id?: number;
 }
 
 export interface TitulosProfesionales {
@@ -75,7 +75,7 @@ export interface TitulosProfesionales {
   universidad: string;
   especialidad: string;
 
-  docente_id: number;
+  docente_id?: number;
 }
 
 export interface FormacionComplementaria {
@@ -85,7 +85,7 @@ export interface FormacionComplementaria {
   especialidad: string;
   institucion: string;
 
-  docente_id: number;
+  docente_id?: number;
 }
 
 export interface ExperienciaDocente {
@@ -97,7 +97,7 @@ export interface ExperienciaDocente {
   pais: string;
   tipo_experiencia: number; // 0 => Universitario, 1 => no_universitario
 
-  docente_id: number;
+  docente_id?: number;
 }
 
 export interface ArticuloCientifico {
@@ -109,7 +109,7 @@ export interface ArticuloCientifico {
   año: string;
   enlace: string;
 
-  docente_id: number;
+  docente_id?: number;
 }
 
 export interface Libro {
@@ -119,7 +119,7 @@ export interface Libro {
   nombre_editorial: string;
   año: string;
 
-  docente_id: number;
+  docente_id?: number;
 }
 
 export interface ProyectoInvestigacion {
@@ -129,7 +129,7 @@ export interface ProyectoInvestigacion {
   entidad_financiadora: string;
   año: string;
 
-  docente_id: number;
+  docente_id?: number;
 }
 
 export interface AsesoriaJurado {
@@ -141,7 +141,7 @@ export interface AsesoriaJurado {
   año: string;
   tipo: number; // 0 => Asesor, 1 => Jurado
 
-  docente_id: number;
+  docente_id?: number;
 }
 
 export interface Otro {
@@ -154,5 +154,5 @@ export interface Otro {
   elearning: string;
   nivel_elearning: string;
 
-  docente_id: number;
+  docente_id?: number;
 }
