@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { DocenteService } from '../../services/docente.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-registro-docentes',
@@ -6,9 +8,10 @@ import { Component } from '@angular/core';
   templateUrl: './registro-docentes.component.html',
   styleUrl: './registro-docentes.component.css'
 })
-export class RegistroDocentesComponent {
+export class RegistroDocentesComponent implements OnInit{
   currentStep =  1;
   totalSteps = 10;
+  
   domicilios: any [] = [{}];
   formacion_academica: any [] = [{}]
   titulo_profesional: any [] = [{}]
@@ -20,7 +23,49 @@ export class RegistroDocentesComponent {
   asesoria_jurado: any [] = [{}]
   otros: any [] = [{}]
 
+  docenteForm: FormGroup;
+  departamentos: any[] = [];
+  provincias: any[] = [];
+  distritos: any[] = [];
 
+  constructor(
+    private fb: FormBuilder,
+    private docenteService: DocenteService
+  ) {
+    this.docenteForm = this.fb.group({
+      // Información Personal
+      nombres: ['', Validators.required],
+      apellido_paterno: ['', Validators.required],
+      apellido_materno: ['', Validators.required],
+      tipo_identificacion: ['', Validators.required],
+      numero_identificacion: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
+      fecha_nacimiento: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      celular: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
+      telefono_fijo: ['', [Validators.required, Validators.pattern('^[0-9]{7,10}$')]],
+
+      // Contacto de Emergencia
+      nombre_emergencia: ['', Validators.required],
+      relacion_emergencia: ['', Validators.required],
+      telefono_emergencia: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
+      telefono_emergencia2: ['', [Validators.pattern('^[0-9]{9}$')]], // Opcional
+
+      // Domicilio del Docente
+      departamento_id: ['', Validators.required],
+      provincia_id: ['', Validators.required],
+      distrito_id: ['', Validators.required],
+      direccion: ['', Validators.required],
+      referencia: ['', Validators.required],
+      mz: ['', Validators.required],
+      lote: ['', Validators.required]
+
+    });
+  }
+
+  ngOnInit(): void {
+    this.cargarDepartamentos();
+  }
+//#region siquiente y volver
   nextStep() {
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
@@ -32,7 +77,9 @@ export class RegistroDocentesComponent {
       this.currentStep--;
     }
   }
+  //#endregion
 
+  //#region agregar
   agregarDomicilio(){
     this.domicilios.push({})
   }
@@ -100,7 +147,7 @@ export class RegistroDocentesComponent {
       this.libro.splice(index , 1)
     }
   }
-  
+
   agregarproyec(){
     this.proyecto_investigacion.push({})
   }
@@ -130,4 +177,61 @@ export class RegistroDocentesComponent {
       this.otros.splice(index , 1)
     }
   }
+  //#endregion
+
+  //#region API datos para Ubicaciones
+  cargarDepartamentos() {
+    this.docenteService.getDepartamentos().subscribe(response => {
+      console.log("Respuesta completa de la API:", response);
+      this.departamentos = response.departamentos || [];
+      console.log("Departamentos extraídos:", this.departamentos);
+    }, error => {
+      console.error("Error al cargar departamentos:", error);
+    });
+  }
+
+  cargarProvincias(event: any) {
+    const departamentoId = event.target.value;
+    console.log("Departamento seleccionado:", departamentoId);
+    this.docenteService.getProvincias(departamentoId).subscribe(response => {
+      console.log("✅ Respuesta completa de provincias:", response);
+      this.provincias = response.provincias || []; // Extraemos correctamente el array
+      this.distritos = []; // Limpiar distritos cuando cambia el departamento
+      console.log("✅ Provincias extraídas:", this.provincias);
+    }, error => {
+      console.error("❌ Error al cargar provincias:", error);
+    });
+  }
+
+  cargarDistritos(event: any) {
+    const provinciaId = event.target.value;
+    console.log("Provincia seleccionada:", provinciaId);
+    this.docenteService.getDistritos(provinciaId).subscribe(response => {
+      console.log("✅ Respuesta completa de distritos:", response);
+      this.distritos = response.distritos || []; // Extraemos correctamente el array
+      console.log("✅ Distritos extraídos:", this.distritos);
+    }, error => {
+      console.error("Error al cargar distritos:", error);
+    });
+  }
+  //#endregion
+
+  //#region boton registroDocentes
+  registrarDocente() {
+    if (this.docenteForm.valid) {
+      this.docenteService.createDocente(this.docenteForm.value).subscribe(
+        response => {
+          console.log('Docente registrado:', response);
+          alert('Docente registrado con éxito');
+        },
+        error => {
+          console.error('Error al registrar docente:', error);
+          alert('Hubo un error al registrar el docente');
+        }
+      );
+    } else {
+      alert('Hay errores en el formulario, revisa los campos.');
+    }
+  }
+  //#endregion
 }

@@ -2,68 +2,83 @@
 <p class="text-2xl ..." style="font-weight: bold; ">Registro Docente</p>
 <div class="flex items-center justify-center p-12">
   <div class="mx-auto w-full max-w-[100%]">
-    <form action="" method="POST">
+    <form [formGroup]="docenteForm">
 
       <!-- Informacion del Docente -->
       <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 1">
         Información Personal del Docente
       </h2>
       <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 1">
+
+        <!-- Nombre -->
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="firstName" class="mb-3 block text-base font-medium text-[#07074D]">
+            <label for="nombres" class="mb-3 block text-base font-medium text-[#07074D]">
               Nombre
             </label>
             <input
               type="text"
-              name="firstName"
-              id="firstName"
+              id="nombres"
               placeholder="Nombre"
+              formControlName="nombres"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
+          <div *ngIf="docenteForm.controls['nombres'].invalid && docenteForm.controls['nombres'].touched" class="text-red-500 text-sm">
+            ⚠ Nombre es obligatorio.
+          </div>
         </div>
 
+        <!-- Apellido Paterno -->
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="lastName" class="mb-3 block text-base font-medium text-[#07074D]">
+            <label for="apellido_paterno" class="mb-3 block text-base font-medium text-[#07074D]">
               Apellido Paterno
             </label>
             <input
               type="text"
-              name="lastName"
-              id="lastName"
+              id="apellido_paterno"
               placeholder="Apellido Paterno"
+              formControlName="apellido_paterno"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
+          <div *ngIf="docenteForm.controls['apellido_paterno'].invalid && docenteForm.controls['apellido_paterno'].touched" class="text-red-500 text-sm">
+            ⚠ Apellido Paterno es obligatorio.
+          </div>
         </div>
 
+        <!-- Apellido Materno -->
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="middleName" class="mb-3 block text-base font-medium text-[#07074D]">
+            <label for="apellido_materno" class="mb-3 block text-base font-medium text-[#07074D]">
               Apellido Materno
             </label>
             <input
               type="text"
-              name="middleName"
-              id="middleName"
+              id="apellido_materno"
               placeholder="Apellido Materno"
+              formControlName="apellido_materno"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
+          <div *ngIf="docenteForm.controls['apellido_materno'].invalid && docenteForm.controls['apellido_materno'].touched" class="text-red-500 text-sm">
+            ⚠ Apellido Materno es obligatorio.
+          </div>
         </div>
 
+        <!-- Tipo de Identificación -->
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="idType" class="mb-3 block text-base font-medium text-[#07074D]">
+            <label for="tipo_identificacion" class="mb-3 block text-base font-medium text-[#07074D]">
               Tipo de Identificación
             </label>
             <select
-              name="idType"
-              id="idType"
+              id="tipo_identificacion"
+              formControlName="tipo_identificacion"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             >
+              <option value="" disabled selected>Tipo de identificación</option>
               <option value="dni">DNI</option>
               <option value="passport">Pasaporte</option>
               <option value="cedula">Cédula</option>
@@ -71,35 +86,44 @@
           </div>
         </div>
 
+        <!-- Nro de Identificación -->
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="idNumber" class="mb-3 block text-base font-medium text-[#07074D]">
+            <label for="numero_identificacion" class="mb-3 block text-base font-medium text-[#07074D]">
               Nro de Identificación
             </label>
             <input
               type="text"
-              name="idNumber"
-              id="idNumber"
+              id="numero_identificacion"
               placeholder="Documento de Identidad"
+              formControlName="numero_identificacion"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
+          <div *ngIf="docenteForm.controls['numero_identificacion'].invalid && docenteForm.controls['numero_identificacion'].touched" class="text-red-500 text-sm">
+            ⚠ Número de identificación es obligatorio.
+          </div>
         </div>
 
+        <!-- Fecha de Nacimiento -->
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="dob" class="mb-3 block text-base font-medium text-[#07074D]">
+            <label for="fecha_nacimiento" class="mb-3 block text-base font-medium text-[#07074D]">
               Fecha de Nacimiento
             </label>
             <input
               type="date"
-              name="dob"
-              id="dob"
+              id="fecha_nacimiento"
+              formControlName="fecha_nacimiento"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
+          <div *ngIf="docenteForm.controls['fecha_nacimiento'].invalid && docenteForm.controls['fecha_nacimiento'].touched" class="text-red-500 text-sm">
+            ⚠ Fecha de nacimiento es obligatorio.
+          </div>
         </div>
 
+        <!-- Email -->
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
             <label for="email" class="mb-3 block text-base font-medium text-[#07074D]">
@@ -107,103 +131,133 @@
             </label>
             <input
               type="email"
-              name="email"
               id="email"
               placeholder="example@mail.com"
+              formControlName="email"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
+          <div *ngIf="docenteForm.controls['email'].invalid && docenteForm.controls['email'].touched" class="text-red-500 text-sm">
+            ⚠ Ingresa un email válido.
+          </div>
         </div>
 
+        <!-- Celular -->
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="cellphone" class="mb-3 block text-base font-medium text-[#07074D]">
+            <label for="celular" class="mb-3 block text-base font-medium text-[#07074D]">
               Celular
             </label>
             <input
               type="tel"
-              name="cellphone"
-              id="cellphone"
+              id="celular"
               placeholder="987654321"
+              formControlName="celular"
               pattern="[0-9]{9}"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
+          <div *ngIf="docenteForm.controls['celular'].invalid && docenteForm.controls['celular'].touched" class="text-red-500 text-sm">
+            ⚠ Nro de celular valido.
+          </div>
         </div>
 
+        <!-- Teléfono fijo -->
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="landline" class="mb-3 block text-base font-medium text-[#07074D]">
+            <label for="telefono_fijo" class="mb-3 block text-base font-medium text-[#07074D]">
               Teléfono fijo
             </label>
             <input
               type="tel"
-              name="landline"
-              id="landline"
+              id="telefono_fijo"
               placeholder="012345678"
+              formControlName="telefono_fijo"
               pattern="[0-9]{7,10}"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
           </div>
+          <div *ngIf="docenteForm.controls['telefono_fijo'].invalid && docenteForm.controls['telefono_fijo'].touched" class="text-red-500 text-sm">
+            ⚠ Telefono fijo obligatorio.
+          </div>
         </div>
+
       </div>
 
       <!-- Contacto de emergencia -->
       <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 2">
         Contacto de emergencia
       </h2>
+
       <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 2">
+        <!-- Nombre -->
         <div class="w-full px-3">
           <div class="mb-5">
-            <label for="familyName" class="mb-3 block text-base font-medium text-[#07074D]">
+            <label for="nombre_emergencia" class="mb-3 block text-base font-medium text-[#07074D]">
               Nombre
             </label>
             <input
               type="text"
-              id="familyName"
+              id="nombre_emergencia"
+              formControlName="nombre_emergencia"
               placeholder="Ej. Juan Pérez"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
+            <div *ngIf="docenteForm.controls['nombre_emergencia'].invalid && docenteForm.controls['nombre_emergencia'].touched" class="text-red-500 text-sm">
+              ⚠ El nombre es obligatorio.
+            </div>
           </div>
         </div>
 
+        <!-- Relación -->
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="relationship" class="mb-3 block text-base font-medium text-[#07074D]">
+            <label for="relacion_emergencia" class="mb-3 block text-base font-medium text-[#07074D]">
               Relación
             </label>
             <input
               type="text"
-              id="relationship"
+              id="relacion_emergencia"
+              formControlName="relacion_emergencia"
               placeholder="Ej. Padre, Madre, Hermano"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
+            <div *ngIf="docenteForm.controls['relacion_emergencia'].invalid && docenteForm.controls['relacion_emergencia'].touched" class="text-red-500 text-sm">
+              ⚠ Debes ingresar la relación con el contacto de emergencia.
+            </div>
           </div>
         </div>
 
+        <!-- Teléfono 1 -->
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="phone1" class="mb-3 block text-base font-medium text-[#07074D]">
+            <label for="telefono_emergencia" class="mb-3 block text-base font-medium text-[#07074D]">
               Teléfono 1
             </label>
             <input
               type="tel"
-              id="phone1"
+              id="telefono_emergencia"
+              formControlName="telefono_emergencia"
               placeholder="Ej. 987654321"
               pattern="[0-9]{9}"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
             />
+            <div *ngIf="docenteForm.controls['telefono_emergencia'].invalid && docenteForm.controls['telefono_emergencia'].touched" class="text-red-500 text-sm">
+              ⚠ El teléfono debe tener 9 dígitos.
+            </div>
           </div>
         </div>
 
+        <!-- Teléfono 2 (Opcional) -->
         <div class="w-full px-3 sm:w-1/2">
           <div class="mb-5">
-            <label for="phone2" class="mb-3 block text-base font-medium text-[#07074D]">
+            <label for="telefono_emergencia2" class="mb-3 block text-base font-medium text-[#07074D]">
               Teléfono 2 (Opcional)
             </label>
             <input
               type="tel"
-              id="phone2"
+              id="telefono_emergencia2"
+              formControlName="telefono_emergencia2"
               placeholder="Ej. 912345678"
               pattern="[0-9]{9}"
               class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -213,129 +267,102 @@
       </div>
 
       <!-- Domicilio del Docente -->
-      <form>
-        <div class="flex items-center justify-between" *ngIf="currentStep === 3">
-          <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6" *ngIf="currentStep === 3">
-            Domicilio del Docente
-          </h2>
-        </div>
-        <div *ngFor="let domicilio of domicilios; let i = index">
-          <div class="-mx-3 flex flex-wrap" *ngIf="currentStep === 3">
-            <div class="w-full px-3 sm:w-1/2">
-              <div class="mb-5">
-                <label for="department" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Departamento
-                </label>
-                <select
-                  name="department"
-                  id="department"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                >
-                  <option value="" disabled selected>Selecciona un departamento</option>
-                  <option value="lima">Lima</option>
-                  <option value="arequipa">Arequipa</option>
-                  <option value="cusco">Cusco</option>
-                </select>
-              </div>
-            </div>
+      <div *ngIf="currentStep === 3">
+        <h2 class="text-xl font-semibold text-[#4A4A68] border-b-2 border-[#6A64F1] pb-2 mb-6">
+          Domicilio del Docente
+        </h2>
 
-            <div class="w-full px-3 sm:w-1/2">
-              <div class="mb-5">
-                <label for="province" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Provincia
-                </label>
-                <select
-                  name="province"
-                  id="province"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                >
-                  <option value="" disabled selected>Selecciona una provincia</option>
-                  <option value="lima">Lima</option>
-                  <option value="huaral">Huaral</option>
-                  <option value="barranca">Barranca</option>
-                </select>
-              </div>
-            </div>
+        <div class="-mx-3 flex flex-wrap">
 
-            <div class="w-full px-3 sm:w-1/2">
-              <div class="mb-5">
-                <label for="district" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Distrito
-                </label>
-                <select
-                  name="district"
-                  id="district"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                >
-                  <option value="" disabled selected>Selecciona un distrito</option>
-                  <option value="miraflores">Miraflores</option>
-                  <option value="san-isidro">San Isidro</option>
-                  <option value="surco">Surco</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="w-full px-3">
-              <div class="mb-5">
-                <label for="address" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Dirección
-                </label>
-                <textarea
-                  name="address"
-                  id="address"
-                  placeholder="Dirección completa"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                ></textarea>
-              </div>
-            </div>
-
-            <div class="w-full px-3 sm:w-1/2">
-              <div class="mb-5">
-                <label for="reference" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Referencia
-                </label>
-                <input
-                  type="text"
-                  name="reference"
-                  id="reference"
-                  placeholder="Referencia"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div>
-
-            <div class="w-full px-3 sm:w-1/2">
-              <div class="mb-5">
-                <label for="mz" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Mz
-                </label>
-                <input
-                  type="text"
-                  name="mz"
-                  id="mz"
-                  placeholder="Manzana"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div>
-
-            <div class="w-full px-3 sm:w-1/2">
-              <div class="mb-5">
-                <label for="lot" class="mb-3 block text-base font-medium text-[#07074D]">
-                  Lote
-                </label>
-                <input
-                  type="text"
-                  name="lot"
-                  id="lot"
-                  placeholder="Lote"
-                  class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
+          <!-- Departamento -->
+          <div class="w-full px-3 sm:w-1/2">
+            <div class="mb-5">
+              <label for="departamento_id" class="mb-3 block text-base font-medium text-[#07074D]">
+                Departamento
+              </label>
+              <select id="departamento_id" formControlName="departamento_id" (change)="cargarProvincias($event)"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">
+                <option value="" disabled selected>Selecciona un departamento</option>
+                <option *ngFor="let depto of departamentos" [value]="depto.id">{{ depto.nombre }}</option>
+              </select>
             </div>
           </div>
+
+          <!-- Provincia -->
+          <div class="w-full px-3 sm:w-1/2">
+            <div class="mb-5">
+              <label for="provincia_id" class="mb-3 block text-base font-medium text-[#07074D]">
+                Provincia
+              </label>
+              <select id="provincia_id" formControlName="provincia_id" (change)="cargarDistritos($event)"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">
+                <option value="" disabled selected>Selecciona una provincia</option>
+                <option *ngFor="let prov of provincias" [value]="prov.id">{{ prov.nombre }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Distrito -->
+          <div class="w-full px-3 sm:w-1/2">
+            <div class="mb-5">
+              <label for="distrito_id" class="mb-3 block text-base font-medium text-[#07074D]">
+                Distrito
+              </label>
+              <select id="distrito_id" formControlName="distrito_id"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">
+                <option value="" disabled selected>Selecciona un distrito</option>
+                <option *ngFor="let dist of distritos" [value]="dist.id">{{ dist.nombre }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dirección -->
+          <div class="w-full px-3">
+            <div class="mb-5">
+              <label for="direccion" class="mb-3 block text-base font-medium text-[#07074D]">
+                Dirección
+              </label>
+              <textarea id="direccion" formControlName="direccion" placeholder="Dirección completa"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">
+              </textarea>
+            </div>
+          </div>
+
+          <!-- Referencia -->
+          <div class="w-full px-3">
+            <div class="mb-5">
+              <label for="referencia" class="mb-3 block text-base font-medium text-[#07074D]">
+                Referencia
+              </label>
+              <input type="text" id="referencia" formControlName="referencia" placeholder="Referencia"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+            </div>
+          </div>
+
+          <!-- Mz (Manzana) -->
+          <div class="w-full px-3 sm:w-1/2">
+            <div class="mb-5">
+              <label for="mz" class="mb-3 block text-base font-medium text-[#07074D]">
+                Mz (Manzana)
+              </label>
+              <input type="text" id="mz" formControlName="mz" placeholder="Ej. Mz A"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+            </div>
+          </div>
+
+          <!-- Lote -->
+          <div class="w-full px-3 sm:w-1/2">
+            <div class="mb-5">
+              <label for="lote" class="mb-3 block text-base font-medium text-[#07074D]">
+                Lote
+              </label>
+              <input type="text" id="lote" formControlName="lote" placeholder="Ej. Lote 12"
+                class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+            </div>
+          </div>
+
         </div>
-      </form>
+      </div>
 
       <!-- Formacion Academica del Docente -->
       <form>
