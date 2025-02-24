@@ -34,19 +34,23 @@ export class RegistroDocentesComponent implements OnInit{
       telefono_fijo: ['', [Validators.required, Validators.pattern('^[0-9]{7,10}$')]],
 
       // Contacto de Emergencia
-      nombre_emergencia: ['', Validators.required],
-      relacion_emergencia: ['', Validators.required],
-      telefono_emergencia: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
-      telefono_emergencia2: ['', [Validators.pattern('^[0-9]{9}$')]], // Opcional
+      contactoEmergencia: this.fb.group({
+        nombre: ['', Validators.required],
+        relacion: ['', Validators.required],
+        telefono_1: ['', Validators.required],
+        telefono_2: ['']
+      }),
 
       // Domicilio del Docente
-      departamento_id: ['', Validators.required],
-      provincia_id: ['', Validators.required],
-      distrito_id: ['', Validators.required],
-      direccion: ['', Validators.required],
-      referencia: ['', Validators.required],
-      mz: ['', Validators.required],
-      lote: ['', Validators.required],
+      domicilio: this.fb.group({
+        departamento_id: ['', Validators.required],
+        provincia_id: ['', Validators.required],
+        distrito_id: ['', Validators.required],
+        direccion: ['', Validators.required],
+        referencia: ['', Validators.required],
+        mz: ['', Validators.required],
+        lote: ['', Validators.required],
+      }),
 
       //Formacion academica
       formacionAcademica: this.fb.array([]),
@@ -59,7 +63,7 @@ export class RegistroDocentesComponent implements OnInit{
       experienciasDocentes:this.fb.array([]),
       
       //Exp_inves Articulos Cientifos
-      articulosCientificos:this.fb.array([]),
+      articuloCientifico: this.fb.array([]),
 
       //Libro/Proyerto/Investigaciones
       libros: this.fb.array([]),
@@ -100,7 +104,7 @@ export class RegistroDocentesComponent implements OnInit{
     return this.docenteForm.get('experienciasDocentes') as FormArray;
   }
   get articulosCientificos(): FormArray {
-    return this.docenteForm.get('articulosCientificos') as FormArray;
+    return this.docenteForm.get('articuloCientifico') as FormArray;
   }
   get libros(): FormArray {
     return this.docenteForm.get('libros') as FormArray;
@@ -149,7 +153,7 @@ export class RegistroDocentesComponent implements OnInit{
       universidad: ['', Validators.required],
       especialidad: ['', Validators.required],
       pais: ['', Validators.required],
-      revalidacion: ['', Validators.required]
+      resolucion_sunedu: ['', Validators.required]
     });
 
     this.formacionesAcademicas.push(formacion);
@@ -215,11 +219,11 @@ export class RegistroDocentesComponent implements OnInit{
 
   crearArticuloCientifico(): FormGroup {
     return this.fb.group({
-      titulo_articulo: ['', Validators.required],
+      nombre_articulo: ['', Validators.required],
       nombre_revista: ['', Validators.required],
       indizado: ['', Validators.required],
       año: ['', Validators.required],
-      enlace: ['', [Validators.required, Validators.pattern('https?://.+')]]
+      enlace: ['', Validators.required]
     });
   }
   
@@ -255,7 +259,7 @@ export class RegistroDocentesComponent implements OnInit{
     return this.fb.group({
       proyecto: ['', Validators.required],
       entidad_financiera: ['', Validators.required],
-      año_adjudicacion: ['', [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear())]]
+      año_adjudicacion: ['', Validators.required]
     });
   }
   
