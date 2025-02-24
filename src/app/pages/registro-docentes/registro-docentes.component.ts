@@ -9,11 +9,9 @@ import { AbstractControl, Form, FormArray, FormBuilder, FormGroup, Validators } 
   styleUrl: './registro-docentes.component.css'
 })
 export class RegistroDocentesComponent implements OnInit{
-  currentStep =  4;
+  currentStep =  6;
   totalSteps = 10;
   
-  titulo_profesional: any [] = [{}]
-  formacion_complementaria: any [] = [{}]
   exp_docentes: any [] = [{}]
   exp_investigadora: any [] = [{}]
   libro: any [] = [{}]
@@ -57,11 +55,18 @@ export class RegistroDocentesComponent implements OnInit{
       mz: ['', Validators.required],
       lote: ['', Validators.required],
 
-      formacionAcademica: this.fb.array([])
+      //Formacion academica
+      formacionAcademica: this.fb.array([]),
+
+      //Titulo/formacion
+      titulosProfesionales: this.fb.array([]),
+      formacionComplementaria: this.fb.array([]),
 
     });
 
     this.agregarFormacionAcademica();
+    this.agregarTituloProfesional();
+    this.agregarFormacionComplementaria();
   }
 
   ngOnInit(): void {
@@ -71,11 +76,26 @@ export class RegistroDocentesComponent implements OnInit{
   get formacionesAcademicas(): FormArray {
     return this.docenteForm.get('formacionAcademica') as FormArray;
   }
+  get titulosProfesionales(): FormArray{
+    return this.docenteForm.get('titulosProfesionales') as FormArray;
+  }
+  get formacionesComplementarias(): FormArray {
+    return this.docenteForm.get('formacionComplementaria') as FormArray;
+  }  
 
   // Método para castear AbstractControl a FormGroup
   getFormGroup(control: AbstractControl): FormGroup {
     return control as FormGroup;
   }
+  // Método para convertir un AbstractControl de titulosProfesionales a FormGroup
+getTituloProfesionalFormGroup(control: AbstractControl): FormGroup {
+  return control as FormGroup;
+}
+
+// Método para convertir un AbstractControl de formacionesComplementarias a FormGroup
+getFormacionComplementariaFormGroup(control: AbstractControl): FormGroup {
+  return control as FormGroup;
+}
 
 //#region siquiente y volver
   nextStep() {
@@ -105,30 +125,41 @@ export class RegistroDocentesComponent implements OnInit{
     this.formacionesAcademicas.push(formacion);
   }
 
-  // Método para eliminar una formación académica
   eliminarFormacionAcademica(index: number) {
     if (this.formacionesAcademicas.length > 1) {
       this.formacionesAcademicas.removeAt(index);
     }
   }
 
-  agregarTitoprof(){
-    this.titulo_profesional.push({})
+  agregarTituloProfesional() {
+    const titulo = this.fb.group({
+      titulo: ['', Validators.required],
+      universidad: ['', Validators.required],
+      especialidad: ['', Validators.required]
+    });
+
+    this.titulosProfesionales.push(titulo);
   }
 
-  eliminarTitoprof(index: number): void{
-    if (this.titulo_profesional.length > 1){
-      this.titulo_profesional.splice(index , 1)
+  eliminarTituloProfesional(index: number) {
+    if (this.titulosProfesionales.length > 1) {
+      this.titulosProfesionales.removeAt(index);
     }
   }
 
-  agregarFormcom(){
-    this.formacion_complementaria.push({})
+  agregarFormacionComplementaria() {
+    const formacion = this.fb.group({
+      denominacion: ['', Validators.required],
+      especialidad: ['', Validators.required],
+      institucion: ['', Validators.required]
+    });
+
+    this.formacionesComplementarias.push(formacion);
   }
 
-  eliminarFomrcom(index: number): void{
-    if (this.formacion_complementaria.length > 1){
-      this.formacion_complementaria.splice(index , 1)
+  eliminarFormacionComplementaria(index: number) {
+    if (this.formacionesComplementarias.length > 1) {
+      this.formacionesComplementarias.removeAt(index);
     }
   }
 
