@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 
@@ -5,9 +6,7 @@ import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
   providedIn: 'root',
 })
 export class AuthGoogleService {
-  constructor(private oauthService: OAuthService) {
-    // this.initLogin();
-  }
+  constructor(private http: HttpClient) {}
 
   // initLogin() {
   //   const config: AuthConfig = {
@@ -22,4 +21,8 @@ export class AuthGoogleService {
   //   this.oauthService.setupAutomaticSilentRefresh();
   //   this.oauthService.loadDiscoveryDocumentAndTryLogin();
   // }
+
+  getLoginGoogle() {
+    return this.http.get('http://localhost:8000/api/auth/google');
+  }
 }

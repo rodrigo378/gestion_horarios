@@ -3,6 +3,8 @@ import { AuthService } from '../../services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User } from '../../interfaces/user';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthGoogleService } from '../../services/auth-google.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +15,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
 
-  constructor(private authService: AuthService, private fb: FormBuilder) {
+  constructor(
+    private authService: AuthService,
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
@@ -21,10 +28,19 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
+    this.route.queryParams.subscribe((params) => {
+      const token = params['token'];
+
+      if (token) {
+        console.log('Token capturado:', token);
+        this.authService.setToken(token);
+        this.router.navigate(['/docentes']);
+      }
     });
+  }
+
+  btnClickGoogle() {
+    window.location.href = 'http://localhost:8000/api/auth/google';
   }
 
   submit() {

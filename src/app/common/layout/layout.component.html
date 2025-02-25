@@ -19,6 +19,17 @@
       nzMode="inline"
       [nzInlineCollapsed]="isCollapsed"
     >
+      <li nz-submenu nzOpen nzTitle="Gestión Usuario" nzIcon="user">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/a">Listar usuarios</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/2">Permisos de usuarios</a>
+          </li>
+        </ul>
+      </li>
+
       <li nz-submenu nzOpen nzTitle="Docentes" nzIcon="user">
         <ul>
           <li nz-menu-item nzMatchRouter>
@@ -35,6 +46,7 @@
           </li> -->
         </ul>
       </li>
+
       <li nz-submenu nzOpen nzTitle="RR. HH" nzIcon="team">
         <ul>
           <li nz-menu-item nzMatchRouter>
@@ -42,6 +54,7 @@
           </li>
         </ul>
       </li>
+
       <li nz-submenu nzOpen nzTitle="Finanzas" nzIcon="dollar">
         <ul>
           <li nz-menu-item nzMatchRouter>
