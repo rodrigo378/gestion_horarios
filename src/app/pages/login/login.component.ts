@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { User } from '../../interfaces/user';
+import { User } from '../../interfaces/User';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthGoogleService } from '../../services/auth-google.service';
 import { ActivatedRoute, Router } from '@angular/router';
