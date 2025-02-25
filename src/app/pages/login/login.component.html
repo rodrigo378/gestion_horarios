@@ -42,6 +42,20 @@
               type=""
               placeholder="Email"
             />
+            <div *ngIf="submitted && form['email'].errors">
+              <span
+                class="text-red-500 text-sm"
+                *ngIf="form['email'].errors?.['required']"
+              >
+                El email es obligatorio.
+              </span>
+              <span
+                class="text-red-500 text-sm"
+                *ngIf="form['email'].errors?.['email']"
+              >
+                Ingresa un email válido.
+              </span>
+            </div>
           </div>
 
           <div class="relative" x-data="{ show: true }">
@@ -51,6 +65,14 @@
               type="password"
               class="text-sm text-black-200 px-4 py-3 rounded-lg w-full bg-gray-200 focus:bg-gray-100 border border-gray-200 focus:outline-none focus:border-purple-400"
             />
+            <div *ngIf="submitted && form['password'].errors">
+              <span
+                class="text-red-500 text-sm"
+                *ngIf="form['password'].errors?.['required']"
+              >
+                La contraseña es obligatoria.
+              </span>
+            </div>
             <div
               class="flex items-center absolute inset-y-0 right-0 mr-3 text-sm leading-5"
             >
@@ -89,6 +111,13 @@
           >
             Sign in
           </button>
+          @if (boolLogin) {
+          <div style="text-align: center; margin-top: 5px">
+            <span class="text-red-500 text-sm">
+              Email o Password Incorrecta.
+            </span>
+          </div>
+          }
         </div>
         <div class="flex items-center justify-center space-x-2 my-5">
           <span class="h-px w-16 bg-gray-100"></span>

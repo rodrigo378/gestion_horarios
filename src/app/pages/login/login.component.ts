@@ -14,6 +14,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
+  boolLogin: boolean = false;
+  submitted = false;
 
   constructor(
     private authService: AuthService,
@@ -39,29 +41,20 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  get form() {
+    return this.loginForm.controls;
+  }
+
   btnClickGoogle() {
     window.location.href = 'http://localhost:8000/api/auth/google';
   }
 
   submit() {
-    console.log('Datos enviados al backend:', this.loginForm.value);
-
-    console.log('email => ', this.loginForm.get('email')?.value);
-    console.log('password => ', this.loginForm.get('password')?.value);
-
     if (this.loginForm.invalid) {
-      alert('Por favor, completa todos los campos correctamente.');
+      this.submitted = true;
+
       return;
     }
-
-    // Object.keys(this.loginForm.controls).forEach((controlName) => {
-    //   const controlErrors = this.loginForm.get(controlName)?.errors;
-    //   if (controlErrors) {
-    //     console.log(`Control: ${controlName}`, controlErrors);
-    //   }
-    // });
-
-    console.log('Datos enviados al backend:', this.loginForm.value);
 
     const user: Partial<User> = {
       email: this.loginForm.get('email')?.value,
@@ -72,9 +65,11 @@ export class LoginComponent implements OnInit {
       next: (res: any) => {
         console.log(res.token);
         this.authService.setToken(res.token);
+        this.router.navigate(['/docentes']);
       },
       error: (e: HttpErrorResponse) => {
         console.log(e);
+        this.boolLogin = true;
       },
     });
   }
