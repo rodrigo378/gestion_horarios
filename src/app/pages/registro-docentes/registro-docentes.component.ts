@@ -8,6 +8,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-registro-docentes',
@@ -18,6 +19,8 @@ import {
 export class RegistroDocentesComponent implements OnInit {
   currentStep = 1;
   totalSteps = 10;
+  mensajeError: string = '';
+  msgErrorCelular: string = '';
 
   docenteForm: FormGroup;
   departamentos: any[] = [];
@@ -100,6 +103,10 @@ export class RegistroDocentesComponent implements OnInit {
   ngOnInit(): void {
     this.cargarDepartamentos();
   }
+
+  // get numeroIdentificacion() {
+  //   return this.docenteForm.get('numero_identificacion');
+  // }
 
   get formacionesAcademicas(): FormArray {
     return this.docenteForm.get('formacionAcademica') as FormArray;
@@ -337,47 +344,45 @@ export class RegistroDocentesComponent implements OnInit {
 
   //#region API datos para Ubicaciones
   cargarDepartamentos() {
-    this.docenteService.getDepartamentos().subscribe(
-      (response) => {
-        console.log('Respuesta completa de la API:', response);
-        this.departamentos = response.departamentos || [];
-        console.log('Departamentos extraídos:', this.departamentos);
+    this.docenteService.getDepartamentos().subscribe({
+      next: (res) => {
+        this.departamentos = res.departamentos || [];
       },
-      (error) => {
-        console.error('Error al cargar departamentos:', error);
-      }
-    );
+      error: (e: HttpErrorResponse) => {
+        console.error('Error al cargar departamentos:', e);
+      },
+    });
   }
 
   cargarProvincias(event: any) {
     const departamentoId = event.target.value;
     console.log('Departamento seleccionado:', departamentoId);
-    this.docenteService.getProvincias(departamentoId).subscribe(
-      (response) => {
-        console.log('✅ Respuesta completa de provincias:', response);
-        this.provincias = response.provincias || []; // Extraemos correctamente el array
+    this.docenteService.getProvincias(departamentoId).subscribe({
+      next: (res: any) => {
+        console.log('✅ Respuesta completa de provincias:', res);
+        this.provincias = res.provincias || []; // Extraemos correctamente el array
         this.distritos = []; // Limpiar distritos cuando cambia el departamento
         console.log('✅ Provincias extraídas:', this.provincias);
       },
-      (error) => {
-        console.error('❌ Error al cargar provincias:', error);
-      }
-    );
+      error: (e: HttpErrorResponse) => {
+        console.error('❌ Error al cargar provincias:', e);
+      },
+    });
   }
 
   cargarDistritos(event: any) {
     const provinciaId = event.target.value;
     console.log('Provincia seleccionada:', provinciaId);
-    this.docenteService.getDistritos(provinciaId).subscribe(
-      (response) => {
-        console.log('✅ Respuesta completa de distritos:', response);
-        this.distritos = response.distritos || []; // Extraemos correctamente el array
+    this.docenteService.getDistritos(provinciaId).subscribe({
+      next: (res: any) => {
+        console.log('✅ Respuesta completa de distritos:', res);
+        this.distritos = res.distritos || []; // Extraemos correctamente el array
         console.log('✅ Distritos extraídos:', this.distritos);
       },
-      (error) => {
-        console.error('Error al cargar distritos:', error);
-      }
-    );
+      error: (e: HttpErrorResponse) => {
+        console.error('Error al cargar distritos:', e);
+      },
+    });
   }
   //#endregion
 
@@ -386,19 +391,77 @@ export class RegistroDocentesComponent implements OnInit {
     if (this.docenteForm.valid) {
       console.log('Datos enviados al backend:', this.docenteForm.value);
 
-      this.docenteService.createDocente(this.docenteForm.value).subscribe(
-        (response) => {
+      this.docenteService.createDocente(this.docenteForm.value).subscribe({
+        next: (response: any) => {
           console.log('Docente registrado:', response);
           alert('Docente registrado con éxito');
         },
-        (error) => {
-          console.error('Error al registrar docente:', error);
+        error: (e: HttpErrorResponse) => {
+          console.error('Error al registrar docente:', e);
           alert('Hubo un error al registrar el docente');
-        }
-      );
+        },
+      });
     } else {
       alert('Hay errores en el formulario, revisa los campos.');
     }
   }
   //#endregion
+
+  changeTipoIdentificacion() {
+    const numeroIdentificacion = this.docenteForm.get('numero_identificacion');
+    console.log(this.docenteForm.get('tipo_identificacion')?.value);
+
+    if (!numeroIdentificacion) return;
+
+    switch (this.docenteForm.get('tipo_identificacion')?.value) {
+      case 'dni':
+        numeroIdentificacion.setValidators([
+          Validators.required,
+          Validators.minLength(8),
+          Validators.maxLength(8),
+          Validators.pattern('^[0-9]{8}$'),
+        ]);
+        this.mensajeError =
+          '⚠ El DNI debe tener exactamente 8 dígitos numéricos.';
+        break;
+
+      case 'passport':
+        numeroIdentificacion.setValidators([
+          Validators.required,
+          Validators.minLength(6),
+          Validators.maxLength(12),
+        ]);
+        this.mensajeError =
+          '⚠ El pasaporte debe tener entre 6 y 12 caracteres.';
+        break;
+
+      case 'cedula':
+        numeroIdentificacion.setValidators([
+          Validators.required,
+          Validators.minLength(11),
+          Validators.maxLength(11),
+          Validators.pattern('^[0-9]{11}$'),
+        ]);
+        this.mensajeError =
+          '⚠ La Cédula debe tener exactamente 11 dígitos numéricos.';
+        break;
+
+      default:
+        numeroIdentificacion.setValidators([Validators.required]);
+        this.mensajeError = '⚠ Este campo es obligatorio.';
+        break;
+    }
+
+    numeroIdentificacion.updateValueAndValidity();
+
+    // Verificar si el campo tiene errores después de la validación
+    if (numeroIdentificacion.invalid) {
+      numeroIdentificacion.setErrors({
+        customError: true,
+        message: this.mensajeError,
+      });
+    } else {
+      numeroIdentificacion.setErrors(null);
+    }
+  }
 }
