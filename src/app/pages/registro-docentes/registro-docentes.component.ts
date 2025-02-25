@@ -17,7 +17,7 @@ import { AlertService } from '../../services/alert.service';
   styleUrl: './registro-docentes.component.css',
 })
 export class RegistroDocentesComponent implements OnInit {
-  currentStep = 10;
+  currentStep = 1;
   totalSteps = 10;
   mensajeError: string = '';
   msgErrorCelular: string = '';
@@ -438,19 +438,9 @@ export class RegistroDocentesComponent implements OnInit {
         },
       });
     } else {
-      Object.keys(this.docenteForm.controls).forEach((controlName) => {
-        const controlErrors = this.docenteForm.get(controlName)?.errors;
-        if (controlErrors) {
-          console.log(`Control: ${controlName}`, controlErrors);
-          if (controlName === 'nombres') {
-            this.currentStep = 1;
-          }
-        }
-      });
-      alert('Hay errores en el formulario, revisa los campos.');
+      this.marcarCamposInvalidos(this.docenteForm)
     }
   }
-  
   //#endregion
 
   //#region Validaciones TipoIdentificaciones

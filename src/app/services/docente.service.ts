@@ -9,7 +9,7 @@ import { AuthService } from './auth.service';
 })
 export class DocenteService {
   private apiUrl = `${environment.api}/docente`; // backticks
-  private apiUrlUbi = `${environment.api}/ubi`;
+  private apiUrlUbi = `${environment.api}`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -40,7 +40,7 @@ export class DocenteService {
 
   getDistritos(provinciaId: number): Observable<{ distritos: any[] }> {
     return this.http.get<{ distritos: any[] }>(
-      `${this.apiUrlUbi}/ubio/distrito/${provinciaId}`
+      `${this.apiUrlUbi}/ubi/distrito/${provinciaId}`
     );
   }
   //#endregion

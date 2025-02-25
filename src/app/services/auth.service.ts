@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
-import { User } from '../interfaces/user';
+import { User } from '../interfaces/User';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -18,24 +18,29 @@ export class AuthService {
   }
 
   setToken(token: string): void {
-    document.cookie = `token=${token}; path=/; max-age=${
-      60 * 60 * 24
-    }; Secure; SameSite=Strict`;
+    localStorage.setItem('authToken', token); // Guarda el token
   }
 
   getToken(): string | null {
-    const cookies = document.cookie.split('; ');
-    const tokenCookie = cookies.find((row) => row.startsWith('token='));
-    return tokenCookie ? tokenCookie.split('=')[1] : null;
+    return localStorage.getItem('authToken'); // Obtiene el token almacenado
   }
 
-  register(user: User) {
-    return this.http.post(`${this.apiUrl}/login`, { user });
+  isAuthenticated(): boolean {
+    const token = localStorage.getItem('authToken');
+    console.log("Token almacenado:", token);
+    return !!token; // Devuelve true si hay token, false si no hay
   }
 
-  logout() {
-    document.cookie =
-      'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure';
-    return this.http.post(`${this.apiUrl}/logout`, {});
+  logout(): void {
+    localStorage.removeItem('authToken'); // Elimina el token
+  }
+
+  getHeaders(): HttpHeaders {
+    const token = this.getToken();
+    return token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
+  }
+
+  getUserData(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/user`, { headers: this.getHeaders() });
   }
 }
