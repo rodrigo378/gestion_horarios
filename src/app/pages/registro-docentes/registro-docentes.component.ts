@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { DocenteService } from '../../services/docente.service';
 import {
   AbstractControl,
-  Form,
   FormArray,
   FormBuilder,
   FormGroup,
@@ -104,10 +103,6 @@ export class RegistroDocentesComponent implements OnInit {
   ngOnInit(): void {
     this.cargarDepartamentos();
   }
-
-  // get numeroIdentificacion() {
-  //   return this.docenteForm.get('numero_identificacion');
-  // }
 
   get formacionesAcademicas(): FormArray {
     return this.docenteForm.get('formacionAcademica') as FormArray;
@@ -443,7 +438,16 @@ export class RegistroDocentesComponent implements OnInit {
         },
       });
     } else {
-      this.marcarCamposInvalidos(this.docenteForm)
+      Object.keys(this.docenteForm.controls).forEach((controlName) => {
+        const controlErrors = this.docenteForm.get(controlName)?.errors;
+        if (controlErrors) {
+          console.log(`Control: ${controlName}`, controlErrors);
+          if (controlName === 'nombres') {
+            this.currentStep = 1;
+          }
+        }
+      });
+      alert('Hay errores en el formulario, revisa los campos.');
     }
   }
   
