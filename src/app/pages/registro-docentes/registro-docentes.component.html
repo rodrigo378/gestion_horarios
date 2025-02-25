@@ -1138,14 +1138,14 @@
                 >
                 <input
                   type="text"
-                  formControlName="nombre_universidad"
+                  formControlName="institucion"
                   placeholder="Ej. Universidad Nacional Mayor de San Marcos"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 />
                 <div
                   *ngIf="
-                    experiencia.get('nombre_universidad')?.invalid &&
-                    experiencia.get('nombre_universidad')?.touched
+                    experiencia.get('institucion')?.invalid &&
+                    experiencia.get('institucion')?.touched
                   "
                   class="text-red-500 text-sm"
                 >
@@ -1284,15 +1284,15 @@
                 >
                 <input
                   type="text"
-                  formControlName="nombre_articulo"
+                  formControlName="titulo_articulo"
                   placeholder="Ej. Inteligencia Artificial en la Educación"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 />
                 <div
                   *ngIf="
-                    articulo.get('nombre_articulo')?.invalid &&
-                    (articulo.get('nombre_articulo')?.touched ||
-                      articulo.get('nombre_articulo')?.dirty)
+                    articulo.get('titulo_articulo')?.invalid &&
+                    (articulo.get('titulo_articulo')?.touched ||
+                      articulo.get('titulo_articulo')?.dirty)
                   "
                   class="text-red-500 text-sm"
                 >
