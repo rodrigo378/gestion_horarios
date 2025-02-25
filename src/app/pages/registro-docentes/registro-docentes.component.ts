@@ -60,17 +60,17 @@ export class RegistroDocentesComponent implements OnInit{
       formacionComplementaria: this.fb.array([]),
 
       //Exp Docente
-      experienciasDocentes:this.fb.array([]),
+      experienciaDocente:this.fb.array([]),
       
       //Exp_inves Articulos Cientifos
       articuloCientifico: this.fb.array([]),
 
       //Libro/Proyerto/Investigaciones
       libros: this.fb.array([]),
-      proyectosInvestigacion: this.fb.array([]),
+      proyectoInvestigacion: this.fb.array([]),
 
       //Asesorias y jurados
-      asesoriasJurados:this.fb.array([]),
+      asesoriaJurado:this.fb.array([]),
 
       //otros
       otros: this.fb.array([])
@@ -101,7 +101,7 @@ export class RegistroDocentesComponent implements OnInit{
     return this.docenteForm.get('formacionComplementaria') as FormArray;
   }
   get experienciasDocentes(): FormArray {
-    return this.docenteForm.get('experienciasDocentes') as FormArray;
+    return this.docenteForm.get('experienciaDocente') as FormArray;
   }
   get articulosCientificos(): FormArray {
     return this.docenteForm.get('articuloCientifico') as FormArray;
@@ -110,10 +110,10 @@ export class RegistroDocentesComponent implements OnInit{
     return this.docenteForm.get('libros') as FormArray;
   }
   get proyectosInvestigacion(): FormArray {
-    return this.docenteForm.get('proyectosInvestigacion') as FormArray;
+    return this.docenteForm.get('proyectoInvestigacion') as FormArray;
   }
   get asesoriasJurados(): FormArray {
-    return this.docenteForm.get('asesoriasJurados') as FormArray;
+    return this.docenteForm.get('asesoriaJurado') as FormArray;
   }
   get otros(): FormArray {
     return this.docenteForm.get('otros') as FormArray;
@@ -200,7 +200,7 @@ export class RegistroDocentesComponent implements OnInit{
   crearExperienciaDocente(): FormGroup {
     return this.fb.group({
       tipo_experiencia: ['', Validators.required],
-      nombre_universidad: ['', Validators.required],
+      institucion: ['', Validators.required],
       curso_dictado: ['', Validators.required],
       semestre: ['', Validators.required],
       pais: ['', Validators.required]
@@ -219,7 +219,7 @@ export class RegistroDocentesComponent implements OnInit{
 
   crearArticuloCientifico(): FormGroup {
     return this.fb.group({
-      nombre_articulo: ['', Validators.required],
+      titulo_articulo: ['', Validators.required],
       nombre_revista: ['', Validators.required],
       indizado: ['', Validators.required],
       año: ['', Validators.required],
@@ -354,7 +354,7 @@ export class RegistroDocentesComponent implements OnInit{
   //#region boton registroDocentes
   registrarDocente() {
     if (this.docenteForm.valid) {
-      console.log('Datos enviados al backend:', this.docenteForm.value); // 🔍 Verificar los datos antes de enviar
+      console.log('Datos enviados al backend:', this.docenteForm.value);
 
       this.docenteService.createDocente(this.docenteForm.value).subscribe(
         response => {

@@ -697,9 +697,9 @@
             <div class="w-full px-3 sm:w-1/2">
               <div class="mb-5">
                 <label class="mb-3 block text-base font-medium text-[#07074D]">Institución</label>
-                <input type="text" formControlName="nombre_universidad" placeholder="Ej. Universidad Nacional Mayor de San Marcos"
+                <input type="text" formControlName="institucion" placeholder="Ej. Universidad Nacional Mayor de San Marcos"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                  <div *ngIf="experiencia.get('nombre_universidad')?.invalid && experiencia.get('nombre_universidad')?.touched" class="text-red-500 text-sm">
+                  <div *ngIf="experiencia.get('institucion')?.invalid && experiencia.get('institucion')?.touched" class="text-red-500 text-sm">
                     ⚠ Este campo es obligatorio.
                   </div>
                 </div>
@@ -783,9 +783,9 @@
             <div class="w-full px-3">
               <div class="mb-5">
                 <label class="mb-3 block text-base font-medium text-[#07074D]">Título del Artículo</label>
-                <input type="text" formControlName="nombre_articulo" placeholder="Ej. Inteligencia Artificial en la Educación"
+                <input type="text" formControlName="titulo_articulo" placeholder="Ej. Inteligencia Artificial en la Educación"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
-                <div *ngIf="articulo.get('nombre_articulo')?.invalid && (articulo.get('nombre_articulo')?.touched || articulo.get('nombre_articulo')?.dirty)" class="text-red-500 text-sm">
+                <div *ngIf="articulo.get('titulo_articulo')?.invalid && (articulo.get('titulo_articulo')?.touched || articulo.get('titulo_articulo')?.dirty)" class="text-red-500 text-sm">
                   ⚠ Este campo es obligatorio.
                 </div>
               </div>
@@ -1086,12 +1086,10 @@
                   Año
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   formControlName="año"
                   placeholder="Ej. 2023"
-                  min="1900"
-                  max="2099"
-                  step="1"
+                  maxlength="4"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 />
                 <div *ngIf="asesoria.get('año')?.invalid && asesoria.get('año')?.touched" class="text-red-500 text-sm">
