@@ -2058,6 +2058,7 @@
         >
           <i class="fa-solid fa-arrow-left"></i> Anterior
         </button>
+
         <button
           *ngIf="currentStep < totalSteps"
           type="button"
@@ -2066,10 +2067,9 @@
         >
           Siguiente <i class="fa-solid fa-arrow-right"></i>
         </button>
-      </div>
-      <div>
-        <!-- Botón de guardar -->
+
         <button
+          *ngIf="currentStep === totalSteps"
           type="button"
           (click)="registrarDocente()"
           class="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-center text-base font-semibold text-white outline-none"

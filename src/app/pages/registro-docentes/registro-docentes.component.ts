@@ -18,7 +18,7 @@ import { AlertService } from '../../services/alert.service';
   styleUrl: './registro-docentes.component.css',
 })
 export class RegistroDocentesComponent implements OnInit {
-  currentStep = 1;
+  currentStep = 10;
   totalSteps = 10;
   mensajeError: string = '';
   msgErrorCelular: string = '';
@@ -104,21 +104,6 @@ export class RegistroDocentesComponent implements OnInit {
   ngOnInit(): void {
     this.cargarDepartamentos();
   }
-
-  ngAfterViewInit() {
-    const observer = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
-        if (mutation.attributeName === 'aria-hidden') {
-          console.log(`Cambio detectado en aria-hidden:`, mutation.target);
-        }
-      });
-    });
-  
-    document.querySelectorAll('[aria-hidden]').forEach(element => {
-      observer.observe(element, { attributes: true });
-    });
-  }
-  
 
   // get numeroIdentificacion() {
   //   return this.docenteForm.get('numero_identificacion');
@@ -388,7 +373,61 @@ export class RegistroDocentesComponent implements OnInit {
   }
   //#endregion
 
-  //#region boton registroDocentes
+  //#region Agregar y validar
+  marcarCamposInvalidos(formGroup: FormGroup) {
+    let camposFaltantes: string[] = [];
+  
+    const nombresAmigables: { [key: string]: string } = {
+      nombres: "Nombres",
+      apellido_paterno: "Apellido Paterno",
+      apellido_materno: "Apellido Materno",
+      tipo_identificacion: "Tipo de Identificación",
+      numero_identificacion: "Número de Identificación",
+      fecha_nacimiento: "Fecha de Nacimiento",
+      email: "Correo Electrónico",
+      celular: "Celular",
+      telefono_fijo: "Teléfono Fijo",
+      "contactoEmergencia.nombre": "Nombre del Contacto de Emergencia",
+      "contactoEmergencia.relacion": "Relación con Contacto de Emergencia",
+      "contactoEmergencia.telefono_1": "Teléfono de Contacto de Emergencia",
+      "domicilio.departamento_id": "Departamento",
+      "domicilio.provincia_id": "Provincia",
+      "domicilio.distrito_id": "Distrito",
+      "domicilio.direccion": "Dirección",
+      "domicilio.referencia": "Referencia",
+      "domicilio.mz": "Manzana",
+      "domicilio.lote": "Lote",
+      "experienciaDocente.0.tipo_experiencia": "Tipo de Experiencia Docente",
+      "asesoriaJurado.0.tipo": "Tipo de Asesoría de Jurado"
+    };
+  
+    const recorrerControles = (control: AbstractControl, nombreCampo = '') => {
+      if (control instanceof FormGroup || control instanceof FormArray) {
+        Object.entries(control.controls).forEach(([subCampo, subControl]) =>
+          recorrerControles(subControl, nombreCampo ? `${nombreCampo}.${subCampo}` : subCampo)
+        );
+      } else if (control.invalid) {
+        const nombreAmigable = nombresAmigables[nombreCampo] || nombreCampo;
+        camposFaltantes.push(nombreAmigable);
+        document.querySelector(`[formControlName="${nombreCampo}"]`)?.classList.add('border-red-500');
+      }
+    };
+
+    recorrerControles(formGroup);
+    if (camposFaltantes.length) {
+      this.alertService.warning(camposFaltantes.join('\n'));
+    }
+    console.log("Campos faltantes:", camposFaltantes);
+  }
+  
+  
+  eliminarError(campo: string) {
+    const elemento = document.querySelector(`[formControlName="${campo}"]`);
+    if (elemento) {
+      elemento.classList.remove('border-red-500');
+    }
+  }
+
   registrarDocente() {
     if (this.docenteForm.valid) {
       console.log('Datos enviados al backend:', this.docenteForm.value);
@@ -407,51 +446,10 @@ export class RegistroDocentesComponent implements OnInit {
       this.marcarCamposInvalidos(this.docenteForm)
     }
   }
-
-  marcarCamposInvalidos(formGroup: FormGroup) {
-    let camposFaltantes: string[] = [];
-  
-    const procesarCampo = (campo: string, control: AbstractControl, prefijo = '') => {
-      if (control instanceof FormGroup) {
-        Object.keys(control.controls).forEach(subCampo => {
-          procesarCampo(subCampo, control.get(subCampo)!, `${prefijo}${campo}.`);
-        });
-      } else if (control instanceof FormArray) {
-        control.controls.forEach((grupo, index) => {
-          if (grupo instanceof FormGroup) {
-            Object.keys(grupo.controls).forEach(subCampo => {
-              procesarCampo(subCampo, grupo.get(subCampo)!, `${prefijo}${campo}[${index}].`);
-            });
-          }
-        });
-      } else if (control.invalid) {
-        const label = document.querySelector(`label[for="${campo}"]`)?.textContent || `${prefijo}${campo}`;
-        camposFaltantes.push(label);
-  
-        // 🔥 Resaltar en rojo los campos vacíos
-        const elemento = document.querySelector(`[formControlName="${campo}"]`) as HTMLElement | null;
-        elemento?.classList.add('border-red-500');
-      }
-    };
-  
-    Object.keys(formGroup.controls).forEach(campo => procesarCampo(campo, formGroup.get(campo)!));
-  
-    if (camposFaltantes.length > 0) {
-      // 🔥 Llamar a la alerta del servicio con los errores encontrados
-      this.alertService.warning(camposFaltantes.join('\n'));
-    }
-  }
-  
-
-  eliminarError(campo: string) {
-    const elemento = document.querySelector(`[formControlName="${campo}"]`);
-    if (elemento) {
-      elemento.classList.remove('border-red-500');
-    }
-  }  
   
   //#endregion
 
+  //#region Validaciones TipoIdentificaciones
   changeTipoIdentificacion() {
     const numeroIdentificacion = this.docenteForm.get('numero_identificacion');
     console.log(this.docenteForm.get('tipo_identificacion')?.value);
@@ -509,4 +507,5 @@ export class RegistroDocentesComponent implements OnInit {
       numeroIdentificacion.setErrors(null);
     }
   }
+  //#endregion
 }
