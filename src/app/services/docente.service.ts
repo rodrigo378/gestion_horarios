@@ -40,7 +40,7 @@ export class DocenteService {
 
   getDistritos(provinciaId: number): Observable<{ distritos: any[] }> {
     return this.http.get<{ distritos: any[] }>(
-      `${this.apiUrlUbi}/ubio/distrito/${provinciaId}`
+      `${this.apiUrlUbi}/ubi/distrito/${provinciaId}`
     );
   }
   //#endregion

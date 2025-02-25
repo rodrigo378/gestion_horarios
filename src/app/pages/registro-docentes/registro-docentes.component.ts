@@ -8,6 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-registro-docentes',
@@ -26,7 +27,7 @@ export class RegistroDocentesComponent implements OnInit {
   provincias: any[] = [];
   distritos: any[] = [];
 
-  constructor(private fb: FormBuilder, private docenteService: DocenteService) {
+  constructor(private fb: FormBuilder, private docenteService: DocenteService, private alertService: AlertService) {
     this.docenteForm = this.fb.group({
       // Información Personal
       nombres: ['', Validators.required],
@@ -161,11 +162,11 @@ export class RegistroDocentesComponent implements OnInit {
   //#region agregar
   agregarFormacionAcademica() {
     const formacion = this.fb.group({
-      grado_academico: ['', Validators.required],
-      universidad: ['', Validators.required],
-      especialidad: ['', Validators.required],
-      pais: ['', Validators.required],
-      resolucion_sunedu: ['', Validators.required],
+      grado_academico: [''],
+      universidad: [''],
+      especialidad: [''],
+      pais: [''],
+      resolucion_sunedu: [''],
     });
 
     this.formacionesAcademicas.push(formacion);
@@ -179,9 +180,9 @@ export class RegistroDocentesComponent implements OnInit {
 
   agregarTituloProfesional() {
     const titulo = this.fb.group({
-      titulo: ['', Validators.required],
-      universidad: ['', Validators.required],
-      especialidad: ['', Validators.required],
+      titulo: [''],
+      universidad: [''],
+      especialidad: [''],
     });
 
     this.titulosProfesionales.push(titulo);
@@ -195,9 +196,9 @@ export class RegistroDocentesComponent implements OnInit {
 
   agregarFormacionComplementaria() {
     const formacion = this.fb.group({
-      denominacion: ['', Validators.required],
-      especialidad: ['', Validators.required],
-      institucion: ['', Validators.required],
+      denominacion: [''],
+      especialidad: [''],
+      institucion: [''],
     });
 
     this.formacionesComplementarias.push(formacion);
@@ -212,10 +213,10 @@ export class RegistroDocentesComponent implements OnInit {
   crearExperienciaDocente(): FormGroup {
     return this.fb.group({
       tipo_experiencia: ['', Validators.required],
-      institucion: ['', Validators.required],
-      curso_dictado: ['', Validators.required],
-      semestre: ['', Validators.required],
-      pais: ['', Validators.required],
+      institucion: [''],
+      curso_dictado: [''],
+      semestre: [''],
+      pais: [''],
     });
   }
 
@@ -231,11 +232,11 @@ export class RegistroDocentesComponent implements OnInit {
 
   crearArticuloCientifico(): FormGroup {
     return this.fb.group({
-      titulo_articulo: ['', Validators.required],
-      nombre_revista: ['', Validators.required],
-      indizado: ['', Validators.required],
-      año: ['', Validators.required],
-      enlace: ['', Validators.required],
+      titulo_articulo: [''],
+      nombre_revista: [''],
+      indizado: [''],
+      año: [''],
+      enlace: [''],
     });
   }
 
@@ -251,16 +252,9 @@ export class RegistroDocentesComponent implements OnInit {
 
   crearLibro(): FormGroup {
     return this.fb.group({
-      libro_titulo: ['', Validators.required],
-      nombre_editorial: ['', Validators.required],
-      año: [
-        '',
-        [
-          Validators.required,
-          Validators.min(1000),
-          Validators.max(new Date().getFullYear()),
-        ],
-      ],
+      libro_titulo: [''],
+      nombre_editorial: [''],
+      año: [''],
     });
   }
 
@@ -276,9 +270,9 @@ export class RegistroDocentesComponent implements OnInit {
 
   crearProyectoInvestigacion(): FormGroup {
     return this.fb.group({
-      proyecto: ['', Validators.required],
-      entidad_financiera: ['', Validators.required],
-      año_adjudicacion: ['', Validators.required],
+      proyecto: [''],
+      entidad_financiera: [''],
+      año_adjudicacion: [''],
     });
   }
 
@@ -295,17 +289,10 @@ export class RegistroDocentesComponent implements OnInit {
   agregarAsesoriaJurado() {
     const asesoria = this.fb.group({
       tipo: ['', Validators.required],
-      titulo_tesis: ['', Validators.required],
-      universidad: ['', Validators.required],
-      nivel: ['', Validators.required],
-      año: [
-        '',
-        [
-          Validators.required,
-          Validators.min(1900),
-          Validators.max(new Date().getFullYear()),
-        ],
-      ],
+      titulo_tesis: [''],
+      universidad: [''],
+      nivel: [''],
+      año: [''],
     });
 
     this.asesoriasJurados.push(asesoria);
@@ -319,12 +306,12 @@ export class RegistroDocentesComponent implements OnInit {
 
   agregarOtros() {
     const otro = this.fb.group({
-      idioma: ['', Validators.required],
-      nivel_idioma: ['', Validators.required],
-      office: ['', Validators.required],
-      nivel_office: ['', Validators.required],
-      learning: ['', Validators.required],
-      nivel_learning: ['', Validators.required],
+      idioma: [''],
+      nivel_idioma: [''],
+      office: [''],
+      nivel_office: [''],
+      learning: [''],
+      nivel_learning: [''],
     });
 
     this.otros.push(otro);
@@ -381,7 +368,61 @@ export class RegistroDocentesComponent implements OnInit {
   }
   //#endregion
 
-  //#region boton registroDocentes
+  //#region Agregar y validar
+  marcarCamposInvalidos(formGroup: FormGroup) {
+    let camposFaltantes: string[] = [];
+  
+    const nombresAmigables: { [key: string]: string } = {
+      nombres: "Nombres",
+      apellido_paterno: "Apellido Paterno",
+      apellido_materno: "Apellido Materno",
+      tipo_identificacion: "Tipo de Identificación",
+      numero_identificacion: "Número de Identificación",
+      fecha_nacimiento: "Fecha de Nacimiento",
+      email: "Correo Electrónico",
+      celular: "Celular",
+      telefono_fijo: "Teléfono Fijo",
+      "contactoEmergencia.nombre": "Nombre del Contacto de Emergencia",
+      "contactoEmergencia.relacion": "Relación con Contacto de Emergencia",
+      "contactoEmergencia.telefono_1": "Teléfono de Contacto de Emergencia",
+      "domicilio.departamento_id": "Departamento",
+      "domicilio.provincia_id": "Provincia",
+      "domicilio.distrito_id": "Distrito",
+      "domicilio.direccion": "Dirección",
+      "domicilio.referencia": "Referencia",
+      "domicilio.mz": "Manzana",
+      "domicilio.lote": "Lote",
+      "experienciaDocente.0.tipo_experiencia": "Tipo de Experiencia Docente",
+      "asesoriaJurado.0.tipo": "Tipo de Asesoría de Jurado"
+    };
+  
+    const recorrerControles = (control: AbstractControl, nombreCampo = '') => {
+      if (control instanceof FormGroup || control instanceof FormArray) {
+        Object.entries(control.controls).forEach(([subCampo, subControl]) =>
+          recorrerControles(subControl, nombreCampo ? `${nombreCampo}.${subCampo}` : subCampo)
+        );
+      } else if (control.invalid) {
+        const nombreAmigable = nombresAmigables[nombreCampo] || nombreCampo;
+        camposFaltantes.push(nombreAmigable);
+        document.querySelector(`[formControlName="${nombreCampo}"]`)?.classList.add('border-red-500');
+      }
+    };
+
+    recorrerControles(formGroup);
+    if (camposFaltantes.length) {
+      this.alertService.warning(camposFaltantes.join('\n'));
+    }
+    console.log("Campos faltantes:", camposFaltantes);
+  }
+  
+  
+  eliminarError(campo: string) {
+    const elemento = document.querySelector(`[formControlName="${campo}"]`);
+    if (elemento) {
+      elemento.classList.remove('border-red-500');
+    }
+  }
+
   registrarDocente() {
     if (this.docenteForm.valid) {
       console.log('Datos enviados al backend:', this.docenteForm.value);
@@ -397,20 +438,12 @@ export class RegistroDocentesComponent implements OnInit {
         },
       });
     } else {
-      Object.keys(this.docenteForm.controls).forEach((controlName) => {
-        const controlErrors = this.docenteForm.get(controlName)?.errors;
-        if (controlErrors) {
-          console.log(`Control: ${controlName}`, controlErrors);
-          if (controlName === 'nombres') {
-            this.currentStep = 1;
-          }
-        }
-      });
-      alert('Hay errores en el formulario, revisa los campos.');
+      this.marcarCamposInvalidos(this.docenteForm)
     }
   }
   //#endregion
 
+  //#region Validaciones TipoIdentificaciones
   changeTipoIdentificacion() {
     const numeroIdentificacion = this.docenteForm.get('numero_identificacion');
     console.log(this.docenteForm.get('tipo_identificacion')?.value);
@@ -468,4 +501,5 @@ export class RegistroDocentesComponent implements OnInit {
       numeroIdentificacion.setErrors(null);
     }
   }
+  //#endregion
 }

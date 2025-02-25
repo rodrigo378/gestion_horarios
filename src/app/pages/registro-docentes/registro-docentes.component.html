@@ -23,6 +23,7 @@
               <input
                 type="text"
                 id="nombres"
+                (input)="eliminarError('nombres')"
                 placeholder="Nombre"
                 formControlName="nombres"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -52,6 +53,7 @@
                 type="text"
                 id="apellido_paterno"
                 placeholder="Apellido Paterno"
+                (input)="eliminarError('apellido_paterno')"
                 formControlName="apellido_paterno"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />
@@ -80,6 +82,7 @@
                 type="text"
                 id="apellido_materno"
                 placeholder="Apellido Materno"
+                (input)="eliminarError('apellido_materno')"
                 formControlName="apellido_materno"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />
@@ -106,6 +109,7 @@
               </label>
               <select
                 id="tipo_identificacion"
+                (input)="eliminarError('tipo_identificacion')"
                 formControlName="tipo_identificacion"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 (change)="changeTipoIdentificacion()"
@@ -140,9 +144,10 @@
               </label>
 
               <input
-                type="number"
+                type="text"
                 id="numero_identificacion"
                 placeholder="Documento de Identidad"
+                (input)="eliminarError('numero_identificacion')"
                 formControlName="numero_identificacion"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 (input)="changeTipoIdentificacion()"
@@ -173,6 +178,7 @@
               <input
                 type="date"
                 id="fecha_nacimiento"
+                (input)="eliminarError('fecha_nacimiento')"
                 formControlName="fecha_nacimiento"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />
@@ -201,6 +207,7 @@
                 type="email"
                 id="email"
                 placeholder="example@mail.com"
+                (input)="eliminarError('email')"
                 formControlName="email"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />
@@ -229,8 +236,9 @@
                 type="tel"
                 id="celular"
                 placeholder="987 654 321"
+                (input)="eliminarError('celular')"
                 formControlName="celular"
-                pattern="[0-9]{9}"
+                maxlength="9"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />
               <div
@@ -268,6 +276,7 @@
                 type="tel"
                 id="telefono_fijo"
                 placeholder="012345678"
+                (input)="eliminarError('telefono_fijo')"
                 formControlName="telefono_fijo"
                 maxlength="7"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -317,6 +326,7 @@
               <input
                 type="text"
                 id="nombre"
+                (input)="eliminarError('nombre')"
                 formControlName="nombre"
                 placeholder="Ej. Juan Pérez"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -345,6 +355,7 @@
               <input
                 type="text"
                 id="relacion"
+                (input)="eliminarError('relacion')"
                 formControlName="relacion"
                 placeholder="Ej. Padre, Madre, Hermano"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -373,6 +384,7 @@
               <input
                 type="tel"
                 id="telefono_1"
+                (input)="eliminarError('telefono_1')"
                 formControlName="telefono_1"
                 placeholder="Ej. 987654321"
                 pattern="[0-9]{9}"
@@ -403,6 +415,7 @@
                 type="tel"
                 id="telefono_2"
                 formControlName="telefono_2"
+                (input)="eliminarError('telefono_2')"
                 placeholder="Ej. 912345678"
                 pattern="[0-9]{9}"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -432,6 +445,7 @@
               </label>
               <select
                 id="departamento_id"
+                (input)="eliminarError('departamento_id')"
                 formControlName="departamento_id"
                 (change)="cargarProvincias($event)"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -466,6 +480,7 @@
               </label>
               <select
                 id="provincia_id"
+                (input)="eliminarError('provincia_id')"
                 formControlName="provincia_id"
                 (change)="cargarDistritos($event)"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -500,6 +515,7 @@
               </label>
               <select
                 id="distrito_id"
+                (input)="eliminarError('distrito_id')"
                 formControlName="distrito_id"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               >
@@ -533,6 +549,7 @@
               </label>
               <textarea
                 id="direccion"
+                (input)="eliminarError('direccion')"
                 formControlName="direccion"
                 placeholder="Dirección completa"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -561,6 +578,7 @@
               <input
                 type="text"
                 id="referencia"
+                (input)="eliminarError('referencia')"
                 formControlName="referencia"
                 placeholder="Referencia"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -589,6 +607,7 @@
               <input
                 type="text"
                 id="mz"
+                (input)="eliminarError('mz')"
                 formControlName="mz"
                 placeholder="Ej. Mz A"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -617,6 +636,7 @@
               <input
                 type="text"
                 id="lote"
+                (input)="eliminarError('email')"
                 formControlName="lote"
                 placeholder="Ej. Lote 12"
                 class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -2038,6 +2058,7 @@
         >
           <i class="fa-solid fa-arrow-left"></i> Anterior
         </button>
+
         <button
           *ngIf="currentStep < totalSteps"
           type="button"
@@ -2046,10 +2067,9 @@
         >
           Siguiente <i class="fa-solid fa-arrow-right"></i>
         </button>
-      </div>
-      <div>
-        <!-- Botón de guardar -->
+
         <button
+          *ngIf="currentStep === totalSteps"
           type="button"
           (click)="registrarDocente()"
           class="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-center text-base font-semibold text-white outline-none"

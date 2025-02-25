@@ -23,6 +23,10 @@ export class AuthService {
     }; Secure; SameSite=Strict`;
   }
 
+  isAuthenticated(): boolean {
+    return this.getToken() !== null;
+  }
+
   getToken(): string | null {
     const cookies = document.cookie.split('; ');
     const tokenCookie = cookies.find((row) => row.startsWith('token='));

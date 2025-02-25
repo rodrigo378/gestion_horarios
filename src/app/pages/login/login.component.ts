@@ -3,7 +3,6 @@ import { AuthService } from '../../services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User } from '../../interfaces/User';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AuthGoogleService } from '../../services/auth-google.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -65,7 +64,12 @@ export class LoginComponent implements OnInit {
       next: (res: any) => {
         console.log(res.token);
         this.authService.setToken(res.token);
+<<<<<<< HEAD
         this.router.navigate(['/docentes']);
+=======
+
+        this.router.navigate(['/registrodocentes'])
+>>>>>>> b25fff37f9205f44602740f9c88e39c20e5a07a8
       },
       error: (e: HttpErrorResponse) => {
         console.log(e);

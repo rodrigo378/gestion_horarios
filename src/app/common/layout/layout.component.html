@@ -64,7 +64,7 @@
       </li>
     </ul>
   </nz-sider>
-  <nz-layout>
+  <!-- <nz-layout>
     <nz-header>
       <div class="app-header">
         <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
@@ -81,5 +81,41 @@
         <router-outlet></router-outlet>
       </div>
     </nz-content>
+  </nz-layout> -->
+
+  <nz-layout>
+    <nz-header>
+      <div class="app-header">
+        <!-- Menú desplegable -->
+        <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
+          <span
+            class="trigger"
+            nz-icon
+            [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'">
+          </span>
+        </span>
+  
+        <!-- Botón de Logout a la derecha -->
+        <div class="header-right">
+          <button
+            nz-button
+            nzType="primary"
+            nzShape="circle"
+            nzSize="large"
+            nz-tooltip="Cerrar sesión"
+            (click)="logout()"
+            class="logout-button">
+            <span nz-icon nzType="poweroff"></span>
+        </button>
+        </div>
+      </div>
+    </nz-header>
+  
+    <nz-content>
+      <div class="inner-content">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
   </nz-layout>
+  
 </nz-layout>
