@@ -9,7 +9,7 @@ import { environment } from '../../environment/environment';
 export class DocenteService {
 
   private apiUrl = `${environment.api}/docente`; // backticks
-  private apiUrlUbi = `${environment.api}`;
+  private apiUrlUbi = `${environment.api}/ubi`;
 
   constructor(private http: HttpClient) {}
 

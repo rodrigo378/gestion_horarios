@@ -9,6 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-registro-docentes',
@@ -27,7 +28,7 @@ export class RegistroDocentesComponent implements OnInit {
   provincias: any[] = [];
   distritos: any[] = [];
 
-  constructor(private fb: FormBuilder, private docenteService: DocenteService) {
+  constructor(private fb: FormBuilder, private docenteService: DocenteService, private alertService: AlertService) {
     this.docenteForm = this.fb.group({
       // Información Personal
       nombres: ['', Validators.required],
@@ -104,6 +105,21 @@ export class RegistroDocentesComponent implements OnInit {
     this.cargarDepartamentos();
   }
 
+  ngAfterViewInit() {
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        if (mutation.attributeName === 'aria-hidden') {
+          console.log(`Cambio detectado en aria-hidden:`, mutation.target);
+        }
+      });
+    });
+  
+    document.querySelectorAll('[aria-hidden]').forEach(element => {
+      observer.observe(element, { attributes: true });
+    });
+  }
+  
+
   // get numeroIdentificacion() {
   //   return this.docenteForm.get('numero_identificacion');
   // }
@@ -166,11 +182,11 @@ export class RegistroDocentesComponent implements OnInit {
   //#region agregar
   agregarFormacionAcademica() {
     const formacion = this.fb.group({
-      grado_academico: ['', Validators.required],
-      universidad: ['', Validators.required],
-      especialidad: ['', Validators.required],
-      pais: ['', Validators.required],
-      resolucion_sunedu: ['', Validators.required],
+      grado_academico: [''],
+      universidad: [''],
+      especialidad: [''],
+      pais: [''],
+      resolucion_sunedu: [''],
     });
 
     this.formacionesAcademicas.push(formacion);
@@ -184,9 +200,9 @@ export class RegistroDocentesComponent implements OnInit {
 
   agregarTituloProfesional() {
     const titulo = this.fb.group({
-      titulo: ['', Validators.required],
-      universidad: ['', Validators.required],
-      especialidad: ['', Validators.required],
+      titulo: [''],
+      universidad: [''],
+      especialidad: [''],
     });
 
     this.titulosProfesionales.push(titulo);
@@ -200,9 +216,9 @@ export class RegistroDocentesComponent implements OnInit {
 
   agregarFormacionComplementaria() {
     const formacion = this.fb.group({
-      denominacion: ['', Validators.required],
-      especialidad: ['', Validators.required],
-      institucion: ['', Validators.required],
+      denominacion: [''],
+      especialidad: [''],
+      institucion: [''],
     });
 
     this.formacionesComplementarias.push(formacion);
@@ -217,10 +233,10 @@ export class RegistroDocentesComponent implements OnInit {
   crearExperienciaDocente(): FormGroup {
     return this.fb.group({
       tipo_experiencia: ['', Validators.required],
-      institucion: ['', Validators.required],
-      curso_dictado: ['', Validators.required],
-      semestre: ['', Validators.required],
-      pais: ['', Validators.required],
+      institucion: [''],
+      curso_dictado: [''],
+      semestre: [''],
+      pais: [''],
     });
   }
 
@@ -236,11 +252,11 @@ export class RegistroDocentesComponent implements OnInit {
 
   crearArticuloCientifico(): FormGroup {
     return this.fb.group({
-      titulo_articulo: ['', Validators.required],
-      nombre_revista: ['', Validators.required],
-      indizado: ['', Validators.required],
-      año: ['', Validators.required],
-      enlace: ['', Validators.required],
+      titulo_articulo: [''],
+      nombre_revista: [''],
+      indizado: [''],
+      año: [''],
+      enlace: [''],
     });
   }
 
@@ -256,16 +272,9 @@ export class RegistroDocentesComponent implements OnInit {
 
   crearLibro(): FormGroup {
     return this.fb.group({
-      libro_titulo: ['', Validators.required],
-      nombre_editorial: ['', Validators.required],
-      año: [
-        '',
-        [
-          Validators.required,
-          Validators.min(1000),
-          Validators.max(new Date().getFullYear()),
-        ],
-      ],
+      libro_titulo: [''],
+      nombre_editorial: [''],
+      año: [''],
     });
   }
 
@@ -281,9 +290,9 @@ export class RegistroDocentesComponent implements OnInit {
 
   crearProyectoInvestigacion(): FormGroup {
     return this.fb.group({
-      proyecto: ['', Validators.required],
-      entidad_financiera: ['', Validators.required],
-      año_adjudicacion: ['', Validators.required],
+      proyecto: [''],
+      entidad_financiera: [''],
+      año_adjudicacion: [''],
     });
   }
 
@@ -300,17 +309,10 @@ export class RegistroDocentesComponent implements OnInit {
   agregarAsesoriaJurado() {
     const asesoria = this.fb.group({
       tipo: ['', Validators.required],
-      titulo_tesis: ['', Validators.required],
-      universidad: ['', Validators.required],
-      nivel: ['', Validators.required],
-      año: [
-        '',
-        [
-          Validators.required,
-          Validators.min(1900),
-          Validators.max(new Date().getFullYear()),
-        ],
-      ],
+      titulo_tesis: [''],
+      universidad: [''],
+      nivel: [''],
+      año: [''],
     });
 
     this.asesoriasJurados.push(asesoria);
@@ -324,12 +326,12 @@ export class RegistroDocentesComponent implements OnInit {
 
   agregarOtros() {
     const otro = this.fb.group({
-      idioma: ['', Validators.required],
-      nivel_idioma: ['', Validators.required],
-      office: ['', Validators.required],
-      nivel_office: ['', Validators.required],
-      learning: ['', Validators.required],
-      nivel_learning: ['', Validators.required],
+      idioma: [''],
+      nivel_idioma: [''],
+      office: [''],
+      nivel_office: [''],
+      learning: [''],
+      nivel_learning: [''],
     });
 
     this.otros.push(otro);
@@ -407,70 +409,40 @@ export class RegistroDocentesComponent implements OnInit {
   }
 
   marcarCamposInvalidos(formGroup: FormGroup) {
-    let primerCampoFaltante: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null = null;
     let camposFaltantes: string[] = [];
   
-    Object.keys(formGroup.controls).forEach(campo => {
-      const control = formGroup.get(campo);
-  
+    const procesarCampo = (campo: string, control: AbstractControl, prefijo = '') => {
       if (control instanceof FormGroup) {
-        // Si el control es otro FormGroup (anidado), recorrerlo recursivamente
-        this.marcarCamposInvalidos(control);
+        Object.keys(control.controls).forEach(subCampo => {
+          procesarCampo(subCampo, control.get(subCampo)!, `${prefijo}${campo}.`);
+        });
       } else if (control instanceof FormArray) {
-        // 🔥 Si es un FormArray, iteramos sobre cada FormGroup dentro de él
         control.controls.forEach((grupo, index) => {
           if (grupo instanceof FormGroup) {
             Object.keys(grupo.controls).forEach(subCampo => {
-              const subControl = grupo.get(subCampo);
-  
-              if (subControl?.invalid) {
-                // Identificar el label correcto
-                const label = document.querySelector(`label[for="${subCampo}"]`)?.textContent || `${campo} [${index}] - ${subCampo}`;
-                camposFaltantes.push(label);
-  
-                // Buscar el elemento en el DOM
-                const elemento = document.querySelector(`[formControlName="${subCampo}"]`) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
-  
-                if (!primerCampoFaltante && elemento) {
-                  primerCampoFaltante = elemento;
-                }
-  
-                // Resaltar en rojo
-                if (elemento) {
-                  elemento.classList.add('border-red-500');
-                }
-              }
+              procesarCampo(subCampo, grupo.get(subCampo)!, `${prefijo}${campo}[${index}].`);
             });
           }
         });
-      } else if (control?.invalid) {
-        // Manejo normal de controles simples
-        const label = document.querySelector(`label[for="${campo}"]`)?.textContent || campo;
+      } else if (control.invalid) {
+        const label = document.querySelector(`label[for="${campo}"]`)?.textContent || `${prefijo}${campo}`;
         camposFaltantes.push(label);
   
-        const elemento = document.querySelector(`[formControlName="${campo}"]`) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
-  
-        if (!primerCampoFaltante && elemento) {
-          primerCampoFaltante = elemento;
-        }
-  
-        if (elemento) {
-          elemento.classList.add('border-red-500');
-        }
+        // 🔥 Resaltar en rojo los campos vacíos
+        const elemento = document.querySelector(`[formControlName="${campo}"]`) as HTMLElement | null;
+        elemento?.classList.add('border-red-500');
       }
-    });
+    };
+  
+    Object.keys(formGroup.controls).forEach(campo => procesarCampo(campo, formGroup.get(campo)!));
   
     if (camposFaltantes.length > 0) {
-      alert(`Faltan los siguientes campos: \n${camposFaltantes.join('\n')}`);
-  
-      // Enfocar el primer campo vacío
-      if (primerCampoFaltante) {
-        setTimeout(() => primerCampoFaltante!.focus(), 0);
-      }
+      // 🔥 Llamar a la alerta del servicio con los errores encontrados
+      this.alertService.warning(camposFaltantes.join('\n'));
     }
   }
   
-  
+
   eliminarError(campo: string) {
     const elemento = document.querySelector(`[formControlName="${campo}"]`);
     if (elemento) {
