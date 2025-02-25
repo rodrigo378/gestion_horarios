@@ -367,8 +367,81 @@ export class RegistroDocentesComponent implements OnInit{
         }
       );
     } else {
-      alert('Hay errores en el formulario, revisa los campos.');
+      this.marcarCamposInvalidos(this.docenteForm)
     }
   }
+
+  marcarCamposInvalidos(formGroup: FormGroup) {
+    let primerCampoFaltante: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null = null;
+    let camposFaltantes: string[] = [];
+  
+    Object.keys(formGroup.controls).forEach(campo => {
+      const control = formGroup.get(campo);
+  
+      if (control instanceof FormGroup) {
+        // Si el control es otro FormGroup (anidado), recorrerlo recursivamente
+        this.marcarCamposInvalidos(control);
+      } else if (control instanceof FormArray) {
+        // 🔥 Si es un FormArray, iteramos sobre cada FormGroup dentro de él
+        control.controls.forEach((grupo, index) => {
+          if (grupo instanceof FormGroup) {
+            Object.keys(grupo.controls).forEach(subCampo => {
+              const subControl = grupo.get(subCampo);
+  
+              if (subControl?.invalid) {
+                // Identificar el label correcto
+                const label = document.querySelector(`label[for="${subCampo}"]`)?.textContent || `${campo} [${index}] - ${subCampo}`;
+                camposFaltantes.push(label);
+  
+                // Buscar el elemento en el DOM
+                const elemento = document.querySelector(`[formControlName="${subCampo}"]`) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
+  
+                if (!primerCampoFaltante && elemento) {
+                  primerCampoFaltante = elemento;
+                }
+  
+                // Resaltar en rojo
+                if (elemento) {
+                  elemento.classList.add('border-red-500');
+                }
+              }
+            });
+          }
+        });
+      } else if (control?.invalid) {
+        // Manejo normal de controles simples
+        const label = document.querySelector(`label[for="${campo}"]`)?.textContent || campo;
+        camposFaltantes.push(label);
+  
+        const elemento = document.querySelector(`[formControlName="${campo}"]`) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
+  
+        if (!primerCampoFaltante && elemento) {
+          primerCampoFaltante = elemento;
+        }
+  
+        if (elemento) {
+          elemento.classList.add('border-red-500');
+        }
+      }
+    });
+  
+    if (camposFaltantes.length > 0) {
+      alert(`Faltan los siguientes campos: \n${camposFaltantes.join('\n')}`);
+  
+      // Enfocar el primer campo vacío
+      if (primerCampoFaltante) {
+        setTimeout(() => primerCampoFaltante!.focus(), 0);
+      }
+    }
+  }
+  
+  
+  eliminarError(campo: string) {
+    const elemento = document.querySelector(`[formControlName="${campo}"]`);
+    if (elemento) {
+      elemento.classList.remove('border-red-500');
+    }
+  }  
+  
   //#endregion
 }
