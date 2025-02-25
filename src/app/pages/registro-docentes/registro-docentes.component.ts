@@ -1,44 +1,54 @@
 import { Component, OnInit } from '@angular/core';
 import { DocenteService } from '../../services/docente.service';
-import { AbstractControl, Form, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  Form,
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-registro-docentes',
   standalone: false,
   templateUrl: './registro-docentes.component.html',
-  styleUrl: './registro-docentes.component.css'
+  styleUrl: './registro-docentes.component.css',
 })
-export class RegistroDocentesComponent implements OnInit{
-  currentStep =  1;
+export class RegistroDocentesComponent implements OnInit {
+  currentStep = 1;
   totalSteps = 10;
-  
+
   docenteForm: FormGroup;
   departamentos: any[] = [];
   provincias: any[] = [];
   distritos: any[] = [];
 
-  constructor(
-    private fb: FormBuilder,
-    private docenteService: DocenteService
-  ) {
+  constructor(private fb: FormBuilder, private docenteService: DocenteService) {
     this.docenteForm = this.fb.group({
       // Información Personal
       nombres: ['', Validators.required],
       apellido_paterno: ['', Validators.required],
       apellido_materno: ['', Validators.required],
       tipo_identificacion: ['', Validators.required],
-      numero_identificacion: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
+      numero_identificacion: [
+        '',
+        [Validators.required, Validators.pattern('^[0-9]+$')],
+      ],
       fecha_nacimiento: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       celular: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
-      telefono_fijo: ['', [Validators.required, Validators.pattern('^[0-9]{7,10}$')]],
+      telefono_fijo: [
+        '',
+        [Validators.required, Validators.pattern('^[0-9]{7,10}$')],
+      ],
 
       // Contacto de Emergencia
       contactoEmergencia: this.fb.group({
         nombre: ['', Validators.required],
         relacion: ['', Validators.required],
         telefono_1: ['', Validators.required],
-        telefono_2: ['']
+        telefono_2: [''],
       }),
 
       // Domicilio del Docente
@@ -60,8 +70,8 @@ export class RegistroDocentesComponent implements OnInit{
       formacionComplementaria: this.fb.array([]),
 
       //Exp Docente
-      experienciaDocente:this.fb.array([]),
-      
+      experienciaDocente: this.fb.array([]),
+
       //Exp_inves Articulos Cientifos
       articuloCientifico: this.fb.array([]),
 
@@ -70,10 +80,10 @@ export class RegistroDocentesComponent implements OnInit{
       proyectoInvestigacion: this.fb.array([]),
 
       //Asesorias y jurados
-      asesoriaJurado:this.fb.array([]),
+      asesoriaJurado: this.fb.array([]),
 
       //otros
-      otros: this.fb.array([])
+      otros: this.fb.array([]),
     });
 
     this.agregarFormacionAcademica();
@@ -84,7 +94,7 @@ export class RegistroDocentesComponent implements OnInit{
     this.agregarLibro();
     this.agregarProyectoInvestigacion();
     this.agregarAsesoriaJurado();
-    this.agregarOtros()
+    this.agregarOtros();
   }
 
   ngOnInit(): void {
@@ -94,7 +104,7 @@ export class RegistroDocentesComponent implements OnInit{
   get formacionesAcademicas(): FormArray {
     return this.docenteForm.get('formacionAcademica') as FormArray;
   }
-  get titulosProfesionales(): FormArray{
+  get titulosProfesionales(): FormArray {
     return this.docenteForm.get('titulosProfesionales') as FormArray;
   }
   get formacionesComplementarias(): FormArray {
@@ -132,7 +142,7 @@ export class RegistroDocentesComponent implements OnInit{
   }
   //#endregion
 
-//#region siquiente y volver
+  //#region siquiente y volver
   nextStep() {
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
@@ -153,7 +163,7 @@ export class RegistroDocentesComponent implements OnInit{
       universidad: ['', Validators.required],
       especialidad: ['', Validators.required],
       pais: ['', Validators.required],
-      resolucion_sunedu: ['', Validators.required]
+      resolucion_sunedu: ['', Validators.required],
     });
 
     this.formacionesAcademicas.push(formacion);
@@ -169,7 +179,7 @@ export class RegistroDocentesComponent implements OnInit{
     const titulo = this.fb.group({
       titulo: ['', Validators.required],
       universidad: ['', Validators.required],
-      especialidad: ['', Validators.required]
+      especialidad: ['', Validators.required],
     });
 
     this.titulosProfesionales.push(titulo);
@@ -185,7 +195,7 @@ export class RegistroDocentesComponent implements OnInit{
     const formacion = this.fb.group({
       denominacion: ['', Validators.required],
       especialidad: ['', Validators.required],
-      institucion: ['', Validators.required]
+      institucion: ['', Validators.required],
     });
 
     this.formacionesComplementarias.push(formacion);
@@ -203,14 +213,14 @@ export class RegistroDocentesComponent implements OnInit{
       institucion: ['', Validators.required],
       curso_dictado: ['', Validators.required],
       semestre: ['', Validators.required],
-      pais: ['', Validators.required]
+      pais: ['', Validators.required],
     });
   }
-  
+
   agregarExperienciaDocente() {
     this.experienciasDocentes.push(this.crearExperienciaDocente());
   }
-  
+
   eliminarExperienciaDocente(index: number) {
     if (this.experienciasDocentes.length > 1) {
       this.experienciasDocentes.removeAt(index);
@@ -223,14 +233,14 @@ export class RegistroDocentesComponent implements OnInit{
       nombre_revista: ['', Validators.required],
       indizado: ['', Validators.required],
       año: ['', Validators.required],
-      enlace: ['', Validators.required]
+      enlace: ['', Validators.required],
     });
   }
-  
+
   agregarArticuloCientifico() {
     this.articulosCientificos.push(this.crearArticuloCientifico());
   }
-  
+
   eliminarArticuloCientifico(index: number) {
     if (this.articulosCientificos.length > 1) {
       this.articulosCientificos.removeAt(index);
@@ -241,32 +251,39 @@ export class RegistroDocentesComponent implements OnInit{
     return this.fb.group({
       libro_titulo: ['', Validators.required],
       nombre_editorial: ['', Validators.required],
-      año: ['', [Validators.required, Validators.min(1000), Validators.max(new Date().getFullYear())]]
+      año: [
+        '',
+        [
+          Validators.required,
+          Validators.min(1000),
+          Validators.max(new Date().getFullYear()),
+        ],
+      ],
     });
   }
-  
+
   agregarLibro() {
     this.libros.push(this.crearLibro());
   }
-  
+
   eliminarLibro(index: number) {
     if (this.libros.length > 1) {
       this.libros.removeAt(index);
     }
   }
-  
+
   crearProyectoInvestigacion(): FormGroup {
     return this.fb.group({
       proyecto: ['', Validators.required],
       entidad_financiera: ['', Validators.required],
-      año_adjudicacion: ['', Validators.required]
+      año_adjudicacion: ['', Validators.required],
     });
   }
-  
+
   agregarProyectoInvestigacion() {
     this.proyectosInvestigacion.push(this.crearProyectoInvestigacion());
   }
-  
+
   eliminarProyectoInvestigacion(index: number) {
     if (this.proyectosInvestigacion.length > 1) {
       this.proyectosInvestigacion.removeAt(index);
@@ -281,8 +298,12 @@ export class RegistroDocentesComponent implements OnInit{
       nivel: ['', Validators.required],
       año: [
         '',
-        [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear())]
-      ]
+        [
+          Validators.required,
+          Validators.min(1900),
+          Validators.max(new Date().getFullYear()),
+        ],
+      ],
     });
 
     this.asesoriasJurados.push(asesoria);
@@ -301,12 +322,12 @@ export class RegistroDocentesComponent implements OnInit{
       office: ['', Validators.required],
       nivel_office: ['', Validators.required],
       learning: ['', Validators.required],
-      nivel_learning: ['', Validators.required]
+      nivel_learning: ['', Validators.required],
     });
-  
+
     this.otros.push(otro);
   }
-  
+
   eliminarOtros(index: number) {
     if (this.otros.length > 1) {
       this.otros.removeAt(index);
@@ -316,38 +337,47 @@ export class RegistroDocentesComponent implements OnInit{
 
   //#region API datos para Ubicaciones
   cargarDepartamentos() {
-    this.docenteService.getDepartamentos().subscribe(response => {
-      console.log("Respuesta completa de la API:", response);
-      this.departamentos = response.departamentos || [];
-      console.log("Departamentos extraídos:", this.departamentos);
-    }, error => {
-      console.error("Error al cargar departamentos:", error);
-    });
+    this.docenteService.getDepartamentos().subscribe(
+      (response) => {
+        console.log('Respuesta completa de la API:', response);
+        this.departamentos = response.departamentos || [];
+        console.log('Departamentos extraídos:', this.departamentos);
+      },
+      (error) => {
+        console.error('Error al cargar departamentos:', error);
+      }
+    );
   }
 
   cargarProvincias(event: any) {
     const departamentoId = event.target.value;
-    console.log("Departamento seleccionado:", departamentoId);
-    this.docenteService.getProvincias(departamentoId).subscribe(response => {
-      console.log("✅ Respuesta completa de provincias:", response);
-      this.provincias = response.provincias || []; // Extraemos correctamente el array
-      this.distritos = []; // Limpiar distritos cuando cambia el departamento
-      console.log("✅ Provincias extraídas:", this.provincias);
-    }, error => {
-      console.error("❌ Error al cargar provincias:", error);
-    });
+    console.log('Departamento seleccionado:', departamentoId);
+    this.docenteService.getProvincias(departamentoId).subscribe(
+      (response) => {
+        console.log('✅ Respuesta completa de provincias:', response);
+        this.provincias = response.provincias || []; // Extraemos correctamente el array
+        this.distritos = []; // Limpiar distritos cuando cambia el departamento
+        console.log('✅ Provincias extraídas:', this.provincias);
+      },
+      (error) => {
+        console.error('❌ Error al cargar provincias:', error);
+      }
+    );
   }
 
   cargarDistritos(event: any) {
     const provinciaId = event.target.value;
-    console.log("Provincia seleccionada:", provinciaId);
-    this.docenteService.getDistritos(provinciaId).subscribe(response => {
-      console.log("✅ Respuesta completa de distritos:", response);
-      this.distritos = response.distritos || []; // Extraemos correctamente el array
-      console.log("✅ Distritos extraídos:", this.distritos);
-    }, error => {
-      console.error("Error al cargar distritos:", error);
-    });
+    console.log('Provincia seleccionada:', provinciaId);
+    this.docenteService.getDistritos(provinciaId).subscribe(
+      (response) => {
+        console.log('✅ Respuesta completa de distritos:', response);
+        this.distritos = response.distritos || []; // Extraemos correctamente el array
+        console.log('✅ Distritos extraídos:', this.distritos);
+      },
+      (error) => {
+        console.error('Error al cargar distritos:', error);
+      }
+    );
   }
   //#endregion
 
@@ -357,11 +387,11 @@ export class RegistroDocentesComponent implements OnInit{
       console.log('Datos enviados al backend:', this.docenteForm.value);
 
       this.docenteService.createDocente(this.docenteForm.value).subscribe(
-        response => {
+        (response) => {
           console.log('Docente registrado:', response);
           alert('Docente registrado con éxito');
         },
-        error => {
+        (error) => {
           console.error('Error al registrar docente:', error);
           alert('Hubo un error al registrar el docente');
         }
