@@ -278,7 +278,7 @@ export class RegistroDocentesComponent implements OnInit{
       tipo: ['', Validators.required],
       titulo_tesis: ['', Validators.required],
       universidad: ['', Validators.required],
-      nivel_tesis: ['', Validators.required],
+      nivel: ['', Validators.required],
       año: [
         '',
         [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear())]
