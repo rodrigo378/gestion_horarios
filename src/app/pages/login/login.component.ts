@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
       if (token) {
         console.log('Token capturado:', token);
         this.authService.setToken(token);
-        this.router.navigate(['/docentes']);
+        this.router.navigate(['/registrodocentes']);
       }
     });
   }
@@ -64,12 +64,7 @@ export class LoginComponent implements OnInit {
       next: (res: any) => {
         console.log(res.token);
         this.authService.setToken(res.token);
-<<<<<<< HEAD
-        this.router.navigate(['/docentes']);
-=======
-
-        this.router.navigate(['/registrodocentes'])
->>>>>>> b25fff37f9205f44602740f9c88e39c20e5a07a8
+        this.router.navigate(['/registrodocentes']);
       },
       error: (e: HttpErrorResponse) => {
         console.log(e);

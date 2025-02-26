@@ -5,29 +5,41 @@ import { Departamento } from '../interfaces/Departamento';
 import { Distrito } from '../interfaces/Distrito';
 import { Provincia } from '../interfaces/Provincia';
 import { AuthService } from './auth.service';
+import { environment } from '../../environment/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UbicacionService {
-  api: string = 'http://localhost:8000/api/ubi';
+  private apiUrl = `${environment.api}/docente`; // backticks
+  private apiUrlUbi = `${environment.api}`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  getDepartamentos(): Observable<Departamento[]> {
+  getTokenHeader() {
     const token = this.authService.getToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-    return this.http.get<Departamento[]>(`${this.api}/departamento`, {
-      headers,
-    });
+    return { headers };
   }
 
-  getDistritos(departamento_id: number): Observable<Distrito[]> {
-    return this.http.get<Distrito[]>(`${this.api}/distrito/${departamento_id}`);
+  getDepartamentos(): Observable<Departamento[]> {
+    return this.http.get<Departamento[]>(
+      `${this.apiUrlUbi}/ubi/departamento`,
+      this.getTokenHeader()
+    );
   }
 
-  getProvincias(distrito_id: number): Observable<Provincia[]> {
-    return this.http.get<Provincia[]>(`${this.api}/provincia/${distrito_id}`);
+  getProvincias(departamentoId: number): Observable<Provincia[]> {
+    return this.http.get<Provincia[]>(
+      `${this.apiUrlUbi}/ubi/provincia/${departamentoId}`,
+      this.getTokenHeader()
+    );
+  }
+
+  getDistritos(provinciaId: number): Observable<Distrito[]> {
+    return this.http.get<Distrito[]>(
+      `${this.apiUrlUbi}/ubi/distrito/${provinciaId}`,
+      this.getTokenHeader()
+    );
   }
 }

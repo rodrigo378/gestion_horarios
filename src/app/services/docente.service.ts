@@ -22,26 +22,34 @@ export class DocenteService {
   }
 
   //#region Api Ubicaciones
-  getDepartamentos(): Observable<{ departamentos: any[] }> {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  // getDepartamentos(): Observable<{ departamentos: any[] }> {
+  //   const token = this.authService.getToken();
+  //   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.get<{ departamentos: any[] }>(
-      `${this.apiUrlUbi}/ubi/departamento`,
-      { headers }
-    );
-  }
+  //   return this.http.get<{ departamentos: any[] }>(
+  //     `${this.apiUrlUbi}/ubi/departamento`,
+  //     { headers }
+  //   );
+  // }
 
-  getProvincias(departamentoId: number): Observable<{ provincias: any[] }> {
-    return this.http.get<{ provincias: any[] }>(
-      `${this.apiUrlUbi}/ubi/provincia/${departamentoId}`
-    );
-  }
+  // getProvincias(departamentoId: number): Observable<{ provincias: any[] }> {
+  //   const token = this.authService.getToken();
+  //   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-  getDistritos(provinciaId: number): Observable<{ distritos: any[] }> {
-    return this.http.get<{ distritos: any[] }>(
-      `${this.apiUrlUbi}/ubi/distrito/${provinciaId}`
-    );
-  }
+  //   return this.http.get<{ provincias: any[] }>(
+  //     `${this.apiUrlUbi}/ubi/provincia/${departamentoId}`,
+  //     { headers }
+  //   );
+  // }
+
+  // getDistritos(provinciaId: number): Observable<{ distritos: any[] }> {
+  //   const token = this.authService.getToken();
+  //   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+  //   return this.http.get<{ distritos: any[] }>(
+  //     `${this.apiUrlUbi}/ubi/distrito/${provinciaId}`,
+  //     { headers }
+  //   );
+  // }
   //#endregion
 }

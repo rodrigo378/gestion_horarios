@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
+import { UbicacionService } from '../../services/ubicacion.service';
 
 @Component({
   selector: 'app-registro-docentes',
@@ -27,7 +28,12 @@ export class RegistroDocentesComponent implements OnInit {
   provincias: any[] = [];
   distritos: any[] = [];
 
-  constructor(private fb: FormBuilder, private docenteService: DocenteService, private alertService: AlertService) {
+  constructor(
+    private fb: FormBuilder,
+    private docenteService: DocenteService,
+    private alertService: AlertService,
+    private ubicacionService: UbicacionService
+  ) {
     this.docenteForm = this.fb.group({
       // Información Personal
       nombres: ['', Validators.required],
@@ -326,9 +332,9 @@ export class RegistroDocentesComponent implements OnInit {
 
   //#region API datos para Ubicaciones
   cargarDepartamentos() {
-    this.docenteService.getDepartamentos().subscribe({
+    this.ubicacionService.getDepartamentos().subscribe({
       next: (res) => {
-        this.departamentos = res.departamentos || [];
+        this.departamentos = res || [];
       },
       error: (e: HttpErrorResponse) => {
         console.error('Error al cargar departamentos:', e);
@@ -339,12 +345,10 @@ export class RegistroDocentesComponent implements OnInit {
   cargarProvincias(event: any) {
     const departamentoId = event.target.value;
     console.log('Departamento seleccionado:', departamentoId);
-    this.docenteService.getProvincias(departamentoId).subscribe({
+    this.ubicacionService.getProvincias(departamentoId).subscribe({
       next: (res: any) => {
-        console.log('✅ Respuesta completa de provincias:', res);
-        this.provincias = res.provincias || []; // Extraemos correctamente el array
-        this.distritos = []; // Limpiar distritos cuando cambia el departamento
-        console.log('✅ Provincias extraídas:', this.provincias);
+        this.provincias = res || [];
+        this.distritos = [];
       },
       error: (e: HttpErrorResponse) => {
         console.error('❌ Error al cargar provincias:', e);
@@ -355,11 +359,9 @@ export class RegistroDocentesComponent implements OnInit {
   cargarDistritos(event: any) {
     const provinciaId = event.target.value;
     console.log('Provincia seleccionada:', provinciaId);
-    this.docenteService.getDistritos(provinciaId).subscribe({
+    this.ubicacionService.getDistritos(provinciaId).subscribe({
       next: (res: any) => {
-        console.log('✅ Respuesta completa de distritos:', res);
-        this.distritos = res.distritos || []; // Extraemos correctamente el array
-        console.log('✅ Distritos extraídos:', this.distritos);
+        this.distritos = res || []; // Extraemos correctamente el array
       },
       error: (e: HttpErrorResponse) => {
         console.error('Error al cargar distritos:', e);
@@ -371,40 +373,45 @@ export class RegistroDocentesComponent implements OnInit {
   //#region Agregar y validar
   marcarCamposInvalidos(formGroup: FormGroup) {
     let camposFaltantes: string[] = [];
-  
+
     const nombresAmigables: { [key: string]: string } = {
-      nombres: "Nombres",
-      apellido_paterno: "Apellido Paterno",
-      apellido_materno: "Apellido Materno",
-      tipo_identificacion: "Tipo de Identificación",
-      numero_identificacion: "Número de Identificación",
-      fecha_nacimiento: "Fecha de Nacimiento",
-      email: "Correo Electrónico",
-      celular: "Celular",
-      telefono_fijo: "Teléfono Fijo",
-      "contactoEmergencia.nombre": "Nombre del Contacto de Emergencia",
-      "contactoEmergencia.relacion": "Relación con Contacto de Emergencia",
-      "contactoEmergencia.telefono_1": "Teléfono de Contacto de Emergencia",
-      "domicilio.departamento_id": "Departamento",
-      "domicilio.provincia_id": "Provincia",
-      "domicilio.distrito_id": "Distrito",
-      "domicilio.direccion": "Dirección",
-      "domicilio.referencia": "Referencia",
-      "domicilio.mz": "Manzana",
-      "domicilio.lote": "Lote",
-      "experienciaDocente.0.tipo_experiencia": "Tipo de Experiencia Docente",
-      "asesoriaJurado.0.tipo": "Tipo de Asesoría de Jurado"
+      nombres: 'Nombres',
+      apellido_paterno: 'Apellido Paterno',
+      apellido_materno: 'Apellido Materno',
+      tipo_identificacion: 'Tipo de Identificación',
+      numero_identificacion: 'Número de Identificación',
+      fecha_nacimiento: 'Fecha de Nacimiento',
+      email: 'Correo Electrónico',
+      celular: 'Celular',
+      telefono_fijo: 'Teléfono Fijo',
+      'contactoEmergencia.nombre': 'Nombre del Contacto de Emergencia',
+      'contactoEmergencia.relacion': 'Relación con Contacto de Emergencia',
+      'contactoEmergencia.telefono_1': 'Teléfono de Contacto de Emergencia',
+      'domicilio.departamento_id': 'Departamento',
+      'domicilio.provincia_id': 'Provincia',
+      'domicilio.distrito_id': 'Distrito',
+      'domicilio.direccion': 'Dirección',
+      'domicilio.referencia': 'Referencia',
+      'domicilio.mz': 'Manzana',
+      'domicilio.lote': 'Lote',
+      'experienciaDocente.0.tipo_experiencia': 'Tipo de Experiencia Docente',
+      'asesoriaJurado.0.tipo': 'Tipo de Asesoría de Jurado',
     };
-  
+
     const recorrerControles = (control: AbstractControl, nombreCampo = '') => {
       if (control instanceof FormGroup || control instanceof FormArray) {
         Object.entries(control.controls).forEach(([subCampo, subControl]) =>
-          recorrerControles(subControl, nombreCampo ? `${nombreCampo}.${subCampo}` : subCampo)
+          recorrerControles(
+            subControl,
+            nombreCampo ? `${nombreCampo}.${subCampo}` : subCampo
+          )
         );
       } else if (control.invalid) {
         const nombreAmigable = nombresAmigables[nombreCampo] || nombreCampo;
         camposFaltantes.push(nombreAmigable);
-        document.querySelector(`[formControlName="${nombreCampo}"]`)?.classList.add('border-red-500');
+        document
+          .querySelector(`[formControlName="${nombreCampo}"]`)
+          ?.classList.add('border-red-500');
       }
     };
 
@@ -412,10 +419,9 @@ export class RegistroDocentesComponent implements OnInit {
     if (camposFaltantes.length) {
       this.alertService.warning(camposFaltantes.join('\n'));
     }
-    console.log("Campos faltantes:", camposFaltantes);
+    console.log('Campos faltantes:', camposFaltantes);
   }
-  
-  
+
   eliminarError(campo: string) {
     const elemento = document.querySelector(`[formControlName="${campo}"]`);
     if (elemento) {
@@ -438,7 +444,7 @@ export class RegistroDocentesComponent implements OnInit {
         },
       });
     } else {
-      this.marcarCamposInvalidos(this.docenteForm)
+      this.marcarCamposInvalidos(this.docenteForm);
     }
   }
   //#endregion
