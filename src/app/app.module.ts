@@ -17,6 +17,9 @@ import { LayoutComponent } from './common/layout/layout.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegistroDocentesComponent } from './pages/registro-docentes/registro-docentes.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NotFountComponent } from './pages/not-fount/not-fount.component';
+import { ListarUsuariosComponent } from './pages/admin/listar-usuarios/listar-usuarios.component';
+import { DisponibilidadHorariaComponent } from './pages/disponibilidad-horaria/disponibilidad-horaria.component';
 registerLocaleData(en);
 
 @NgModule({
@@ -25,6 +28,9 @@ registerLocaleData(en);
     LayoutComponent,
     LoginComponent,
     RegistroDocentesComponent,
+    NotFountComponent,
+    ListarUsuariosComponent,
+    DisponibilidadHorariaComponent,
   ],
   imports: [
     BrowserModule,

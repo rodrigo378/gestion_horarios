@@ -11,7 +11,7 @@ import { environment } from '../../environment/environment';
   providedIn: 'root',
 })
 export class UbicacionService {
-  private apiUrl = `${environment.api}/docente`; // backticks
+  // private apiUrl = `${environment.api}/docente`; // backticks
   private apiUrlUbi = `${environment.api}`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}

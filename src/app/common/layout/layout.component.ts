@@ -14,7 +14,7 @@ export class LayoutComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   logout() {
-    this.authService.logout(); // Elimina el token
-    this.router.navigate(['/login']); // Redirige al login
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

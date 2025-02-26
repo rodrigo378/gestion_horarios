@@ -22,28 +22,39 @@
       <li nz-submenu nzTitle="Gestión Usuario" nzIcon="user">
         <ul>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/a">Listar usuarios</a>
+            <a routerLink="/listausuarios">Listar usuarios</a>
           </li>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/2">Permisos de usuarios</a>
+            <a routerLink="/permisos">Permisos de usuarios</a>
           </li>
         </ul>
       </li>
 
-      <li nz-submenu nzOpen nzTitle="Docentes" nzIcon="user">
+      <li nz-submenu nzOpen nzTitle="Gestion de Docentes" nzIcon="user">
         <ul>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/registrodocentes">Registro</a>
+            <a routerLink="#">Registro Docente</a>
           </li>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/docentes">Docentes</a>
-          </li>
-          <!-- <li nz-menu-item nzMatchRouter>
-            <a>Monitor</a>
+            <a routerLink="#">Disponibilidad Horaria</a>
           </li>
           <li nz-menu-item nzMatchRouter>
-            <a>Workplace</a>
-          </li> -->
+            <a routerLink="/Contrato">Contrato</a>
+          </li>
+        </ul>
+      </li>
+
+      <li nz-submenu nzOpen nzTitle="Postular Docentes" nzIcon="user">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/registrodocentes">Registro Docente</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/#">Editar formulario</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="#">------</a>
+          </li>
         </ul>
       </li>
 
