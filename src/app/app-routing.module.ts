@@ -16,7 +16,7 @@ const routes: Routes = [
     component: LayoutComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'registrodocentes' },
+      { path: '', pathMatch: 'full', redirectTo: 'welcome' },
       {
         path: 'welcome',
         loadChildren: () =>

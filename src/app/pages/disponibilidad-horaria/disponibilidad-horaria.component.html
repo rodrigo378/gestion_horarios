@@ -1,3 +1,58 @@
-<p class="text-2xl" style="font-weight: bold">Disponibilidad horaria</p>
+<p class="text-2xl font-bold">Disponibilidad horaria</p>
 
+<div class="mt-10 flex items-center justify-center">
+    <div class="mx-auto w-full max-w-[100%]">
+        <div class="overflow-hidden rounded-lg shadow-lg border border-gray-200 bg-white p-4">
+            <table class="w-full border-collapse">
+                <thead class="bg-gray-100 text-gray-600 uppercase text-sm hidden md:table-header-group">
+                    <tr>
+                        <th class="px-4 py-3 text-left">Día</th>
+                        <th class="px-4 py-3 text-left">Hora Inicio</th>
+                        <th class="px-4 py-3 text-left">Hora Fin</th>
+                        <th class="px-4 py-3 text-left">Disponibilidad</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let dia of disponibilidad; let i = index" class="border-t border-gray-200 block md:table-row">
+                        <td class="px-4 py-3 font-semibold text-gray-700 block md:table-cell">{{ dia.dia | titlecase }}</td>
+                        <td class="px-4 py-3 block md:table-cell">
+                            <input type="time" class="w-full p-2 border rounded-md" [(ngModel)]="disponibilidad[i].hora_inicio">
+                        </td>
+                        <td class="px-4 py-3 block md:table-cell">
+                            <input type="time" class="w-full p-2 border rounded-md" [(ngModel)]="disponibilidad[i].hora_fin">
+                        </td>
+                        <td class="px-4 py-3 block md:table-cell">
+                            <select class="w-full p-2 border rounded-md bg-white" [(ngModel)]="disponibilidad[i].modalidad">
+                                <option value="presencial">Presencial</option>
+                                <option value="virtual">Virtual</option>
+                            </select>
+                        </td>
+                        <td class="px-4 py-3 block md:table-cell">
+                            <button 
+                                *ngIf="datosCargados && dia.hora_inicio && dia.hora_fin"
+                                class="bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded"
+                                (click)="editarDisponibilidad(dia.id, i)">
+                                <i class="fa-solid fa-pencil"></i> Editar
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
+            <!-- Mensaje de retroalimentación -->
+            <p *ngIf="mensaje" class="mt-4 p-2 text-center rounded-md" 
+                [ngClass]="{'bg-green-100 text-green-700': mensaje.includes('éxito'), 'bg-red-100 text-red-700': mensaje.includes('Error')}">
+                {{ mensaje }}
+            </p>
+
+            <!-- Botón para guardar toda la disponibilidad -->
+            <button
+                *ngIf="mostrarBotonGuardar"
+                class="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700" 
+                (click)="guardarDisponibilidad()">
+                Guardar <i class="fas fa-save"></i>
+            </button>
+        </div>
+    </div>
+</div>

@@ -34,11 +34,11 @@ export class AlertService {
   } 
 
   // ❌ Alerta de error
-  error(message: string, title: string = '¡Error!') {
+  errorwarning(message: string, title: string = 'Oops...!') {
     Swal.fire({
       title: title,
       text: message,
-      icon: 'error',
+      icon: 'warning',
       confirmButtonText: 'OK'
     });
   }

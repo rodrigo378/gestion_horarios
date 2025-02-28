@@ -11,14 +11,23 @@ export class DocenteService {
   private apiUrl = `${environment.api}/docente`; // backticks
   private apiUrlUbi = `${environment.api}`;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient, 
+    private authService: AuthService
+  ) {}
+
+  getTokenHeader() {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return { headers };
+  }
 
   getDocentes(): Observable<any> {
     return this.http.get(this.apiUrl);
   }
 
   createDocente(docenteData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/create`, docenteData);
+    return this.http.post(`${this.apiUrl}/create`, docenteData, this.getTokenHeader() );
   }
 
   //#region Api Ubicaciones
