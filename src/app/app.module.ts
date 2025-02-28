@@ -21,6 +21,8 @@ import { NotFountComponent } from './pages/not-fount/not-fount.component';
 import { ListarUsuariosComponent } from './pages/admin/listar-usuarios/listar-usuarios.component';
 import { DisponibilidadHorariaComponent } from './pages/disponibilidad-horaria/disponibilidad-horaria.component';
 import { ListaDocentesComponent } from './pages/lista-docentes/lista-docentes.component';
+import { DocentesAprobadosComponent } from './pages/docentes-aprobados/docentes-aprobados.component';
+import { DocentesRechazadosComponent } from './pages/docentes-rechazados/docentes-rechazados.component';
 registerLocaleData(en);
 
 @NgModule({
@@ -33,6 +35,8 @@ registerLocaleData(en);
     ListarUsuariosComponent,
     DisponibilidadHorariaComponent,
     ListaDocentesComponent,
+    DocentesAprobadosComponent,
+    DocentesRechazadosComponent,
   ],
   imports: [
     BrowserModule,

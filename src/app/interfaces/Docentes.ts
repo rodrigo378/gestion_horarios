@@ -156,3 +156,15 @@ export interface Otro {
 
   docente_id?: number;
 }
+
+export interface listadocentes{
+  id?: number;
+  nombres: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+  tipo_identificacion: string;
+  numero_identificacion: string;
+  email: string;
+  celular: string; 
+  estado: number;
+}

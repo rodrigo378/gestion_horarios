@@ -8,7 +8,7 @@
     [nzTrigger]="null"
   >
     <div class="sidebar-logo">
-      <a href="#" target="_blank">
+      <a href="/welcome">
         <img src="assets/img/logo-uma.png" alt="logo" />
         <h1>Gestion de docentes</h1>
       </a>
@@ -21,13 +21,13 @@
     >
       <!-- "nzOpen" para abrir la opcion -->
       <li nz-submenu 
-          nzTitle="Bienvenido"
+          nzTitle="Dashboard"
           nzIcon="dashboard"
-          [nzOpen]="selectedMenu === 'bienvenidos'"
-          (nzOpenChange)="toggleMenuOp('bienvenidos', $event)">
+          [nzOpen]="selectedMenu === 'dashboard'"
+          (nzOpenChange)="toggleMenuOp('dashboard', $event)">
         <ul>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/welcome">Bienvenido</a>
+            <a routerLink="/welcome">Dashboard</a>
           </li>
         </ul>
       </li>
@@ -96,6 +96,12 @@
         <ul>
           <li nz-menu-item nzMatchRouter>
             <a routerLink="/listadocentes">Lista de doncentes</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/docenteaprobados">Lista de doncentes aprobados</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/docentesrechazados">Lista de doncentes rechazados</a>
           </li>
         </ul>
       </li>

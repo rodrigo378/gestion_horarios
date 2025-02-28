@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environment/environment';
 import { AuthService } from './auth.service';
+import { listadocentes } from '../interfaces/Docentes';
 
 @Injectable({
   providedIn: 'root',
@@ -22,13 +23,30 @@ export class DocenteService {
     return { headers };
   }
 
-  getDocentes(): Observable<any> {
-    return this.http.get(this.apiUrl);
+  getDocentes(): Observable<listadocentes[]> {
+    return this.http.get<listadocentes[]>(this.apiUrl, this.getTokenHeader());
+  }
+
+  getDocentesAprobados(): Observable<listadocentes[]> {
+    return this.http.get<listadocentes[]>(`${this.apiUrl}/aprobados`, this.getTokenHeader());
+  }
+
+  getDocentesRechazados(): Observable<listadocentes[]> {
+    return this.http.get<listadocentes[]>(`${this.apiUrl}/rechazados`, this.getTokenHeader());
   }
 
   createDocente(docenteData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/create`, docenteData, this.getTokenHeader() );
   }
+
+  aprobarDocente(id: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/aprobar`, {}, this.getTokenHeader());
+  }
+  
+  rechazarDocente(id: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/rechazar`, {}, this.getTokenHeader());
+  }
+  
 
   //#region Api Ubicaciones
   // getDepartamentos(): Observable<{ departamentos: any[] }> {
