@@ -15,6 +15,9 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   boolLogin: boolean = false;
   submitted = false;
+  showPassword: boolean = false;
+
+  currentYear: number = new Date().getFullYear();
 
   constructor(
     private authService: AuthService,
@@ -71,5 +74,10 @@ export class LoginComponent implements OnInit {
         this.boolLogin = true;
       },
     });
+  }
+
+  togglePassword()
+  {
+    this,this.showPassword = !this.showPassword
   }
 }

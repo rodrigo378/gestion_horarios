@@ -28,12 +28,11 @@ export class DocentesAprobadosComponent {
 cargarDocentes() {
   this.docenteService.getDocentesAprobados().subscribe({
     next: (data: listadocentes[]) => {
-      // Asegurarse de que estado es un número y no un string
       this.docentes = data.map(docente => ({
         ...docente,
-        estado: Number(docente.estado) // Convertir a número si es necesario
+        estado: Number(docente.estado)
       }));
-      this.usuariosFiltrados = [...this.docentes]; // Asegurar que los datos sean correctos
+      this.usuariosFiltrados = [...this.docentes];
     },
     error: (error) => {
       console.error('Error al obtener docentes:', error);
