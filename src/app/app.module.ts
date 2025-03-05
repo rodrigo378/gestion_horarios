@@ -9,7 +9,7 @@ import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import { FormsModule } from '@angular/forms';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { IconsProviderModule } from './icons-provider.module';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
@@ -19,10 +19,12 @@ import { RegistroDocentesComponent } from './pages/registro-docentes/registro-do
 import { ReactiveFormsModule } from '@angular/forms';
 import { NotFountComponent } from './pages/not-fount/not-fount.component';
 import { ListarUsuariosComponent } from './pages/admin/listar-usuarios/listar-usuarios.component';
-import { DisponibilidadHorariaComponent } from './pages/disponibilidad-horaria/disponibilidad-horaria.component';
 import { ListaDocentesComponent } from './pages/lista-docentes/lista-docentes.component';
 import { DocentesAprobadosComponent } from './pages/docentes-aprobados/docentes-aprobados.component';
 import { DocentesRechazadosComponent } from './pages/docentes-rechazados/docentes-rechazados.component';
+import { EscogerCursoDocenteComponent } from './pages/escoger-curso-docente/escoger-curso-docente.component';
+import { PostularCursoComponent } from './pages/postular-curso/postular-curso.component';
+import { VerHorarioComponent } from './pages/ver-horario/ver-horario.component';
 registerLocaleData(en);
 
 @NgModule({
@@ -33,10 +35,12 @@ registerLocaleData(en);
     RegistroDocentesComponent,
     NotFountComponent,
     ListarUsuariosComponent,
-    DisponibilidadHorariaComponent,
     ListaDocentesComponent,
     DocentesAprobadosComponent,
     DocentesRechazadosComponent,
+    EscogerCursoDocenteComponent,
+    PostularCursoComponent,
+    VerHorarioComponent,
   ],
   imports: [
     BrowserModule,

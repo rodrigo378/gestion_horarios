@@ -28,12 +28,11 @@ export class DocentesRechazadosComponent {
 cargarDocentes() {
   this.docenteService.getDocentesRechazados().subscribe({
     next: (data: listadocentes[]) => {
-      // Asegurarse de que estado es un número y no un string
       this.docentes = data.map(docente => ({
         ...docente,
-        estado: Number(docente.estado) // Convertir a número si es necesario
+        estado: Number(docente.estado)
       }));
-      this.usuariosFiltrados = [...this.docentes]; // Asegurar que los datos sean correctos
+      this.usuariosFiltrados = [...this.docentes];
     },
     error: (error) => {
       console.error('Error al obtener docentes:', error);
@@ -76,7 +75,7 @@ cargarDocentes() {
       docente.tipo_identificacion.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) ||
       docente.numero_identificacion.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) ||
       docente.celular.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) ||
-      String(docente.estado).toLowerCase().includes(this.filtroBusqueda.toLowerCase()) // Convertir estado a string antes de toLowerCase()
+      String(docente.estado).toLowerCase().includes(this.filtroBusqueda.toLowerCase())
     );
   }
 }
