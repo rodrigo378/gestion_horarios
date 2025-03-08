@@ -13,6 +13,7 @@ export class LayoutComponent {
   isMenuOpen = false;
   currentYear: number = new Date().getFullYear();
   selectedMenu: String | null = null;
+  docenteId: number = 1
 
   constructor(private authService: AuthService, private router: Router) {}
 

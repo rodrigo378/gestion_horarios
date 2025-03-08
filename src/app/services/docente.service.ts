@@ -27,16 +27,35 @@ export class DocenteService {
     return this.http.get<listadocentes[]>(this.apiUrl, this.getTokenHeader());
   }
 
+  // Obtener un docente por ID
+  // getDocenteId(id: number): Observable<any> {
+  //   return this.http.get<any>(`${this.apiUrl}/${id}`, this.getTokenHeader());
+  // }
+
+  getDocentePorUsuario(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/user`, this.getTokenHeader());
+  }
+  
+  
+  // // Actualizar un docente
+  // updateDocente(id: number, docenteData: any): Observable<any> {
+  //   return this.http.put(`${this.apiUrl}/${id}`, docenteData, this.getTokenHeader());
+  // }
+
+  updateDocenteUsuario(docenteData: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/user`, docenteData, this.getTokenHeader());
+  }
+
+  createDocente(docenteData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/create`, docenteData, this.getTokenHeader() );
+  }
+
   getDocentesAprobados(): Observable<listadocentes[]> {
     return this.http.get<listadocentes[]>(`${this.apiUrl}/aprobados`, this.getTokenHeader());
   }
 
   getDocentesRechazados(): Observable<listadocentes[]> {
     return this.http.get<listadocentes[]>(`${this.apiUrl}/rechazados`, this.getTokenHeader());
-  }
-
-  createDocente(docenteData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/create`, docenteData, this.getTokenHeader() );
   }
 
   aprobarDocente(id: number): Observable<any> {

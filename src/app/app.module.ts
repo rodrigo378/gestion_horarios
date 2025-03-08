@@ -25,6 +25,7 @@ import { DocentesRechazadosComponent } from './pages/docentes-rechazados/docente
 import { EscogerCursoDocenteComponent } from './pages/escoger-curso-docente/escoger-curso-docente.component';
 import { PostularCursoComponent } from './pages/postular-curso/postular-curso.component';
 import { VerHorarioComponent } from './pages/ver-horario/ver-horario.component';
+import { VerInformacionComponent } from './pages/ver-informacion/ver-informacion.component';
 registerLocaleData(en);
 
 @NgModule({
@@ -41,6 +42,7 @@ registerLocaleData(en);
     EscogerCursoDocenteComponent,
     PostularCursoComponent,
     VerHorarioComponent,
+    VerInformacionComponent,
   ],
   imports: [
     BrowserModule,

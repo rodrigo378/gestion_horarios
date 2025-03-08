@@ -13,6 +13,7 @@ import { DocentesRechazadosComponent } from './pages/docentes-rechazados/docente
 import { EscogerCursoDocenteComponent } from './pages/escoger-curso-docente/escoger-curso-docente.component';
 import { PostularCursoComponent } from './pages/postular-curso/postular-curso.component';
 import { VerHorarioComponent } from './pages/ver-horario/ver-horario.component';
+import { VerInformacionComponent } from './pages/ver-informacion/ver-informacion.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -28,6 +29,7 @@ const routes: Routes = [
           import('./pages/welcome/welcome.module').then((m) => m.WelcomeModule),
       },
       { path: 'registrodocentes', component: RegistroDocentesComponent },
+      { path: 'verinformacion', component: VerInformacionComponent },
       { path: 'cursoelegir', component: EscogerCursoDocenteComponent },
       { path: 'postularcurso', component: PostularCursoComponent },
       { path: 'verhorario', component: VerHorarioComponent },

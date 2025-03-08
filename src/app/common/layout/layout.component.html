@@ -54,7 +54,10 @@
           (nzOpenChange)="toggleMenuOp('postular', $event)">
         <ul>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/registrodocentes">Ver Información</a>
+            <a routerLink="/registrodocentes">Registra tu informacion</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/verinformacion">Ver tu informacion</a>
           </li>
           <li nz-menu-item nzMatchRouter>
             <a routerLink="/cursoelegir">Llenar prospecto</a>
@@ -145,7 +148,7 @@
                   <span class="absolute -inset-1.5"></span>
                   <span class="sr-only">Abrir menú de usuario</span>
                   <img class="size-8 rounded-full"
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    src="../../../assets/img/docente.png"
                     alt="">
                 </button>
               </div>
@@ -173,6 +176,6 @@
     </nz-content>
       <!-- Footer -->
       <nz-footer class="footer bg-{#f0f2f5} text-red-600 text-center p-4 font-bold text-[15px]">
-        © {{ currentYear }} Developed by - Team TI.
+        © {{ currentYear }} Developed by - <a href="https://github.com/VictorSinche?tab=repositories" rel="" target="_blank" title="Codepen aji" class="text-blue-900 hover:text-blue-900 ">Team TI.</a>
       </nz-footer>
 </nz-layout>

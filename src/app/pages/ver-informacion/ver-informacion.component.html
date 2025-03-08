@@ -1,0 +1,89 @@
+<p class="text-2xl font-bold">Edite su información</p>
+<p class="text-slate-500 mb-5">Edite ciertos campos de su información</p>
+
+<div class="bg-gray-100 flex justify-center py-10 rounded-lg">
+    <div class="bg-white shadow-lg rounded-lg p-8 w-[794px] min-h-[1123px]">
+        <div class="grid grid-cols-5 gap-6">
+        
+            <!-- 🔹 Columna Izquierda (Sidebar) -->
+            <div class="col-span-2 bg-gray-800 text-white p-6 rounded-lg">
+                <div class="flex justify-center">
+                    <img src="../../../assets/img/docente.png" alt="Foto Docente" class="w-24 h-24 rounded-full shadow-md">
+                </div>
+
+                <!-- Datos personales -->
+                <h3 class="text-lg font-bold bg-yellow-500 text-black px-3 py-1 mt-4 rounded-md">
+                    Datos personales
+                </h3>
+                <p> <strong>Nombre:</strong> {{ docente?.nombres }} {{ docente?.apellido_paterno }} {{ docente?.apellido_materno }}</p>
+                <p> <strong>Identificación:</strong> {{ docente?.tipo_identificacion }} - {{ docente?.numero_identificacion }}</p>
+                <p> <strong>Email:</strong> {{ docente?.email }}</p>
+                <p> <strong>Fecha Nacimiento:</strong> {{ docente?.fecha_nacimiento }}</p>
+                <p> <strong>Celular:</strong> {{ docente?.celular }}</p>
+                <p> <strong>Teléfono Fijo:</strong> {{ docente?.telefono_fijo }}</p>
+
+                <!-- Contacto emergencia -->
+                <h3 class="text-lg font-bold bg-yellow-500 text-black px-3 py-1 mt-6 rounded-md">
+                    Contacto de Emergencia
+                </h3>
+                <p> <strong>Nombre:</strong> {{ docente?.contacto_emergencia?.nombre }}</p>
+                <p> <strong>Relación:</strong> {{ docente?.contacto_emergencia?.relacion }}</p>
+                <p> <strong>Teléfono 1:</strong> {{ docente?.contacto_emergencia?.telefono_1 }}</p>
+                <p> <strong>Teléfono 2:</strong> {{ docente?.contacto_emergencia?.telefono_2 }}</p>
+
+                <!-- Domicilio -->
+                <h3 class="text-lg font-bold bg-yellow-500 text-black px-3 py-1 mt-6 rounded-md">
+                    Domicilio
+                </h3>
+                <p> <strong>Departamento:</strong> {{ docente?.domicilio?.departamento_id }}</p>
+                <p> <strong>Provincia:</strong> {{ docente?.domicilio?.provincia_id }}</p>
+                <p> <strong>Distrito:</strong> {{ docente?.domicilio?.distrito_id }}</p>
+                <p> <strong>Dirección:</strong> {{ docente?.domicilio?.direccion }}</p>
+                <p> <strong>Referencia:</strong> {{ docente?.domicilio?.referencia }}</p>
+
+                <!-- Competencias -->
+                <h3 class="text-lg font-bold bg-yellow-500 text-black px-3 py-1 mt-6 rounded-md">
+                    Mis Competencias
+                </h3>
+                <ul class="list-disc ml-6">
+                    <li><strong>Idioma:</strong> {{ docente?.otros?.[0]?.idioma }}</li>
+                    <li><strong>Nivel Idioma:</strong> {{ docente?.otros?.[0]?.nivel_idioma }}</li>
+                    <li><strong>Office:</strong> {{ docente?.otros?.[0]?.office }}</li>
+                    <li><strong>Nivel Office:</strong> {{ docente?.otros?.[0]?.nivel_office }}</li>
+                    <li><strong>eLearning:</strong> {{ docente?.otros?.[0]?.learning }}</li>
+                    <li><strong>Nivel eLearning:</strong> {{ docente?.otros?.[0]?.nivel_learning }}</li>
+                </ul>
+            </div>
+
+            <!-- 🔹 Columna Derecha (Información Principal) -->
+            <div class="col-span-3">
+                <!-- Formación Académica -->
+                <h3 class="text-lg font-bold bg-gray-200 border-t-4 border-black px-3 py-1">
+                    🎓 Formación Académica
+                </h3>
+                <div *ngFor="let formacion of docente?.formacion_academica">
+                    <p class="text-gray-700"> <strong>Grado Académico:</strong> {{ formacion.grado_academico }}</p>
+                    <p class="text-gray-700"> <strong>Universidad:</strong> {{ formacion.universidad }}</p>
+                    <p class="text-gray-700"> <strong>Especialidad:</strong> {{ formacion.especialidad }}</p>
+                    <p class="text-gray-700"> <strong>País:</strong> {{ formacion.pais }}</p>
+                    <p class="text-gray-700"> <strong>Resolución SUNEDU:</strong> {{ formacion.resolucion_sunedu }}</p>
+                </div>
+
+                <!-- Títulos Profesionales -->
+                <h3 class="text-lg font-bold bg-gray-200 border-t-4 border-black px-3 py-1 mt-6">
+                    📜 Títulos Profesionales
+                </h3>
+                <div *ngFor="let titulo of docente?.titulos_profesionales">
+                    <p class="text-gray-700"> <strong>Título:</strong> {{ titulo.titulo }}</p>
+                    <p class="text-gray-700"> <strong>Universidad:</strong> {{ titulo.universidad }}</p>
+                    <p class="text-gray-700"> <strong>Especialidad:</strong> {{ titulo.especialidad }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón para Guardar Cambios -->
+        <button class="mt-6 w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition">
+            Guardar Cambios
+        </button>
+    </div>
+</div>

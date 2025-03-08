@@ -44,7 +44,7 @@ export class VerHorarioComponent  implements OnInit{
   }
 
   generateCalendar(year: number, month: number) {
-    const firstDay = new Date(year, month, 1);
+    const firstDay = new Date(year, month, 0);
     this.firstDayOfMonth = firstDay.getDay();
     const totalDays = new Date(year, month + 1, 0).getDate();
     this.daysInMonth = Array.from({ length: totalDays }, (_, i) => i + 1);
@@ -54,6 +54,12 @@ export class VerHorarioComponent  implements OnInit{
     this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + step, 1);
     this.generateCalendar(this.currentDate.getFullYear(), this.currentDate.getMonth());
   }
+
+  selectMonth(event: Event) {
+    const selectedMonth = parseInt((event.target as HTMLSelectElement).value);
+    this.currentDate = new Date(this.currentDate.getFullYear(), selectedMonth, 1);
+    this.generateCalendar(this.currentDate.getFullYear(), this.currentDate.getMonth());
+  }  
 
   goToToday() {
     this.currentDate = new Date();
