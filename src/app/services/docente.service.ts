@@ -43,7 +43,7 @@ export class DocenteService {
   // }
 
   updateDocenteUsuario(docenteData: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/user`, docenteData, this.getTokenHeader());
+    return this.http.put(`${this.apiUrl}/update/user`, docenteData, this.getTokenHeader());
   }
 
   createDocente(docenteData: any): Observable<any> {
