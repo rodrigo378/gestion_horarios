@@ -5,7 +5,6 @@
     <div class="bg-white shadow-lg rounded-lg p-8 w-[794px] min-h-[1123px]">
 
         <div class="grid grid-cols-5 gap-6">
-        
             <!-- 🔹 Columna Izquierda -->
             <div class="col-span-2 bg-gray-800 text-white p-6 rounded-lg">
                 <div class="flex justify-center">
@@ -97,6 +96,39 @@
                         <span contenteditable="true" #lote>{{ docente?.domicilio.lote }}</span>
                     </p>
                 </div>
+
+                <!-- otros conocimientos -->
+                <div>
+                    <h3 class="text-lg font-bold bg-yellow-500 text-black px-3 py-1 mt-4 rounded-md">
+                        Otros conocimientos
+                    </h3>
+                    <div *ngFor="let otros of docente?.otros; let i = index">
+                        <p><strong>Idioma: </strong> 
+                            <span contenteditable="true" #idioma>{{ otros.idioma }}</span>
+                        </p>
+                        
+                        <p><strong>Nivel de idioma: </strong> 
+                            <span contenteditable="true" #nivel_idioma>{{ otros.nivel_idioma }}</span>
+                        </p>
+    
+                        <p><strong>Office: </strong> 
+                            <span contenteditable="true" #office>{{ otros.office }}</span>
+                        </p>
+        
+                        <p><strong>Nivel de office: </strong> 
+                            <span contenteditable="true" #nivel_office>{{ otros.nivel_office }}</span>
+                        </p>
+    
+                        <p><strong>Learning: </strong> 
+                            <span contenteditable="true" #learning>{{ otros.learning }}</span>
+                        </p>
+        
+                        <p><strong>Nivel de earning: </strong> 
+                            <span contenteditable="true" #nivel_learning>{{ otros.nivel_learning }}</span>
+                        </p>
+    
+                    </div>
+                </div>
             </div>
 
             <!-- 🔹 Columna Derecha -->
@@ -129,6 +161,171 @@
 
                     <hr class="my-4">
                 </div>
+
+                <!-- Titulos Profecional -->
+                <h3 class="text-lg font-bold bg-gray-200 border-t-4 border-black px-3 py-1">
+                    Titulo Profecional
+                </h3>
+
+                <div *ngFor="let titulo of docente?.titulos_profesionales; let i = index">
+                    <p><strong>Titulo: </strong> 
+                        <span contenteditable="true" #titulo>{{ titulo.titulo }}</span>
+                    </p>
+
+                    <p><strong>Universidad: </strong> 
+                        <span contenteditable="true" #universidadtp>{{ titulo.universidad }}</span>
+                    </p>
+
+                    <p><strong>Especialidad: </strong> 
+                        <span contenteditable="true" #especialidadtp>{{ titulo.especialidad }}</span>
+                    </p>
+
+                    <hr class="my-4">
+                </div>
+
+                <!-- Formacion Complementaria -->
+                <h3 class="text-lg font-bold bg-gray-200 border-t-4 border-black px-3 py-1">
+                    Formacion Complementaria
+                </h3>
+
+                <div *ngFor="let formacioncomplementaria of docente?.formacion_complementaria; let i = index">
+                    <p><strong>Titulo: </strong> 
+                        <span contenteditable="true" #denominacion>{{ formacioncomplementaria.denominacion }}</span>
+                    </p>
+
+                    <p><strong>Universidad: </strong> 
+                        <span contenteditable="true" #especialidadfc>{{ formacioncomplementaria.especialidad }}</span>
+                    </p>
+
+                    <p><strong>Especialidad: </strong> 
+                        <span contenteditable="true" #institucion>{{ formacioncomplementaria.institucion }}</span>
+                    </p>
+
+                    <hr class="my-4">
+                </div>
+
+                <!-- Experiemcia Docemte -->
+                <h3 class="text-lg font-bold bg-gray-200 border-t-4 border-black px-3 py-1">
+                    Experiencia del docente
+                </h3>
+
+                <div *ngFor="let xpdocente of docente?.experiencia_docente; let i = index">
+                    <p><strong>Institución: </strong> 
+                        <span contenteditable="true" #institucion>{{ xpdocente.institucion }}</span>
+                    </p>
+
+                    <p><strong>Curso Dictado: </strong> 
+                        <span contenteditable="true" #cursodictado>{{ xpdocente.curso_dictado }}</span>
+                    </p>
+
+                    <p><strong>Semestre: </strong> 
+                        <span contenteditable="true" #semestre>{{ xpdocente.semestre }}</span>
+                    </p>
+
+                    <p><strong>Pais: </strong> 
+                        <span contenteditable="true" #paisxp>{{ xpdocente.pais }}</span>
+                    </p>
+
+                    <hr class="my-4">
+                </div>
+
+                <!-- Articulos Cientificos -->
+                <h3 class="text-lg font-bold bg-gray-200 border-t-4 border-black px-3 py-1">
+                    Articulos Cientificos
+                </h3>
+
+                <div *ngFor="let artcientifico of docente?.articulos_cientificos; let i = index">
+                    <p><strong>Titulo articulo: </strong> 
+                        <span contenteditable="true" #tituloarticulo>{{ artcientifico.titulo_articulo }}</span>
+                    </p>
+
+                    <p><strong>Nombre revista: </strong> 
+                        <span contenteditable="true" #nombrerevista>{{ artcientifico.nombre_revista }}</span>
+                    </p>
+
+                    <p><strong>Indizado: </strong> 
+                        <span contenteditable="true" #indizado>{{ artcientifico.indizado }}</span>
+                    </p>
+
+                    <p><strong>Año: </strong> 
+                        <span contenteditable="true" #año>{{ artcientifico['año'] }}</span>
+                    </p>                    
+
+                    <p><strong>Enlace: </strong> 
+                        <span contenteditable="true" #enlace>{{ artcientifico.enlace }}</span>
+                    </p>
+
+                    <hr class="my-4">
+                </div>
+
+                <!-- libros -->
+                <h3 class="text-lg font-bold bg-gray-200 border-t-4 border-black px-3 py-1">
+                    Libros
+                </h3>
+
+                <div *ngFor="let libros of docente?.libros; let i = index">
+                    <p><strong>Titulo: </strong> 
+                        <span contenteditable="true" #titulolibro>{{ libros.titulo }}</span>
+                    </p>
+
+                    <p><strong>Nombre revista: </strong> 
+                        <span contenteditable="true" #nombreeditorial>{{ libros.nombre_editorial }}</span>
+                    </p>
+
+                    <p><strong>Año: </strong> 
+                        <span contenteditable="true" #añolibro>{{ libros['año'] }}</span>
+                    </p>                    
+
+                    <hr class="my-4">
+                </div>
+
+                <!-- Proyectos de investigacion -->
+                <h3 class="text-lg font-bold bg-gray-200 border-t-4 border-black px-3 py-1">
+                    Proyectos de investigación
+                </h3>
+
+                <div *ngFor="let proinvestigacion of docente?.proyectos_investigacion; let i = index">
+                    <p><strong>Proyecto: </strong> 
+                        <span contenteditable="true" #proyecto>{{ proinvestigacion.proyecto }}</span>
+                    </p>
+
+                    <p><strong>Entidad Financiera: </strong> 
+                        <span contenteditable="true" #emtidadfinanciera>{{ proinvestigacion.entidad_financiera }}</span>
+                    </p>
+
+                    <p><strong>Año adjudicacion: </strong> 
+                        <span contenteditable="true" #añoadjudicacion>{{ proinvestigacion['año_adjudicacion'] }}</span>
+                    </p>
+
+                    <hr class="my-4">
+                </div>
+
+                <!-- Asesorias y jurados -->
+                <h3 class="text-lg font-bold bg-gray-200 border-t-4 border-black px-3 py-1">
+                    Proyectos de investigación
+                </h3>
+
+                <div *ngFor="let asesoriajurados of docente?.asesorias_jurado; let i = index">
+                    <p><strong>Titulo tesis: </strong> 
+                        <span contenteditable="true" #titulotesis>{{ asesoriajurados.titulo_tesis }}</span>
+                    </p>
+
+                    <p><strong>Universidad: </strong> 
+                        <span contenteditable="true" #universidadaj>{{ asesoriajurados.universidad }}</span>
+                    </p>
+
+                    <p><strong>Nivel: </strong> 
+                        <span contenteditable="true" #nivel>{{ asesoriajurados.nivel }}</span>
+                    </p>
+
+                    <p><strong>Año: </strong> 
+                        <span contenteditable="true" #añoaj>{{ asesoriajurados['año'] }}</span>
+                    </p>
+
+
+                    <hr class="my-4">
+                </div>
+
             </div>
         </div>
 
