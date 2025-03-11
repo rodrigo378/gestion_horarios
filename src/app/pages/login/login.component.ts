@@ -34,21 +34,21 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const token = params['token'];
-
       if (token) {
         console.log('Token capturado:', token);
-        this.authService.setToken(token);
+        this.authService.setToken(token); 
         this.router.navigate(['/registrodocentes']);
       }
     });
   }
+  
 
   get form() {
     return this.loginForm.controls;
   }
 
   btnClickGoogle() {
-    window.location.href = 'http://localhost:8000/api/auth/google';
+    window.location.href = 'http://localhost:3000/auth/google';
   }
 
   submit() {

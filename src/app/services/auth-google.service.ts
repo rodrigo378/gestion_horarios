@@ -23,6 +23,6 @@ export class AuthGoogleService {
   // }
 
   getLoginGoogle() {
-    return this.http.get('http://localhost:8000/api/auth/google');
+    return this.http.get('http://localhost:3000/auth/google');
   }
 }
