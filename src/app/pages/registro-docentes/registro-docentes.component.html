@@ -1585,14 +1585,14 @@
                 >
                 <input
                   type="text"
-                  formControlName="proyecto"
+                  formControlName="nombre"
                   placeholder="Ej. Desarrollo de un Modelo de IA para Diagnóstico Médico"
                   class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 />
                 <div
                   *ngIf="
-                    proyecto.get('proyecto')?.invalid &&
-                    proyecto.get('proyecto')?.touched
+                    proyecto.get('nombre')?.invalid &&
+                    proyecto.get('nombre')?.touched
                   "
                   class="text-red-500 text-sm"
                 >
@@ -1633,7 +1633,7 @@
                 >
                 <input
                   type="text"
-                  formControlName="año_adjudicacion"
+                  formControlName="año"
                   placeholder="Ej. 2023"
                   min="1900"
                   max="2099"
@@ -1642,8 +1642,7 @@
                 />
                 <div
                   *ngIf="
-                    proyecto.get('año_adjudicacion')?.invalid &&
-                    proyecto.get('año_adjudicacion')?.touched
+                    proyecto.get('año')?.invalid && proyecto.get('año')?.touched
                   "
                   class="text-red-500 text-sm"
                 >

@@ -276,9 +276,9 @@ export class RegistroDocentesComponent implements OnInit {
 
   crearProyectoInvestigacion(): FormGroup {
     return this.fb.group({
-      proyecto: [''],
+      nombre: [''],
       entidad_financiera: [''],
-      año_adjudicacion: [''],
+      año: [''],
     });
   }
 
@@ -294,11 +294,11 @@ export class RegistroDocentesComponent implements OnInit {
 
   agregarAsesoriaJurado() {
     const asesoria = this.fb.group({
-      tipo: ['', Validators.required],
       titulo_tesis: [''],
       universidad: [''],
       nivel: [''],
       año: [''],
+      tipo: ['', Validators.required],
     });
 
     this.asesoriasJurados.push(asesoria);
