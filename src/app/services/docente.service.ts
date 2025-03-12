@@ -9,7 +9,7 @@ import { listadocentes } from '../interfaces/Docentes';
   providedIn: 'root',
 })
 export class DocenteService {
-  private apiUrl = `${environment.api}docente`; // backticks
+  private apiUrl = `${environment.api}/docente`; // backticks
   private apiUrlUbi = `${environment.api}`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}

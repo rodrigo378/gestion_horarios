@@ -1,18 +1,22 @@
-import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { DocenteService } from '../../services/docente.service';
 import { AlertService } from '../../services/alert.service';
-import { FormacionAcademica } from '../../interfaces/Docentes';
 
 @Component({
   selector: 'app-ver-informacion',
   standalone: false,
   templateUrl: './ver-informacion.component.html',
-  styleUrl: './ver-informacion.component.css'
+  styleUrl: './ver-informacion.component.css',
 })
-export class VerInformacionComponent implements OnInit{
-
-  docente: any = null;
+export class VerInformacionComponent implements OnInit {
+  docente!: any;
 
   @ViewChild('nombre') nombre!: ElementRef;
   @ViewChild('apellidoP') apellidoP!: ElementRef;
@@ -81,8 +85,7 @@ export class VerInformacionComponent implements OnInit{
 
   constructor(
     private docenteService: DocenteService,
-    private alertServices: AlertService,
-    private router: Router
+    private alertServices: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -90,8 +93,10 @@ export class VerInformacionComponent implements OnInit{
   }
 
   cargarDocenteUsuario(): void {
-    this.docenteService.getDocentePorUsuario().subscribe(response => {
-      this.docente = response.docente;
+    this.docenteService.getDocentePorUsuario().subscribe((response) => {
+      console.log('SAdasdsadasd => ', response);
+      this.docente = response;
+      console.log('=> ', this.docente.email);
     });
   }
 
@@ -99,16 +104,17 @@ export class VerInformacionComponent implements OnInit{
     return element ? element.nativeElement.innerText.trim() : '';
   }
 
-
   obtenerFormacionAcademica(): any[] {
-    return this.docente.formacion_academica.map((formacion: any, i: number) => ({
-      id: formacion.id ?? null,
-      grado_academico: this.obtenerTexto(this.gradoAcademico.get(i)),
-      universidad: this.obtenerTexto(this.universidad.get(i)),
-      especialidad: this.obtenerTexto(this.especialidad.get(i)),
-      pais: this.obtenerTexto(this.pais.get(i)),
-      resolucion_sunedu: this.obtenerTexto(this.resolucionSunedu.get(i))
-    }));
+    return this.docente.formacion_academica.map(
+      (formacion: any, i: number) => ({
+        id: formacion.id ?? null,
+        grado_academico: this.obtenerTexto(this.gradoAcademico.get(i)),
+        universidad: this.obtenerTexto(this.universidad.get(i)),
+        especialidad: this.obtenerTexto(this.especialidad.get(i)),
+        pais: this.obtenerTexto(this.pais.get(i)),
+        resolucion_sunedu: this.obtenerTexto(this.resolucionSunedu.get(i)),
+      })
+    );
   }
 
   obtenerTitulosProfecionales(): any[] {
@@ -121,34 +127,39 @@ export class VerInformacionComponent implements OnInit{
   }
 
   obtenerFormacionComplementaria(): any[] {
-    return this.docente.formacion_complementaria.map((formacioncomplementaria: any, i: number) => ({
-      id: formacioncomplementaria.id ?? null,
-      denominacion: this.obtenerTexto(this.denominacion.get(i)),
-      especialidad: this.obtenerTexto(this.especialidadfc.get(i)),
-      institucion: this.obtenerTexto(this.institucion.get(i)),
-    }));
+    return this.docente.formacion_complementaria.map(
+      (formacioncomplementaria: any, i: number) => ({
+        id: formacioncomplementaria.id ?? null,
+        denominacion: this.obtenerTexto(this.denominacion.get(i)),
+        especialidad: this.obtenerTexto(this.especialidadfc.get(i)),
+        institucion: this.obtenerTexto(this.institucion.get(i)),
+      })
+    );
   }
 
   obtenerExperienciaDocente(): any[] {
-    return this.docente.experiencia_docente.map((xpdocente: any, i: number) => ({
-      id: xpdocente.id ?? null,
-      institucion: this.obtenerTexto(this.institucion.get(i)),
-      curso_dictado: this.obtenerTexto(this.cursodictado.get(i)),
-      semestre: this.obtenerTexto(this.semestre.get(i)),
-      pais: this.obtenerTexto(this.paisxp.get(i)),
-    }));
+    return this.docente.experiencia_docente.map(
+      (xpdocente: any, i: number) => ({
+        id: xpdocente.id ?? null,
+        institucion: this.obtenerTexto(this.institucion.get(i)),
+        curso_dictado: this.obtenerTexto(this.cursodictado.get(i)),
+        semestre: this.obtenerTexto(this.semestre.get(i)),
+        pais: this.obtenerTexto(this.paisxp.get(i)),
+      })
+    );
   }
 
-
   obtenerArticulosCientificos(): any[] {
-    return this.docente.articulos_cientificos.map((artcientifico: any, i: number) => ({
-      id: artcientifico.id ?? null,
-      titulo_articulo: this.obtenerTexto(this.tituloarticulo.get(i)),
-      nombre_revista: this.obtenerTexto(this.nombrerevista.get(i)),
-      indizado: this.obtenerTexto(this.indizado.get(i)),
-      año: this.obtenerTexto(this.año.get(i)),
-      enlace: this.obtenerTexto(this.enlace.get(i)),
-    }));
+    return this.docente.articulos_cientificos.map(
+      (artcientifico: any, i: number) => ({
+        id: artcientifico.id ?? null,
+        titulo_articulo: this.obtenerTexto(this.tituloarticulo.get(i)),
+        nombre_revista: this.obtenerTexto(this.nombrerevista.get(i)),
+        indizado: this.obtenerTexto(this.indizado.get(i)),
+        año: this.obtenerTexto(this.año.get(i)),
+        enlace: this.obtenerTexto(this.enlace.get(i)),
+      })
+    );
   }
 
   obtenerLibros(): any[] {
@@ -161,22 +172,26 @@ export class VerInformacionComponent implements OnInit{
   }
 
   obtenerProyecyosInvestigacion(): any[] {
-    return this.docente.proyectos_investigacion.map((proinvestigacion: any, i: number) => ({
-      id: proinvestigacion.id ?? null,
-      proyecto: this.obtenerTexto(this.proyecto.get(i)),
-      entidad_financiera: this.obtenerTexto(this.emtidadfinanciera.get(i)),
-      año_adjudicacion: this.obtenerTexto(this.añoadjudicacion.get(i)),
-    }));
+    return this.docente.proyectos_investigacion.map(
+      (proinvestigacion: any, i: number) => ({
+        id: proinvestigacion.id ?? null,
+        proyecto: this.obtenerTexto(this.proyecto.get(i)),
+        entidad_financiera: this.obtenerTexto(this.emtidadfinanciera.get(i)),
+        año_adjudicacion: this.obtenerTexto(this.añoadjudicacion.get(i)),
+      })
+    );
   }
 
   obtenersAsesoriasJurados(): any[] {
-    return this.docente.asesorias_jurado.map((asesoriajurados: any, i: number) => ({
-      id: asesoriajurados.id ?? null,
-      titulo_tesis: this.obtenerTexto(this.titulotesis.get(i)),
-      universidad: this.obtenerTexto(this.universidadaj.get(i)),
-      nivel: this.obtenerTexto(this.nivel.get(i)),
-      año: this.obtenerTexto(this.añoaj.get(i)),
-    }));
+    return this.docente.asesorias_jurado.map(
+      (asesoriajurados: any, i: number) => ({
+        id: asesoriajurados.id ?? null,
+        titulo_tesis: this.obtenerTexto(this.titulotesis.get(i)),
+        universidad: this.obtenerTexto(this.universidadaj.get(i)),
+        nivel: this.obtenerTexto(this.nivel.get(i)),
+        año: this.obtenerTexto(this.añoaj.get(i)),
+      })
+    );
   }
 
   obtenerOtros(): any[] {
@@ -191,66 +206,10 @@ export class VerInformacionComponent implements OnInit{
     }));
   }
 
-  // actualizarDocente(): void {
-  //   // Obtener el valor modificado del campo
-  //   const nombreCompleto = this.nombreCompleto.nativeElement.innerText.trim();
-
-  //   // Separar en nombres y apellidos
-  //   const partes = nombreCompleto.split(' '); 
-  //   const nombres = partes.slice(0, -2).join(' ') || '';  
-  //   const apellido_paterno = partes[partes.length - 2] || '';
-  //   const apellido_materno = partes[partes.length - 1] || '';
-
-  //   // Capturar la lista de formación académica
-  //   const formaciones = this.docente.formacion_academica.map((formacion: any, i: number) => ({
-  //     id: formacion.id ?? null,  // 🔥 Capturamos el ID para que Laravel lo reconozca
-  //     grado_academico: this.gradoAcademico.get(i)?.nativeElement.innerText.trim() || '',
-  //     universidad: this.universidad.get(i)?.nativeElement.innerText.trim() || '',
-  //     especialidad: this.especialidad.get(i)?.nativeElement.innerText.trim() || '',
-  //     pais: this.pais.get(i)?.nativeElement.innerText.trim() || '',
-  //     resolucion_sunedu: this.resolucionSunedu.get(i)?.nativeElement.innerText.trim() || '',
-  //   }));
-
-  
-  //   const datosActualizados = {
-  //     nombres: nombres,
-  //     apellido_paterno: apellido_paterno,
-  //     apellido_materno: apellido_materno,
-  //     email: this.email.nativeElement.innerText.trim(),
-  //     celular: this.celular.nativeElement.innerText.trim(),
-  //     telefono_fijo: this.telefono.nativeElement.innerText.trim(),
-  //     contactoEmergencia: {
-  //       nombre: this.contactoNombre.nativeElement.innerText.trim(),
-  //       relacion: this.contactoRelacion.nativeElement.innerText.trim(),
-  //       telefono_1: this.contactoTelefono1.nativeElement.innerText.trim(),
-  //       telefono_2: this.contactoTelefono2.nativeElement.innerText.trim(),
-  //     },
-  //     domicilio: {
-  //       departamento_id: this.departamento_id.nativeElement.innerText.trim(),
-  //       provincia_id: this.provincia_id.nativeElement.innerText.trim(),
-  //       distrito_id: this.distrito_id.nativeElement.innerText.trim(),
-  //       direccion: this.direccion.nativeElement.innerText.trim(),
-  //       referencia: this.referencia.nativeElement.innerText.trim(),
-  //       mz: this.mz.nativeElement.innerText.trim(),
-  //       lote: this.lote.nativeElement.innerText.trim(),
-  //     },
-  //     formacion_academica: formaciones,
-  //     // titulo_profecionales: titulos
-  //   };
-
-  //   console.log("📌 Enviando datos a Laravel:", JSON.stringify(datosActualizados, null, 2));
-
-  //   this.docenteService.updateDocenteUsuario(datosActualizados).subscribe(response => {
-  //     this.alertServices.success('Información actualizada correctamente');
-  //   }, error => {
-  //     console.error("Error al actualizar la información:", error);
-  //   });
-  // }
-
   actualizarDocente(): void {
     const nombreCompleto = this.obtenerTexto(this.nombreCompleto);
-    const partes = nombreCompleto.split(' '); 
-    const nombres = partes.slice(0, -2).join(' ') || '';  
+    const partes = nombreCompleto.split(' ');
+    const nombres = partes.slice(0, -2).join(' ') || '';
     const apellido_paterno = partes[partes.length - 2] || '';
     const apellido_materno = partes[partes.length - 1] || '';
 
@@ -284,15 +243,21 @@ export class VerInformacionComponent implements OnInit{
       libros: this.obtenerLibros(),
       proyectos_investigacion: this.obtenerProyecyosInvestigacion(),
       asesorias_jurado: this.obtenersAsesoriasJurados(),
-      otros: this.obtenerOtros()
+      otros: this.obtenerOtros(),
     };
 
-    console.log("📌 Enviando datos a Laravel:", JSON.stringify(datosActualizados, null, 2));
+    console.log(
+      '📌 Enviando datos a Laravel:',
+      JSON.stringify(datosActualizados, null, 2)
+    );
 
-    this.docenteService.updateDocenteUsuario(datosActualizados).subscribe(response => {
-      this.alertServices.success('Información actualizada correctamente');
-    }, error => {
-      console.error("Error al actualizar la información:", error);
-    });
+    this.docenteService.updateDocenteUsuario(datosActualizados).subscribe(
+      (response) => {
+        this.alertServices.success('Información actualizada correctamente');
+      },
+      (error) => {
+        console.error('Error al actualizar la información:', error);
+      }
+    );
   }
 }
