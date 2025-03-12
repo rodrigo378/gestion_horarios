@@ -14,6 +14,7 @@ import { EscogerCursoDocenteComponent } from './pages/escoger-curso-docente/esco
 import { PostularCursoComponent } from './pages/postular-curso/postular-curso.component';
 import { VerHorarioComponent } from './pages/ver-horario/ver-horario.component';
 import { VerInformacionComponent } from './pages/ver-informacion/ver-informacion.component';
+import { AsignarhorarioComponent } from './pages/asignar-horario/asignarhorario.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -38,6 +39,7 @@ const routes: Routes = [
       { path: 'listadocentes', component: ListaDocentesComponent },
       { path: 'docenteaprobados', component: DocentesAprobadosComponent },
       { path: 'docentesrechazados', component: DocentesRechazadosComponent },
+      { path: 'asignarhorario', component: AsignarhorarioComponent }
     ], 
   },
   { path: '**', component:NotFountComponent },

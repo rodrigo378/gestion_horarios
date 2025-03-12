@@ -1,0 +1,72 @@
+<!-- 📅 Calendario -->
+<full-calendar [options]="calendarOptions"></full-calendar>
+
+<!-- 🟢 Modal para agregar eventos -->
+<div *ngIf="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+    <h2 class="text-lg font-bold text-gray-700 mb-4">Agregar Evento</h2>
+
+    <!-- 📌 Formulario para agregar eventos -->
+    <label class="block text-gray-600">Título del Evento</label>
+    <input type="text" [(ngModel)]="newEvent.title" class="w-full p-2 border rounded mb-3">
+
+    <label class="block text-gray-600">Fecha y Hora de Inicio</label>
+    <input type="datetime-local" [(ngModel)]="newEvent.start" class="w-full p-2 border rounded mb-3">
+
+    <label class="block text-gray-600">Fecha y Hora de Fin</label>
+    <input type="datetime-local" [(ngModel)]="newEvent.end" class="w-full p-2 border rounded mb-3">
+
+    <label class="block text-gray-600">Color del Evento</label>
+    <div class="flex space-x-2">
+      <input type="color" [(ngModel)]="newEvent.color" class="w-10 h-10 cursor-pointer border rounded">
+      <!-- Colores sugeridos -->
+      <div class="flex space-x-1">
+        <button *ngFor="let color of suggestedColors" 
+                [style.background]="color" 
+                class="w-8 h-8 rounded-full border cursor-pointer"
+                (click)="selectColor(color)">
+        </button>
+      </div>
+    </div>
+
+    <!-- 🟢 Botones -->
+    <div class="flex justify-end space-x-2 mt-4">
+      <button (click)="closeModal()" class="bg-gray-500 text-white px-3 py-1 rounded">Cancelar</button>
+      <button (click)="saveEvent()" class="bg-blue-500 text-white px-3 py-1 rounded">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- 🟡 Modal para ver detalles del evento, asignar docente, editar o eliminar -->
+<div *ngIf="isEventDetailsModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-lg font-bold text-gray-700 mb-4">Detalles del Evento</h2>
+  
+      <label class="block text-gray-600">Título del Evento</label>
+      <input type="text" [(ngModel)]="selectedEventCopy.title" class="w-full p-2 border rounded mb-3">
+  
+      <label class="block text-gray-600">Fecha y Hora de Inicio</label>
+      <input type="datetime-local" [(ngModel)]="selectedEventCopy.start" class="w-full p-2 border rounded mb-3">
+  
+      <label class="block text-gray-600">Fecha y Hora de Fin</label>
+      <input type="datetime-local" [(ngModel)]="selectedEventCopy.end" class="w-full p-2 border rounded mb-3">
+  
+      <label class="block text-gray-600">Docente Asignado</label>
+      <select [(ngModel)]="selectedTeacher" class="w-full p-2 border rounded mb-3">
+        <option *ngFor="let teacher of teachers" [value]="teacher">{{ teacher }}</option>
+      </select>
+  
+      <label class="block text-gray-600">Color del Evento</label>
+      <input type="color" [(ngModel)]="selectedEventCopy.color" class="w-full p-2 border rounded mb-3">
+  
+      <!-- 🟡 Botones -->
+      <div class="flex justify-between space-x-2 mt-4">
+        <button (click)="deleteEvent()" class="bg-red-500 text-white px-3 py-1 rounded">Eliminar</button>
+        <div class="flex space-x-2">
+          <button (click)="saveEditedEvent()" class="bg-blue-500 text-white px-3 py-1 rounded">Guardar Cambios</button>
+          <button (click)="closeEventDetailsModal()" class="bg-gray-500 text-white px-3 py-1 rounded">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

@@ -276,9 +276,9 @@ export class RegistroDocentesComponent implements OnInit {
 
   crearProyectoInvestigacion(): FormGroup {
     return this.fb.group({
-      proyecto: [''],
+      nombre: [''],
       entidad_financiera: [''],
-      año_adjudicacion: [''],
+      año: [''],
     });
   }
 
@@ -294,7 +294,7 @@ export class RegistroDocentesComponent implements OnInit {
 
   agregarAsesoriaJurado() {
     const asesoria = this.fb.group({
-      tipo: ['', Validators.required],
+      tipo: ['null', Validators.required],
       titulo_tesis: [''],
       universidad: [''],
       nivel: [''],
@@ -436,11 +436,12 @@ export class RegistroDocentesComponent implements OnInit {
       this.docenteService.createDocente(this.docenteForm.value).subscribe({
         next: (response: any) => {
           console.log('Docente registrado:', response);
-          alert('Docente registrado con éxito');
+          this.alertService.success('Docente registrado correctamente');
         },
         error: (e: HttpErrorResponse) => {
           console.error('Error al registrar docente:', e);
-          alert('Hubo un error al registrar el docente');
+          this.alertService.errorwarning('Hubo un error al registrar el docente');
+          
         },
       });
     } else {

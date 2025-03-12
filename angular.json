@@ -44,7 +44,8 @@
             ],
             "styles": [
               "src/theme.less",
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/devextreme/dist/css/dx.material.blue.light.css"
             ],
             "scripts": []
           },
@@ -102,7 +103,8 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/devextreme/dist/css/dx.material.blue.light.css"
             ],
             "scripts": []
           }

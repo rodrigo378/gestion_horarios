@@ -26,6 +26,9 @@ import { EscogerCursoDocenteComponent } from './pages/escoger-curso-docente/esco
 import { PostularCursoComponent } from './pages/postular-curso/postular-curso.component';
 import { VerHorarioComponent } from './pages/ver-horario/ver-horario.component';
 import { VerInformacionComponent } from './pages/ver-informacion/ver-informacion.component';
+import { AsignarhorarioComponent } from './pages/asignar-horario/asignarhorario.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
+
 registerLocaleData(en);
 
 @NgModule({
@@ -43,6 +46,7 @@ registerLocaleData(en);
     PostularCursoComponent,
     VerHorarioComponent,
     VerInformacionComponent,
+    AsignarhorarioComponent,
   ],
   imports: [
     BrowserModule,
@@ -52,6 +56,7 @@ registerLocaleData(en);
     NzLayoutModule,
     NzMenuModule,
     ReactiveFormsModule,
+    FullCalendarModule
   ],
   providers: [
     provideNzI18n(en_US),

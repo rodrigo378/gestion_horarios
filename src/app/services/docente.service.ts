@@ -9,7 +9,7 @@ import { listadocentes } from '../interfaces/Docentes';
   providedIn: 'root',
 })
 export class DocenteService {
-  private apiUrl = `${environment.api}/docente`; // backticks
+  private apiUrl = `${environment.api}`; // backticks
   private apiUrlUbi = `${environment.api}`;
 
   constructor(
@@ -23,31 +23,20 @@ export class DocenteService {
     return { headers };
   }
 
+  createDocente(docenteData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}docente`, docenteData, this.getTokenHeader() );
+  }
+
   getDocentes(): Observable<listadocentes[]> {
     return this.http.get<listadocentes[]>(this.apiUrl, this.getTokenHeader());
   }
-
-  // Obtener un docente por ID
-  // getDocenteId(id: number): Observable<any> {
-  //   return this.http.get<any>(`${this.apiUrl}/${id}`, this.getTokenHeader());
-  // }
 
   getDocentePorUsuario(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/user`, this.getTokenHeader());
   }
   
-  
-  // // Actualizar un docente
-  // updateDocente(id: number, docenteData: any): Observable<any> {
-  //   return this.http.put(`${this.apiUrl}/${id}`, docenteData, this.getTokenHeader());
-  // }
-
   updateDocenteUsuario(docenteData: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/update/user`, docenteData, this.getTokenHeader());
-  }
-
-  createDocente(docenteData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/create`, docenteData, this.getTokenHeader() );
   }
 
   getDocentesAprobados(): Observable<listadocentes[]> {

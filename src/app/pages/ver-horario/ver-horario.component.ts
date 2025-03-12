@@ -24,8 +24,8 @@ export class VerHorarioComponent  implements OnInit{
   classSchedule: { [key: number]: { [key: number]: any[] } } = {
     2: { // Febrero (mes 2)
       7: [
-        { subject: 'Matemática I', time: '08:00 AM - 12:00 PM', faculty: 'Ingeniería', cycle: 'IV', floor: 'Piso 3', modality: 'Precencial' },
-        { subject: 'Física II', time: '03:00 PM - 07:00 PM', faculty: 'Ingeniería', cycle: 'IV', floor: 'Piso 2', modality: 'Precencial' }
+        { subject: 'Matemática I', time: '08:00 AM - 12:00 PM', faculty: 'Ingeniería', cycle: 'IV', floor: 'Piso 3', modality: 'Presencial' },
+        { subject: 'Física II', time: '03:00 PM - 07:00 PM', faculty: 'Ingeniería', cycle: 'IV', floor: 'Piso 2', modality: 'Presencial' }
       ],
       18: [
         { subject: 'Inglés II', time: '09:00 AM - 11:00 AM', faculty: 'Humanidades', cycle: 'II', floor: 'Piso 1', modality: 'Virtual' }
@@ -33,8 +33,8 @@ export class VerHorarioComponent  implements OnInit{
     },
     3: { // Marzo (mes 3)
       10: [
-        { subject: 'Biología', time: '02:00 PM - 05:00 PM', faculty: 'Ciencias', cycle: 'III', floor: 'Piso 4', modality: 'Precencial' },
-        { subject: 'Química', time: '06:00 PM - 08:00 PM', faculty: 'Ciencias', cycle: 'III', floor: 'Piso 4', modality: 'Precencial' }
+        { subject: 'Biología', time: '02:00 PM - 05:00 PM', faculty: 'Ciencias', cycle: 'III', floor: 'Piso 4', modality: 'Presencial' },
+        { subject: 'Química', time: '06:00 PM - 08:00 PM', faculty: 'Ciencias', cycle: 'III', floor: 'Piso 4', modality: 'Presencial' }
       ]
     }
   };
