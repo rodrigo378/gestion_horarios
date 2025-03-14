@@ -14,7 +14,7 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(user: Partial<User>): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, user);
+    return this.http.post(`${this.apiUrl}/auth/signin`, user);
   }
 
   setToken(token: string): void {
@@ -31,10 +31,6 @@ export class AuthService {
     const cookies = document.cookie.split('; ');
     const tokenCookie = cookies.find((row) => row.startsWith('token='));
     return tokenCookie ? tokenCookie.split('=')[1] : null;
-  }
-
-  register(user: User) {
-    return this.http.post(`${this.apiUrl}/login`, { user });
   }
 
   logout() {

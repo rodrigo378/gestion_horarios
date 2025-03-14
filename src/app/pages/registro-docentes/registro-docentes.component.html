@@ -1591,8 +1591,8 @@
                 />
                 <div
                   *ngIf="
-                    proyecto.get('proyecto')?.invalid &&
-                    proyecto.get('proyecto')?.touched
+                    proyecto.get('nombre')?.invalid &&
+                    proyecto.get('nombre')?.touched
                   "
                   class="text-red-500 text-sm"
                 >
@@ -1642,8 +1642,7 @@
                 />
                 <div
                   *ngIf="
-                    proyecto.get('año_adjudicacion')?.invalid &&
-                    proyecto.get('año_adjudicacion')?.touched
+                    proyecto.get('año')?.invalid && proyecto.get('año')?.touched
                   "
                   class="text-red-500 text-sm"
                 >

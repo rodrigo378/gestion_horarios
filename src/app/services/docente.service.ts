@@ -12,10 +12,7 @@ export class DocenteService {
   private apiUrl = `${environment.api}`; // backticks
   private apiUrlUbi = `${environment.api}`;
 
-  constructor(
-    private http: HttpClient, 
-    private authService: AuthService
-  ) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   getTokenHeader() {
     const token = this.authService.getToken();
@@ -34,27 +31,53 @@ export class DocenteService {
   getDocentePorUsuario(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/user`, this.getTokenHeader());
   }
-  
+
+  // // Actualizar un docente
+  // updateDocente(id: number, docenteData: any): Observable<any> {
+  //   return this.http.put(`${this.apiUrl}/${id}`, docenteData, this.getTokenHeader());
+  // }
+
   updateDocenteUsuario(docenteData: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/update/user`, docenteData, this.getTokenHeader());
+    return this.http.put(
+      `${this.apiUrl}/update/user`,
+      docenteData,
+      this.getTokenHeader()
+    );
+  }
+
+  createDocente(docenteData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}`, docenteData, this.getTokenHeader());
   }
 
   getDocentesAprobados(): Observable<listadocentes[]> {
-    return this.http.get<listadocentes[]>(`${this.apiUrl}/aprobados`, this.getTokenHeader());
+    return this.http.get<listadocentes[]>(
+      `${this.apiUrl}/aprobados`,
+      this.getTokenHeader()
+    );
   }
 
   getDocentesRechazados(): Observable<listadocentes[]> {
-    return this.http.get<listadocentes[]>(`${this.apiUrl}/rechazados`, this.getTokenHeader());
+    return this.http.get<listadocentes[]>(
+      `${this.apiUrl}/rechazados`,
+      this.getTokenHeader()
+    );
   }
 
   aprobarDocente(id: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/aprobar`, {}, this.getTokenHeader());
+    return this.http.post(
+      `${this.apiUrl}/${id}/aprobar`,
+      {},
+      this.getTokenHeader()
+    );
   }
-  
+
   rechazarDocente(id: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/rechazar`, {}, this.getTokenHeader());
+    return this.http.post(
+      `${this.apiUrl}/${id}/rechazar`,
+      {},
+      this.getTokenHeader()
+    );
   }
-  
 
   //#region Api Ubicaciones
   // getDepartamentos(): Observable<{ departamentos: any[] }> {

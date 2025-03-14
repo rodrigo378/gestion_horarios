@@ -294,11 +294,11 @@ export class RegistroDocentesComponent implements OnInit {
 
   agregarAsesoriaJurado() {
     const asesoria = this.fb.group({
-      tipo: ['null', Validators.required],
       titulo_tesis: [''],
       universidad: [''],
       nivel: [''],
       año: [''],
+      tipo: ['', Validators.required],
     });
 
     this.asesoriasJurados.push(asesoria);
