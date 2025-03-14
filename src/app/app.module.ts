@@ -28,6 +28,7 @@ import { VerHorarioComponent } from './pages/ver-horario/ver-horario.component';
 import { VerInformacionComponent } from './pages/ver-informacion/ver-informacion.component';
 import { AsignarhorarioComponent } from './pages/asignar-horario/asignarhorario.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 registerLocaleData(en);
 
@@ -56,7 +57,8 @@ registerLocaleData(en);
     NzLayoutModule,
     NzMenuModule,
     ReactiveFormsModule,
-    FullCalendarModule
+    FullCalendarModule,
+    BrowserAnimationsModule,
   ],
   providers: [
     provideNzI18n(en_US),

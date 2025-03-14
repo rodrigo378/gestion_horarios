@@ -1,21 +1,84 @@
-<!-- 📅 Calendario -->
-<full-calendar [options]="calendarOptions"></full-calendar>
+<div class="shadow-lg p-3 bg-white rounded-lg">
+  <p class="text-2xl font-bold">Asignación de horarios</p>
+  <p class="text-slate-500 mt-1">Asigne horarios a los docentes:</p>
+</div>
 
-<!-- 🟢 Modal para agregar eventos -->
-<div *ngIf="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-  <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+<div class="flex flex-wrap gap-4 p-4 bg-white shadow-md rounded-lg mt-5">
+  <!-- Select de Turno -->
+  <div class="flex flex-col w-52">
+    <label class="text-sm font-semibold">Turno</label>
+    <select [(ngModel)]="turnoSeleccionado" (change)="aplicarFiltrosYActualizarTexto()"
+      class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500">
+      <option value="">Todos</option>
+      <option *ngFor="let turno of turnos" [value]="turno">{{ turno }}</option>
+    </select>
+  </div>
+  
+  <!-- Select de Ciclo -->
+  <div class="flex flex-col w-52">
+    <label class="text-sm font-semibold">Ciclo</label>
+    <select [(ngModel)]="cicloSeleccionado" (change)="aplicarFiltrosYActualizarTexto()"
+      class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500">
+      <option value="">Todos</option>
+      <option *ngFor="let ciclo of ciclos" [value]="ciclo">{{ ciclo }}</option>
+    </select>
+  </div>
+  
+  <!-- Select de Sección -->
+  <div class="flex flex-col w-52">
+    <label class="text-sm font-semibold">Sección</label>
+    <select [(ngModel)]="seccionSeleccionada" (change)="aplicarFiltrosYActualizarTexto()"
+      class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500">
+      <option value="">Todos</option>
+      <option *ngFor="let seccion of secciones" [value]="seccion">{{ seccion }}</option>
+    </select>
+  </div>
+  
+  <!-- Select de Carrera -->
+  <div class="flex flex-col w-52">
+    <label class="text-sm font-semibold">Carrera</label>
+    <select [(ngModel)]="carreraSeleccionada" (change)="aplicarFiltrosYActualizarTexto()"
+      class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500">
+      <option value="">Todos</option>
+      <option *ngFor="let carrera of carreras" [value]="carrera">{{ carrera }}</option>
+    </select>
+  </div>
+</div>
+
+<div class="flex flex-wrap gap-4 p-4 bg-white shadow-md rounded-lg mt-5">
+  <span class="font-bold" mar *ngIf="textoFiltros">{{ textoFiltros }}</span>
+  <span *ngIf="!textoFiltros" class="text-gray-500 font-bold">No hay filtros seleccionados</span>
+</div>
+
+<!-- 📅 Calendario -->
+<full-calendar 
+    [options]="calendarOptions" 
+    class="mt-5 shadow-lg bg-white p-5 rounded-lg border border-gray-200">
+</full-calendar>
+
+<!-- 🟢 Modal para agregar eventos con animación -->
+<div *ngIf="isModalOpen" 
+      id="modal-evento"
+      @fadeInOut 
+      class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  
+  <div class="bg-white p-6 rounded-lg shadow-lg w-96 transition-opacity duration-500">
     <h2 class="text-lg font-bold text-gray-700 mb-4">Agregar Evento</h2>
 
     <!-- 📌 Formulario para agregar eventos -->
-    <label class="block text-gray-600">Título del Evento</label>
-    <input type="text" [(ngModel)]="newEvent.title" class="w-full p-2 border rounded mb-3">
+    <label class="block text-gray-600">Curso</label>
+    <select [(ngModel)]="cursoSeleccionado"
+            class="w-full p-2 border rounded mb-3 bg-gray-100 focus:ring-2 focus:ring-blue-500">
+      <option value="">Selecciona un curso</option>
+      <option *ngFor="let curso of cursos" [value]="curso">{{ curso }}</option>
+    </select>    
 
     <label class="block text-gray-600">Fecha y Hora de Inicio</label>
     <input type="datetime-local" [(ngModel)]="newEvent.start" class="w-full p-2 border rounded mb-3">
-
+    
     <label class="block text-gray-600">Fecha y Hora de Fin</label>
     <input type="datetime-local" [(ngModel)]="newEvent.end" class="w-full p-2 border rounded mb-3">
-
+    
     <label class="block text-gray-600">Color del Evento</label>
     <div class="flex space-x-2">
       <input type="color" [(ngModel)]="newEvent.color" class="w-10 h-10 cursor-pointer border rounded">
@@ -31,42 +94,50 @@
 
     <!-- 🟢 Botones -->
     <div class="flex justify-end space-x-2 mt-4">
-      <button (click)="closeModal()" class="bg-gray-500 text-white px-3 py-1 rounded">Cancelar</button>
+      <button (click)="cerrarModalAnimado('modal-evento', closeModal)" class="bg-gray-500 text-white px-3 py-1 rounded">Cancelar</button>
       <button (click)="saveEvent()" class="bg-blue-500 text-white px-3 py-1 rounded">Guardar</button>
-    </div>
+    </div>    
   </div>
 </div>
 
-<!-- 🟡 Modal para ver detalles del evento, asignar docente, editar o eliminar -->
-<div *ngIf="isEventDetailsModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-      <h2 class="text-lg font-bold text-gray-700 mb-4">Detalles del Evento</h2>
+<!-- 🟡 Modal para ver detalles del evento con animación -->
+<div *ngIf="isEventDetailsModalOpen" 
+      id="modal-detalles-evento"
+      @fadeInOut 
+      class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
   
-      <label class="block text-gray-600">Título del Evento</label>
-      <input type="text" [(ngModel)]="selectedEventCopy.title" class="w-full p-2 border rounded mb-3">
-  
-      <label class="block text-gray-600">Fecha y Hora de Inicio</label>
-      <input type="datetime-local" [(ngModel)]="selectedEventCopy.start" class="w-full p-2 border rounded mb-3">
-  
-      <label class="block text-gray-600">Fecha y Hora de Fin</label>
-      <input type="datetime-local" [(ngModel)]="selectedEventCopy.end" class="w-full p-2 border rounded mb-3">
-  
-      <label class="block text-gray-600">Docente Asignado</label>
-      <select [(ngModel)]="selectedTeacher" class="w-full p-2 border rounded mb-3">
-        <option *ngFor="let teacher of teachers" [value]="teacher">{{ teacher }}</option>
-      </select>
-  
-      <label class="block text-gray-600">Color del Evento</label>
-      <input type="color" [(ngModel)]="selectedEventCopy.color" class="w-full p-2 border rounded mb-3">
-  
-      <!-- 🟡 Botones -->
-      <div class="flex justify-between space-x-2 mt-4">
-        <button (click)="deleteEvent()" class="bg-red-500 text-white px-3 py-1 rounded">Eliminar</button>
-        <div class="flex space-x-2">
-          <button (click)="saveEditedEvent()" class="bg-blue-500 text-white px-3 py-1 rounded">Guardar Cambios</button>
-          <button (click)="closeEventDetailsModal()" class="bg-gray-500 text-white px-3 py-1 rounded">Cerrar</button>
-        </div>
+  <div class="bg-white p-6 rounded-lg shadow-lg w-96 transition-opacity duration-500">
+    <h2 class="text-lg font-bold text-gray-700 mb-4">Detalles del Evento</h2>
+
+    <label class="block text-gray-600">Curso</label>
+    <select [(ngModel)]="selectedEventCopy.title" class="w-full p-2 border rounded mb-3">
+      <option *ngFor="let curso of cursos" [value]="curso">{{ curso }}</option>
+    </select>
+
+    <label class="block text-gray-600">Fecha y Hora de Inicio</label>
+    <input type="datetime-local" [(ngModel)]="selectedEventCopy.start" class="w-full p-2 border rounded mb-3">
+    
+    <label class="block text-gray-600">Fecha y Hora de Fin</label>
+    <input type="datetime-local" [(ngModel)]="selectedEventCopy.end" class="w-full p-2 border rounded mb-3">
+    
+    <label class="block text-gray-600">Docente Asignado</label>
+    <select [(ngModel)]="selectedTeacher" class="w-full p-2 border rounded mb-3">
+      <option value="">Seleccione un Docente</option>
+      <option *ngFor="let teacher of teachers" [value]="teacher">{{ teacher }}</option>
+    </select>
+
+    <label class="block text-gray-600">Color del Evento</label>
+    <input type="color" [(ngModel)]="selectedEventCopy.color" class="w-full p-2 border rounded mb-3" 
+            [value]="selectedEventCopy.color">
+    
+
+    <!-- 🟡 Botones -->
+    <div class="flex justify-between space-x-2 mt-4">
+      <button (click)="deleteEvent()" class="bg-red-500 text-white px-3 py-1 rounded">Eliminar</button>
+      <div class="flex space-x-2">
+        <button (click)="saveEditedEvent()" class="bg-blue-500 text-white px-3 py-1 rounded">Guardar Cambios</button>
+        <button (click)="cerrarModalDetallesConAnimacion()" class="bg-gray-500 text-white px-3 py-1 rounded">Cerrar</button>
       </div>
     </div>
   </div>
-  
+</div>

@@ -33,7 +33,7 @@ export class AlertService {
     });
   } 
 
-  // ❌ Alerta de error
+  // ⚠️ Alerta de erroralerta
   errorwarning(message: string, title: string = 'Oops...!') {
     Swal.fire({
       title: title,
@@ -42,6 +42,16 @@ export class AlertService {
       confirmButtonText: 'OK'
     });
   }
+
+    // ❌ Alerta de error
+    error(message: string, title: string = 'Oops...!') {
+      Swal.fire({
+        title: title,
+        text: message,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    }
 
   // ❓ Alerta de confirmación con botón de cancelar
   confirm(message: string, title: string = 'Confirmar acción'): Promise<boolean> {
