@@ -3,7 +3,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { CalendarOptions } from '@fullcalendar/core'
-import esLocale from '@fullcalendar/core/locales/es'; // Importar idioma español
+import esLocale from '@fullcalendar/core/locales/es';
 import { AlertService } from '../../services/alert.service';
 @Component({
   selector: 'app-asignarhorario',
@@ -187,11 +187,6 @@ export class AsignarhorarioComponent {
   cerrarModalDetallesConAnimacion() {
     this.cerrarModalAnimado("modal-detalles-evento", () => (this.isEventDetailsModalOpen = false));
   }
-
-    // 📌 Convierte una fecha al formato compatible con <input type="datetime-local">
-  // private formatDate(date: Date): string {
-  //   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}T${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-  // }
 
   // 📌 Método para abrir el modal de detalles sin bloquear la app
   handleEventClick(eventInfo: any) {

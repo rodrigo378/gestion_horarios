@@ -1,12 +1,11 @@
 <p class="text-2xl font-bold">Edite su información</p>
 <p class="text-slate-500 mb-5">Edite ciertos campos de su información</p>
 
-@if (docente) {
 <div class="bg-gray-100 flex justify-center py-10 rounded-lg">
   <div class="bg-white shadow-lg rounded-lg p-8 w-[794px] min-h-[1123px]">
     <div class="grid grid-cols-5 gap-6">
       <!-- 🔹 Columna Izquierda -->
-      <div class="col-span-2 bg-gray-800 text-white p-6 rounded-lg">
+      <div class="col-span-2 bg-gray-800 text-white p-6 rounded-lg" *ngIf="docente">
         <div class="flex justify-center">
           <img
             src="../../../assets/img/docente.png"
@@ -32,7 +31,7 @@
 
           <p>
             <strong>Email: </strong>
-            <span contenteditable="true" #email>{{ docente.email }}sss</span>
+            <span contenteditable="true" #email>{{ docente.email }}</span>
           </p>
 
           <p>
@@ -191,7 +190,7 @@
       </div>
 
       <!-- 🔹 Columna Derecha -->
-      <div class="col-span-3">
+      <div class="col-span-3" *ngIf="docente">
         <!-- Formación Académica -->
         <h3
           class="text-lg font-bold bg-gray-200 border-t-4 border-black px-3 py-1"
@@ -200,7 +199,7 @@
         </h3>
 
         <div
-          *ngFor="let formacion of docente.formacionAcademica; let i = index"
+          *ngFor="let formacion of docente.formacionesAcademicas; let i = index"
         >
           <p>
             <strong>Grado Académico: </strong>
@@ -246,7 +245,7 @@
         </h3>
 
         <div
-          *ngFor="let titulo of docente.titulos_profesionales; let i = index"
+          *ngFor="let titulo of docente.titulosProfesionales; let i = index"
         >
           <p>
             <strong>Titulo: </strong>
@@ -279,7 +278,7 @@
 
         <div
           *ngFor="
-            let formacioncomplementaria of docente.formacion_complementaria;
+            let formacioncomplementaria of docente.formacionesComplementarias;
             let i = index
           "
         >
@@ -315,7 +314,7 @@
         </h3>
 
         <div
-          *ngFor="let xpdocente of docente.experiencia_docente; let i = index"
+          *ngFor="let xpdocente of docente.experienciasDocentes; let i = index"
         >
           <p>
             <strong>Institución: </strong>
@@ -355,7 +354,7 @@
 
         <div
           *ngFor="
-            let artcientifico of docente.articulos_cientificos;
+            let artcientifico of docente.articulosCientificos;
             let i = index
           "
         >
@@ -402,7 +401,10 @@
           Libros
         </h3>
 
-        <div *ngFor="let libros of docente.libros; let i = index">
+        <div 
+          *ngFor="
+            let libros of docente.libros; 
+            let i = index">
           <p>
             <strong>Titulo: </strong>
             <span contenteditable="true" #titulolibro>{{ libros.titulo }}</span>
@@ -432,28 +434,28 @@
 
         <div
           *ngFor="
-            let proinvestigacion of docente.proyectos_investigacion;
+            let proinvestigacion of docente.proyectosInvestigacion;
             let i = index
           "
         >
           <p>
             <strong>Proyecto: </strong>
             <span contenteditable="true" #proyecto>{{
-              proinvestigacion.proyecto
+              proinvestigacion.nombre
             }}</span>
           </p>
 
           <p>
             <strong>Entidad Financiera: </strong>
             <span contenteditable="true" #emtidadfinanciera>{{
-              proinvestigacion.entidad_financiera
+              proinvestigacion.entidad_financiadora
             }}</span>
           </p>
 
           <p>
             <strong>Año adjudicacion: </strong>
             <span contenteditable="true" #añoadjudicacion>{{
-              proinvestigacion["año_adjudicacion"]
+              proinvestigacion["año"]
             }}</span>
           </p>
 
@@ -469,7 +471,7 @@
 
         <div
           *ngFor="
-            let asesoriajurados of docente.asesorias_jurado;
+            let asesoriajurados of docente.asesoriasJurados;
             let i = index
           "
         >
@@ -515,5 +517,3 @@
     </button>
   </div>
 </div>
-
-}

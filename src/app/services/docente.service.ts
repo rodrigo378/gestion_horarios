@@ -10,7 +10,7 @@ import { listadocentes } from '../interfaces/Docentes';
 })
 export class DocenteService {
   private apiUrl = `${environment.api}`; // backticks
-  private apiUrlUbi = `${environment.api}`;
+  // private apiUrlUbi = `${environment.api}`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -21,7 +21,7 @@ export class DocenteService {
   }
 
   createDocente(docenteData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}docente`, docenteData, this.getTokenHeader() );
+    return this.http.post(`${this.apiUrl}/docente`, docenteData, this.getTokenHeader() );
   }
 
   getDocentes(): Observable<listadocentes[]> {
@@ -29,7 +29,7 @@ export class DocenteService {
   }
 
   getDocentePorUsuario(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/user`, this.getTokenHeader());
+    return this.http.get<any>(`${this.apiUrl}/docente/user`, this.getTokenHeader());
   }
 
   // // Actualizar un docente
@@ -38,15 +38,11 @@ export class DocenteService {
   // }
 
   updateDocenteUsuario(docenteData: any): Observable<any> {
-    return this.http.put(
-      `${this.apiUrl}/update/user`,
+    return this.http.patch(
+      `${this.apiUrl}/docente/updateuser`,
       docenteData,
       this.getTokenHeader()
-    );
-  }
-
-  createDocente(docenteData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}`, docenteData, this.getTokenHeader());
+    );    
   }
 
   getDocentesAprobados(): Observable<listadocentes[]> {

@@ -18,6 +18,7 @@ import { AlertService } from '../../services/alert.service';
 export class VerInformacionComponent implements OnInit {
   docente!: any;
 
+  //#region ViewChildren y ViewChild
   @ViewChild('nombre') nombre!: ElementRef;
   @ViewChild('apellidoP') apellidoP!: ElementRef;
   @ViewChild('apellidoM') apellidoM!: ElementRef;
@@ -82,7 +83,8 @@ export class VerInformacionComponent implements OnInit {
   @ViewChildren('nivel_learning') nivel_learning!: QueryList<ElementRef>;
 
   @ViewChild('nombreCompleto') nombreCompleto!: ElementRef;
-
+  //#endregion
+  
   constructor(
     private docenteService: DocenteService,
     private alertServices: AlertService
@@ -94,7 +96,7 @@ export class VerInformacionComponent implements OnInit {
 
   cargarDocenteUsuario(): void {
     this.docenteService.getDocentePorUsuario().subscribe((response) => {
-      console.log('SAdasdsadasd => ', response);
+      console.log('datos cargados desde el back:  => ', response);
       this.docente = response;
       console.log('=> ', this.docente.email);
     });
@@ -105,7 +107,7 @@ export class VerInformacionComponent implements OnInit {
   }
 
   obtenerFormacionAcademica(): any[] {
-    return this.docente.formacion_academica.map(
+    return this.docente.formacionesAcademicas.map(
       (formacion: any, i: number) => ({
         id: formacion.id ?? null,
         grado_academico: this.obtenerTexto(this.gradoAcademico.get(i)),
@@ -118,7 +120,7 @@ export class VerInformacionComponent implements OnInit {
   }
 
   obtenerTitulosProfecionales(): any[] {
-    return this.docente.titulos_profesionales.map((titulo: any, i: number) => ({
+    return this.docente.titulosProfesionales.map((titulo: any, i: number) => ({
       id: titulo.id ?? null,
       titulo: this.obtenerTexto(this.titulo.get(i)),
       universidad: this.obtenerTexto(this.universidadtp.get(i)),
@@ -127,7 +129,7 @@ export class VerInformacionComponent implements OnInit {
   }
 
   obtenerFormacionComplementaria(): any[] {
-    return this.docente.formacion_complementaria.map(
+    return this.docente.formacionesComplementarias.map(
       (formacioncomplementaria: any, i: number) => ({
         id: formacioncomplementaria.id ?? null,
         denominacion: this.obtenerTexto(this.denominacion.get(i)),
@@ -138,7 +140,7 @@ export class VerInformacionComponent implements OnInit {
   }
 
   obtenerExperienciaDocente(): any[] {
-    return this.docente.experiencia_docente.map(
+    return this.docente.experienciasDocentes.map(
       (xpdocente: any, i: number) => ({
         id: xpdocente.id ?? null,
         institucion: this.obtenerTexto(this.institucion.get(i)),
@@ -150,7 +152,7 @@ export class VerInformacionComponent implements OnInit {
   }
 
   obtenerArticulosCientificos(): any[] {
-    return this.docente.articulos_cientificos.map(
+    return this.docente.articulosCientificos.map(
       (artcientifico: any, i: number) => ({
         id: artcientifico.id ?? null,
         titulo_articulo: this.obtenerTexto(this.tituloarticulo.get(i)),
@@ -172,18 +174,18 @@ export class VerInformacionComponent implements OnInit {
   }
 
   obtenerProyecyosInvestigacion(): any[] {
-    return this.docente.proyectos_investigacion.map(
+    return this.docente.proyectosInvestigacion.map(
       (proinvestigacion: any, i: number) => ({
         id: proinvestigacion.id ?? null,
-        proyecto: this.obtenerTexto(this.proyecto.get(i)),
-        entidad_financiera: this.obtenerTexto(this.emtidadfinanciera.get(i)),
-        año_adjudicacion: this.obtenerTexto(this.añoadjudicacion.get(i)),
+        nombre: this.obtenerTexto(this.proyecto.get(i)),
+        entidad_financiadora: this.obtenerTexto(this.emtidadfinanciera.get(i)),
+        año: this.obtenerTexto(this.añoadjudicacion.get(i)),
       })
     );
   }
 
   obtenersAsesoriasJurados(): any[] {
-    return this.docente.asesorias_jurado.map(
+    return this.docente.asesoriasJurados.map(
       (asesoriajurados: any, i: number) => ({
         id: asesoriajurados.id ?? null,
         titulo_tesis: this.obtenerTexto(this.titulotesis.get(i)),
@@ -235,14 +237,14 @@ export class VerInformacionComponent implements OnInit {
         mz: this.obtenerTexto(this.mz),
         lote: this.obtenerTexto(this.lote),
       },
-      formacion_academica: this.obtenerFormacionAcademica(),
-      titulos_profesionales: this.obtenerTitulosProfecionales(),
-      formacion_complementaria: this.obtenerFormacionComplementaria(),
-      experiencia_docente: this.obtenerExperienciaDocente(),
-      articulos_cientificos: this.obtenerArticulosCientificos(),
+      formacionAcademica: this.obtenerFormacionAcademica(),
+      titulosProfesionales: this.obtenerTitulosProfecionales(),
+      formacionComplementaria: this.obtenerFormacionComplementaria(),
+      experienciaDocente: this.obtenerExperienciaDocente(),
+      articuloCientifico: this.obtenerArticulosCientificos(),
       libros: this.obtenerLibros(),
-      proyectos_investigacion: this.obtenerProyecyosInvestigacion(),
-      asesorias_jurado: this.obtenersAsesoriasJurados(),
+      proyectoInvestigacion: this.obtenerProyecyosInvestigacion(),
+      asesoriaJurado: this.obtenersAsesoriasJurados(),
       otros: this.obtenerOtros(),
     };
 
