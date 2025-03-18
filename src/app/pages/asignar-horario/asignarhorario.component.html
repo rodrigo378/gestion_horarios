@@ -5,8 +5,46 @@
 
 <!-- Filtros -->
 <div class="flex flex-wrap gap-4 p-4 bg-white shadow-md rounded-lg mt-5">
+
+  <!-- Select de Facultad -->
+  <div class="flex flex-col w-56">
+    <label class="text-sm font-semibold">Facultad</label>
+    <select [(ngModel)]="facultadSeleccionada" (change)="onFacultadChange()"
+      class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500">
+      <option value="">Selecciona una facultad</option>
+      <option *ngFor="let facultad of facultades" [value]="facultad.codigo">
+        {{ facultad.nombre }}
+      </option>
+    </select>
+  </div>
+
+<!-- Select de Carrera (Especialidad) -->
+<div class="flex flex-col w-96">
+  <label class="text-sm font-semibold">Carrera / Especialidad</label>
+  <select [(ngModel)]="carreraSeleccionada"
+    class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500" 
+    [disabled]="carreras.length === 0">
+    <option value="">Selecciona una especialidad</option>
+    <option *ngFor="let carrera of carreras" [value]="carrera">
+      {{ carrera }}
+    </option>
+  </select>
+</div>
+
+  <!-- Select de Ciclo -->
+  <div class="flex flex-col w-24">
+    <label class="text-sm font-semibold">Ciclo</label>
+    <select [(ngModel)]="cicloSeleccionado" (change)="onCicloChange()"
+      class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500" [disabled]="!ciclos.length">
+      <option value="">Selecciona un ciclo</option>
+      <option *ngFor="let ciclo of ciclos" [value]="ciclo">
+        {{ ciclo }}
+      </option>
+    </select>
+  </div>
+
   <!-- Select de Turno -->
-  <div class="flex flex-col w-52">
+  <div class="flex flex-col w-28">
     <label class="text-sm font-semibold">Turno</label>
     <select [(ngModel)]="turnoSeleccionado" (change)="aplicarFiltrosYActualizarTexto()"
       class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500">
@@ -15,33 +53,13 @@
     </select>
   </div>
   
-  <!-- Select de Ciclo -->
-  <div class="flex flex-col w-52">
-    <label class="text-sm font-semibold">Ciclo</label>
-    <select [(ngModel)]="cicloSeleccionado" (change)="aplicarFiltrosYActualizarTexto()"
-      class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500">
-      <option value="">Todos</option>
-      <option *ngFor="let ciclo of ciclos" [value]="ciclo">{{ ciclo }}</option>
-    </select>
-  </div>
-  
   <!-- Select de Sección -->
-  <div class="flex flex-col w-52">
+  <div class="flex flex-col w-24">
     <label class="text-sm font-semibold">Sección</label>
     <select [(ngModel)]="seccionSeleccionada" (change)="aplicarFiltrosYActualizarTexto()"
       class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500">
       <option value="">Todos</option>
       <option *ngFor="let seccion of secciones" [value]="seccion">{{ seccion }}</option>
-    </select>
-  </div>
-  
-  <!-- Select de Carrera -->
-  <div class="flex flex-col w-52">
-    <label class="text-sm font-semibold">Carrera</label>
-    <select [(ngModel)]="carreraSeleccionada" (change)="aplicarFiltrosYActualizarTexto()"
-      class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500">
-      <option value="">Todos</option>
-      <option *ngFor="let carrera of carreras" [value]="carrera">{{ carrera }}</option>
     </select>
   </div>
 </div>
@@ -95,7 +113,7 @@
 
     <!-- 🟢 Botones -->
     <div class="flex justify-end space-x-2 mt-4">
-      <button (click)="cerrarModalAnimado('modal-evento', closeModal)" class="bg-gray-500 text-white px-3 py-1 rounded">Cancelar</button>
+      <button (click)="cerrarModalAnimado('modal-evento', closeModal.bind(this))" class="bg-gray-500 text-white px-3 py-1 rounded">Cancelar</button>
       <button (click)="saveEvent()" class="bg-blue-500 text-white px-3 py-1 rounded">Guardar</button>
     </div>    
   </div>

@@ -98,7 +98,6 @@ export class VerInformacionComponent implements OnInit {
     this.docenteService.getDocentePorUsuario().subscribe((response) => {
       console.log('datos cargados desde el back:  => ', response);
       this.docente = response;
-      console.log('=> ', this.docente.email);
     });
   }
 

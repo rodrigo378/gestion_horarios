@@ -1,20 +1,23 @@
-import { Component, Output, output } from '@angular/core';
+import { Component, OnInit, Output, output } from '@angular/core';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { CalendarOptions } from '@fullcalendar/core'
 import esLocale from '@fullcalendar/core/locales/es';
 import { AlertService } from '../../services/alert.service';
+import { HttpClient } from '@angular/common/http';
+import { AsignarhorarioService } from '../../services/asignarhorario.service';
+import { Especialidad, Curso } from '../../interfaces/especialidad';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 @Component({
   selector: 'app-asignarhorario',
   standalone: false,
   templateUrl: './asignarhorario.component.html',
   styleUrl: './asignarhorario.component.css'
 })
-export class AsignarhorarioComponent {
+export class AsignarhorarioComponent implements OnInit{
 
-
-  isModalOpen = false;
+  isModalOpen:boolean = false;
   isEventDetailsModalOpen = false;
   
   selectedEvent: any = null;
@@ -23,22 +26,28 @@ export class AsignarhorarioComponent {
   
   textoFiltros = '';
   
-  turnos = ['Mañana','Tarde', 'Noche'];
-  ciclos = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+  turnos = ['Mañana', 'Noche'];
   secciones = ['N1', 'N2', 'N3', 'N4'];
-  carreras = ['Enfermería', 'Farmacia o Bioquímica'];
+
+  facultades: { codigo: string; nombre: string }[] = [
+    { codigo: 'E', nombre: 'Escuela de Ingeniería' },
+    { codigo: 'S', nombre: 'Escuela de Salud' }
+  ];
+  carreras: string[] = [];
+  ciclos: string[] = [];
+
   
   turnoSeleccionado = '';
   cicloSeleccionado = '';
   seccionSeleccionada = '';
   carreraSeleccionada = '';
-
+  facultadSeleccionada = '';
   cursoSeleccionado = '';
 
   
   teachers = ['Prof. Juan Pérez', 'Prof. María Gómez', 'Prof. Carlos López', 'Prof. Ana Torres'];
   
-  suggestedColors = ['#b23f25', '#37', '#336331', '#9a2366', '#A533FF', '#277b77'];
+  suggestedColors = ['#b23f25', '#3788d8', '#336331', '#9a2366', '#A533FF', '#277b77'];
   
   newEvent = { title: '', start: '', end: '', color: '' };
   
@@ -46,10 +55,7 @@ export class AsignarhorarioComponent {
     { id: '1', title: 'Clase de Matemáticas', start: '2024-03-12T08:00:00', end: '2024-03-12T10:00:00', color: '#3788d8', teacher: '', ciclo: 'I', seccion: 'N1', carrera: 'Enfermería' }
   ];
   
-  cursos = [
-    'Matemáticas', 'Física', 'Química', 'Biología', 'Historia', 'Programación', 
-    'Redes y Comunicaciones', 'Estadística', 'Cálculo', 'Ingeniería de Software'
-  ];
+  cursos: string[] = [];
 
   //#region Libreria del calendario
   calendarOptions: CalendarOptions = {
@@ -74,7 +80,55 @@ export class AsignarhorarioComponent {
   };
   //#endregion;
 
-  constructor(private alertService: AlertService) {}
+  constructor(
+    private alertService: AlertService,
+    private http: HttpClient,
+    private asignarhorarioService: AsignarhorarioService
+  ) {}
+
+  ngOnInit(): void {
+
+  }
+
+  onFacultadChange() {
+    if (this.facultadSeleccionada) {
+      this.asignarhorarioService.getCarrerasYCiclos(this.facultadSeleccionada).subscribe({
+        next: (data: any[]) => {
+          this.carreras = data.map((e) => e.especialidad);  // 🔹 Obtiene Carreras (Especialidades)
+          this.ciclos = [...new Set(data.flatMap((e) => e.ciclos.split(', ')))]; // 🔹 Obtiene Ciclos únicos
+          
+          // 🔹 Habilita el select de especialidad (Carrera)
+          if (this.carreras.length > 0) {
+            this.carreraSeleccionada = this.carreras[0]; // 🔹 Selecciona la primera por defecto
+          } else {
+            this.carreraSeleccionada = '';
+          }
+
+          this.cursos = []; // 🔹 Reseteamos los cursos al cambiar la facultad
+        },
+        error: (err) => console.error('Error al obtener carreras y ciclos:', err)
+      });
+    } else {
+      this.carreras = [];
+      this.ciclos = [];
+      this.cursos = [];
+      this.carreraSeleccionada = '';
+    }
+  }
+
+  onCicloChange() {
+    if (this.cicloSeleccionado) {
+      this.asignarhorarioService.getCursos(this.facultadSeleccionada, this.cicloSeleccionado).subscribe({
+        next: (data: any[]) => {
+          this.cursos = data.map((c) => c.c_nomcur);
+        },
+        error: (err) => console.error('Error al obtener cursos:', err)
+      });
+    } else {
+      this.cursos = [];
+    }
+  }
+
   //#region metodos 
   private formatDate(date: Date): string {
     const pad = (num: number) => String(num).padStart(2, '0'); // Asegura dos dígitos
@@ -147,6 +201,7 @@ export class AsignarhorarioComponent {
     this.selectedEvent.setExtendedProp('teacher', this.selectedTeacher);
 
     this.alertService.success("✅ Cambios guardados correctamente.");
+    this.cerrarModalDetallesConAnimacion()
   }
 
   deleteEvent() {
@@ -216,7 +271,6 @@ export class AsignarhorarioComponent {
     this.selectedEvent = null;
     this.selectedEventCopy = null;
   }
-
 
   aplicarFiltrosYActualizarTexto() {
     const filtros: string[] = [];
