@@ -7,8 +7,8 @@ import esLocale from '@fullcalendar/core/locales/es';
 import { AlertService } from '../../services/alert.service';
 import { HttpClient } from '@angular/common/http';
 import { AsignarhorarioService } from '../../services/asignarhorario.service';
-import { Especialidad, Curso } from '../../interfaces/especialidad';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { Curso } from '../../interfaces/Especialidad';
 @Component({
   selector: 'app-asignarhorario',
   standalone: false,
@@ -33,6 +33,12 @@ export class AsignarhorarioComponent implements OnInit{
     { codigo: 'E', nombre: 'Escuela de Ingeniería' },
     { codigo: 'S', nombre: 'Escuela de Salud' }
   ];
+  modalidades = [
+    { id: 1, nombre: 'Presencial' },
+    { id: 2, nombre: 'Semipresencial' },
+    { id: 3, nombre: 'Virtual' }
+  ];  
+
   carreras: string[] = [];
   ciclos: string[] = [];
 
@@ -43,7 +49,8 @@ export class AsignarhorarioComponent implements OnInit{
   carreraSeleccionada = '';
   facultadSeleccionada = '';
   cursoSeleccionado = '';
-
+  modalidadSeleccionada: number = 1;
+  tipoHorasSeleccionado = 'n_ht';
   
   teachers = ['Prof. Juan Pérez', 'Prof. María Gómez', 'Prof. Carlos López', 'Prof. Ana Torres'];
   
@@ -52,14 +59,16 @@ export class AsignarhorarioComponent implements OnInit{
   newEvent = { title: '', start: '', end: '', color: '' };
   
   events = [
-    { id: '1', title: 'Clase de Matemáticas', start: '2024-03-12T08:00:00', end: '2024-03-12T10:00:00', color: '#3788d8', teacher: '', ciclo: 'I', seccion: 'N1', carrera: 'Enfermería' }
+    { id: '1', title: 'Clase de Matemáticas', start: '2024-01-01T08:08:00', end: '2024-01-01T10:00:00', color: '#3788d8', teacher: '', ciclo: 'I', seccion: 'N1', carrera: 'Enfermería' }
   ];
   
-  cursos: string[] = [];
+  cursos: Curso[] = [];
+  cursosFiltrados: Curso[] = [];
 
   //#region Libreria del calendario
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+    initialDate: '2024-01-01',
     initialView: 'timeGridWeek',
     locale: esLocale,
     headerToolbar: { left: '', center: '', right: '' },
@@ -117,18 +126,32 @@ export class AsignarhorarioComponent implements OnInit{
   }
 
   onCicloChange() {
-    if (this.cicloSeleccionado) {
-      this.asignarhorarioService.getCursos(this.facultadSeleccionada, this.cicloSeleccionado).subscribe({
+    if (this.cicloSeleccionado && this.carreraSeleccionada) {
+      this.asignarhorarioService.getCursos(this.facultadSeleccionada, this.cicloSeleccionado, this.carreraSeleccionada).subscribe({
         next: (data: any[]) => {
-          this.cursos = data.map((c) => c.c_nomcur);
+          this.cursos = data.map((c) => ({
+            nombre: c.c_nomcur,
+            horas: c.horas,
+            modalidad: Number(c.c_codmod),
+            tipoHoras: c.tipo_horas
+          }));
+          this.filtrarCursosPorModalidadYTipoHoras()
         },
         error: (err) => console.error('Error al obtener cursos:', err)
       });
     } else {
       this.cursos = [];
+      this.cursosFiltrados = []
     }
   }
 
+  filtrarCursosPorModalidadYTipoHoras() {
+    this.cursosFiltrados = this.cursos.filter(curso => 
+      curso.modalidad === Number(this.modalidadSeleccionada) && 
+      curso.tipoHoras === this.tipoHorasSeleccionado &&
+      curso.horas > 0
+    );
+  }
   //#region metodos 
   private formatDate(date: Date): string {
     const pad = (num: number) => String(num).padStart(2, '0'); // Asegura dos dígitos
@@ -160,49 +183,110 @@ export class AsignarhorarioComponent implements OnInit{
     this.isModalOpen = false;
   }
 
-  //#region guardar y edit detalle y eliminar
   saveEvent() {
     if (!this.cursoSeleccionado) {
       this.alertService.error("El curso es obligatorio");
       return;
     }
-
-    this.newEvent.color ||= this.generarColorAleatorio();
-
+  
+    if (!this.newEvent.start) {
+      this.alertService.error("La hora de inicio es obligatoria");
+      return;
+    }
+  
+    const curso = this.cursos.find(c => 
+      c.nombre === this.cursoSeleccionado && c.tipoHoras === this.tipoHorasSeleccionado
+    );
+  
+    const duracionHoras = curso ? curso.horas : 2;
+    const startDate = new Date(this.newEvent.start);
+    const endDate = new Date(startDate);
+    endDate.setHours(endDate.getHours() + duracionHoras);
+  
     const newEvent = {
       id: String(this.events.length + 1),
       title: this.cursoSeleccionado,
-      start: this.newEvent.start,
-      end: this.newEvent.end,
-      color: this.newEvent.color,
+      start: startDate.toISOString(),
+      end: endDate.toISOString(), 
+      color: this.newEvent.color || this.generarColorAleatorio(),
       teacher: '',
       ciclo: this.cicloSeleccionado || '',
       seccion: this.seccionSeleccionada || '',
       carrera: this.carreraSeleccionada || ''
     };
-
+  
     this.events.push(newEvent);
+  
+    this.filtrarCursosPorModalidadYTipoHoras();  
     this.aplicarFiltrosYActualizarTexto();
     this.alertService.success("✅ Evento guardado correctamente.");
-    // 📌 Cerrar el modal con animación
     this.cerrarModalAnimado("modal-evento", this.closeModal.bind(this));
     this.exportarEstadoComoJSON();
   }
+  
+
+  // 📌 Método para abrir el modal de detalles sin bloquear la app
+  handleEventClick(eventInfo: any) {
+    const event = eventInfo.event;
+    if (!event) return;
+  
+    const eventColor = event.backgroundColor || event.color || '#3788d8';
+  
+    // 🔹 Buscar la duración del curso seleccionado
+    const curso = this.cursos.find(c => c.nombre === event.title);
+    const duracionHoras = curso ? curso.horas : 2; // Si no lo encuentra, usa 2 horas por defecto
+  
+    // 🔹 Convertir la hora de inicio a objeto `Date`
+    const startDate = new Date(event.start as string);
+  
+    // 🔹 Calcular automáticamente la hora de fin
+    const endDate = new Date(startDate);
+    endDate.setHours(endDate.getHours() + duracionHoras);
+  
+    // 🔹 Asignar los valores al modal de edición
+    this.selectedEvent = event;
+    this.selectedEventCopy = {
+      id: event.id,
+      title: event.title,
+      start: this.formatDate(startDate), // Convertir fecha inicio
+      end: this.formatDate(endDate), // 🔹 Fecha fin calculada automáticamente
+      color: eventColor,
+      teacher: event.extendedProps?.teacher || ''
+    };
+  
+    this.selectedTeacher = this.selectedEventCopy.teacher;
+    this.isEventDetailsModalOpen = true;
+  }  
 
   saveEditedEvent() {
     if (!this.selectedEvent || !this.selectedEventCopy) return;
-
+  
+    // 🔹 Buscar la duración del curso seleccionado
+    const curso = this.cursos.find(c => c.nombre === this.selectedEventCopy.title);
+    const duracionHoras = curso ? curso.horas : 2; // 🔹 2 horas por defecto si no encuentra el curso
+  
+    // 🔹 Convertir la hora de inicio en objeto `Date`
+    const startDate = new Date(this.selectedEventCopy.start);
+  
+    // 🔹 Calcular la nueva hora de finalización
+    const endDate = new Date(startDate);
+    endDate.setHours(endDate.getHours() + duracionHoras);
+  
+    // 🔹 Asignar la nueva hora de fin en `selectedEventCopy.end`
+    this.selectedEventCopy.end = this.formatDate(endDate);
+  
+    // 🔹 Actualizar los valores del evento
     this.selectedEvent.setProp('title', this.selectedEventCopy.title);
     this.selectedEvent.setStart(this.selectedEventCopy.start);
     this.selectedEvent.setEnd(this.selectedEventCopy.end);
-
     this.selectedEvent.setProp('backgroundColor', this.selectedEventCopy.color);
     this.selectedEvent.setProp('borderColor', this.selectedEventCopy.color);
     this.selectedEvent.setExtendedProp('teacher', this.selectedTeacher);
-
+  
     this.alertService.success("✅ Cambios guardados correctamente.");
-    this.cerrarModalDetallesConAnimacion()
+    this.cerrarModalDetallesConAnimacion();
   }
+  
 
   deleteEvent() {
     if (!this.selectedEvent) return;
@@ -241,28 +325,6 @@ export class AsignarhorarioComponent implements OnInit{
   // 📌 Cierra el modal de detalles con animación
   cerrarModalDetallesConAnimacion() {
     this.cerrarModalAnimado("modal-detalles-evento", () => (this.isEventDetailsModalOpen = false));
-  }
-
-  // 📌 Método para abrir el modal de detalles sin bloquear la app
-  handleEventClick(eventInfo: any) {
-    const event = eventInfo.event;
-    if (!event) return;
-
-    const eventColor = event.backgroundColor || event.color || '#3788d8';
-
-    this.selectedEvent = event;
-    this.selectedEventCopy = {
-      id: event.id,
-      title: event.title,
-      start: this.formatDate(new Date(event.start as string)), // Convertir fecha inicio
-      end: this.formatDate(new Date(event.end as string)), // Convertir fecha fin
-      color: eventColor,
-      teacher: event.extendedProps?.teacher || ''
-    };
-
-    this.selectedTeacher = this.selectedEventCopy.teacher;
-    this.isEventDetailsModalOpen = true;
-    this.exportarEstadoComoJSON();
   }
 
   // 📌 Cierra el modal de detalles
@@ -328,6 +390,5 @@ export class AsignarhorarioComponent implements OnInit{
   
     console.log("📌 Estado del componente en JSON:", JSON.stringify(estadoActual, null, 2));
   }
-  
 
 }

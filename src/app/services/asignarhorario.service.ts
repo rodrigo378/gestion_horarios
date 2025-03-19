@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AsignarhorarioService {
-  private apiUrl = `${environment.api}/especialidades`; // backticks
+  private apiUrl = `${environment.api}/curso`; // backticks
   
   constructor( private http: HttpClient, private authService: AuthService) { }
 
@@ -18,7 +18,7 @@ export class AsignarhorarioService {
   }
 
   // 🔹 Obtiene Cursos según Facultad y Ciclo seleccionados
-  getCursos(c_codfac: string, c_ciclo: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/cursos?c_codfac=${c_codfac}&c_ciclo=${c_ciclo}`);
+  getCursos(c_codfac: string, c_ciclo: string, c_codesp: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/?c_codfac=${c_codfac}&c_ciclo=${c_ciclo}&c_codesp=${c_codesp}`);
   }
 }

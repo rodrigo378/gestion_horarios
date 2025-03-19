@@ -1,5 +1,8 @@
 export interface Curso {
-    c_ciclo: string;
+    nombre: string;
+    horas: number;
+    modalidad: number;
+    tipoHoras: string;
 }
 
 export interface Especialidad {
