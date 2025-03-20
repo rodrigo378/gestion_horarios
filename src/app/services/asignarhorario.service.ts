@@ -12,13 +12,14 @@ export class AsignarhorarioService {
   
   constructor( private http: HttpClient, private authService: AuthService) { }
 
-  // 🔹 Obtiene Carreras y Ciclos según la Facultad seleccionada
-  getCarrerasYCiclos(c_codfac: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/carreras-ciclos?c_codfac=${c_codfac}`);
+// 🔹 Obtiene Carreras (Especialidades) según Facultad, Ciclo y Modalidad
+  getCarrerasYCiclosYModalidad(c_codfac: string, n_ciclo: string, c_codmod: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/carreras-ciclo?c_codfac=${c_codfac}&n_ciclo=${n_ciclo}&c_codmod=${c_codmod}`);
   }
 
   // 🔹 Obtiene Cursos según Facultad y Ciclo seleccionados
   getCursos(c_codfac: string, c_ciclo: string, c_codesp: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/?c_codfac=${c_codfac}&c_ciclo=${c_ciclo}&c_codesp=${c_codesp}`);
   }
+  
 }

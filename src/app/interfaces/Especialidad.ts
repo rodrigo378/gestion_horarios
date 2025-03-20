@@ -9,4 +9,5 @@ export interface Especialidad {
     especialidad: string;
     c_codfac: string;
     cursos: Curso[];
+    
 }
