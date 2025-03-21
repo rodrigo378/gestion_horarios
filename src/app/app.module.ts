@@ -29,6 +29,7 @@ import { VerInformacionComponent } from './pages/ver-informacion/ver-informacion
 import { AsignarhorarioComponent } from './pages/asignar-horario/asignarhorario.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { VerTurnosComponent } from './pages/ver-turnos/ver-turnos.component';
 
 registerLocaleData(en);
 
@@ -48,6 +49,7 @@ registerLocaleData(en);
     VerHorarioComponent,
     VerInformacionComponent,
     AsignarhorarioComponent,
+    VerTurnosComponent,
   ],
   imports: [
     BrowserModule,

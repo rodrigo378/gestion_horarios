@@ -15,6 +15,7 @@ import { PostularCursoComponent } from './pages/postular-curso/postular-curso.co
 import { VerHorarioComponent } from './pages/ver-horario/ver-horario.component';
 import { VerInformacionComponent } from './pages/ver-informacion/ver-informacion.component';
 import { AsignarhorarioComponent } from './pages/asignar-horario/asignarhorario.component';
+import { VerTurnosComponent } from './pages/ver-turnos/ver-turnos.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -39,7 +40,8 @@ const routes: Routes = [
       { path: 'listadocentes', component: ListaDocentesComponent },
       { path: 'docenteaprobados', component: DocentesAprobadosComponent },
       { path: 'docentesrechazados', component: DocentesRechazadosComponent },
-      { path: 'asignarhorario', component: AsignarhorarioComponent }
+      { path: 'asignarhorario', component: AsignarhorarioComponent },
+      { path: 'verturnos', component: VerTurnosComponent }
     ], 
   },
   { path: '**', component:NotFountComponent },
