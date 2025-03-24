@@ -112,6 +112,18 @@
                             class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
                             <p
                             class="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500">
+                            Turno
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" aria-hidden="true" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                            </svg>
+                            </p>
+                        </th>
+                        <th
+                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                            <p
+                            class="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500">
                             Acciónes
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor" aria-hidden="true" class="w-4 h-4">
@@ -128,7 +140,7 @@
                             <div class="flex items-center gap-3">
                             <div class="flex flex-col">
                                 <p class="text-sm font-semibold text-slate-700">
-                                {{ turno.facultad }}
+                                {{ turno.nom_fac }}
                                 </p>
                             </div>
                             </div>
@@ -136,28 +148,28 @@
                         <td class="p-4 border-b border-slate-200">
                             <div class="flex flex-col">
                             <p class="text-sm font-semibold text-slate-700">
-                                {{turno.especialidad}}
+                                {{turno.nomesp}}
                             </p>
                             </div>
                         </td>
                         <td class="p-4 border-b border-slate-200">
                             <div class="flex flex-col">
                             <p class="text-sm font-semibold text-slate-700">
-                                {{turno.seccion}}
+                                {{turno.c_grpcur}}
                             </p>
                             </div>
                         </td>
                         <td class="p-4 border-b border-slate-200">
                             <div class="flex flex-col">
                             <p class="text-sm font-semibold text-slate-700">
-                                {{turno.ciclo}}
+                                {{turno.n_ciclo}}
                             </p>
                             </div>
                         </td>
                         <td class="p-4 border-b border-slate-200">
                             <div class="flex flex-col">
                             <p class="text-sm font-semibold text-slate-700">
-                                {{turno.modalidad}}
+                                {{turno.c_nommod}}
                             </p>
                             </div>
                         </td>
@@ -165,18 +177,29 @@
                             <div class="w-max">
                             <div
                                 >
-                                <span [ngClass]="{'text-green-900 bg-green-500/20': turno.estado === 'asignado', 'text-slate-500 bg-slate-100': turno.estado === 'no asignado'}"
-                                class="relative grid items-center px-2 py-1 font-sans text-xs font-bold text-green-900 uppercase rounded-md select-none whitespace-nowrap bg-green-500/20">
-                                    {{ turno.estado }}
-                                </span>
+                                <span
+                                    [ngClass]="{
+                                        'text-green-900 bg-green-500/20': turno.estado === 1,
+                                        'text-slate-500 bg-slate-100': turno.estado === 2
+                                    }"
+                                    class="relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap"
+                                    >
+                                    {{ turno.estado === 1 ? 'asignado' : 'no asignado' }}
+                                    </span>
                             </div>
                             </div>
                         </td>
+                        <td>
+                            <select [(ngModel)]="turnoSeleccionado[turno.id]" class="border rounded p-1">
+                            <option value="manana">Mañana</option>
+                            <option value="noche">Noche</option>
+                            </select>
+                        </td>                          
                         <td class="p-4 border-b border-slate-200">
                             <button
                             class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                             type="button"
-                            routerLink="/asignarhorario">
+                            (click)="verCursos(turno)">
                             <span class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
                                 <i class="fa-solid fa-calendar-days fa-2x"></i>
                             </span>

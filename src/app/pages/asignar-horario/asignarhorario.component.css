@@ -40,3 +40,7 @@
   font-weight: bold !important;
   font-size: 15px;
 }
+
+[draggable="true"] {
+  user-select: none;
+}

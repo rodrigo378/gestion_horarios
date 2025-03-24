@@ -1,5 +1,8 @@
 import { Location } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Turno } from '../../interfaces/turno';
+import { TurnoService } from '../../services/turno.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ver-turnos',
@@ -7,29 +10,38 @@ import { Component } from '@angular/core';
   templateUrl: './ver-turnos.component.html',
   styleUrl: './ver-turnos.component.css'
 })
-export class VerTurnosComponent {
+export class VerTurnosComponent implements OnInit{
 
-  itemsPorPagina = 5;
+  itemsPorPagina = 8;
   paginaActual = 1;
-
   modalAbierto = false;
+  turnos: Turno[] =  []
+  turnoSeleccionado: { [key: number]: string } = {};
 
-  turnos =[
-    { facultad: 'Escuela de Ingienería', especialidad: 'ADMINISTRACIÓN Y MARKETING', modalidad: 'Precencial', seccion: 'N1', ciclo: '1', estado: 'asignado' },
-    { facultad: 'Escuela de Salud', especialidad: 'ENFERMERÍA', modalidad: 'Semiprecencial', seccion: 'N1', ciclo: '2', estado: 'asignado' },
-    { facultad: 'Escuela de Ingienería', especialidad: 'INGENIERÍA DE INTELIGENCIA ARTIFICIAL', modalidad: 'Virtual', seccion: 'M1', ciclo: '3', estado: 'no asignado' },
-    { facultad: 'Escuela de Salud', especialidad: 'NUTRICIÓN Y DIETÉTICA', modalidad: 'Precencial', seccion: 'N2', ciclo: '1', estado: 'asignado' },
-    { facultad: 'Escuela de Ingienería', especialidad: 'ADMINISTRACIÓN Y MARKETING', modalidad: 'Semiprecencial', seccion: 'N1', ciclo: '4', estado: 'asignado' },
-    { facultad: 'Escuela de Salud', especialidad: 'TECNOLOGÍA MÉDICA EN TERAPIA FÍSICA Y REHABILITACIÓN', modalidad: 'Precencial', seccion: 'M1', ciclo: '5', estado: 'no asignado' },
-    { facultad: 'Escuela de Salud', especialidad: 'TECNOLOGÍA MÉDICA EN LABORATORIO CLÍNICO Y ANATOMÍA PATOLÓGICA', modalidad: 'Semiprecencial', seccion: 'A', ciclo: '6', estado: 'asignado' },
-    { facultad: 'Escuela de Ingienería', especialidad: 'CONTABILIDAD Y FINANZAS', modalidad: 'Virtual', seccion: 'N1', ciclo: '2', estado: 'asignado' },
-    { facultad: 'Escuela de Salud', especialidad: 'ENFERMERÍA', modalidad: 'Virtual', seccion: 'M1', ciclo: '3', estado: 'no asignado' },
-    { facultad: 'Escuela de Ingienería', especialidad: 'ADMINISTRACIÓN Y NEGOCIOS INTERNACIONALES', modalidad: 'Precencial', seccion: 'N2', ciclo: '1', estado: 'asignado' }
-  ];
-  
   constructor(
     private location: Location,
+    private turnoServices: TurnoService,
+    private router: Router
   ){}
+  
+  ngOnInit(): void {
+    this.turnoServices.getTurnos().subscribe((data)=>{
+      this.turnos = data;
+      this.turnosFiltrados = data;
+    })
+  }
+
+  verCursos(turno: Turno){
+    this.router.navigate(['/asignarhorario'],{
+      queryParams:{
+        id:turno.id
+      }
+    });
+  }
+
+  //#region CRUD turnos
+  
+  //#endregion
 
   siguientePagina() {
     if (this.paginaActual < this.totalPaginas) {
@@ -47,10 +59,11 @@ export class VerTurnosComponent {
     return Math.ceil(this.turnosFiltrados.length / this.itemsPorPagina);
   }
   
-  get turnosPaginados() {
+  get turnosPaginados(): Turno[] {
     const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
-    return this.turnosFiltrados.slice(inicio, inicio + this.itemsPorPagina);
-  }
+    const fin = inicio + this.itemsPorPagina;
+    return this.turnosFiltrados.slice(inicio, fin);
+  }  
 
   abrirModal() {
     this.modalAbierto = true;
@@ -64,17 +77,21 @@ export class VerTurnosComponent {
     this.location.back();
   }
 
-  turnosFiltrados = [...this.turnos];
-  filtroBusqueda: string = ''; 
+  turnosFiltrados: Turno[] = [];
+  filtroBusqueda: string = '';  
 
   filtrarturnos() {
-    this.turnosFiltrados = this.turnos.filter(usuario => 
-      usuario.facultad.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) ||
-      usuario.especialidad.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) ||
-      usuario.seccion.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) ||
-      usuario.ciclo.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) ||
-      usuario.modalidad.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) ||
-      usuario.estado.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) 
+    const texto = this.filtroBusqueda.toLowerCase();
+
+    this.turnosFiltrados = this.turnos.filter(turno =>
+      turno.nom_fac.toLowerCase().includes(texto) ||
+      turno.nomesp.toLowerCase().includes(texto) ||
+      turno.c_grpcur.toLowerCase().includes(texto) ||
+      turno.n_ciclo.toString().includes(texto) ||
+      turno.c_nommod.toLowerCase().includes(texto) ||
+      (turno.estado === 1 ? 'asignado' : 'no asignado').toLowerCase().includes(texto)
     );
+    this.paginaActual = 1
   }
+
 }

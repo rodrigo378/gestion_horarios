@@ -2,15 +2,17 @@ import { Component, OnInit, Output, output } from '@angular/core';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { Draggable } from '@fullcalendar/interaction';
 import { CalendarOptions } from '@fullcalendar/core'
 import esLocale from '@fullcalendar/core/locales/es';
 import { AlertService } from '../../services/alert.service';
-import { HttpClient } from '@angular/common/http';
-import { AsignarhorarioService } from '../../services/asignarhorario.service';
-import { trigger, state, style, transition, animate } from '@angular/animations';
-import { Curso } from '../../interfaces/Especialidad';
 import { HorarioService } from '../../services/horario.service';
-import { Horario } from '../../interfaces/Horario';
+import { ActivatedRoute } from '@angular/router';
+import { Curso } from '../../interfaces/Curso';
+import { CursoService } from '../../services/curso.service';
+import { CreateHorario } from '../../interfaces/Horario';
+import { Turno } from '../../interfaces/turno';
+import { TurnoService } from '../../services/turno.service';
 @Component({
   selector: 'app-asignarhorario',
   standalone: false,
@@ -18,50 +20,17 @@ import { Horario } from '../../interfaces/Horario';
   styleUrl: './asignarhorario.component.css'
 })
 export class AsignarhorarioComponent implements OnInit{
-
-  isModalOpen:boolean = false;
-  isEventDetailsModalOpen = false;
-  
-  selectedEvent: any = null;
-  selectedEventCopy: any = null;
-  selectedTeacher = '';
-
-  mostrarHorario: boolean = false
-  
-  textoFiltros = '';
-  
-  turnos = ['Mañana', 'Noche'];
-  secciones = ['N1', 'N2', 'N3', 'N4'];
-
-  facultades: { codigo: string; nombre: string }[] = [
-    { codigo: 'E', nombre: 'Escuela de Ingeniería' },
-    { codigo: 'S', nombre: 'Escuela de Salud' }
-  ];
-
-  modalidades = [
-    { id: 1, nombre: 'Presencial' },
-    { id: 2, nombre: 'Semipresencial' },
-    { id: 3, nombre: 'Virtual' }
-  ];
-
-  ciclos: string[] = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
-
-  carreras: { nombre: string; codigo: string }[] = [];
-
-  
-  turnoSeleccionado = '';
-  cicloSeleccionado = '';
-  seccionSeleccionada = '';
-  carreraSeleccionada = '';
-  facultadSeleccionada = '';
-
-  modalidadSeleccionada: number = 1;
-  cursoSeleccionado = '';
-  tipoHorasSeleccionado = 'n_ht';
-  
-  teachers = ['Prof. Juan Pérez', 'Prof. María Gómez', 'Prof. Carlos López', 'Prof. Ana Torres'];
-  
-  suggestedColors = ['#b23f25', '#3788d8', '#336331', '#9a2366', '#A533FF', '#277b77'];
+  // variables para agregar horas
+  modalHorasActivo = false;
+  cursoSeleccionado: any = null;
+  horasAsignadas: number = 1;
+  fechaDrop: Date | null = null;
+  //para traer cursos y data
+  turnoId!: number;
+  turnoData!: Turno;
+  cursos: Curso[] = [];
+  //idparaeventocruzetem
+  ultimoEventoIdTemporal: string | null = null;
   
   newEvent = { curso: '', h_inicio: '', h_fin: '', color: '' };
 
@@ -81,9 +50,6 @@ export class AsignarhorarioComponent implements OnInit{
 
   events: any[] = []
 
-  cursos: Curso[] = [];
-  cursosFiltrados: Curso[] = [];
-
   //#region Libreria del calendario
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -100,399 +66,310 @@ export class AsignarhorarioComponent implements OnInit{
     editable: true,
     selectable: true,
     events: [],
+    droppable: true,
     height: 'auto',
     dayHeaderFormat: { weekday: 'long' },
     slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
-    select: (info) => this.handleSelect(info),
+    // select: (info) => this.handleSelect(info),
+    drop: this.handleExternalDrop.bind(this),
     // eventClick: (info) => this.handleEventClick(info),
   };
   //#endregion;
 
   constructor(
     private alertService: AlertService,
-    private http: HttpClient,
-    private asignarhorarioService: AsignarhorarioService,
-    private horarioService: HorarioService
+    private horarioService: HorarioService,
+    private cursoService: CursoService,
+    private turnoService: TurnoService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.getCarrerasYCiclosYModalidad()
-    this.cargarHorarios()
-  }
-
-  //#region cargar filtros Especialidades, Cursos y Modalidad
-  getCarrerasYCiclosYModalidad() {
-    if (this.facultadSeleccionada && this.cicloSeleccionado && this.modalidadSeleccionada) {
-      this.asignarhorarioService
-        .getCarrerasYCiclosYModalidad(this.facultadSeleccionada, this.cicloSeleccionado, this.modalidadSeleccionada)
-        .subscribe({
-          next: (data: any[]) => {
-            this.carreras = data.map((e) => ({ nombre: e.nomesp, codigo: e.c_codesp }));
-  
-            // 🔹 Si hay especialidades, selecciona la primera por defecto
-            if (this.carreras.length > 0) {
-              this.carreraSeleccionada = this.carreras[0].codigo;
-            } else {
-              this.carreraSeleccionada = '';
-            }
-
-            this.getCursos()
-          },
-          error: (err) => console.error('Error al obtener especialidades filtradas:', err)
-        });
-    } else {
-      this.carreras = [];
-      this.carreraSeleccionada = '';
-    }
-  }
-  
-  getCursos() {
-    if (this.facultadSeleccionada && this.cicloSeleccionado && this.carreraSeleccionada) {
-      console.log("📡 Llamando a API de cursos con:", this.facultadSeleccionada, this.cicloSeleccionado, this.carreraSeleccionada);
-  
-      this.asignarhorarioService
-        .getCursos(this.facultadSeleccionada, this.cicloSeleccionado, this.carreraSeleccionada)
-        .subscribe({
-          next: (data: any[]) => {
-            console.log("✅ Cursos recibidos:", data);
-  
-            this.cursos = data.map((c) => ({
-              nombre: c.c_nomcur,
-              horas: c.horas,
-              modalidad: Number(c.c_codmod),
-              tipoHoras: c.tipo_horas
-            }));
-  
-            this.filtrarCursosPorModalidadYTipoHoras();
-          },
-          error: (err) => console.error('❌ Error al obtener cursos:', err)
-        });
-    } else {
-      console.log("⚠️ No se llamó a la API de cursos porque falta algún parámetro.");
-      this.cursos = [];
-      this.cursosFiltrados = [];
-    }
-  }  
-  
-  onCicloChange() {
-    console.log("🔄 Ciclo cambiado:", this.cicloSeleccionado);
-    this.getCursos(); // 🔹 Llamamos la función al cambiar ciclo
-  }
-  
-  onCarreraChange() {
-    console.log("🔄 Especialidad cambiada:", this.carreraSeleccionada);
-    this.getCursos(); // 🔹 Llamamos la función al cambiar especialidad
-  }  
-  
-  filtrarCursosPorModalidadYTipoHoras() {
-    this.cursosFiltrados = this.cursos.filter(curso => 
-      curso.modalidad === Number(this.modalidadSeleccionada) && 
-      curso.tipoHoras === this.tipoHorasSeleccionado &&
-      curso.horas > 0
-    );
-  }
-  //#endregion
-
-  //#region metodos 
-  private formatDate(date: Date): string {
-    const pad = (num: number) => String(num).padStart(2, '0'); // Asegura dos dígitos
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-  }
-
-  private generarColorAleatorio(): string {
-    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-  }
-  //#endregion;
-  
-  selectColor(color: string) {
-    this.newEvent.color = color;
-  }
-
-  closeModal() {
-    this.isModalOpen = false;
-  }
-
-  //#region Listar, Guardar y Editar eventos
-  cargarHorarios() {
-    this.horarioService.getHorario().subscribe({
-      next: (data: Horario[]) => {
-        console.log("📡 Horarios cargados:", data);
-  
-        // 🔹 Convertimos los datos al formato de FullCalendar
-        this.events = data.map(evento => ({
-          id: evento.id,
-          title: evento.curso,
-          start: evento.h_inicio,
-          end: evento.h_fin,
-          color: evento.color, 
-          teacher: evento.docente,
-          ciclo: evento.ciclo, 
-          seccion: evento.seccion, 
-          carrera: evento.carrera
-        }));
-  
-        // 🔹 Asignamos los eventos convertidos a `calendarOptions`
-        this.calendarOptions.events = [...this.events];
-      },
-      error: (err) => console.error("❌ Error al obtener horarios:", err)
-    });
-  }
-  
-  handleSelect({ startStr, endStr }: any) {
-    this.newEvent = {
-      curso: '',
-      h_inicio: this.formatDate(new Date(startStr)),
-      h_fin: this.formatDate(new Date(endStr)),
-      color: ''
-    };
-    this.isModalOpen = true;
-  }
-
-  saveEvent() {
-    if (!this.cursoSeleccionado) {
-      this.alertService.error("El curso es obligatorio");
-      return;
-    }
-    if (!this.newEvent.h_inicio) {
-      this.alertService.error("La hora de inicio es obligatoria");
-      return;
-    }
-    const curso = this.cursos.find(c => 
-      c.nombre === this.cursoSeleccionado && c.tipoHoras === this.tipoHorasSeleccionado
-    );
-  
-    const duracionHoras = curso ? curso.horas : 2;  
-    const startDate = new Date(this.newEvent.h_inicio);  
-    const endDate = new Date(startDate);
-    endDate.setHours(endDate.getHours() + duracionHoras);
-  
-    const newEvent: Horario = {
-      id: String(Date.now()),
-      curso: this.cursoSeleccionado,
-      h_inicio: startDate.toISOString(),
-      h_fin: endDate.toISOString(),
-      color: this.newEvent.color || this.generarColorAleatorio(),
-      docente: '',
-      ciclo: this.cicloSeleccionado || '',
-      seccion: this.seccionSeleccionada || '',
-      carrera: this.carreraSeleccionada || '',
-      dia: ''
-    };
-  
-    this.events = [...this.events, newEvent];  
-    this.horarioService.guardarHorarios([newEvent]).subscribe({
-      next: () => {
-        this.alertService.success("✅ Evento guardado correctamente en la BD.");
-        this.getHorario();
-        setTimeout(() => {
-          this.calendarOptions.events = [...this.events];
-        }, 100);
-      },
-      error: (err) => {
-        this.alertService.error("❌ Error al guardar el evento.");
-        console.error("Error:", err);
+    this.route.queryParams.subscribe(params => {
+      this.turnoId = +params['id'];
+      if (this.turnoId) {
+        this.cargarDatosPorTurno(this.turnoId);
       }
     });
-    this.cerrarModalAnimado("modal-evento", this.closeModal.bind(this));
+    this.inicializarDragAndDrop();
+    this.cargarHorarios();
+  }
+
+  //#region Metodos
+  
+  private cargarDatosPorTurno(id: number): void {
+    this.turnoService.getTurnoById(id).subscribe(turno => {
+      this.turnoData = turno;
+
+      const dataCursos = {
+        c_codfac: turno.c_codfac,
+        c_codesp: turno.c_codesp,
+        n_ciclo: turno.n_ciclo.toString()
+      };
+  
+      this.cursoService.obtenerCursos(dataCursos).subscribe(res => {
+        this.cursos = [];
+  
+        res.forEach((curso: Curso) => {
+          if (curso.n_ht && curso.n_ht > 0) {
+            this.cursos.push({
+              ...curso,
+              n_hp: undefined,
+              tipo: 'Teoría',
+              horasRestantes: curso.n_ht
+            });
+          }
+  
+          if (curso.n_hp && curso.n_hp > 0) {
+            this.cursos.push({
+              ...curso,
+              n_ht: undefined,
+              tipo: 'Práctica',
+              horasRestantes: curso.n_hp
+            });
+          }
+        });
+      });
+  
+      // 🔹 Cargar horarios del turno
+      this.horarioService.getHorarioPorTurno(id).subscribe(horarios => {
+        this.calendarOptions.events = horarios.map(h => ({
+          title: h.c_nomcur,
+          start: h.h_inicio,
+          end: h.h_fin,
+          backgroundColor: h.c_color,
+          extendedProps: {
+            docente: h.c_nomdoc,
+            codDocente: h.c_coddoc,
+            dia: h.dia,
+            turno: h.turno_id,
+            codCur: h.c_codcur
+          }
+        }));
+      });
+    });
   }
   
-  // handleEventClick(eventInfo: any) {
-  //   const event = eventInfo.event;
-  //   if (!event) return;
+  private cargarCursos(data: any): void {
+    this.cursoService.obtenerCursos(data).subscribe((res) => {
+      this.cursos = [];
   
-  //   const eventColor = event.backgroundColor || event.color || '#3788d8';
+      res.forEach((curso: Curso) => {
+        if (curso.n_ht && curso.n_ht > 0) {
+          this.cursos.push({
+            ...curso,
+            n_hp: undefined,
+            tipo: 'Teoría',
+            horasRestantes: curso.n_ht
+          });
+        }
   
-  //   // 🔹 Buscar la duración del curso seleccionado
-  //   const curso = this.cursos.find(c => c.nombre === event.title);
-  //   const duracionHoras = curso ? curso.horas : 2; // Si no lo encuentra, usa 2 horas por defecto
+        if (curso.n_hp && curso.n_hp > 0) {
+          this.cursos.push({
+            ...curso,
+            n_ht: undefined,
+            tipo: 'Práctica',
+            horasRestantes: curso.n_hp
+          });
+        }
+      });
+    });
+  }
   
-  //   // 🔹 Convertir la hora de inicio a objeto `Date`
-  //   const startDate = new Date(event.start as string);
-  
-  //   // 🔹 Calcular automáticamente la hora de fin
-  //   const endDate = new Date(startDate);
-  //   endDate.setHours(endDate.getHours() + duracionHoras);
-  
-  //   // 🔹 Asignar los valores al modal de edición
-  //   this.selectedEvent = event;
-  //   this.selectedEventCopy = {
-  //     id: event.id,
-  //     title: event.title,
-  //     start: this.formatDate(startDate), // Convertir fecha inicio
-  //     end: this.formatDate(endDate), // 🔹 Fecha fin calculada automáticamente
-  //     color: eventColor,
-  //     teacher: event.extendedProps?.teacher || ''
-  //   };
-  
-  //   this.selectedTeacher = this.selectedEventCopy.teacher;
-  //   this.isEventDetailsModalOpen = true;
-  // }  
+  private inicializarDragAndDrop(): void {
+    setTimeout(() => {
+      const containerEl = document.getElementById('external-events');
+      if (containerEl) {
+        new Draggable(containerEl, {
+          itemSelector: '.fc-event',
+          eventData: function(eventEl) {
+            const data = eventEl.getAttribute('data-event');
+            return data ? JSON.parse(data) : {};
+          }
+        });
+      }
+    }, 0);
+  }
 
-  // saveEditedEvent() {
-  //   if (!this.selectedEvent || !this.selectedEventCopy) return;
-  
-  //   // 🔹 Buscar la duración del curso seleccionado
-  //   const curso = this.cursos.find(c => c.nombre === this.selectedEventCopy.title);
-  //   const duracionHoras = curso ? curso.horas : 2; // 🔹 2 horas por defecto si no encuentra el curso
-  
-  //   // 🔹 Convertir la hora de inicio en objeto `Date`
-  //   const startDate = new Date(this.selectedEventCopy.start);
-  
-  //   // 🔹 Calcular la nueva hora de finalización
-  //   const endDate = new Date(startDate);
-  //   endDate.setHours(endDate.getHours() + duracionHoras);
-  
-  //   // 🔹 Asignar la nueva hora de fin en `selectedEventCopy.end`
-  //   this.selectedEventCopy.end = this.formatDate(endDate);
-  
-  //   // 🔹 Actualizar los valores del evento
-  //   this.selectedEvent.setProp('title', this.selectedEventCopy.title);
-  //   this.selectedEvent.setStart(this.selectedEventCopy.start);
-  //   this.selectedEvent.setEnd(this.selectedEventCopy.end);
-  //   this.selectedEvent.setProp('backgroundColor', this.selectedEventCopy.color);
-  //   this.selectedEvent.setProp('borderColor', this.selectedEventCopy.color);
-  //   this.selectedEvent.setExtendedProp('teacher', this.selectedTeacher);
-  
-  //   this.alertService.success("✅ Cambios guardados correctamente.");
-  //   this.cerrarModalDetallesConAnimacion();
-  // }
+  private verificaCruceHorario(nuevo: { start: Date, end: Date }): boolean {
+    const eventos = this.calendarOptions.events as any[];
+    
+    for(let ev of eventos){
+      const inicioExistente = new Date(ev.start);
+      const finExistente = new Date(ev.end);
 
-  // deleteEvent() {
-  //   if (!this.selectedEvent) return;
-
-  //   this.events = this.events.filter(event => event.id !== this.selectedEvent?.id);
-  //   this.selectedEvent.remove();
-  //   this.calendarOptions.events = [...this.events];
-
-  //   this.aplicarFiltrosYActualizarTexto()
-  //   this.closeEventDetailsModal();
-  // }
-  
-  //#endregion
-  
-  //#region animacion cerrar
-  cerrarModalAnimado(idModal: string, callback: () => void) {
-    const modal = document.getElementById(idModal);
-    if (modal) {
-      modal.style.opacity = "1";
-      modal.style.transition = "opacity 0.5s ease-out";
-
-      setTimeout(() => (modal.style.opacity = "0"), 100);
-      setTimeout(() => {
-        modal.style.display = "none";
-        this.isModalOpen = false;
-        callback();
-      }, 600);
-    } else {
-      callback();
+      const seCruzan = (
+        nuevo.start < finExistente &&
+        nuevo.end > inicioExistente
+      );
+      if(seCruzan){
+        return true;
+      }
     }
+    return false
   }
-
-  cerrarModalDetallesConAnimacion() {
-    this.cerrarModalAnimado("modal-detalles-evento", () => (this.isEventDetailsModalOpen = false));
-  }
-  //#endregion
-
-  // closeEventDetailsModal() {
-  //   this.isEventDetailsModalOpen = false;
-  //   this.selectedEvent = null;
-  //   this.selectedEventCopy = null;
-  // }
-
-  aplicarFiltrosYActualizarTexto() {
-    const filtros: string[] = [];
   
-    // 📌 Definir los turnos con su rango de horas
-    const turnos: Record<string, { min: string; max: string }> = {
-      'Mañana': { min: '07:00:00', max: '17:59:59' },
-      'Noche': { min: '18:00:00', max: '22:59:59' },
+    //#endregion
+  
+  handleExternalDrop(info: any) {
+    const draggedData = JSON.parse(info.draggedEl.getAttribute('data-event'));
+    const index = this.cursos.findIndex(c => c.c_codcur === draggedData.extendedProps.codigo && c.tipo === draggedData.extendedProps.tipo);
+  
+    this.cursoSeleccionado = {
+      ...draggedData,
+      horasDisponibles: this.cursos[index].horasRestantes,
+      tipo: draggedData.extendedProps.tipo,
+      index: index
+    };
+    this.fechaDrop = info.date;
+    this.horasAsignadas = 1;
+    this.modalHorasActivo = true;
+  }
+  
+  stringifyEvent(curso: any): string {
+    return JSON.stringify({
+      title: curso.c_nomcur,
+      extendedProps: {
+        codigo: curso.c_codcur,
+        tipo:curso.tipo,
+        ht: curso.n_ht,
+        hp: curso.n_hp
+      }
+    });
+  }
+  
+  confirmarAsignacionHoras() {
+    const start = new Date(this.fechaDrop!);
+    const end = new Date(start);
+    end.setHours(start.getHours() + this.horasAsignadas);
+  
+    const eventoId = `temp-${Date.now()}`;
+    this.ultimoEventoIdTemporal = eventoId;
+  
+    if (this.verificaCruceHorario({ start, end })) {
+      this.alertService.error('❌ Este curso se cruza con uno ya asignado');
+      this.modalHorasActivo = false;
+      this.cancelarAsignacionHoras();
+      return;
+    }
+  
+    const evento = {
+      id: eventoId,
+      title: `${this.cursoSeleccionado.title} (${this.cursoSeleccionado.tipo})`,
+      start: start,
+      end: end,
+      backgroundColor: this.cursoSeleccionado.tipo === 'Teoría' ? '#3788d8' : '#28a745',
+      extendedProps: {
+        codCur: this.cursoSeleccionado.extendedProps.codigo,
+        tipo: this.cursoSeleccionado.extendedProps.tipo,
+        isNew: true
+      }
     };
   
-    // 📌 Obtener el rango de horas según el turno seleccionado
-    const turno = turnos[this.turnoSeleccionado] || { min: '08:00:00', max: '23:00:00' };
-    this.calendarOptions.slotMinTime = turno.min;
-    this.calendarOptions.slotMaxTime = turno.max;
-    if (this.turnoSeleccionado) filtros.push(`Turno: ${this.turnoSeleccionado}`);
+    this.calendarOptions.events = [
+      ...(this.calendarOptions.events as any[]),
+      evento
+    ];
   
-    // 📌 Filtrar eventos según Ciclo, Sección y Carrera
-    this.calendarOptions.events = this.events.filter(event =>
-      (!this.cicloSeleccionado || event.ciclo === this.cicloSeleccionado) &&
-      (!this.seccionSeleccionada || event.seccion === this.seccionSeleccionada) &&
-      (!this.carreraSeleccionada || event.carrera === this.carreraSeleccionada)
-    );
+    const idx = this.cursoSeleccionado.index;
   
-    // 📌 Construcción eficiente del texto de filtros
-    const filtrosSeleccionados = [
-      this.cicloSeleccionado && `Ciclo: ${this.cicloSeleccionado}`,
-      this.seccionSeleccionada && `Sección: ${this.seccionSeleccionada}`,
-      this.carreraSeleccionada && `Carrera: ${this.carreraSeleccionada}`
-    ].filter(Boolean);
+    if (idx !== -1 && this.cursos[idx]) {
+      this.cursos[idx].horasRestantes = (this.cursos[idx].horasRestantes || 0) - this.horasAsignadas;
   
-    if (filtrosSeleccionados.length) filtros.push(...filtrosSeleccionados);
-    this.textoFiltros = filtros.join(' - ');
-  
-    // 📌 Refrescar la configuración del calendario
-    this.calendarOptions = { ...this.calendarOptions };
-  }
-  
-  //#region ver horario luego de los filtros
-  verificarFiltrosCompletos(): boolean {
-    return (
-      this.facultadSeleccionada !== '' &&
-      this.modalidadSeleccionada !== null &&
-      this.cicloSeleccionado !== '' &&
-      this.seccionSeleccionada !== '' &&
-      this.carreraSeleccionada !== ''
-    );
-  }
-
-  mostrarHorarioHandler() {
-    if (this.verificarFiltrosCompletos()) {
-      this.mostrarHorario = true; // 🔹 Solo muestra el horario si todos los filtros están completos
-      this.getHorario(); // 🔹 Llama a la API para obtener el horario
-    } else {
-      this.alertService.error("⚠️ Selecciona todos los filtros antes de ver el horario.");
+      if (this.cursos[idx].horasRestantes <= 0) {
+        this.cursos.splice(idx, 1);
+      }
     }
+  
+    // Reset modal y temporal
+    this.modalHorasActivo = false;
+    this.cursoSeleccionado = null;
+    this.fechaDrop = null;
+    this.ultimoEventoIdTemporal = null;
+  }
+  
+  //#region Listar, Guardar y Editar eventos
+  obtenerDiaSemana(fecha: Date): string {
+    const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    return dias[new Date(fecha).getDay()];
   }
 
-  getHorario() {
-    this.horarioService.getHorario().subscribe({
-      next: (data: Horario[]) => {
-        this.events = data.map(evento => ({
-          id: evento.id,
-          title: evento.curso,
-          start: evento.h_inicio,
-          end: evento.h_fin,
-          color: evento.color,
-          teacher: evento.docente,
-          ciclo: evento.ciclo,
-          seccion: evento.seccion,
-          carrera: evento.carrera
-        }));
+  guardarEventos(): void {
+    if (!this.turnoId || this.calendarOptions.events === undefined) return;
   
-        this.calendarOptions.events = [...this.events]; // 🔹 Actualiza FullCalendar
+    const eventos = (this.calendarOptions.events as any[]).filter(ev =>
+      ev.extendedProps?.codCur &&
+      ev.extendedProps?.isNew // 🔥 solo los nuevos
+    );
+  
+    const horarios: CreateHorario[] = eventos.map(ev => {
+      const inicio = new Date(ev.start);
+      const fin = new Date(ev.end);
+  
+      const diferenciaEnMilisegundos = fin.getTime() - inicio.getTime();
+      const horas = Math.round(diferenciaEnMilisegundos / (1000 * 60 * 60)); // 🔢 Convertimos a horas enteras
+  
+      return {
+        c_codcur: ev.extendedProps.codCur,
+        c_nomcur: ev.title || '',
+        dia: this.obtenerDiaSemana(inicio),
+        h_inicio: inicio.toISOString(),
+        h_fin: fin.toISOString(),
+        n_horas: horas,
+        c_color: ev.backgroundColor || '#3788d8',
+        c_coddoc: 'DNI123456',
+        c_nomdoc: 'Ing. Carlos Pérez',
+        turno_id: this.turnoId
+      };
+    });
+  
+    this.horarioService.guardarHorarios(horarios).subscribe({
+      next: () => {
+        this.alertService.success('✅ Horarios guardados correctamente.');
+        this.cargarHorarios(); // 🔁 Recarga para ver lo nuevo
       },
-      error: (err) => console.error("❌ Error al obtener horario:", err)
+      error: (err) => {
+        this.alertService.error('❌ Error al guardar horarios.');
+        console.error(err);
+      }
+    });
+  
+    console.log('📝 Horarios que se están enviando:', horarios);
+  }
+  
+  cargarHorarios(): void {
+    if (!this.turnoId) return;
+  
+    this.horarioService.getHorarioPorTurno(this.turnoId).subscribe(horarios => {
+      console.log('📡 Horarios recuperados:', horarios); // <--- ¿viene vacío?
+      this.calendarOptions.events = horarios.map(h => ({
+        title: h.c_nomcur,
+        start: h.h_inicio,
+        end: h.h_fin,
+        backgroundColor: h.c_color,
+        extendedProps: {
+          docente: h.c_nomdoc,
+          codDocente: h.c_coddoc,
+          dia: h.dia,
+          turno: h.turno_id,
+          codCur: h.c_codcur
+        }
+      }));
     });
   }
   //#endregion
+
+  cancelarAsignacionHoras() {
+    if (this.ultimoEventoIdTemporal) {
+      this.calendarOptions.events = (this.calendarOptions.events as any[]).filter(ev =>
+        ev.id !== this.ultimoEventoIdTemporal
+      );
+    }
   
-  // exportarEstadoComoJSON() {
-  //   const estadoActual = {
-  //     eventos: this.events, // Todos los eventos registrados
-  //     eventoSeleccionado: this.selectedEvent || null, // Último evento seleccionado o null
-  //     // eventoNuevo: this.newEvent, // Evento en proceso de creación
-  //     filtros: {
-  //       ciclo: this.cicloSeleccionado || null,
-  //       seccion: this.seccionSeleccionada || null,
-  //       carrera: this.carreraSeleccionada || null,
-  //       turno: this.turnoSeleccionado || null,
-  //     },
-  //     modalAbierto: this.isModalOpen, // Indica si el modal está abierto
-  //     fechaExportacion: new Date().toISOString(), // Marca de tiempo de exportación
-  //   };
-  
-  //   console.log("📌 Estado del componente en JSON:", JSON.stringify(estadoActual, null, 2));
-  // }
+    this.modalHorasActivo = false;
+    this.cursoSeleccionado = null;
+    this.fechaDrop = null;
+    this.ultimoEventoIdTemporal = null;
+  }
 
 }
