@@ -6,11 +6,11 @@ import { Turno } from '../interfaces/turno';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TurnoService {
   private apiUrl = `${environment.api}/turno`;
-  
+
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   getTurnos(): Observable<Turno[]> {
@@ -24,5 +24,13 @@ export class TurnoService {
   getTurnosFiltrados(params: any): Observable<Turno[]> {
     const httpParams = new HttpParams({ fromObject: params });
     return this.http.get<Turno[]>(this.apiUrl, { params: httpParams });
+  }
+
+  createTurno(turno: Turno) {
+    return this.http.post(this.apiUrl, turno);
+  }
+
+  deleteTurno(id: number) {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }
