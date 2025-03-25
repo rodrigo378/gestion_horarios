@@ -123,13 +123,6 @@ export class VerTurnosComponent implements OnInit {
     const form = this.formularioHorario.value;
     console.log('form =>', form);
 
-    // const turno = {
-    //   ...form,
-    //   nom_fac: this.getNombreFacultad(form.c_codfac),
-    //   nomesp: this.obtenerNombreEspecialidad(form.c_codesp),
-    //   c_nommod: this.obtenerNombreModalidad(form.c_codmod),
-    //   estado: 1, // si decides no enviarlo, puedes omitir esta línea
-    // };
     const turno = {
       ...form,
       n_codper: Number(form.n_codper),
@@ -146,6 +139,12 @@ export class VerTurnosComponent implements OnInit {
     this.turnoServices.createTurno(turno).subscribe({
       next: (res: any) => {
         console.log('res => ', res);
+        this.alertService.success('Se creo el Turno exitosamente');
+        this.turnoServices.getTurnos().subscribe((data) => {
+          this.turnos = data;
+          this.turnosFiltrados = data;
+          this.extraerValoresUnicos(data);
+        });
       },
       error: (er: HttpErrorResponse) => {
         console.log('er => ', er);
