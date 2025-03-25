@@ -9,13 +9,13 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CursoService {
-  private apiUrl = `${environment.api}/curso`;
+  private apiUrl = `${environment.api}/sigu`;
   
   constructor(private http: HttpClient, private authService: AuthService) {}
   
   obtenerCursos(data: { c_codfac: string, c_codesp: string, n_ciclo: string, c_codmod: string }): Observable<Curso[]> {
-    return this.http.post<Curso[]>(this.apiUrl, data);
-  }
+    return this.http.post<Curso[]>(`${this.apiUrl}/curso`, data);
+}
 
   getEspecialidades(): Observable<Especialidad[]> {
     return this.http.get<Especialidad[]>(`${this.apiUrl}/especialidades`);

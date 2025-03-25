@@ -10,7 +10,7 @@ import { HorarioService } from '../../services/horario.service';
 import { ActivatedRoute } from '@angular/router';
 import { Curso } from '../../interfaces/Curso';
 import { CursoService } from '../../services/curso.service';
-import { CreateHorario } from '../../interfaces/Horario';
+import { CreateHorario, UpdateHorario } from '../../interfaces/Horario';
 import { Turno } from '../../interfaces/turno';
 import { TurnoService } from '../../services/turno.service';
 @Component({
@@ -33,6 +33,7 @@ export class AsignarhorarioComponent implements OnInit{
   //idparaeventocruzetem
   ultimoEventoIdTemporal: string | null = null;
   //para el nuvo html-modal
+  eventoSeleccionado: any = null;
   aulaSeleccionada!: number;
   docenteSeleccionado!: number;
   diaSeleccionado: string = '';
@@ -42,6 +43,9 @@ export class AsignarhorarioComponent implements OnInit{
   //para separa los cursos por planes
   cursosPlan2023: Curso[] = [];
   cursosPlan2025: Curso[] = [];
+
+  mostrarCalendario: boolean = true;
+
   
   newEvent = { curso: '', h_inicio: '', h_fin: '', color: '' };
 
@@ -69,7 +73,7 @@ export class AsignarhorarioComponent implements OnInit{
     dayHeaderFormat: { weekday: 'long' },
     slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
     drop: this.handleExternalDrop.bind(this),
-    // eventClick: (info) => this.handleEventClick(info),
+    eventClick: this.onEventClick.bind(this),
   };
   //#endregion;
 
@@ -153,21 +157,7 @@ export class AsignarhorarioComponent implements OnInit{
               }
             }
           });
-  
-          // Cargar al calendario
-          this.calendarOptions.events = horarios.map(h => ({
-            title: h.c_nomcur,
-            start: h.h_inicio,
-            end: h.h_fin,
-            backgroundColor: h.c_color,
-            extendedProps: {
-              docente: h.c_nomdoc,
-              codDocente: h.c_coddoc,
-              dia: h.dia,
-              turno: h.turno_id,
-              codCur: h.c_codcur
-            }
-          }));
+          this.cargarHorarios();
         });
       });
     });
@@ -271,6 +261,33 @@ export class AsignarhorarioComponent implements OnInit{
       }
     });
   }
+
+  onEventClick(info: any) {
+    const evento = info.event;
+  
+    console.log('🧠 Evento clickeado con ID:', evento.id); // debe salir "25", "26", etc.
+  
+    this.eventoSeleccionado = evento;
+    this.modalHorasActivo = true;
+  
+    this.cursoSeleccionado = {
+      extendedProps: {
+        codigo: evento.extendedProps.codCur,
+        tipo: evento.extendedProps.tipo
+      },
+      title: evento.title,
+      horasDisponibles: evento.extendedProps.n_horas
+    };
+  
+    const fecha = new Date(evento.start);
+    this.fechaDrop = fecha;
+    this.diaSeleccionado = this.obtenerDiaSemana(fecha);
+    this.horaInicio = this.formatDateTime(fecha);
+    this.horasAsignadas = evento.extendedProps.n_horas || 1;
+    this.aulaSeleccionada = evento.extendedProps.aula_id || 1;
+    this.docenteSeleccionado = evento.extendedProps.docente_id || 1;
+  }
+
   //#endregion
   
   confirmarAsignacionHoras() {
@@ -410,22 +427,112 @@ export class AsignarhorarioComponent implements OnInit{
     if (!this.turnoId) return;
   
     this.horarioService.getHorarioPorTurno(this.turnoId).subscribe(horarios => {
-      console.log('📡 Horarios recuperados:', horarios); // <--- ¿viene vacío?
-      this.calendarOptions.events = horarios.map(h => ({
-        title: h.c_nomcur,
-        start: h.h_inicio,
-        end: h.h_fin,
-        backgroundColor: h.c_color,
-        extendedProps: {
-          docente: h.c_nomdoc,
-          codDocente: h.c_coddoc,
-          dia: h.dia,
-          turno: h.turno_id,
-          codCur: h.c_codcur
-        }
-      }));
+      console.log('📡 Horarios recuperados:', horarios);
+  
+      // 🔁 Ocultamos el calendario temporalmente
+      this.mostrarCalendario = false;
+  
+      setTimeout(() => {
+        this.calendarOptions.events = horarios.map(h => ({
+          id: String(h.id), // 👈 ahora sí, FullCalendar lo tomará
+          title: h.c_nomcur,
+          start: h.h_inicio,
+          end: h.h_fin,
+          backgroundColor: h.c_color,
+          extendedProps: {
+            docente: h.c_nomdoc,
+            codDocente: h.c_coddoc,
+            dia: h.dia,
+            turno: h.turno_id,
+            codCur: h.c_codcur,
+            tipo: 'Teoría',
+            n_horas: h.n_horas,
+            aula_id: h.aula_id || 1,
+            docente_id: h.c_coddoc || 1
+          }
+        }));
+  
+        // ✅ Volvemos a mostrar el calendario (forzamos redibujo)
+        this.mostrarCalendario = true;
+  
+        console.log('🎯 Eventos construidos con ID:', this.calendarOptions.events);
+      }, 10);
     });
   }
+  
+
+  actualizarEvento() {
+    if (!this.eventoSeleccionado) return;
+  
+    const [hora, minutos] = this.horaInicio.split(':').map(Number);
+    const base = new Date(this.fechaDrop!);
+    base.setHours(hora, minutos, 0);
+  
+    const fin = new Date(base);
+    fin.setHours(fin.getHours() + this.horasAsignadas);
+  
+    const docente = this.docentes.find(d => d.id === this.docenteSeleccionado);
+  
+    const dataUpdate: UpdateHorario = {
+      id: this.eventoSeleccionado.id,
+      c_codcur: this.eventoSeleccionado.extendedProps.codCur,
+      c_nomcur: this.eventoSeleccionado.title,
+      dia: this.diaSeleccionado,
+      h_inicio: base.toISOString(),
+      h_fin: fin.toISOString(),
+      n_horas: this.horasAsignadas,
+      c_color: this.eventoSeleccionado.backgroundColor || '#3788d8',
+      c_coddoc: docente?.id.toString() || 'SIN_DOCENTE',
+      c_nomdoc: docente?.nombre || 'Sin nombre',
+      turno_id: this.turnoId
+    };
+  
+    this.horarioService.updateHorarios(dataUpdate).subscribe({
+      next: () => {
+        this.eventoSeleccionado.setStart(base);
+        this.eventoSeleccionado.setEnd(fin);
+        this.eventoSeleccionado.setExtendedProp('n_horas', this.horasAsignadas);
+        this.eventoSeleccionado.setExtendedProp('dia', this.diaSeleccionado);
+        this.eventoSeleccionado.setExtendedProp('aula_id', this.aulaSeleccionada);
+        this.eventoSeleccionado.setExtendedProp('docente_id', this.docenteSeleccionado);
+  
+        this.alertService.success('✅ Evento actualizado correctamente.');
+        this.modalHorasActivo = false;
+        this.eventoSeleccionado = null;
+      },
+      error: (err) => {
+        this.alertService.error('❌ Error al actualizar el evento.');
+        console.error(err);
+      }
+    });
+  }
+
+eliminarEvento() {
+  if (!this.eventoSeleccionado) return;
+
+  const id = this.eventoSeleccionado.id;
+
+  const confirmar = window.confirm('¿Estás seguro de que deseas eliminar este horario?');
+
+  if (!confirmar) return;
+
+  if (id && !id.toString().startsWith('temp-')) {
+    this.horarioService.eliminarHorario(id).subscribe({
+      next: () => {
+        this.alertService.success('🗑️ Evento eliminado correctamente.');
+      },
+      error: (err) => {
+        this.alertService.error('❌ Error al eliminar el evento.');
+        console.error(err);
+      }
+    });
+  }
+
+  this.eventoSeleccionado.remove();
+  this.modalHorasActivo = false;
+  this.eventoSeleccionado = null;
+}
+
   //#endregion
 
   cancelarAsignacionHoras() {

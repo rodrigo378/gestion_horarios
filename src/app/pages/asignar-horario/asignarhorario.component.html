@@ -70,8 +70,9 @@
 </div>
 
 <!-- 📅 Calendario -->
-<full-calendar 
-  [options]="calendarOptions" 
+<full-calendar  
+  *ngIf="mostrarCalendario"
+  [options]="calendarOptions"
   class="mt-5 shadow-lg bg-white p-5 rounded-lg border border-gray-200">
 </full-calendar>
 
@@ -81,28 +82,11 @@
   💾 Guardar horarios
 </button>
 
-<!-- Modal para elegir cantidad de horas
-<div *ngIf="modalHorasActivo" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-  <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
-    <h2 class="text-lg font-semibold mb-3">Asignar Horas a {{ cursoSeleccionado?.title }}</h2>
-    <p class="text-sm mb-2">Máximo: {{ cursoSeleccionado?.horasDisponibles }} horas</p>
-    
-    <input type="number" [(ngModel)]="horasAsignadas" 
-            [max]="cursoSeleccionado?.horasDisponibles"
-            min="1"
-            class="border rounded px-3 py-1 w-20 text-center">
-
-    <div class="mt-4 flex justify-center gap-3">
-      <button (click)="confirmarAsignacionHoras()" class="bg-blue-600 text-white px-4 py-1 rounded">Asignar</button>
-      <button (click)="cancelarAsignacionHoras()" class="bg-gray-300 px-4 py-1 rounded">Cancelar</button>
-    </div>
-  </div>
-</div> -->
-
-<!-- Modal para asignar horario -->
 <div *ngIf="modalHorasActivo" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
   <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md text-center">
-    <h2 class="text-lg font-semibold mb-3">Asignar horario a:</h2>
+    <h2 class="text-lg font-semibold mb-3">
+      {{ eventoSeleccionado ? 'Editar horario de:' : 'Asignar horario a:' }}
+    </h2>
     
     <!-- Curso (bloqueado) -->
     <div class="mb-3">
@@ -130,12 +114,15 @@
 
     <!-- N° de horas -->
     <div class="mb-3">
-      <label class="block text-sm font-medium text-gray-700">Asignar horas - Maximo {{ cursoSeleccionado?.horasDisponibles }} horas</label>
-      <p class="text-sm mb-2">Máximo: {{ cursoSeleccionado?.horasDisponibles }} horas</p>
-      <input type="number" [(ngModel)]="horasAsignadas"
-              [max]="cursoSeleccionado?.horasDisponibles ?? 1"
-              min="1"
-              class="w-full border rounded px-3 py-1 text-center">
+      <label class="block text-sm font-medium text-gray-700">
+        Asignar horas - Máximo {{ cursoSeleccionado?.horasDisponibles ?? '∞' }} horas
+      </label>
+      <p class="text-sm mb-2">Máximo: {{ cursoSeleccionado?.horasDisponibles ?? '∞' }} horas</p>
+      <input type="number"
+            [(ngModel)]="horasAsignadas"
+            [max]="cursoSeleccionado?.horasDisponibles ?? 10"
+            min="1"
+            class="w-full border rounded px-3 py-1 text-center">
     </div>
 
     <!-- Aula -->
@@ -157,9 +144,32 @@
     </div>
 
     <!-- Botones -->
-    <div class="mt-4 flex justify-center gap-3">
-      <button (click)="confirmarAsignacionHoras()" class="bg-blue-600 text-white px-4 py-2 rounded">Asignar</button>
-      <button (click)="cancelarAsignacionHoras()" class="bg-gray-300 px-4 py-2 rounded">Cancelar</button>
+    <div class="mt-4 flex flex-wrap justify-center gap-3">
+      <!-- Botón de asignar o actualizar -->
+      <button *ngIf="!eventoSeleccionado"
+              (click)="confirmarAsignacionHoras()"
+              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        ➕ Asignar
+      </button>
+
+      <button *ngIf="eventoSeleccionado"
+              (click)="actualizarEvento()"
+              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        🔄 Actualizar
+      </button>
+
+      <!-- Botón eliminar -->
+      <button *ngIf="eventoSeleccionado"
+              (click)="eliminarEvento()"
+              class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+        🗑️ Eliminar
+      </button>
+
+      <!-- Cancelar -->
+      <button (click)="cancelarAsignacionHoras()"
+              class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
+        ❌ Cancelar
+      </button>
     </div>
   </div>
 </div>
