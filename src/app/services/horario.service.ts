@@ -3,7 +3,7 @@ import { environment } from '../../environment/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
-import { CreateHorario, getHorario } from '../interfaces/Horario';
+import { CreateHorario, getHorario, UpdateHorario } from '../interfaces/Horario';
 @Injectable({
   providedIn: 'root',
 })
@@ -20,7 +20,12 @@ export class HorarioService {
     return this.http.get<getHorario[]>(`${this.apiUrl}/${turno_id}`);
   }
 
-  updateHorarios(){
-    
+  updateHorarios(data: UpdateHorario): Observable<any> {
+    return this.http.put(`${this.apiUrl}`, data);
   }
+  
+  eliminarHorario(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+  
 }

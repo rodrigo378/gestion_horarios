@@ -1,33 +1,72 @@
-<div class="shadow-lg p-3 bg-white rounded-lg">
-  <p class="text-2xl font-bold">Asignación de horarios</p>
+<div *ngIf="turnoData" class="shadow-lg p-3 bg-white rounded-lg">
+  <p class="text-2xl font-bold">
+    Asignación de horarios |
+    {{ turnoData.n_ciclo }}° Ciclo -
+    {{ turnoData.c_nommod }} -
+    Sección {{ turnoData.c_grpcur }} -
+    {{ turnoData.nomesp }}
+  </p>
   <p class="text-slate-500 mt-1">Asigne horarios a los docentes:</p>
 </div>
-
-
 <!-- <div class="flex flex-wrap gap-4 p-4 bg-white shadow-md rounded-lg mt-5">
   <span class="font-bold" mar *ngIf="textoFiltros">{{ textoFiltros }}</span>
   <span *ngIf="!textoFiltros" class="text-gray-500 font-bold">No hay filtros seleccionados</span>
 </div> -->
-<div id="external-events" class="... bg-white shadow-lg border p-5 rounded-xl">
-  <h2 class="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">📚 Cursos</h2>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-    <div *ngFor="let curso of cursos"
-    class="fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-2 cursor-move"
-    [attr.data-event]="stringifyEvent(curso)">
-    <p class="text-sm text-slate-800 font-medium">
-      <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
-    </p>
-    <p class="text-xs text-gray-600 mt-1">
-      {{ curso.tipo }}:
-      <ng-container *ngIf="curso.n_ht">HT: {{ curso.horasRestantes }}</ng-container>
-      <ng-container *ngIf="curso.n_hp">HP: {{ curso.horasRestantes }}</ng-container>
-    </p>
-    <p class="text-sm text-slate-800 font-medium mt-1">
-      <span class="">{{ curso.c_nommod }}</span>
-    </p>
+<div id="external-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
+  <h2 class="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">📚 Cursos por Plan</h2>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    
+    <!-- 📘 Plan 2023 -->
+    <div>
+      <h3 class="text-lg font-semibold text-blue-600 mb-3">📘 Plan 2023 ({{ cursosPlan2023.length }} cursos)</h3>
+      <div class="space-y-3">
+        <div *ngFor="let curso of cursosPlan2023"
+            class="fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-2 cursor-move"
+            [attr.data-event]="stringifyEvent(curso)">
+          <p class="text-sm text-slate-800 font-medium">
+            <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+          </p>
+          <p class="text-xs text-gray-600 mt-1">
+            {{ curso.tipo }}: {{ curso.horasRestantes }} hrs
+          </p>
+          <p class="text-sm text-slate-800 font-medium mt-1">
+            {{ curso.c_nommod }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📗 Plan 2025 -->
+    <div>
+      <h3 class="text-lg font-semibold text-green-600 mb-3">📗 Plan 2025 ({{ cursosPlan2025.length }} cursos)</h3>
+      <div class="space-y-3">
+        <div *ngFor="let curso of cursosPlan2025"
+            class="fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-2 cursor-move"
+            [attr.data-event]="stringifyEvent(curso)">
+          <p class="text-sm text-slate-800 font-medium">
+            <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+          </p>
+          <p class="text-xs text-gray-600 mt-1">
+            {{ curso.tipo }}: {{ curso.horasRestantes }} hrs
+          </p>
+          <p class="text-sm text-slate-800 font-medium mt-1">
+            {{ curso.c_nommod }}
+          </p>
+        </div>
+      </div>
     </div>
   </div>
+</div>
+
+<div *ngIf="turnoData" class="shadow-lg p-3 bg-white rounded-lg mt-5">
+  <p class="text-2xl font-bold">
+    {{ turnoData.n_ciclo }}° Ciclo -
+    {{ turnoData.c_nommod }} -
+    Sección {{ turnoData.c_grpcur }} -
+    {{ turnoData.nomesp }}
+  </p>
 </div>
 
 <!-- 📅 Calendario -->
@@ -42,8 +81,7 @@
   💾 Guardar horarios
 </button>
 
-
-<!-- Modal para elegir cantidad de horas -->
+<!-- Modal para elegir cantidad de horas
 <div *ngIf="modalHorasActivo" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
   <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
     <h2 class="text-lg font-semibold mb-3">Asignar Horas a {{ cursoSeleccionado?.title }}</h2>
@@ -57,6 +95,71 @@
     <div class="mt-4 flex justify-center gap-3">
       <button (click)="confirmarAsignacionHoras()" class="bg-blue-600 text-white px-4 py-1 rounded">Asignar</button>
       <button (click)="cancelarAsignacionHoras()" class="bg-gray-300 px-4 py-1 rounded">Cancelar</button>
+    </div>
+  </div>
+</div> -->
+
+<!-- Modal para asignar horario -->
+<div *ngIf="modalHorasActivo" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md text-center">
+    <h2 class="text-lg font-semibold mb-3">Asignar horario a:</h2>
+    
+    <!-- Curso (bloqueado) -->
+    <div class="mb-3">
+      <label class="block text-sm font-medium text-gray-700">Curso</label>
+      <select class="w-full border rounded px-3 py-1" disabled>
+        <option>
+          {{ cursoSeleccionado?.extendedProps?.codigo }} - {{ cursoSeleccionado?.title }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Día editable -->
+    <div class="mb-3">
+      <label class="block text-sm font-medium text-gray-700">Día</label>
+      <select class="w-full border rounded px-3 py-1" [(ngModel)]="diaSeleccionado">
+        <option *ngFor="let dia of ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado']">{{ dia }}</option>
+      </select>
+    </div>
+
+    <!-- Hora inicio -->
+    <div class="mb-3">
+      <label class="block text-sm font-medium text-gray-700">Hora de inicio</label>
+      <input type="time" class="w-full border rounded px-3 py-1" [(ngModel)]="horaInicio">
+    </div>
+
+    <!-- N° de horas -->
+    <div class="mb-3">
+      <label class="block text-sm font-medium text-gray-700">Asignar horas - Maximo {{ cursoSeleccionado?.horasDisponibles }} horas</label>
+      <p class="text-sm mb-2">Máximo: {{ cursoSeleccionado?.horasDisponibles }} horas</p>
+      <input type="number" [(ngModel)]="horasAsignadas"
+              [max]="cursoSeleccionado?.horasDisponibles ?? 1"
+              min="1"
+              class="w-full border rounded px-3 py-1 text-center">
+    </div>
+
+    <!-- Aula -->
+    <div class="mb-3">
+      <label class="block text-sm font-medium text-gray-700">Aula</label>
+      <select class="w-full border rounded px-3 py-1" [(ngModel)]="aulaSeleccionada">
+        <option *ngFor="let aula of aulas" [value]="aula.id">{{ aula.nombre }}</option>
+      </select>
+    </div>
+
+    <!-- Docente -->
+    <div class="mb-3">
+      <label class="block text-sm font-medium text-gray-700">Docente</label>
+      <select class="w-full border rounded px-3 py-1" [(ngModel)]="docenteSeleccionado">
+        <option *ngFor="let docente of docentes" [value]="docente.id">
+          {{ docente.nombre }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Botones -->
+    <div class="mt-4 flex justify-center gap-3">
+      <button (click)="confirmarAsignacionHoras()" class="bg-blue-600 text-white px-4 py-2 rounded">Asignar</button>
+      <button (click)="cancelarAsignacionHoras()" class="bg-gray-300 px-4 py-2 rounded">Cancelar</button>
     </div>
   </div>
 </div>

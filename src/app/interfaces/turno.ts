@@ -12,3 +12,4 @@ export interface Turno {
     n_ciclo: number;
     estado: number;
   }
+  

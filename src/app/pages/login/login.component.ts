@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
       if (token) {
         console.log('Token capturado:', token);
         this.authService.setToken(token); 
-        this.router.navigate(['/registrodocentes']);
+        this.router.navigate(['/welcome']);
       }
     });
   }

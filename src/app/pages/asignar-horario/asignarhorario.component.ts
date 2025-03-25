@@ -20,6 +20,7 @@ import { TurnoService } from '../../services/turno.service';
   styleUrl: './asignarhorario.component.css'
 })
 export class AsignarhorarioComponent implements OnInit{
+  //#region Variables
   // variables para agregar horas
   modalHorasActivo = false;
   cursoSeleccionado: any = null;
@@ -27,28 +28,25 @@ export class AsignarhorarioComponent implements OnInit{
   fechaDrop: Date | null = null;
   //para traer cursos y data
   turnoId!: number;
-  turnoData!: Turno;
+  turnoData?: Turno;
   cursos: Curso[] = [];
   //idparaeventocruzetem
   ultimoEventoIdTemporal: string | null = null;
+  //para el nuvo html-modal
+  aulaSeleccionada!: number;
+  docenteSeleccionado!: number;
+  diaSeleccionado: string = '';
+  horaInicio: string = '';  
+  aulas = [ { id: 1, nombre: 'Aula 101' }, { id: 2, nombre: 'Aula 102' } ];
+  docentes = [ { id: 1, nombre: 'Carlos Pérez' }, { id: 2, nombre: 'Luz Herrera' } ];
+  //para separa los cursos por planes
+  cursosPlan2023: Curso[] = [];
+  cursosPlan2025: Curso[] = [];
   
   newEvent = { curso: '', h_inicio: '', h_fin: '', color: '' };
 
-  // events = [
-  //   {
-  //     id: '1',
-  //     curso: 'Clase de Matemáticas',
-  //     h_inicio: '2024-01-01T08:00:00',
-  //     h_fin: '2024-01-01T10:00:00',
-  //     color: '#3788d8',
-  //     docente: '',
-  //     ciclo: 'I',
-  //     seccion: 'N1',
-  //     carrera: 'Enfermería'
-  //   }
-  // ];
-
   events: any[] = []
+  //#endregion
 
   //#region Libreria del calendario
   calendarOptions: CalendarOptions = {
@@ -70,7 +68,6 @@ export class AsignarhorarioComponent implements OnInit{
     height: 'auto',
     dayHeaderFormat: { weekday: 'long' },
     slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
-    // select: (info) => this.handleSelect(info),
     drop: this.handleExternalDrop.bind(this),
     // eventClick: (info) => this.handleEventClick(info),
   };
@@ -95,57 +92,83 @@ export class AsignarhorarioComponent implements OnInit{
     this.cargarHorarios();
   }
 
-  //#region Metodos
-  
+  //#region Metodos cargar y verificar cursos
   private cargarDatosPorTurno(id: number): void {
     this.turnoService.getTurnoById(id).subscribe(turno => {
       this.turnoData = turno;
-
+  
       const dataCursos = {
         c_codfac: turno.c_codfac,
         c_codesp: turno.c_codesp,
-        n_ciclo: turno.n_ciclo.toString()
+        n_ciclo: turno.n_ciclo.toString(),
+        c_codmod: turno.c_codmod
       };
   
-      this.cursoService.obtenerCursos(dataCursos).subscribe(res => {
-        this.cursos = [];
+      this.cursoService.obtenerCursos(dataCursos).subscribe(resCursos => {
+        this.horarioService.getHorarioPorTurno(id).subscribe(horarios => {
+          const horasAsignadasPorCurso: Record<string, number> = {};
   
-        res.forEach((curso: Curso) => {
-          if (curso.n_ht && curso.n_ht > 0) {
-            this.cursos.push({
-              ...curso,
-              n_hp: undefined,
-              tipo: 'Teoría',
-              horasRestantes: curso.n_ht
-            });
-          }
+          horarios.forEach(h => {
+            horasAsignadasPorCurso[h.c_codcur] =
+              (horasAsignadasPorCurso[h.c_codcur] || 0) + (h.n_horas || 0);
+          });
   
-          if (curso.n_hp && curso.n_hp > 0) {
-            this.cursos.push({
-              ...curso,
-              n_ht: undefined,
-              tipo: 'Práctica',
-              horasRestantes: curso.n_hp
-            });
-          }
+          // Limpiamos las listas
+          this.cursos = [];
+          this.cursosPlan2023 = [];
+          this.cursosPlan2025 = [];
+  
+          resCursos.forEach((curso: Curso) => {
+            const horasTeoriaAsignadas = horasAsignadasPorCurso[curso.c_codcur] || 0;
+          
+            if (curso.n_ht && curso.n_ht > 0) {
+              const horasRestantes = curso.n_ht - horasTeoriaAsignadas;
+              if (horasRestantes > 0) {
+                const cursoTeoria: Curso = {
+                  ...curso,
+                  n_hp: undefined,
+                  tipo: 'Teoría',
+                  horasRestantes,
+                };
+                this.cursos.push(cursoTeoria);
+          
+                if (curso.n_codper === 2023) this.cursosPlan2023.push(cursoTeoria);
+                if (curso.n_codper === 2025) this.cursosPlan2025.push(cursoTeoria);
+              }
+            }
+          
+            if (curso.n_hp && curso.n_hp > 0) {
+              const horasRestantes = curso.n_hp - horasTeoriaAsignadas;
+              if (horasRestantes > 0) {
+                const cursoPractica: Curso = {
+                  ...curso,
+                  n_ht: undefined,
+                  tipo: 'Práctica',
+                  horasRestantes,
+                };
+                this.cursos.push(cursoPractica);
+          
+                if (curso.n_codper === 2023) this.cursosPlan2023.push(cursoPractica);
+                if (curso.n_codper === 2025) this.cursosPlan2025.push(cursoPractica);
+              }
+            }
+          });
+  
+          // Cargar al calendario
+          this.calendarOptions.events = horarios.map(h => ({
+            title: h.c_nomcur,
+            start: h.h_inicio,
+            end: h.h_fin,
+            backgroundColor: h.c_color,
+            extendedProps: {
+              docente: h.c_nomdoc,
+              codDocente: h.c_coddoc,
+              dia: h.dia,
+              turno: h.turno_id,
+              codCur: h.c_codcur
+            }
+          }));
         });
-      });
-  
-      // 🔹 Cargar horarios del turno
-      this.horarioService.getHorarioPorTurno(id).subscribe(horarios => {
-        this.calendarOptions.events = horarios.map(h => ({
-          title: h.c_nomcur,
-          start: h.h_inicio,
-          end: h.h_fin,
-          backgroundColor: h.c_color,
-          extendedProps: {
-            docente: h.c_nomdoc,
-            codDocente: h.c_coddoc,
-            dia: h.dia,
-            turno: h.turno_id,
-            codCur: h.c_codcur
-          }
-        }));
       });
     });
   }
@@ -208,9 +231,16 @@ export class AsignarhorarioComponent implements OnInit{
     }
     return false
   }
+
+  private formatDateTime(date: Date): string {
+    const horas = String(date.getHours()).padStart(2, '0');
+    const minutos = String(date.getMinutes()).padStart(2, '0');
+    return `${horas}:${minutos}`;
+  }
   
-    //#endregion
+  //#endregion
   
+  //#region funcion para los eventos
   handleExternalDrop(info: any) {
     const draggedData = JSON.parse(info.draggedEl.getAttribute('data-event'));
     const index = this.cursos.findIndex(c => c.c_codcur === draggedData.extendedProps.codigo && c.tipo === draggedData.extendedProps.tipo);
@@ -222,6 +252,10 @@ export class AsignarhorarioComponent implements OnInit{
       index: index
     };
     this.fechaDrop = info.date;
+    if (this.fechaDrop) {
+      this.diaSeleccionado = this.obtenerDiaSemana(this.fechaDrop);
+      this.horaInicio = this.formatDateTime(this.fechaDrop);
+    }
     this.horasAsignadas = 1;
     this.modalHorasActivo = true;
   }
@@ -237,9 +271,36 @@ export class AsignarhorarioComponent implements OnInit{
       }
     });
   }
+  //#endregion
   
   confirmarAsignacionHoras() {
-    const start = new Date(this.fechaDrop!);
+    if (!this.fechaDrop || !this.horaInicio) return;
+
+    const diaAFecha: Record<string, number> = {
+      'Domingo': 0,
+      'Lunes': 1,
+      'Martes': 2,
+      'Miércoles': 3,
+      'Jueves': 4,
+      'Viernes': 5,
+      'Sábado': 6
+    };
+
+    const base = new Date(this.fechaDrop);
+    base.setDate(base.getDate() - base.getDay()); // ir al domingo
+    const diaNumero = diaAFecha[this.diaSeleccionado];
+    const [hora, minutos] = this.horaInicio.split(':').map(Number);
+  
+    const start = new Date(base);
+    start.setDate(base.getDate() + diaNumero);
+    start.setHours(hora, minutos, 0);
+  
+    // 👇 Si el usuario modificó la hora manualmente (input horaInicio), la aplicamos
+    // if (this.horaInicio) {
+    //   const [hora, minuto] = this.horaInicio.split(':').map(Number);
+    //   start.setHours(hora, minuto);
+    // }
+  
     const end = new Date(start);
     end.setHours(start.getHours() + this.horasAsignadas);
   
@@ -271,21 +332,29 @@ export class AsignarhorarioComponent implements OnInit{
       evento
     ];
   
-    const idx = this.cursoSeleccionado.index;
+    const codigo = this.cursoSeleccionado.extendedProps.codigo;
+    const tipo = this.cursoSeleccionado.extendedProps.tipo;
   
-    if (idx !== -1 && this.cursos[idx]) {
-      this.cursos[idx].horasRestantes = (this.cursos[idx].horasRestantes || 0) - this.horasAsignadas;
-  
-      if (this.cursos[idx].horasRestantes <= 0) {
-        this.cursos.splice(idx, 1);
+    const actualizarLista = (lista: Curso[]) => {
+      const index = lista.findIndex(c => c.c_codcur === codigo && c.tipo === tipo);
+      if (index !== -1) {
+        lista[index].horasRestantes = (lista[index].horasRestantes || 0) - this.horasAsignadas;
+        if (lista[index].horasRestantes <= 0) {
+          lista.splice(index, 1);
+        }
       }
-    }
+    };
   
-    // Reset modal y temporal
+    actualizarLista(this.cursosPlan2023);
+    actualizarLista(this.cursosPlan2025);
+  
+    // 🧹 Limpieza final
     this.modalHorasActivo = false;
     this.cursoSeleccionado = null;
     this.fechaDrop = null;
     this.ultimoEventoIdTemporal = null;
+    this.horaInicio = '';
+    this.diaSeleccionado = '';
   }
   
   //#region Listar, Guardar y Editar eventos

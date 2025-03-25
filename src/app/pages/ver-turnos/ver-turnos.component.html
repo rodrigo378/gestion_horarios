@@ -31,6 +31,66 @@
                 </div>
             </div>
         </div>
+
+        <div class="flex justify-end items-center flex-wrap gap-3 mt-4 mb-4 mr-4">
+          <!-- Select: Sección
+            <select [(ngModel)]="filtros.c_grpcur"
+                    (change)="aplicarFiltros()"
+                    class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28">
+              <option value="">Sección</option>
+              <option *ngFor="let sec of secciones" [value]="sec">{{ sec }}</option>
+            </select> -->
+
+            <!-- Select: Facultad -->
+            <select [(ngModel)]="filtros.c_codfac"
+                    (change)="onFacultadChange()"
+                    class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28">
+              <option value="">Facultad</option>
+              <option *ngFor="let fac of facultades" [value]="fac">
+                {{ getNombreFacultad(fac) }}
+              </option>
+            </select>
+
+            <!-- Select: Especialidad -->
+            <select [(ngModel)]="filtros.c_codesp"
+                    (change)="aplicarFiltros()"
+                    class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-96">
+              <option value="">Especialidad</option>
+              <option *ngFor="let esp of especialidadesFiltradas" [value]="esp.codesp">
+                {{ esp.nomesp }}
+              </option>
+            </select>
+
+            <!-- Select: Modalidad -->
+            <select [(ngModel)]="filtros.c_codmod"
+                    (change)="aplicarFiltros()"
+                    class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28">
+              <option value="">Modalidad</option>
+              <option *ngFor="let mod of modalidades" [value]="mod.value">{{ mod.label }}</option>
+            </select>
+
+            <!-- Select: Ciclo -->
+            <select [(ngModel)]="filtros.n_ciclo"
+                    (change)="aplicarFiltros()"
+                    class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28">
+              <option value="">Ciclo</option>
+              <option *ngFor="let c of ciclos" [value]="c">{{ c }}</option>
+            </select>
+
+            <!-- Select: Estado -->
+            <select [(ngModel)]="filtros.estado"
+                    (change)="aplicarFiltros()"
+                    class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28">
+              <option value="">Estado</option>
+              <option [value]="1">Asignado</option>
+              <option [value]="2">No asignado</option>
+            </select>
+            <!-- Botón Crear más moderno -->
+            <button class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300">
+                <i class="fa-solid fa-plus"></i>
+                Crear
+            </button>
+        </div>
         
         <div class="p-0 overflow-scroll">
             <table class="w-full mt-4 text-left table-auto min-w-max">
@@ -112,18 +172,6 @@
                             class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
                             <p
                             class="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500">
-                            Turno
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" aria-hidden="true" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
-                            </svg>
-                            </p>
-                        </th>
-                        <th
-                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                            <p
-                            class="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500">
                             Acciónes
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor" aria-hidden="true" class="w-4 h-4">
@@ -189,12 +237,6 @@
                             </div>
                             </div>
                         </td>
-                        <td>
-                            <select [(ngModel)]="turnoSeleccionado[turno.id]" class="border rounded p-1">
-                            <option value="manana">Mañana</option>
-                            <option value="noche">Noche</option>
-                            </select>
-                        </td>                          
                         <td class="p-4 border-b border-slate-200">
                             <button
                             class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"

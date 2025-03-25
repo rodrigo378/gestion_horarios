@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { Curso } from '../interfaces/Curso';
+import { Curso, Especialidad } from '../interfaces/Curso';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -13,7 +13,12 @@ export class CursoService {
   
   constructor(private http: HttpClient, private authService: AuthService) {}
   
-  obtenerCursos(data: { c_codfac: string, c_codesp: string, n_ciclo: string }): Observable<Curso[]> {
+  obtenerCursos(data: { c_codfac: string, c_codesp: string, n_ciclo: string, c_codmod: string }): Observable<Curso[]> {
     return this.http.post<Curso[]>(this.apiUrl, data);
-  }  
+  }
+
+  getEspecialidades(): Observable<Especialidad[]> {
+    return this.http.get<Especialidad[]>(`${this.apiUrl}/especialidades`);
+  }
+  
 }

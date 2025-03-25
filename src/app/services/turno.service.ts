@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Turno } from '../interfaces/turno';
 import { Observable } from 'rxjs';
@@ -18,6 +18,11 @@ export class TurnoService {
   }
 
   getTurnoById(id: number): Observable<Turno> {
-    return this.http.get<Turno>(`${this.apiUrl}/${id}`); // ← Este se usa solo al entrar al componente
+    return this.http.get<Turno>(`${this.apiUrl}/${id}`);
+  }
+
+  getTurnosFiltrados(params: any): Observable<Turno[]> {
+    const httpParams = new HttpParams({ fromObject: params });
+    return this.http.get<Turno[]>(this.apiUrl, { params: httpParams });
   }
 }

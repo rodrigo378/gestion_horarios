@@ -12,4 +12,13 @@ export interface Curso {
     tipo?: string;
     c_nommod: string;
     horasRestantes?: number
-  }  
+  }
+
+export interface Especialidad {
+  codfac: string;
+  codesp: string;
+  nomesp: string;
+  estado: number;
+  c_abrevesp: string;
+}
+  
