@@ -8,21 +8,21 @@
   </p>
   <p class="text-slate-500 mt-1">Asigne horarios a los docentes:</p>
 </div>
-<!-- <div class="flex flex-wrap gap-4 p-4 bg-white shadow-md rounded-lg mt-5">
-  <span class="font-bold" mar *ngIf="textoFiltros">{{ textoFiltros }}</span>
-  <span *ngIf="!textoFiltros" class="text-gray-500 font-bold">No hay filtros seleccionados</span>
-</div> -->
 
 <div id="external-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
-  <h2 class="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">📚 Cursos por Plan</h2>
+  <h2 class="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">
+    📚 Cursos por Plan
+  </h2>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     
     <!-- 📘 Plan 2023 -->
     <div>
-      <h3 class="text-lg font-semibold text-blue-600 mb-3">📘 Plan 2023 ({{ cursosPlan2023.length }} cursos)</h3>
+      <h3 class="text-lg font-semibold text-blue-600 mb-3">
+        📘 Plan 2023 ({{ cursosPlan2023Visibles.length }} cursos)
+      </h3>
       <div class="space-y-3">
-        <div *ngFor="let curso of cursosPlan2023"
+        <div *ngFor="let curso of cursosPlan2023Visibles"
             class="fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-2 cursor-move"
             [attr.data-event]="stringifyEvent(curso)">
           <p class="text-sm text-slate-800 font-medium">
@@ -40,9 +40,11 @@
 
     <!-- 📗 Plan 2025 -->
     <div>
-      <h3 class="text-lg font-semibold text-green-600 mb-3">📗 Plan 2025 ({{ cursosPlan2025.length }} cursos)</h3>
+      <h3 class="text-lg font-semibold text-green-600 mb-3">
+        📗 Plan 2025 ({{ cursosPlan2025Visibles.length }} cursos)
+      </h3>
       <div class="space-y-3">
-        <div *ngFor="let curso of cursosPlan2025"
+        <div *ngFor="let curso of cursosPlan2025Visibles"
             class="fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-2 cursor-move"
             [attr.data-event]="stringifyEvent(curso)">
           <p class="text-sm text-slate-800 font-medium">
@@ -60,6 +62,7 @@
   </div>
 </div>
 
+
 <div *ngIf="turnoData" class="shadow-lg p-3 bg-white rounded-lg mt-5">
   <p class="text-2xl font-bold">
     {{ turnoData.n_ciclo }}° Ciclo -
@@ -72,6 +75,7 @@
 <!-- 📅 Calendario -->
 <full-calendar  
   *ngIf="mostrarCalendario"
+  #fullcalendar
   [options]="calendarOptions"
   class="mt-5 shadow-lg bg-white p-5 rounded-lg border border-gray-200">
 </full-calendar>
@@ -115,12 +119,11 @@
     <!-- N° de horas -->
     <div class="mb-3">
       <label class="block text-sm font-medium text-gray-700">
-        Asignar horas - Máximo {{ cursoSeleccionado?.horasDisponibles ?? '∞' }} horas
+        Asignar horas - Máximo {{ cursoSeleccionado?.horasDisponibles }} horas
       </label>
-      <p class="text-sm mb-2">Máximo: {{ cursoSeleccionado?.horasDisponibles ?? '∞' }} horas</p>
       <input type="number"
             [(ngModel)]="horasAsignadas"
-            [max]="cursoSeleccionado?.horasDisponibles ?? 10"
+            [max]="cursoSeleccionado?.horasDisponibles"
             min="1"
             class="w-full border rounded px-3 py-1 text-center">
     </div>

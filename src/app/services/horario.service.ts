@@ -20,9 +20,9 @@ export class HorarioService {
     return this.http.get<getHorario[]>(`${this.apiUrl}/${turno_id}`);
   }
 
-  updateHorarios(data: UpdateHorario): Observable<any> {
+  updateHorarios(data: { horarios: UpdateHorario[] }): Observable<any> {
     return this.http.put(`${this.apiUrl}`, data);
-  }
+  }  
   
   eliminarHorario(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
