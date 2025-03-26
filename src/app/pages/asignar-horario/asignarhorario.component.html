@@ -15,7 +15,7 @@
   </h2>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    
+
     <!-- 📘 Plan 2023 -->
     <div>
       <h3 class="text-lg font-semibold text-blue-600 mb-3">
@@ -23,21 +23,34 @@
       </h3>
       <div class="space-y-3">
         <div *ngFor="let curso of cursosPlan2023Visibles"
-            class="fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-2 cursor-move"
-            [attr.data-event]="stringifyEvent(curso)">
+            class="relative fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3 cursor-move"
+            [ngClass]="{ 'opacity-50 pointer-events-none': curso.disabled }"
+            [attr.data-event]="stringifyEvent(curso)"
+            >
+  
+          <!-- Área -->
+          <span class="absolute right-1 top-9 bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-r-lg">
+            {{ curso.c_nom_cur_area }}
+          </span>
+  
+          <!-- Curso principal -->
           <p class="text-sm text-slate-800 font-medium">
-            <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+            <span class="font-semibold text-indigo-600">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
           </p>
+  
+          <!-- Tipo y horas -->
           <p class="text-xs text-gray-600 mt-1">
-            {{ curso.tipo }}: {{ curso.horasRestantes }} hrs
+            {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
           </p>
-          <p class="text-sm text-slate-800 font-medium mt-1">
+  
+          <!-- Modalidad -->
+          <p class="text-xs text-gray-500">
             {{ curso.c_nommod }}
           </p>
         </div>
       </div>
     </div>
-
+  
     <!-- 📗 Plan 2025 -->
     <div>
       <h3 class="text-lg font-semibold text-green-600 mb-3">
@@ -45,23 +58,41 @@
       </h3>
       <div class="space-y-3">
         <div *ngFor="let curso of cursosPlan2025Visibles"
-            class="fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-2 cursor-move"
+            class="relative fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3 cursor-move"
             [attr.data-event]="stringifyEvent(curso)">
+  
+          <!-- Área -->
+          <span class="absolute right-1 bottom-2 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-r-lg">
+            {{ curso.c_nom_cur_area }}
+          </span>
+  
+          <!-- Curso principal -->
           <p class="text-sm text-slate-800 font-medium">
-            <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+            <span class="font-semibold text-emerald-600">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
           </p>
+  
+          <!-- Equivalente si existe y es distinto -->
+          <ng-container *ngIf="curso.c_codcur_equ && curso.c_codcur_equ !== curso.c_codcur">
+            <p class="text-sm text-slate-500 font-medium mt-1">
+              <span class="font-semibold">Equiv: [{{ curso.c_codcur_equ }}]</span> - {{ curso.c_nomcur_equ }}
+            </p>
+          </ng-container>
+  
+          <!-- Tipo y horas -->
           <p class="text-xs text-gray-600 mt-1">
-            {{ curso.tipo }}: {{ curso.horasRestantes }} hrs
+            {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
           </p>
-          <p class="text-sm text-slate-800 font-medium mt-1">
+  
+          <!-- Modalidad -->
+          <p class="text-xs text-gray-500">
             {{ curso.c_nommod }}
           </p>
         </div>
       </div>
     </div>
+  
   </div>
-</div>
-
+  
 
 <div *ngIf="turnoData" class="shadow-lg p-3 bg-white rounded-lg mt-5">
   <p class="text-2xl font-bold">

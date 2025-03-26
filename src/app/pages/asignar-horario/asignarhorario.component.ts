@@ -399,7 +399,17 @@ export class AsignarhorarioComponent implements OnInit{
   
     actualizarLista(this.cursosPlan2023);
     actualizarLista(this.cursosPlan2025);
-  
+
+    // ✅ Deshabilitar curso equivalente del otro plan
+    const codEquivalente = this.cursosPlan2025.find(c => c.c_codcur === this.cursoSeleccionado.extendedProps.codigo)?.c_codcur_equ;
+
+    if (codEquivalente) {
+      const index = this.cursosPlan2023.findIndex(c => c.c_codcur === codEquivalente);
+      if (index !== -1) {
+        this.cursosPlan2023[index].disabled = true;
+      }
+    }
+    
     // 🧹 Limpieza final
     this.modalHorasActivo = false;
     this.cursoSeleccionado = null;
