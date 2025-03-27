@@ -111,14 +111,14 @@ export class AsignarhorarioComponent implements OnInit{
   }
   //#region 
 
-  cargarAulas(): void {
+  private cargarAulas(): void {
     this.aulaService.obtenerAulas().subscribe(data => {
       console.log('🏫 AULAS:', data);
       this.aulas = data;
     });
   }
   
-  cargarDocentes(): void {
+  private cargarDocentes(): void {
     this.docenteService.obtenerDocentes().subscribe(data => {
       console.log('📚 DOCENTES:', data);
       this.docentes = data;
@@ -351,8 +351,8 @@ export class AsignarhorarioComponent implements OnInit{
     this.diaSeleccionado = this.obtenerDiaSemana(fecha);
     this.horaInicio = this.formatDateTime(fecha);
     this.horasAsignadas = evento.extendedProps.n_horas || 1;
-    this.aulaSeleccionada = evento.extendedProps.aula_id || 1;
-    this.docenteSeleccionado = evento.extendedProps.docente_id || 1;
+    this.aulaSeleccionada = evento.extendedProps.aula_id || null;
+    this.docenteSeleccionado = evento.extendedProps.docente_id || null;
   }
   
   //#endregion
@@ -415,8 +415,8 @@ export class AsignarhorarioComponent implements OnInit{
         tipo: this.cursoSeleccionado.extendedProps.tipo,
         isNew: true,
         n_horas: this.horasAsignadas, // 👈🔥 ESTO ES CLAVE
-        aula_id: this.aulaSeleccionada,
-        docente_id: this.docenteSeleccionado
+        aula_id: this.aulaSeleccionada ?? null,
+        docente_id: this.docenteSeleccionado ?? null
       }
     };
   
@@ -458,7 +458,7 @@ export class AsignarhorarioComponent implements OnInit{
     this.ultimoEventoIdTemporal = null;
     this.horaInicio = '';
     this.diaSeleccionado = '';
-    this,this.vacantesAula = null
+    this.vacantesAula = null
   }
   
   //#region Listar, Guardar y Editar eventos
@@ -496,8 +496,8 @@ export class AsignarhorarioComponent implements OnInit{
         c_nomdoc: docente?.c_nomdoc || 'Sin nombre',
         n_aulo: aula?.n_aulo || 'SIN_AULA',
         aforo: aula?.aforo || 0,
-        aula_id: Number(ev.extendedProps['aula_id']),
-        docente_id: Number(ev.extendedProps['docente_id']),
+        aula_id: ev.extendedProps['aula_id'] != null ? Number(ev.extendedProps['aula_id']) : null,
+        docente_id: ev.extendedProps['docente_id'] != null ? Number(ev.extendedProps['docente_id']) : null,        
         turno_id: this.turnoId
       };
     });
@@ -515,7 +515,6 @@ export class AsignarhorarioComponent implements OnInit{
   
     console.log('📝 Horarios que se están enviando:', horarios);
   }
-  
   
   cargarHorarios(): void {
     if (!this.turnoId) return;
@@ -541,8 +540,8 @@ export class AsignarhorarioComponent implements OnInit{
             codCur: h.c_codcur,
             tipo: 'Teoría',
             n_horas: h.n_horas,
-            aula_id: h.aula_id || 1,
-            docente_id: h.c_coddoc || 1
+            aula_id: h.aula_id || null,
+            docente_id: h.c_coddoc || null
           }
         }));
   
@@ -734,6 +733,7 @@ export class AsignarhorarioComponent implements OnInit{
         this.alertService.success('✅ Evento actualizado correctamente.');
         this.modalHorasActivo = false;
         this.eventoSeleccionado = null;
+        this.cargarHorarios()
       },
       error: (err) => {
         this.alertService.error('❌ Error al actualizar el evento.');

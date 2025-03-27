@@ -117,8 +117,9 @@ export class VerCursosComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           console.log(res);
-          this.alertService.success('Se crea el curso transversal');
           this.getHorariosFiltrados();
+          this.getHorarios()
+          this.alertService.success('Se crea el curso transversal');          
         },
         error: (err: HttpErrorResponse) => {
           this.alertService.error(err.error.message);
