@@ -13,6 +13,7 @@ export interface getHorario{
   turno_id: number;
 }
 export interface CreateHorario {
+  n_codper: string;
   c_codcur: string;
   c_nomcur: string;
   dia: string;
@@ -29,6 +30,7 @@ export interface CreateHorario {
 }
 export interface UpdateHorario {
   id: number;
+  n_codper: string;
   c_codcur: string;
   c_nomcur: string;
   dia: string;
@@ -41,4 +43,6 @@ export interface UpdateHorario {
   turno_id: number;
   n_aulo?: string;
   aforo?: number;
+  aula_id?: number
+  docente_id?: number
 }

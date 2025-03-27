@@ -465,6 +465,7 @@ export class AsignarhorarioComponent implements OnInit{
       const docente = this.docentes.find(d => d.id === ev.extendedProps['docente_id']);      
   
       return {
+        n_codper: String(this.turnoData?.n_codper || ''),
         c_codcur: ev.extendedProps['codCur'],
         c_nomcur: ev.title || '',
         dia: this.obtenerDiaSemana(inicio),
@@ -593,8 +594,23 @@ export class AsignarhorarioComponent implements OnInit{
     if (!this.eventoSeleccionado) return;
   
     const [hora, minutos] = this.horaInicio.split(':').map(Number);
+    const diaAFecha: Record<string, number> = {
+      'Domingo': 0,
+      'Lunes': 1,
+      'Martes': 2,
+      'Miércoles': 3,
+      'Jueves': 4,
+      'Viernes': 5,
+      'Sábado': 6
+    };
+    
     const base = new Date(this.fechaDrop!);
+    base.setDate(base.getDate() - base.getDay()); // ir al domingo
+    const diaNumero = diaAFecha[this.diaSeleccionado];
+    
+    base.setDate(base.getDate() + diaNumero);
     base.setHours(hora, minutos, 0);
+    
   
     const fin = new Date(base);
     fin.setHours(fin.getHours() + this.horasAsignadas);
@@ -645,11 +661,14 @@ export class AsignarhorarioComponent implements OnInit{
       c_color: this.eventoSeleccionado.backgroundColor || '#3788d8',
       c_coddoc: docente?.c_coddoc || 'Sin DNI',
       c_nomdoc: docente?.c_nomdoc || 'Sin nombre',
-
-        n_aulo: aula?.n_aulo || 'SIN_AULA',
-        aforo: aula?.aforo || 0,
-      turno_id: this.turnoId
+      n_aulo: aula?.n_aulo || 'SIN_AULA',
+      aforo: aula?.aforo || 0,
+      aula_id: Number(this.aulaSeleccionada),
+      docente_id: Number(this.docenteSeleccionado),
+      turno_id: this.turnoId,
+      n_codper: String(this.turnoData?.n_codper || '')
     };
+    
   
     this.horarioService.updateHorarios({ horarios: [dataUpdate] }).subscribe({
       next: () => {
