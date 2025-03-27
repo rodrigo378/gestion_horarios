@@ -16,8 +16,8 @@ import { TurnoService } from '../../services/turno.service';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import { DocentecurService } from '../../services/docentecur.service';
 import { AulaService } from '../../services/aula.service';
-import { Aula } from '../../interfaces/aula';
 import { Docente } from '../../interfaces/Docente';
+import { Aula } from '../../interfaces/Aula';
 @Component({
   selector: 'app-asignarhorario',
   standalone: false,

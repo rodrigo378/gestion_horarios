@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Aula } from '../interfaces/aula';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
-
+import { Aula } from '../interfaces/Aula';
 @Injectable({
   providedIn: 'root'
 })
