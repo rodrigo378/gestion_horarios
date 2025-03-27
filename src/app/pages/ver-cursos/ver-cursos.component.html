@@ -1,0 +1,538 @@
+<!-- component -->
+<div class="max-w-[100%] mx-auto">
+  <div
+    class="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border"
+  >
+    <div
+      class="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border"
+    >
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-semibold text-slate-800">
+            Asigna cursos transversales
+          </h3>
+        </div>
+        <div class="flex flex-col gap-2 shrink-0 sm:flex-row">
+          <div class="w-full md:w-72">
+            <div class="relative h-10 w-full min-w-[200px]">
+              <div
+                class="absolute grid w-5 h-5 top-2/4 right-3 -translate-y-2/4 place-items-center text-blue-gray-500"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                  ></path>
+                </svg>
+              </div>
+              <input
+                class="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 !pr-9 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                placeholder=" "
+              />
+              <label
+                class="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none !overflow-visible truncate text-[11px] font-normal leading-tight text-gray-500 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-gray-900 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-gray-900 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500"
+              >
+                Search
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-start items-center flex-wrap gap-3 mt-4 mb-4 mr-4">
+      <select
+        class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+        [(ngModel)]="selectFacultadad"
+        (change)="changeSelectFacultad()"
+      >
+        <option value="">Facultad</option>
+        <option value="S">CIENCIAS DE LA SALUD</option>
+        <option value="E">INGENIERÍA Y NEGOCIOS</option>
+      </select>
+
+      <!-- Select: Especialidad -->
+      <select
+        class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-96"
+        [(ngModel)]="selectEspecialidad"
+      >
+        <option value="">Especialidad</option>
+        <option
+          *ngFor="let especialidad of especialidades"
+          [value]="especialidad.codesp"
+        >
+          {{ especialidad.nomesp }}
+        </option>
+      </select>
+
+      <!-- Select: Modalidad -->
+      <select
+        class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+        [(ngModel)]="selectModalidad"
+      >
+        <option value="">Modalidad</option>
+        <option value="1">Presencial</option>
+        <option value="2">Semipresencial</option>
+        <option value="3">Virtual</option>
+      </select>
+
+      <select
+        class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+        [(ngModel)]="selectPlan"
+      >
+        <option value="">Plan</option>
+        <option value="2023">2023</option>
+        <option value="2025">2025</option>
+      </select>
+
+      <select
+        class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+        [(ngModel)]="selectPeriodo"
+      >
+        <option value="">Periodo</option>
+        <option value="20241">2024-1</option>
+        <option value="20242">2024-4</option>
+        <option value="20251">2025-1</option>
+      </select>
+    </div>
+
+    <div class="flex justify-start items-center flex-wrap gap-3 mt-4 mb-4 mr-4">
+      <button
+        class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
+        (click)="clickDefinirCursoTransversales()"
+      >
+        <i class="fa-solid fa-plus"></i>
+        Definir Cursos Transversales
+      </button>
+    </div>
+
+    <div class="p-0 overflow-scroll">
+      <table class="w-full mt-4 text-left table-auto min-w-max">
+        <thead>
+          <tr>
+            <th
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+              >
+                Codigo
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+            <th
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+              >
+                Curso
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+            <th
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+              >
+                Dia
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+            <th
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+              >
+                Inicio
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+            <th
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+              >
+                Fin
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+            <th
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+              >
+                Nº Horas
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+
+            <th
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+              >
+                Acciónes
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (horario of horarios; track horario.id) {
+          <tr>
+            <td class="p-4 border-b border-slate-200">
+              <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ horario.c_codcur }}
+                  </p>
+                </div>
+              </div>
+            </td>
+            <td class="p-4 border-b border-slate-200">
+              <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ horario.c_nomcur }}
+                  </p>
+                </div>
+              </div>
+            </td>
+            <td class="p-4 border-b border-slate-200">
+              <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ horario.dia }}
+                  </p>
+                </div>
+              </div>
+            </td>
+            <td class="p-4 border-b border-slate-200">
+              <div class="flex flex-col">
+                <p class="text-sm font-semibold text-slate-700">
+                  {{ horario.h_inicio }}
+                </p>
+              </div>
+            </td>
+            <td class="p-4 border-b border-slate-200">
+              <div class="flex flex-col">
+                <p class="text-sm font-semibold text-slate-700">
+                  {{ horario.h_fin }}
+                </p>
+              </div>
+            </td>
+            <td class="p-4 border-b border-slate-200">
+              <div class="flex flex-col">
+                <p class="text-sm font-semibold text-slate-700">
+                  {{ horario.n_horas }}
+                </p>
+              </div>
+            </td>
+
+            <td class="p-4 border-b border-slate-200">
+              <!-- Botón agregar -->
+              <button
+                class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-green-600 transition-all hover:bg-green-600/10 active:bg-green-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                type="button"
+                (click)="clickMas(horario)"
+              >
+                <span
+                  class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                >
+                  <i class="fa-solid fa-plus fa-lg"></i>
+                </span>
+              </button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="flex items-center justify-between p-3">
+      <p class="block text-sm text-slate-500"></p>
+      <div class="flex gap-1">
+        <button
+          class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+        >
+          Anterior
+        </button>
+        <button
+          class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+        >
+          Siguiente
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  *ngIf="mostrarModalCrear"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+>
+  <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-4xl">
+    <!-- Cabecera -->
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <h2 class="text-xl font-bold text-gray-800">
+          Definir curso transversal
+        </h2>
+        <p class="text-sm text-gray-600">
+          <span class="font-semibold">Código:</span> CURS1234 <br />
+          <span class="font-semibold">Nombre:</span> Curso de Comunicación
+        </p>
+      </div>
+      <button
+        class="text-gray-500 hover:text-red-500"
+        (click)="mostrarModalCrear = false"
+      >
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Filtros -->
+    <form class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <!-- Modalidad -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Modalidad</label
+        >
+        <select
+          [(ngModel)]="filtros.c_codmod"
+          name="modalidad"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione modalidad</option>
+          <option value="1">Presencial</option>
+          <option value="2">Semipresencial</option>
+          <option value="3">Virtual</option>
+        </select>
+      </div>
+
+      <!-- Facultad -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Facultad</label
+        >
+        <select
+          [(ngModel)]="filtros.c_codfac"
+          (change)="changeSelectFacultadModal()"
+          name="facultad"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione facultad</option>
+          <option value="S">Ciencias de la Salud</option>
+          <option value="E">Ingeniería y Negocios</option>
+        </select>
+      </div>
+
+      <!-- Especialidad -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Especialidad</label
+        >
+        <select
+          [(ngModel)]="filtros.c_codesp"
+          name="especialidad"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione especialidad</option>
+          <option *ngFor="let esp of especialidadesModal" [value]="esp.codesp">
+            {{ esp.nomesp }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Plan -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Plan</label>
+        <select
+          [(ngModel)]="filtros.c_codpla"
+          name="plan"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione plan</option>
+          <option value="20231">2023</option>
+          <option value="20232">2025</option>
+        </select>
+      </div>
+      <button
+        class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
+        (click)="clickBuscarCursosModal()"
+      >
+        Buscar
+      </button>
+    </form>
+
+    <!-- Tabla -->
+    <div>
+      <h3 class="text-md font-semibold text-gray-700 mb-2">
+        Seleccionar curso
+      </h3>
+      <div class="overflow-auto max-h-64 border rounded-md">
+        <table class="min-w-full text-sm text-left text-gray-700">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2">Cod Plan</th>
+              <th class="px-4 py-2">Curso</th>
+              <th class="px-4 py-2">Sección</th>
+              <th class="px-4 py-2">Semestre</th>
+              <th class="px-4 py-2">Seleccionar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let curso of cursosFiltrados" class="border-t">
+              <td class="px-4 py-2">{{ curso.n_codper }}</td>
+              <td class="px-4 py-2">
+                ({{ curso.c_codcur }}) {{ curso.c_nomcur }}
+              </td>
+              <td class="px-4 py-2">{{ curso.turno.c_grpcur }}</td>
+              <td class="px-4 py-2">{{ curso.turno.n_ciclo }}</td>
+              <td class="px-4 py-2">
+                <button
+                  class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-green-600 transition-all hover:bg-green-600/10 active:bg-green-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                  type="button"
+                >
+                  <span
+                    class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                  >
+                    <i class="fa-solid fa-plus fa-lg"></i>
+                  </span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="mt-6 flex justify-end gap-2">
+      <button
+        (click)="mostrarModalCrear = false"
+        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+      >
+        Cancelar
+      </button>
+      <button
+        class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
+      >
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>

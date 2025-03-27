@@ -30,6 +30,7 @@ import { AsignarhorarioComponent } from './pages/asignar-horario/asignarhorario.
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { VerTurnosComponent } from './pages/ver-turnos/ver-turnos.component';
+import { VerCursosComponent } from './pages/ver-cursos/ver-cursos.component';
 
 registerLocaleData(en);
 
@@ -50,6 +51,7 @@ registerLocaleData(en);
     VerInformacionComponent,
     AsignarhorarioComponent,
     VerTurnosComponent,
+    VerCursosComponent,
   ],
   imports: [
     BrowserModule,
@@ -61,6 +63,7 @@ registerLocaleData(en);
     ReactiveFormsModule,
     FullCalendarModule,
     BrowserAnimationsModule,
+    FormsModule,
   ],
   providers: [
     provideNzI18n(en_US),
