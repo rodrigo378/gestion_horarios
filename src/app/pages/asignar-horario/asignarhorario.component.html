@@ -184,7 +184,7 @@
     <div class="mb-4">
       <label class="block text-sm font-semibold text-gray-600 mb-1">Aula</label>
       <select class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="aulaSeleccionada">
-        <option [ngValue]="null" disabled>-- Selecciona un aula --</option>
+        <option [ngValue]="null">-- Selecciona un aula --</option>
         <option *ngFor="let a of aulas" [ngValue]="a.id">
           {{ a.n_aulo }} - Aforo de ({{ a.aforo }} personas)
         </option>
@@ -195,7 +195,7 @@
     <div class="mb-6">
       <label class="block text-sm font-semibold text-gray-600 mb-1">Docente</label>
       <select class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="docenteSeleccionado">
-        <option [ngValue]="null" disabled>-- Selecciona un docente --</option>
+        <option [ngValue]="null">-- Selecciona un docente --</option>
         <option *ngFor="let d of docentes" [value]="d.id">
           {{ d.c_coddoc }} - {{ d.c_nomdoc }}
         </option>
