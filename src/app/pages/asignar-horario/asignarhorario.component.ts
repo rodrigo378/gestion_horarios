@@ -52,7 +52,8 @@ export class AsignarhorarioComponent implements OnInit{
   cursosPlan2025: Curso[] = [];
   //detruir y contruir calender
   mostrarCalendario: boolean = true;
-
+  //nro vacamtes
+  vacantesAula: number | null = null;
   
   newEvent = { curso: '', h_inicio: '', h_fin: '', color: '' };
 
@@ -73,6 +74,8 @@ export class AsignarhorarioComponent implements OnInit{
     slotLabelInterval: '00:30:00',
     allDaySlot: false,
     editable: true,
+    eventDurationEditable:false,
+    eventResizableFromStart: false,
     selectable: true,
     events: [],
     droppable: true,
@@ -108,14 +111,14 @@ export class AsignarhorarioComponent implements OnInit{
   }
   //#region 
 
-  private cargarAulas(): void {
+  cargarAulas(): void {
     this.aulaService.obtenerAulas().subscribe(data => {
       console.log('🏫 AULAS:', data);
       this.aulas = data;
     });
   }
   
-  private cargarDocentes(): void {
+  cargarDocentes(): void {
     this.docenteService.obtenerDocentes().subscribe(data => {
       console.log('📚 DOCENTES:', data);
       this.docentes = data;
@@ -329,13 +332,16 @@ export class AsignarhorarioComponent implements OnInit{
     if (curso) {
       horasMaximas = tipo === 'Teoría' ? (curso.n_ht ?? 1) : (curso.n_hp ?? 1);
     }
+
+    this.vacantesAula = curso?.vacante ?? null
   
     this.cursoSeleccionado = {
       ...curso,
       title: evento.title,
       extendedProps: {
         codigo,
-        tipo
+        tipo,
+
       },
       horasDisponibles: horasMaximas
     };
@@ -353,6 +359,18 @@ export class AsignarhorarioComponent implements OnInit{
   
   confirmarAsignacionHoras() {
     if (!this.fechaDrop || !this.horaInicio) return;
+
+      // ✅ VALIDACIÓN DE HORAS
+  const maxHoras = this.cursoSeleccionado?.horasDisponibles || 0;
+  if (this.horasAsignadas > maxHoras) {
+    this.alertService.error(`❌ No puedes asignar más de ${maxHoras} hora(s) a este curso.`);
+    return;
+  }
+
+  if (this.horasAsignadas < 1) {
+    this.alertService.error(`❌ Debes asignar al menos 1 hora.`);
+    return;
+  }
 
     const diaAFecha: Record<string, number> = {
       'Domingo': 0,
@@ -440,6 +458,7 @@ export class AsignarhorarioComponent implements OnInit{
     this.ultimoEventoIdTemporal = null;
     this.horaInicio = '';
     this.diaSeleccionado = '';
+    this,this.vacantesAula = null
   }
   
   //#region Listar, Guardar y Editar eventos
@@ -592,6 +611,17 @@ export class AsignarhorarioComponent implements OnInit{
 
   actualizarEvento() {
     if (!this.eventoSeleccionado) return;
+
+    const maxHoras = this.cursoSeleccionado?.horasDisponibles || 0;
+    if (this.horasAsignadas > maxHoras) {
+      this.alertService.error(`❌ No puedes asignar más de ${maxHoras} hora(s) a este curso.`);
+      return;
+    }
+  
+    if (this.horasAsignadas < 1) {
+      this.alertService.error(`❌ Debes asignar al menos 1 hora.`);
+      return;
+    }
   
     const [hora, minutos] = this.horaInicio.split(':').map(Number);
     const diaAFecha: Record<string, number> = {
@@ -642,6 +672,26 @@ export class AsignarhorarioComponent implements OnInit{
       this.eventoSeleccionado.setExtendedProp('isNew', true); // 🔥 Clave para guardar correctamente
   
       this.actualizarHorasRestantes(codigo, tipo, diferencia);
+
+      const eventosActuales = (this.calendarOptions.events as any[]).map(ev => {
+        if (ev.id === idEvento) {
+          return {
+            ...ev,
+            start: base,
+            end: fin,
+            extendedProps: {
+              ...ev.extendedProps,
+              n_horas: this.horasAsignadas,
+              dia: this.diaSeleccionado,
+              aula_id: this.aulaSeleccionada,
+              docente_id: this.docenteSeleccionado,
+              isNew: true
+            }
+          };
+        }
+        return ev;
+      });
+      this.calendarOptions.events = eventosActuales;
   
       this.alertService.success('📝 Evento temporal actualizado.');
       this.modalHorasActivo = false;
