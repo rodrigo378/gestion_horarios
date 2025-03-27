@@ -68,5 +68,5 @@ export interface Horario {
   horario_padre_id: number;
   hijos: Horario[];
   docente_id: number;
-  Docente: Docente;
+  Docente?: Docente;
 }

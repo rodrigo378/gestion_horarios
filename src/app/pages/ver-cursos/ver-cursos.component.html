@@ -373,7 +373,7 @@
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ horario.Docente.c_nomdoc }}
+                    {{ horario.Docente?.c_nomdoc || "-- -- -- -- -- -- --" }}
                   </p>
                 </div>
               </div>
@@ -553,7 +553,7 @@
         <input
           type="text"
           class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 text-gray-500"
-          value="{{ horario.Docente.c_nomdoc }}"
+          [value]="horario.Docente?.c_nomdoc || '--'"
           disabled
         />
       </div>
