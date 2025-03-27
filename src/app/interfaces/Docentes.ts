@@ -1,4 +1,4 @@
-export interface Docente {
+export interface Docentes {
   id?: number;
   nombres: string;
   apellido_paterno: string;

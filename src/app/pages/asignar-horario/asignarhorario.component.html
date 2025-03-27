@@ -163,7 +163,10 @@
     <div class="mb-3">
       <label class="block text-sm font-medium text-gray-700">Aula</label>
       <select class="w-full border rounded px-3 py-1" [(ngModel)]="aulaSeleccionada">
-        <option *ngFor="let aula of aulas" [value]="aula.id">{{ aula.nombre }}</option>
+        <option [ngValue]="null" disabled>-- Selecciona un aula --</option>
+        <option *ngFor="let a of aulas" [ngValue]="a.id">
+          {{ a.n_aulo }} ({{ a.aforo }} personas)
+        </option>
       </select>
     </div>
 
@@ -171,8 +174,9 @@
     <div class="mb-3">
       <label class="block text-sm font-medium text-gray-700">Docente</label>
       <select class="w-full border rounded px-3 py-1" [(ngModel)]="docenteSeleccionado">
-        <option *ngFor="let docente of docentes" [value]="docente.id">
-          {{ docente.nombre }}
+        <option [ngValue]="null" disabled>-- Selecciona un aula --</option>
+        <option *ngFor="let d of docentes" [value]="d.id">
+          {{ d.c_coddoc }} - {{ d.c_nomdoc }}
         </option>
       </select>
     </div>

@@ -23,6 +23,9 @@ export interface CreateHorario {
   c_coddoc: string;
   c_nomdoc: string;
   turno_id: number;
+
+  n_aulo?: string;
+  aforo?: number;
 }
 export interface UpdateHorario {
   id: number;
@@ -36,4 +39,6 @@ export interface UpdateHorario {
   c_coddoc: string;
   c_nomdoc: string;
   turno_id: number;
+  n_aulo?: string;
+  aforo?: number;
 }

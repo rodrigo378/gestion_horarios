@@ -14,6 +14,10 @@ import { CreateHorario, UpdateHorario } from '../../interfaces/Horario';
 import { Turno } from '../../interfaces/turno';
 import { TurnoService } from '../../services/turno.service';
 import { FullCalendarComponent } from '@fullcalendar/angular';
+import { DocentecurService } from '../../services/docentecur.service';
+import { AulaService } from '../../services/aula.service';
+import { Aula } from '../../interfaces/aula';
+import { Docente } from '../../interfaces/Docente';
 @Component({
   selector: 'app-asignarhorario',
   standalone: false,
@@ -37,16 +41,16 @@ export class AsignarhorarioComponent implements OnInit{
   ultimoEventoIdTemporal: string | null = null;
   //para el nuvo html-modal
   eventoSeleccionado: any = null;
-  aulaSeleccionada!: number;
-  docenteSeleccionado!: number;
+  aulaSeleccionada: number | null = null;
+  docenteSeleccionado: number | null = null;  
   diaSeleccionado: string = '';
   horaInicio: string = '';  
-  aulas = [ { id: 1, nombre: 'Aula 101' }, { id: 2, nombre: 'Aula 102' } ];
-  docentes = [ { id: 1, nombre: 'Carlos Pérez' }, { id: 2, nombre: 'Luz Herrera' } ];
+  aulas: Aula[] = [];
+  docentes: Docente[]= [];
   //para separa los cursos por planes
   cursosPlan2023: Curso[] = [];
   cursosPlan2025: Curso[] = [];
-
+  //detruir y contruir calender
   mostrarCalendario: boolean = true;
 
   
@@ -85,7 +89,9 @@ export class AsignarhorarioComponent implements OnInit{
     private horarioService: HorarioService,
     private cursoService: CursoService,
     private turnoService: TurnoService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private docenteService: DocentecurService,
+    private aulaService: AulaService,
   ) {}
 
   ngOnInit(): void {
@@ -97,8 +103,25 @@ export class AsignarhorarioComponent implements OnInit{
     });
     this.inicializarDragAndDrop();
     this.cargarHorarios();
+    this.cargarAulas()
+    this.cargarDocentes()
   }
   //#region 
+
+  private cargarAulas(): void {
+    this.aulaService.obtenerAulas().subscribe(data => {
+      console.log('🏫 AULAS:', data);
+      this.aulas = data;
+    });
+  }
+  
+  private cargarDocentes(): void {
+    this.docenteService.obtenerDocentes().subscribe(data => {
+      console.log('📚 DOCENTES:', data);
+      this.docentes = data;
+    });
+  }
+  
   private calcularHorasRestantesPorCurso(
     cursos: Curso[],
     horasAsignadas: Record<string, number>
@@ -437,6 +460,9 @@ export class AsignarhorarioComponent implements OnInit{
   
       const diferenciaEnMilisegundos = fin.getTime() - inicio.getTime();
       const horas = Math.round(diferenciaEnMilisegundos / (1000 * 60 * 60));
+
+      const aula = this.aulas.find(a => a.id === ev.extendedProps['aula_id']);
+      const docente = this.docentes.find(d => d.id === ev.extendedProps['docente_id']);      
   
       return {
         c_codcur: ev.extendedProps['codCur'],
@@ -446,8 +472,12 @@ export class AsignarhorarioComponent implements OnInit{
         h_fin: fin.toISOString(),
         n_horas: horas,
         c_color: ev.backgroundColor || '#3788d8',
-        c_coddoc: 'DNI123456',
-        c_nomdoc: 'Ing. Carlos Pérez',
+        c_coddoc: docente?.c_coddoc || 'Sin DNI',
+        c_nomdoc: docente?.c_nomdoc || 'Sin nombre',
+        n_aulo: aula?.n_aulo || 'SIN_AULA',
+        aforo: aula?.aforo || 0,
+        aula_id: Number(ev.extendedProps['aula_id']),
+        docente_id: Number(ev.extendedProps['docente_id']),
         turno_id: this.turnoId
       };
     });
@@ -577,6 +607,7 @@ export class AsignarhorarioComponent implements OnInit{
     }
   
     const docente = this.docentes.find(d => d.id === this.docenteSeleccionado);
+    const aula = this.aulas.find(a => a.id === this.aulaSeleccionada);
     const idEvento = this.eventoSeleccionado.id;
     const codigo = this.eventoSeleccionado.extendedProps.codCur;
     const tipo = this.eventoSeleccionado.extendedProps.tipo;
@@ -601,7 +632,7 @@ export class AsignarhorarioComponent implements OnInit{
       this.eventoSeleccionado = null;
       return;
     }
-  
+
     // ☁️ Actualización persistente
     const dataUpdate: UpdateHorario = {
       id: Number(idEvento),
@@ -612,8 +643,11 @@ export class AsignarhorarioComponent implements OnInit{
       h_fin: fin.toISOString(),
       n_horas: this.horasAsignadas,
       c_color: this.eventoSeleccionado.backgroundColor || '#3788d8',
-      c_coddoc: docente?.id.toString() || 'SIN_DOCENTE',
-      c_nomdoc: docente?.nombre || 'Sin nombre',
+      c_coddoc: docente?.c_coddoc || 'Sin DNI',
+      c_nomdoc: docente?.c_nomdoc || 'Sin nombre',
+
+        n_aulo: aula?.n_aulo || 'SIN_AULA',
+        aforo: aula?.aforo || 0,
       turno_id: this.turnoId
     };
   
