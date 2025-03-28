@@ -90,6 +90,7 @@ export class AsignarhorarioComponent implements OnInit {
     slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
     drop: this.handleExternalDrop.bind(this),
     eventClick: this.onEventClick.bind(this),
+    hiddenDays: [0],
   };
   //#endregion;
 
