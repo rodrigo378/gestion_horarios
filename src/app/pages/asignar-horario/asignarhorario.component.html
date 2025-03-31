@@ -1,6 +1,8 @@
 <div *ngIf="turnoData" class="shadow-lg p-3 bg-white rounded-lg">
   <p class="text-2xl font-bold">
     Asignación de horarios |
+    {{turnoData.n_codper}} -
+    {{ turnoData.n_codpla }} -
     {{ turnoData.n_ciclo }}° Ciclo -
     {{ turnoData.c_nommod }} -
     Sección {{ turnoData.c_grpcur }} -
@@ -96,6 +98,8 @@
 
 <div *ngIf="turnoData" class="shadow-lg p-3 bg-white rounded-lg mt-5">
   <p class="text-2xl font-bold">
+    {{turnoData.n_codper}} -
+    {{ turnoData.n_codpla }} -
     {{ turnoData.n_ciclo }}° Ciclo -
     {{ turnoData.c_nommod }} -
     Sección {{ turnoData.c_grpcur }} -
@@ -117,16 +121,23 @@
   💾 Guardar horarios
 </button>
 
+<!-- modal guardar/editar -->
 <div *ngIf="modalHorasActivo" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-  <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md text-center">
-    <h2 class="text-lg font-semibold mb-3">
+  <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg relative text-left">
+    
+    <!-- Botón cerrar arriba -->
+    <button (click)="cancelarAsignacionHoras()" class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-xl">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <h2 class="text-xl font-bold text-gray-800 mb-5 border-b pb-2">
       {{ eventoSeleccionado ? 'Editar horario de:' : 'Asignar horario a:' }}
     </h2>
     
     <!-- Curso (bloqueado) -->
-    <div class="mb-3">
-      <label class="block text-sm font-medium text-gray-700">Curso</label>
-      <select class="w-full border rounded px-3 py-1" disabled>
+    <div class="mb-4">
+      <label class="block text-sm font-semibold text-gray-600 mb-1">Curso</label>
+      <select class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100 cursor-not-allowed" disabled>
         <option>
           {{ cursoSeleccionado?.extendedProps?.codigo }} - {{ cursoSeleccionado?.title }}
         </option>
@@ -134,36 +145,46 @@
     </div>
 
     <!-- Día editable -->
-    <div class="mb-3">
-      <label class="block text-sm font-medium text-gray-700">Día</label>
-      <select class="w-full border rounded px-3 py-1" [(ngModel)]="diaSeleccionado">
+    <div class="mb-4">
+      <label class="block text-sm font-semibold text-gray-600 mb-1">Día</label>
+      <select class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="diaSeleccionado">
         <option *ngFor="let dia of ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado']">{{ dia }}</option>
       </select>
     </div>
 
     <!-- Hora inicio -->
-    <div class="mb-3">
-      <label class="block text-sm font-medium text-gray-700">Hora de inicio</label>
-      <input type="time" class="w-full border rounded px-3 py-1" [(ngModel)]="horaInicio">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <!-- Hora inicio -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-600 mb-1">Hora de inicio</label>
+        <input type="time" class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="horaInicio">
+      </div>
+    
+      <!-- Asignar horas -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-600 mb-1">
+          Asignar horas (máximo {{ cursoSeleccionado?.horasDisponibles }})
+        </label>
+        <input type="number"
+                [(ngModel)]="horasAsignadas"
+                [max]="cursoSeleccionado?.horasDisponibles"
+                min="1"
+                class="w-full border border-gray-300 rounded px-3 py-2 text-center">
+      </div>
     </div>
-
-    <!-- N° de horas -->
-    <div class="mb-3">
-      <label class="block text-sm font-medium text-gray-700">
-        Asignar horas - Máximo {{ cursoSeleccionado?.horasDisponibles }} horas
-      </label>
-      <input type="number"
-            [(ngModel)]="horasAsignadas"
-            [max]="cursoSeleccionado?.horasDisponibles"
-            min="1"
-            class="w-full border rounded px-3 py-1 text-center">
+    
+    <!-- Vacantes (debajo de horas) -->
+    <div *ngIf="vacantesAula !== null" class="mb-4 text-sm text-gray-700 text-center">
+      <span class="bg-gray-100 px-3 py-1 rounded-full inline-block text-2xl">
+        🧑‍🎓 Vacantes disponibles: <strong>{{ vacantesAula }}</strong>
+      </span>
     </div>
 
     <!-- Aula -->
-    <div class="mb-3">
-      <label class="block text-sm font-medium text-gray-700">Aula</label>
-      <select class="w-full border rounded px-3 py-1" [(ngModel)]="aulaSeleccionada">
-        <option [ngValue]="null" disabled>-- Selecciona un aula --</option>
+    <div class="mb-4">
+      <label class="block text-sm font-semibold text-gray-600 mb-1">Aula</label>
+      <select class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="aulaSeleccionada">
+        <option [ngValue]="null">-- Selecciona un aula --</option>
         <option *ngFor="let a of aulas" [ngValue]="a.id">
           {{ a.n_aula }} - Aforo de ({{ a.aforo }} personas)
         </option>
@@ -171,10 +192,10 @@
     </div>
 
     <!-- Docente -->
-    <div class="mb-3">
-      <label class="block text-sm font-medium text-gray-700">Docente</label>
-      <select class="w-full border rounded px-3 py-1" [(ngModel)]="docenteSeleccionado">
-        <option [ngValue]="null" disabled>-- Selecciona un aula --</option>
+    <div class="mb-6">
+      <label class="block text-sm font-semibold text-gray-600 mb-1">Docente</label>
+      <select class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="docenteSeleccionado">
+        <option [ngValue]="null">-- Selecciona un docente --</option>
         <option *ngFor="let d of docentes" [value]="d.id">
           {{ d.c_coddoc }} - {{ d.c_nomdoc }}
         </option>
@@ -182,31 +203,23 @@
     </div>
 
     <!-- Botones -->
-    <div class="mt-4 flex flex-wrap justify-center gap-3">
-      <!-- Botón de asignar o actualizar -->
+    <div class="flex flex-wrap justify-end gap-3">
       <button *ngIf="!eventoSeleccionado"
               (click)="confirmarAsignacionHoras()"
-              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+              class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
         ➕ Asignar
       </button>
 
       <button *ngIf="eventoSeleccionado"
               (click)="actualizarEvento()"
-              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
         🔄 Actualizar
       </button>
 
-      <!-- Botón eliminar -->
       <button *ngIf="eventoSeleccionado"
               (click)="eliminarEvento()"
-              class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+              class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
         🗑️ Eliminar
-      </button>
-
-      <!-- Cancelar -->
-      <button (click)="cancelarAsignacionHoras()"
-              class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
-        ❌ Cancelar
       </button>
     </div>
   </div>

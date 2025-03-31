@@ -167,7 +167,7 @@
                 </svg>
               </p>
             </th>
-            <th
+            <!-- <th
               class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
             >
               <p
@@ -190,8 +190,32 @@
                   ></path>
                 </svg>
               </p>
-            </th>
+            </th> -->
             <th
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+              >
+                Docente
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+            <!-- <th
               class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
             >
               <p
@@ -262,7 +286,7 @@
                   ></path>
                 </svg>
               </p>
-            </th>
+            </th> -->
 
             <th
               class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
@@ -288,10 +312,35 @@
                 </svg>
               </p>
             </th>
+
+            <th
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+              >
+                Equivalentes
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
           </tr>
         </thead>
         <tbody>
-          <!-- @for (horario of horarios; track horario.id) {
+          @for (horario of horarios; track horario.id) {
           <tr>
             <td class="p-4 border-b border-slate-200">
               <div class="flex items-center gap-3">
@@ -311,7 +360,7 @@
                 </div>
               </div>
             </td>
-            <td class="p-4 border-b border-slate-200">
+            <!-- <td class="p-4 border-b border-slate-200">
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
@@ -319,8 +368,17 @@
                   </p>
                 </div>
               </div>
-            </td>
+            </td> -->
             <td class="p-4 border-b border-slate-200">
+              <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ horario.Docente.c_nomdoc }}
+                  </p>
+                </div>
+              </div>
+            </td>
+            <!-- <td class="p-4 border-b border-slate-200">
               <div class="flex flex-col">
                 <p class="text-sm font-semibold text-slate-700">
                   {{ horario.h_inicio }}
@@ -333,18 +391,19 @@
                   {{ horario.h_fin }}
                 </p>
               </div>
-            </td>
-            <td class="p-4 border-b border-slate-200">
+            </td> -->
+            <!-- <td class="p-4 border-b border-slate-200">
               <div class="flex flex-col">
                 <p class="text-sm font-semibold text-slate-700">
                   {{ horario.n_horas }}
                 </p>
               </div>
-            </td>
+            </td> -->
 
             <td class="p-4 border-b border-slate-200">
               <!-- Botón agregar -->
-              <!-- <button
+              <button
+                [disabled]="horario.horario_padre_id !== null"
                 class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-green-600 transition-all hover:bg-green-600/10 active:bg-green-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 type="button"
                 (click)="clickMas(horario)"
@@ -356,8 +415,22 @@
                 </span>
               </button>
             </td>
-          </tr> -->
-          
+
+            <td class="p-4 border-b border-slate-200">
+              <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                  @for (hijo of horario.hijos; track hijo.id) {
+                  <p class="text-sm font-semibold text-slate-700">
+                    - ({{ hijo.n_codper }}) {{ hijo.c_codcur }} -
+                    {{ horario.turno.c_grpcur }} ({{ horario.turno.c_codfac }} -
+                    {{ horario.turno.c_codesp }})
+                  </p>
+                  }
+                </div>
+              </div>
+            </td>
+          </tr>
+          }
         </tbody>
       </table>
     </div>
@@ -392,8 +465,9 @@
           Definir curso transversal
         </h2>
         <p class="text-sm text-gray-600">
-          <span class="font-semibold">Código:</span> CURS1234 <br />
-          <span class="font-semibold">Nombre:</span> Curso de Comunicación
+          <span class="font-semibold">Código:</span> {{ horario.c_codcur }}
+          <br />
+          <span class="font-semibold">Nombre:</span> {{ horario.c_nomcur }}
         </p>
       </div>
       <button
@@ -466,13 +540,27 @@
           class="w-full border border-gray-300 rounded-md px-3 py-2"
         >
           <option value="">Seleccione plan</option>
-          <option value="20231">2023</option>
-          <option value="20232">2025</option>
+          <option value="2023">2023</option>
+          <option value="2025">2025</option>
         </select>
       </div>
+
+      <!-- Docente -->
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Docente</label
+        >
+        <input
+          type="text"
+          class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 text-gray-500"
+          value="{{ horario.Docente.c_nomdoc }}"
+          disabled
+        />
+      </div>
+
       <button
         class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
-        (click)="false"
+        (click)="clickBuscarCursosModal()"
       >
         Buscar
       </button>
@@ -495,26 +583,37 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let curso of cursosFiltrados" class="border-t">
-              <td class="px-4 py-2">{{ curso.n_codper }}</td>
-              <td class="px-4 py-2">
-                ({{ curso.c_codcur }}) {{ curso.c_nomcur }}
-              </td>
-              <td class="px-4 py-2">{{ curso.turno.c_grpcur }}</td>
-              <td class="px-4 py-2">{{ curso.turno.n_ciclo }}</td>
-              <td class="px-4 py-2">
-                <button
-                  class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-green-600 transition-all hover:bg-green-600/10 active:bg-green-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                  type="button"
+            <ng-container *ngFor="let curso of cursosFiltrados">
+              <ng-container
+                *ngIf="curso.horario_padre_id === null"
+                class="border-t"
+              >
+                <tr
+                  *ngIf="curso.turno_id !== horario.turno_id"
+                  class="border-t"
                 >
-                  <span
-                    class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                  >
-                    <i class="fa-solid fa-plus fa-lg"></i>
-                  </span>
-                </button>
-              </td>
-            </tr>
+                  <td class="px-4 py-2">{{ curso.n_codper }}</td>
+                  <td class="px-4 py-2">
+                    ({{ curso.c_codcur }}) {{ curso.c_nomcur }}
+                  </td>
+                  <td class="px-4 py-2">{{ curso.turno.c_grpcur }}</td>
+                  <td class="px-4 py-2">{{ curso.turno.n_ciclo }}</td>
+                  <td class="px-4 py-2">
+                    <button
+                      class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-green-600 transition-all hover:bg-green-600/10 active:bg-green-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                      type="button"
+                      (click)="clickMasCursoTransversal(curso.id)"
+                    >
+                      <span
+                        class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                      >
+                        <i class="fa-solid fa-plus fa-lg"></i>
+                      </span>
+                    </button>
+                  </td>
+                </tr>
+              </ng-container>
+            </ng-container>
           </tbody>
         </table>
       </div>

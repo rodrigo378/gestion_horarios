@@ -1,3 +1,6 @@
+import { Docente } from "./Docente";
+import { Turno } from "./turno";
+
 export interface HorarioExtendido {
   id: number;
   dia: string;
@@ -90,4 +93,25 @@ export interface UpdateHorarioDetalle {
   aula_id: number;
   docente_id: number;
   turno_id: number;
+  }
+
+export interface Horario {
+  id?: number;
+  c_codcur: string;
+  c_nomcur: string;
+  n_codper: string;
+  dia: string;
+  h_inicio: string;
+  h_fin: string;
+  n_horas: number;
+  aula_id: number;
+  c_color: string;
+  c_coddoc: string;
+  c_nomdoc: string;
+  turno_id: number;
+  turno: Turno;
+  horario_padre_id: number;
+  hijos: Horario[];
+  docente_id: number;
+  Docente: Docente;
 }
