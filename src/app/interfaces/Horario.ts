@@ -115,3 +115,7 @@ export interface Horario {
   docente_id: number;
   Docente: Docente;
 }
+//-----------Delete---------------
+export interface DeleteHorariosRequest {
+  horarios_id: number[];
+}
