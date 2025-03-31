@@ -3,7 +3,7 @@ import { environment } from '../../environment/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
-import { CreateHorario, DeleteHorariosRequest, Horario, HorarioExtendido, UpdateHorarioData } from '../interfaces/Horario';
+import { CreateHorario, CreateHorarioRequest, DeleteHorariosRequest, Horario, HorarioExtendido, UpdateHorarioData } from '../interfaces/Horario';
 @Injectable({
   providedIn: 'root',
 })
@@ -12,8 +12,8 @@ export class HorarioService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  guardarHorarios(dataArray: CreateHorario[]): Observable<any> {
-    return this.http.post(`${this.apiUrl}`, { dataArray });
+  guardarHorarios(data: CreateHorarioRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}`, data); // ✅ No lo vuelvas a meter en { dataArray }
   }
   
   getHorarioPorTurno(turno_id: number): Observable<HorarioExtendido[]> {

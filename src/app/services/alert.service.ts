@@ -69,4 +69,22 @@ export class AlertService {
     Swal.fire('ℹ️ Información', message, 'info');
   }
 
+  confirmConConflictos(htmlErrores: string): Promise<boolean> {
+    return Swal.fire({
+      title: '⚠️ ¡Conflictos detectados!',
+      html: `<div style="text-align:left; font-size:15px;">
+                <p>Se encontraron los siguientes conflictos:</p>
+                <ul style="padding-left: 20px; margin-top:10px;">${htmlErrores}</ul>
+                <p style="margin-top:20px;">¿Deseas guardar los horarios a pesar de los conflictos?</p>
+            </div>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '🛑 Guardar de todas formas',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33', // rojo
+      cancelButtonColor: '#3085d6',
+      width: '600px'
+    }).then(result => result.isConfirmed);
+  }
+  
 }

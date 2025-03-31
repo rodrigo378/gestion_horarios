@@ -65,6 +65,12 @@ export interface CreateHorario {
   }[];
 }
 
+export interface CreateHorarioRequest {
+  dataArray: CreateHorario[];
+  verificar: boolean;
+}
+
+
 //---------------Update--------------------//
 export interface UpdateHorarioData {
   dataArray: UpdateHorarioItem[];
@@ -92,8 +98,8 @@ export interface UpdateHorarioDetalle {
   h_fin: string;
   n_horas: number;
   c_color: string;
-  aula_id: number;
-  docente_id: number;
+  aula_id: number | null;
+  docente_id: number | null;
   turno_id: number;
   }
 

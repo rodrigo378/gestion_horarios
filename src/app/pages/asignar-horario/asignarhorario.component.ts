@@ -84,6 +84,7 @@ export class AsignarhorarioComponent implements OnInit{
     slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
     drop: this.handleExternalDrop.bind(this),
     eventClick: this.onEventClick.bind(this),
+    eventDrop: this.onEventDrop.bind(this),
     hiddenDays: [0]
   };
   //#endregion;
@@ -290,9 +291,17 @@ export class AsignarhorarioComponent implements OnInit{
   get cursosPlan2023Visibles(): Curso[] {
     return this.cursosPlan2023.filter(c => (c.horasRestantes || 0) > 0);
   }
+
+  get cursosPlan2023Asignados(): number {
+    return this.cursosPlan2023.length - this.cursosPlan2023Visibles.length;
+  }  
   
   get cursosPlan2025Visibles(): Curso[] {
     return this.cursosPlan2025.filter(c => (c.horasRestantes || 0) > 0);
+  }
+
+  get cursosPlan2025Asignado(): number {
+    return this.cursosPlan2025.length - this.cursosPlan2025Visibles.length;
   }
   
   //#endregion
@@ -365,6 +374,43 @@ export class AsignarhorarioComponent implements OnInit{
     this.horasAsignadas = evento.extendedProps.n_horas || 0;
     this.aulaSeleccionada = evento.extendedProps.aula_id ?? null;
     this.docenteSeleccionado = evento.extendedProps.docente_id ?? null;
+  }
+  
+  onEventDrop(info: any): void {
+    const evento = info.event;
+  
+    this.eventoSeleccionado = evento;
+    this.modalHorasActivo = true;
+  
+    const fecha = new Date(evento.start);
+    this.fechaDrop = fecha;
+    this.diaSeleccionado = this.obtenerDiaSemana(fecha);
+    this.horaInicio = this.formatDateTime(fecha);
+    this.horasAsignadas = evento.extendedProps.n_horas || 1;
+    this.aulaSeleccionada = evento.extendedProps.aula_id ?? null;
+    this.docenteSeleccionado = evento.extendedProps.docente_id ?? null;
+  
+    const codigo = evento.extendedProps.codCur;
+    const tipo = evento.extendedProps.tipo;
+    const curso = this.cursos.find(c => c.c_codcur === codigo && c.tipo === tipo);
+  
+    let horasMaximas = 1;
+    if (curso) {
+      horasMaximas = tipo === 'Teoría' ? (curso.n_ht ?? 1) : (curso.n_hp ?? 1);
+    }
+  
+    this.cursoSeleccionado = {
+      ...curso,
+      title: evento.title,
+      extendedProps: {
+        codigo,
+        tipo
+      },
+      horasDisponibles: horasMaximas
+    };
+  
+    // Aquí puedes autoactualizar si deseas
+    // this.actualizarEvento();
   }
   
   //#endregion
@@ -537,20 +583,43 @@ export class AsignarhorarioComponent implements OnInit{
       };
     });
   
-    // Paso 3: Enviar al backend
-    this.horarioService.guardarHorarios(dataArray).subscribe({
-      next: () => {
-        this.alertService.success('✅ Horarios guardados correctamente.');
-        this.cargarHorarios();
+    const payload = {
+      dataArray: dataArray,
+      verificar: true
+    };
+    // Paso 3: Enviar al backend con verificación activa
+    this.horarioService.guardarHorarios({ dataArray, verificar: true }).subscribe({
+      next: (res) => {
+        if (res.success === false && res.errores?.length > 0) {
+          const errores = Array.isArray(res.errores) ? res.errores as string[] : [];
+          const erroresHtml = errores.map(err => `<li>${err}</li>`).join('');
+                this.alertService.confirmConConflictos(erroresHtml).then(confirmado => {
+            if (confirmado) {
+              // Volver a enviar con verificar en false
+              this.horarioService.guardarHorarios({ dataArray, verificar: false }).subscribe({
+                next: () => {
+                  this.alertService.success('✅ Horarios guardados a pesar de los conflictos.');
+                  this.cargarHorarios();
+                },
+                error: () => {
+                  this.alertService.error('❌ Error al guardar los horarios con conflictos.');
+                }
+              });
+            }
+          });
+        } else {
+          this.alertService.success('✅ Horarios guardados correctamente.');
+          this.cargarHorarios();
+        }
       },
       error: (err: any) => {
         this.alertService.error('❌ Error al guardar horarios.');
         console.error(err);
       }
     });
-    
-  
-    console.log('📝 Data enviada al backend:', { dataArray });
+
+    console.log('📝 Data enviada al backend:', { dataArray, verificar: true });
+
   }
   
   cargarHorarios(): void {
@@ -751,14 +820,15 @@ export class AsignarhorarioComponent implements OnInit{
               h_fin: fin.toISOString(),
               n_horas: this.horasAsignadas,
               c_color: this.eventoSeleccionado.backgroundColor || '#3788d8',
-              aula_id: Number(this.aulaSeleccionada),
-              docente_id: Number(this.docenteSeleccionado),
+              aula_id: this.aulaSeleccionada != null ? Number(this.aulaSeleccionada) : null,
+              docente_id: this.docenteSeleccionado != null ? Number(this.docenteSeleccionado) : null,
               turno_id: this.turnoId
             }
           ]
         }
       ]
     };
+    
     
     this.horarioService.updateHorarios(dataUpdate).subscribe({
       next: () => {
