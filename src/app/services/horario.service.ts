@@ -77,4 +77,11 @@ export class HorarioService {
     if (c_codcur) params.n_codpla = c_codcur;
     return this.http.get<Curso2[]>(`${this.apiUrl}/curso`, { params });
   }
+
+  createTransversal(padre_id: number, hijos_id: number[]) {
+    return this.http.post(`${this.apiUrl}/curso/transversal`, {
+      padre_id,
+      hijos_id,
+    });
+  }
 }

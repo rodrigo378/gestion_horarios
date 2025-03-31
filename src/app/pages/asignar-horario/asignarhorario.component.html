@@ -106,13 +106,20 @@
     </p>
   </div>
 
-  <button
-  (click)="eliminarTodosLosHorarios()"
-  class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-2xl shadow-md transition duration-200 flex items-center gap-2 mt-5"
-  >
-    <span>🗑️</span>
-    <span>Eliminar todos los horarios</span>
-  </button>
+  <div class="flex justify-end items-center gap-4 mt-5">
+    <button
+      (click)="eliminarTodosLosHorarios()"
+      class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-2xl shadow-md transition duration-200 flex items-center gap-2">
+      <span>🗑️</span>
+      <span>Eliminar todos los horarios</span>
+    </button>
+  
+    <button
+      (click)="guardarEventos()"
+      class="bg-green-600 text-white px-4 py-2 rounded-2xl hover:bg-green-700 transition">
+      💾 Guardar horarios
+    </button>
+  </div>
 
   <!-- 📅 Calendario -->
   <full-calendar  
@@ -121,12 +128,6 @@
     [options]="calendarOptions"
     class="mt-5 shadow-lg bg-white p-5 rounded-lg border border-gray-200">
   </full-calendar>
-
-  <button
-    (click)="guardarEventos()"
-    class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-    💾 Guardar horarios
-  </button>
 
 <!-- modal guardar/editar -->
 <div *ngIf="modalHorasActivo" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -193,7 +194,7 @@
       <select class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="aulaSeleccionada">
         <option [ngValue]="null">-- Selecciona un aula --</option>
         <option *ngFor="let a of aulas" [ngValue]="a.id">
-          {{ a.n_aula }} - Aforo de ({{ a.aforo }} personas)
+          Aula: {{ a.c_codaula }} - Aforo de ({{ a.n_capacidad }} personas) - {{ a.n_piso | pisoLabel }} - Pabellon {{ a.pabellon }}
         </option>
       </select>
     </div>

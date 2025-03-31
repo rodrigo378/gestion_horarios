@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { HorarioService } from '../../services/horario.service';
 import { Curso2, Especialidad } from '../../interfaces/Curso';
 import { CursoService } from '../../services/curso.service';
-import { Horario } from '../../interfaces/Horario';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
 
@@ -159,5 +158,20 @@ export class VerCursosComponent implements OnInit {
     console.log('Cursos seleccionados:', this.arrayCheckboxCursos);
   }
 
-  clickGuardarModal() {}
+  clickGuardarModal() {
+    console.log('padre_id => ', this.curso.id);
+    console.log('hijos_id => ', this.arrayCheckboxCursos);
+
+    this.horarioService
+      .createTransversal(this.curso.id, this.arrayCheckboxCursos)
+      .subscribe({
+        next: (res: any) => {
+          console.log(res);
+          this.getCursos();
+        },
+        error: (err: HttpErrorResponse) => {
+          console.log(err);
+        },
+      });
+  }
 }
