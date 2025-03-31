@@ -63,6 +63,14 @@ export interface Horario {
   c_color: string;
   c_coddoc: string;
   c_nomdoc: string;
+
+  n_codper_equ: string;
+  c_codmod_equ: string;
+  c_codfac_equ: string;
+  c_codesp_equ: string;
+  c_codcur_equ: string;
+  c_nomcur_equ: string;
+
   turno_id: number;
   turno: Turno;
   horario_padre_id: number;

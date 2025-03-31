@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HorarioService } from '../../services/horario.service';
-import { Especialidad } from '../../interfaces/Curso';
+import { Curso2, Especialidad } from '../../interfaces/Curso';
 import { CursoService } from '../../services/curso.service';
 import { Horario } from '../../interfaces/Horario';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -13,8 +13,9 @@ import { AlertService } from '../../services/alert.service';
   styleUrl: './ver-cursos.component.css',
 })
 export class VerCursosComponent implements OnInit {
-  horarios: Horario[] = [];
-  horario!: Horario;
+  cursos: Curso2[] = [];
+  curso!: Curso2;
+
   especialidades: Especialidad[] = [];
   especialidadesModal: Especialidad[] = [];
   cursosFiltrados: any[] = [];
@@ -29,9 +30,9 @@ export class VerCursosComponent implements OnInit {
 
   filtros = {
     c_codmod: '',
+    n_codper: '',
     c_codfac: '',
     c_codesp: '',
-    c_codpla: '',
   };
 
   constructor(
@@ -42,35 +43,36 @@ export class VerCursosComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  getHorarios() {
-    this.horarioService
-      .getHorarios(
-        this.selectModalidad,
-        Number(this.selectPeriodo),
-        this.selectFacultadad,
-        this.selectEspecialidad,
-        Number(this.selectPlan)
-      )
-      .subscribe((data) => {
-        this.horarios = data;
-        console.log('cursos tabla => ', this.horarios);
-      });
+  getCursos() {
+    this.horarioService.getCurso().subscribe((data) => {
+      console.log('data => ', data);
+      this.cursos = data;
+    });
   }
 
-  getHorariosFiltrados() {
-    console.log('filtros => ', this.filtros);
-
+  getCursoTransversal() {
     this.horarioService
-      .getHorarios(
-        this.filtros.c_codmod,
-        undefined,
+      .getCurso(
+        Number(this.filtros.c_codmod),
+        this.filtros.n_codper,
         this.filtros.c_codfac,
-        this.filtros.c_codesp,
-        Number(this.filtros.c_codpla)
+        this.filtros.c_codesp
       )
       .subscribe((data) => {
-        this.cursosFiltrados = data;
-        console.log('cursos modal => ', data);
+        this.cursosFiltrados = data.filter((curso) => {
+          const codA = this.curso.c_codcur;
+          const codAeq = this.curso.c_codcur_equ;
+          const codB = curso.c_codcur;
+          const codBeq = curso.c_codcur_equ;
+
+          return (
+            codA === codB ||
+            codA === codBeq ||
+            (codAeq && (codAeq === codB || codAeq === codBeq))
+          );
+        });
+
+        console.log('📚 Cursos filtrados modal => ', this.cursosFiltrados);
       });
   }
 
@@ -95,30 +97,30 @@ export class VerCursosComponent implements OnInit {
   }
 
   clickDefinirCursoTransversales() {
-    this.getHorarios();
+    this.getCursos();
   }
 
-  clickMas(horario: Horario) {
-    console.log('horario => ', horario);
-    this.horario = horario;
+  clickMas(curso: Curso2) {
+    console.log('curso => ', curso);
+    this.curso = curso;
     this.mostrarModalCrear = true;
   }
 
   clickBuscarCursosModal() {
-    this.getHorariosFiltrados();
+    this.getCursoTransversal();
   }
 
   clickMasCursoTransversal(hijo_id: number) {
-    console.log('padre_id => ', this.horario.id);
+    console.log('padre_id => ', this.curso.id);
     console.log('hijo_id => ', hijo_id);
 
     this.horarioService
-      .asociarHorarioTransversal(Number(this.horario.id), hijo_id)
+      .asociarHorarioTransversal(Number(this.curso.id), hijo_id)
       .subscribe({
         next: (res: any) => {
           console.log(res);
-          this.getHorariosFiltrados();
-          this.getHorarios();
+          this.getCursoTransversal();
+          this.getCursos();
           this.alertService.success('Se crea el curso transversal');
         },
         error: (err: HttpErrorResponse) => {

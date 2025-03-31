@@ -9,6 +9,7 @@ import {
   Horario,
   UpdateHorario,
 } from '../interfaces/Horario';
+import { Curso2 } from '../interfaces/Curso';
 @Injectable({
   providedIn: 'root',
 })
@@ -54,5 +55,21 @@ export class HorarioService {
 
   asociarHorarioTransversal(padre_id: number, hijo_id: number) {
     return this.http.post(`${this.apiUrl}/transversal`, { padre_id, hijo_id });
+  }
+
+  getCurso(
+    c_codmod?: number,
+    n_codper?: string,
+    c_codfac?: string,
+    c_codesp?: string,
+    c_codcur?: string
+  ): Observable<Curso2[]> {
+    const params: any = {};
+    if (c_codmod) params.c_codmod = c_codmod;
+    if (n_codper) params.n_codper = n_codper;
+    if (c_codfac) params.c_codfac = c_codfac;
+    if (c_codesp) params.c_codesp = c_codesp;
+    if (c_codcur) params.n_codpla = c_codcur;
+    return this.http.get<Curso2[]>(`${this.apiUrl}/curso`, { params });
   }
 }

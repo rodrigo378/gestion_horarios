@@ -125,6 +125,30 @@
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
               >
+                Id
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+            <th
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+              >
                 Codigo
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -340,13 +364,13 @@
           </tr>
         </thead>
         <tbody>
-          @for (horario of horarios; track horario.id) {
+          @for (curso of cursos; track curso.id) {
           <tr>
             <td class="p-4 border-b border-slate-200">
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ horario.c_codcur }}
+                    {{ curso.id }}
                   </p>
                 </div>
               </div>
@@ -355,8 +379,31 @@
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ horario.c_nomcur }}
+                    {{ curso.c_codcur }}
                   </p>
+                </div>
+              </div>
+            </td>
+            <td class="p-4 border-b border-slate-200">
+              <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ curso.c_nomcur }}
+                  </p>
+                </div>
+              </div>
+            </td>
+            <td class="p-4 border-b border-slate-200">
+              <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                  @for (horario of curso.Horario; track horario.id) {
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ horario.Docente?.c_nomdoc || "sin docente" }}
+                    ({{ horario.dia }})
+                    {{ horario.h_inicio | date : "shortTime" }} -
+                    {{ horario.h_fin | date : "shortTime" }}
+                  </p>
+                  }
                 </div>
               </div>
             </td>
@@ -369,15 +416,15 @@
                 </div>
               </div>
             </td> -->
-            <td class="p-4 border-b border-slate-200">
+            <!-- <td class="p-4 border-b border-slate-200">
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ horario.Docente?.c_nomdoc || "-- -- -- -- -- -- --" }}
+                    {{ curso.Docente?.c_nomdoc || "-- -- -- -- -- -- --" }}
                   </p>
                 </div>
               </div>
-            </td>
+            </td> -->
             <!-- <td class="p-4 border-b border-slate-200">
               <div class="flex flex-col">
                 <p class="text-sm font-semibold text-slate-700">
@@ -403,10 +450,9 @@
             <td class="p-4 border-b border-slate-200">
               <!-- Botón agregar -->
               <button
-                [disabled]="horario.horario_padre_id !== null"
                 class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-green-600 transition-all hover:bg-green-600/10 active:bg-green-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 type="button"
-                (click)="clickMas(horario)"
+                (click)="clickMas(curso)"
               >
                 <span
                   class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
@@ -416,10 +462,10 @@
               </button>
             </td>
 
-            <td class="p-4 border-b border-slate-200">
+            <!-- <td class="p-4 border-b border-slate-200">
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
-                  @for (hijo of horario.hijos; track hijo.id) {
+                  @for (hijo of curso.hijos; track hijo.id) {
                   <p class="text-sm font-semibold text-slate-700">
                     - ({{ hijo.n_codper }}) {{ hijo.c_codcur }} -
                     {{ horario.turno.c_grpcur }} ({{ horario.turno.c_codfac }} -
@@ -428,7 +474,7 @@
                   }
                 </div>
               </div>
-            </td>
+            </td> -->
           </tr>
           }
         </tbody>
@@ -465,9 +511,9 @@
           Definir curso transversal
         </h2>
         <p class="text-sm text-gray-600">
-          <span class="font-semibold">Código:</span> {{ horario.c_codcur }}
+          <span class="font-semibold">Código:</span> {{ curso.c_codcur }}
           <br />
-          <span class="font-semibold">Nombre:</span> {{ horario.c_nomcur }}
+          <span class="font-semibold">Nombre:</span> {{ curso.c_nomcur }}
         </p>
       </div>
       <button
@@ -532,7 +578,7 @@
       </div>
 
       <!-- Plan -->
-      <div>
+      <!-- <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Plan</label>
         <select
           [(ngModel)]="filtros.c_codpla"
@@ -543,10 +589,10 @@
           <option value="2023">2023</option>
           <option value="2025">2025</option>
         </select>
-      </div>
+      </div> -->
 
       <!-- Docente -->
-      <div class="md:col-span-2">
+      <!-- <div class="md:col-span-2">
         <label class="block text-sm font-medium text-gray-700 mb-1"
           >Docente</label
         >
@@ -556,7 +602,7 @@
           [value]="horario.Docente?.c_nomdoc || '--'"
           disabled
         />
-      </div>
+      </div> -->
 
       <button
         class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
@@ -575,6 +621,7 @@
         <table class="min-w-full text-sm text-left text-gray-700">
           <thead class="bg-gray-100">
             <tr>
+              <th class="px-4 py-2">Id</th>
               <th class="px-4 py-2">Cod Plan</th>
               <th class="px-4 py-2">Curso</th>
               <th class="px-4 py-2">Sección</th>
@@ -588,11 +635,9 @@
                 *ngIf="curso.horario_padre_id === null"
                 class="border-t"
               >
-                <tr
-                  *ngIf="curso.turno_id !== horario.turno_id"
-                  class="border-t"
-                >
-                  <td class="px-4 py-2">{{ curso.n_codper }}</td>
+                <tr class="border-t">
+                  <td class="px-4 py-2">{{ curso.id }}</td>
+                  <td class="px-4 py-2">{{ curso.n_codper }}asds</td>
                   <td class="px-4 py-2">
                     ({{ curso.c_codcur }}) {{ curso.c_nomcur }}
                   </td>

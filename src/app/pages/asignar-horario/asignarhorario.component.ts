@@ -210,6 +210,9 @@ export class AsignarhorarioComponent implements OnInit {
             this.cursosPlan2023 = resultado.cursosPlan2023;
             this.cursosPlan2025 = resultado.cursosPlan2025;
 
+            console.log('cursosPlan2023 => ', this.cursosPlan2023);
+            console.log('cursosPlan2025 => ', this.cursosPlan2025);
+
             // this.cargarHorarios();
           });
       });
@@ -375,6 +378,8 @@ export class AsignarhorarioComponent implements OnInit {
   //#endregion
 
   confirmarAsignacionHoras() {
+    console.log('confirmarAsignacionHoras');
+
     if (!this.fechaDrop || !this.horaInicio) return;
 
     // ✅ VALIDACIÓN DE HORAS
