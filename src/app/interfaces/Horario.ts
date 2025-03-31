@@ -44,15 +44,16 @@ export interface CreateHorario {
     n_ciclo: number;
     c_area?: string;
     turno_id: number;
-    n_codper_equ: string;
-    c_codmod_equ: string;
-    c_codfac_equ: string;
-    c_codesp_equ: string;
-    c_codcur_equ: string;
-    c_nomcur_equ: string;
+
+    n_codper_equ: string | null;
+    c_codmod_equ: string | null;
+    c_codfac_equ: string | null;
+    c_codesp_equ: string | null;
+    c_codcur_equ: string | null;
+    c_nomcur_equ: string | null;
   };
   horarios: {
-    id?: number; // por si ya existen
+    id?: number;
     dia: string;
     h_inicio: string;
     h_fin: string;
@@ -63,6 +64,7 @@ export interface CreateHorario {
     turno_id: number;
   }[];
 }
+
 //---------------Update--------------------//
 export interface UpdateHorarioData {
   dataArray: UpdateHorarioItem[];
