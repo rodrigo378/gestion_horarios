@@ -26,6 +26,8 @@ export class VerCursosComponent implements OnInit {
   selectPlan: string = '';
   selectPeriodo: string = '';
 
+  arrayCheckboxCursos: number[] = [];
+
   mostrarModalCrear: boolean = false;
 
   filtros = {
@@ -144,4 +146,18 @@ export class VerCursosComponent implements OnInit {
     this.mostrarModalCrear = false;
     this.cursosFiltrados = [];
   }
+
+  toggleSeleccionCurso(curso: any) {
+    const index = this.arrayCheckboxCursos.indexOf(curso.id);
+
+    if (index !== -1) {
+      this.arrayCheckboxCursos.splice(index, 1);
+    } else {
+      this.arrayCheckboxCursos.push(curso.id);
+    }
+
+    console.log('Cursos seleccionados:', this.arrayCheckboxCursos);
+  }
+
+  clickGuardarModal() {}
 }

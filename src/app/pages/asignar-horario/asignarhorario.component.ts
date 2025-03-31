@@ -356,9 +356,9 @@ export class AsignarhorarioComponent implements OnInit {
       (c) => c.c_codcur === codigo && c.tipo === tipo
     );
 
-    let horasMaximas = 1;
+    let horasMaximas = 0;
     if (curso) {
-      horasMaximas = tipo === 'Teoría' ? curso.n_ht ?? 1 : curso.n_hp ?? 1;
+      horasMaximas = tipo === 'Teoría' ? curso.n_ht ?? 0 : curso.n_hp ?? 0;
     }
 
     this.vacantesAula = curso?.vacante ?? null;
@@ -377,7 +377,7 @@ export class AsignarhorarioComponent implements OnInit {
     this.fechaDrop = fecha;
     this.diaSeleccionado = this.obtenerDiaSemana(fecha);
     this.horaInicio = this.formatDateTime(fecha);
-    this.horasAsignadas = evento.extendedProps.n_horas || 1;
+    this.horasAsignadas = evento.extendedProps.n_horas || 0;
     this.aulaSeleccionada = evento.extendedProps.aula_id ?? null;
     this.docenteSeleccionado = evento.extendedProps.docente_id ?? null;
   }
@@ -565,12 +565,14 @@ export class AsignarhorarioComponent implements OnInit {
           n_ciclo: Number(curso?.n_ciclo) || 0,
           c_area: curso?.c_area || '',
           turno_id: this.turnoId,
-          n_codper_equ: String(curso?.n_codper_equ || null),
-          c_codmod_equ: String(curso?.c_codmod_equ || null),
-          c_codfac_equ: String(curso?.c_codfac_equ || null),
-          c_codesp_equ: String(curso?.c_codesp_equ || null),
-          c_codcur_equ: String(curso?.c_codcur_equ || null),
-          c_nomcur_equ: String(curso?.c_nomcur_equ || null),
+          n_codper_equ:
+            curso?.n_codper_equ != null ? String(curso.n_codper_equ) : null,
+          c_codmod_equ:
+            curso?.c_codmod_equ != null ? String(curso.c_codmod_equ) : null,
+          c_codfac_equ: curso?.c_codfac_equ ?? null,
+          c_codesp_equ: curso?.c_codesp_equ ?? null,
+          c_codcur_equ: curso?.c_codcur_equ ?? null,
+          c_nomcur_equ: curso?.c_nomcur_equ ?? null,
         },
         horarios: horariosDelCurso,
       };

@@ -59,4 +59,42 @@ export interface Curso2 {
   turno_id: number;
   Horario: Horario[];
   turno: Turno;
+  cursosPadres: CursoPadre[];
+  cursosHijos: CursoHijo[];
+}
+
+export interface CursoPadre {
+  id: number;
+  curso_id: number;
+  padre_curso_id: number;
+  shortname: string;
+  cursoPadre: CursoResumen;
+}
+
+export interface CursoHijo {
+  id: number;
+  curso_id: number;
+  padre_curso_id: number;
+  shortname: string;
+  cursosHijo: CursoResumen;
+}
+
+export interface CursoResumen {
+  id: number;
+  n_codper: string;
+  c_codmod: number;
+  c_codfac: string;
+  c_codesp: string;
+  c_codcur: string;
+  c_nomcur: string;
+  n_ciclo: number;
+  c_area: string;
+  n_codper_equ?: string;
+  c_codmod_equ?: string;
+  c_codfac_equ?: string;
+  c_codesp_equ?: string;
+  c_codcur_equ?: string;
+  c_nomcur_equ?: string;
+  turno_id: number;
+  turno?: Turno;
 }
