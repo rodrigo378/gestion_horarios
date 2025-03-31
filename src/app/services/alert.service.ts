@@ -65,4 +65,8 @@ export class AlertService {
     }).then(result => result.isConfirmed);
   }
 
+    info(message: string): void {
+    Swal.fire('ℹ️ Información', message, 'info');
+  }
+
 }

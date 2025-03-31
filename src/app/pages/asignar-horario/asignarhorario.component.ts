@@ -565,12 +565,12 @@ export class AsignarhorarioComponent implements OnInit {
           n_ciclo: Number(curso?.n_ciclo) || 0,
           c_area: curso?.c_area || '',
           turno_id: this.turnoId,
-          n_codper_equ: String(curso?.n_codper_equ || 'NINGUNO'),
-          c_codmod_equ: String(curso?.c_codmod_equ || 'NINGUNO'),
-          c_codfac_equ: String(curso?.c_codfac_equ || 'NINGUNO'),
-          c_codesp_equ: String(curso?.c_codesp_equ || 'NINGUNO'),
-          c_codcur_equ: String(curso?.c_codcur_equ || 'NINGUNO'),
-          c_nomcur_equ: String(curso?.c_nomcur_equ || 'NINGUNO'),
+          n_codper_equ: String(curso?.n_codper_equ || null),
+          c_codmod_equ: String(curso?.c_codmod_equ || null),
+          c_codfac_equ: String(curso?.c_codfac_equ || null),
+          c_codesp_equ: String(curso?.c_codesp_equ || null),
+          c_codcur_equ: String(curso?.c_codcur_equ || null),
+          c_nomcur_equ: String(curso?.c_nomcur_equ || null),
         },
         horarios: horariosDelCurso,
       };
@@ -852,48 +852,90 @@ export class AsignarhorarioComponent implements OnInit {
     });
   }
 
-  eliminarEvento() {
+  eliminarEvento(): void {
     if (!this.eventoSeleccionado) return;
 
-    const id = this.eventoSeleccionado.id;
+    const id = this.eventoSeleccionado.id.toString();
     const codigo = this.eventoSeleccionado.extendedProps.codCur;
     const tipo = this.eventoSeleccionado.extendedProps.tipo;
     const horas = this.eventoSeleccionado.extendedProps.n_horas ?? 1;
     const titulo = this.eventoSeleccionado.title;
 
-    const confirmar = window.confirm(
-      '¿Estás seguro de que deseas eliminar este horario?'
-    );
-    if (!confirmar) return;
+    this.alertService
+      .confirm(
+        '¿Estás seguro de que deseas eliminar este horario?',
+        'Eliminar horario'
+      )
+      .then((isConfirmed) => {
+        if (!isConfirmed) return;
 
-    const calendarApi = this.calendarComponent.getApi();
-    const evento = calendarApi.getEventById(id);
-    if (evento) evento.remove();
+        const calendarApi = this.calendarComponent.getApi();
+        const evento = calendarApi.getEventById(id);
+        if (evento) evento.remove();
 
-    this.calendarOptions.events = (this.calendarOptions.events as any[]).filter(
-      (ev) => ev.id !== id
-    );
-    if (id && !id.toString().startsWith('temp-')) {
-      this.horarioService.eliminarHorario(id).subscribe({
-        next: () => {
-          this.alertService.success('🗑️ Evento eliminado correctamente.');
-          this.recargarCursosSegunTurno();
-        },
-        error: (err) => {
-          this.alertService.error('❌ Error al eliminar el evento.');
-          console.error(err);
-        },
+        this.calendarOptions.events = (
+          this.calendarOptions.events as any[]
+        ).filter((ev) => ev.id !== id);
+
+        if (!id.startsWith('temp-')) {
+          this.horarioService
+            .deleteHorarios({ horarios_id: [Number(id)] })
+            .subscribe({
+              next: () => {
+                this.alertService.success('🗑️ Evento eliminado correctamente.');
+                this.recargarCursosSegunTurno();
+              },
+              error: (err) => {
+                this.alertService.error('❌ Error al eliminar el evento.');
+                console.error(err);
+              },
+            });
+        } else {
+          this.devolverCursoEliminado(codigo, tipo, horas, titulo);
+        }
+
+        this.modalHorasActivo = false;
+        this.eventoSeleccionado = null;
       });
-    } else {
-      // Solo para temporales
-      this.devolverCursoEliminado(codigo, tipo, horas, titulo);
-      this.calendarOptions.events = (
-        this.calendarOptions.events as any[]
-      ).filter((ev) => ev.id !== id);
-    }
-    this.modalHorasActivo = false;
-    this.eventoSeleccionado = null;
   }
+
+  eliminarTodosLosHorarios(): void {
+    this.alertService
+      .confirm(
+        '¿Estás seguro de eliminar todos los horarios? Esta acción no se puede deshacer.',
+        'Eliminar horarios'
+      )
+      .then((isConfirmed) => {
+        if (!isConfirmed) return;
+
+        const ids: number[] = this.calendarComponent
+          .getApi()
+          .getEvents()
+          .filter((ev) => !ev.id.toString().startsWith('temp-')) // solo persistentes
+          .map((ev) => Number(ev.id));
+
+        if (ids.length === 0) {
+          this.alertService.info('No hay horarios guardados para eliminar.');
+          return;
+        }
+
+        this.horarioService.deleteHorarios({ horarios_id: ids }).subscribe({
+          next: () => {
+            this.alertService.success(
+              'Todos los horarios fueron eliminados correctamente.'
+            );
+            this.cargarHorarios();
+          },
+          error: (err) => {
+            this.alertService.error(
+              'Ocurrió un error al eliminar los horarios.'
+            );
+            console.error(err);
+          },
+        });
+      });
+  }
+
   //#endregion
 
   cancelarAsignacionHoras() {

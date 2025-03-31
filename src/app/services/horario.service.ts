@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import {
   CreateHorario,
+  DeleteHorariosRequest,
   Horario,
   HorarioExtendido,
   UpdateHorarioData,
@@ -32,8 +33,29 @@ export class HorarioService {
     return this.http.put(`${this.apiUrl}`, data);
   }
 
-  eliminarHorario(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  deleteHorarios(data: DeleteHorariosRequest): Observable<any> {
+    return this.http.request('delete', `${this.apiUrl}`, {
+      body: data,
+    });
+  }
+
+  getHorarios(
+    c_codmod?: string,
+    n_codper?: number,
+    c_codfac?: string,
+    c_codesp?: string,
+    n_codpla?: number
+  ) {
+    const params: any = {};
+    if (c_codmod) params.c_codmod = c_codmod;
+    if (n_codper) params.n_codper = n_codper;
+    if (c_codfac) params.c_codfac = c_codfac;
+    if (c_codesp) params.c_codesp = c_codesp;
+    if (n_codpla) params.n_codpla = n_codpla;
+
+    return this.http.get<Horario[]>('http://localhost:3000/horario', {
+      params,
+    });
   }
 
   asociarHorarioTransversal(padre_id: number, hijo_id: number) {
