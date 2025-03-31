@@ -3,7 +3,7 @@ import { environment } from '../../environment/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
-import { CreateHorario, Horario, HorarioExtendido, UpdateHorarioData } from '../interfaces/Horario';
+import { CreateHorario, DeleteHorariosRequest, Horario, HorarioExtendido, UpdateHorarioData } from '../interfaces/Horario';
 @Injectable({
   providedIn: 'root',
 })
@@ -24,10 +24,12 @@ export class HorarioService {
     return this.http.put(`${this.apiUrl}`, data);
   }
   
-  eliminarHorario(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  deleteHorarios(data: DeleteHorariosRequest): Observable<any> {
+    return this.http.request('delete', `${this.apiUrl}`, {
+      body: data
+    });
   }
-
+  
   getHorarios(
     c_codmod?: string,
     n_codper?: number,
