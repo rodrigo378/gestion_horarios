@@ -31,6 +31,7 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { VerTurnosComponent } from './pages/ver-turnos/ver-turnos.component';
 import { VerCursosComponent } from './pages/ver-cursos/ver-cursos.component';
+import { PisoPipe } from './piso.pipe';
 
 registerLocaleData(en);
 
@@ -52,6 +53,7 @@ registerLocaleData(en);
     AsignarhorarioComponent,
     VerTurnosComponent,
     VerCursosComponent,
+    PisoPipe,
   ],
   imports: [
     BrowserModule,
