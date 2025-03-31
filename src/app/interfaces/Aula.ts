@@ -1,6 +1,6 @@
 // aula.ts
 export interface Aula {
     id: number;
-    n_aulo: string;
+    n_aula: string;
     aforo: number;
 }
