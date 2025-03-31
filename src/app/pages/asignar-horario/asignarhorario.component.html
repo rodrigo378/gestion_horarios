@@ -165,7 +165,7 @@
       <select class="w-full border rounded px-3 py-1" [(ngModel)]="aulaSeleccionada">
         <option [ngValue]="null" disabled>-- Selecciona un aula --</option>
         <option *ngFor="let a of aulas" [ngValue]="a.id">
-          {{ a.n_aulo }} - Aforo de ({{ a.aforo }} personas)
+          {{ a.n_aula }} - Aforo de ({{ a.aforo }} personas)
         </option>
       </select>
     </div>
