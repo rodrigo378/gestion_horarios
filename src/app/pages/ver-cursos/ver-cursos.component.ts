@@ -44,10 +44,17 @@ export class VerCursosComponent implements OnInit {
   ngOnInit(): void {}
 
   getCursos() {
-    this.horarioService.getCurso().subscribe((data) => {
-      console.log('data => ', data);
-      this.cursos = data;
-    });
+    this.horarioService
+      .getCurso(
+        Number(this.selectModalidad),
+        this.selectPeriodo,
+        this.selectFacultadad,
+        this.selectEspecialidad
+      )
+      .subscribe((data) => {
+        console.log('data => ', data);
+        this.cursos = data;
+      });
   }
 
   getCursoTransversal() {
@@ -65,10 +72,13 @@ export class VerCursosComponent implements OnInit {
           const codB = curso.c_codcur;
           const codBeq = curso.c_codcur_equ;
 
+          const esMismoCurso = this.curso.id === curso.id;
+
           return (
-            codA === codB ||
-            codA === codBeq ||
-            (codAeq && (codAeq === codB || codAeq === codBeq))
+            !esMismoCurso &&
+            (codA === codB ||
+              codA === codBeq ||
+              (codAeq && (codAeq === codB || codAeq === codBeq)))
           );
         });
 
@@ -128,5 +138,10 @@ export class VerCursosComponent implements OnInit {
           console.log(err);
         },
       });
+  }
+
+  cerrarModal() {
+    this.mostrarModalCrear = false;
+    this.cursosFiltrados = [];
   }
 }

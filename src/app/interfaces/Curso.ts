@@ -1,6 +1,7 @@
 import { Aula } from './Aula';
 import { Docente } from './Docente';
 import { Horario } from './Horario';
+import { Turno } from './turno';
 
 export interface Curso {
   n_codper: number;
@@ -57,4 +58,5 @@ export interface Curso2 {
   c_nomcur_equ?: string;
   turno_id: number;
   Horario: Horario[];
+  turno: Turno;
 }

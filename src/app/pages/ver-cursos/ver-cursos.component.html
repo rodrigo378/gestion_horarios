@@ -191,30 +191,7 @@
                 </svg>
               </p>
             </th>
-            <!-- <th
-              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-            >
-              <p
-                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-              >
-                Dia
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                  class="w-4 h-4"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                  ></path>
-                </svg>
-              </p>
-            </th> -->
+
             <th
               class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
             >
@@ -239,13 +216,14 @@
                 </svg>
               </p>
             </th>
-            <!-- <th
+
+            <th
               class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
             >
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
               >
-                Inicio
+                Seccion
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -263,13 +241,14 @@
                 </svg>
               </p>
             </th>
+
             <th
               class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
             >
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
               >
-                Fin
+                Ciclo
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -287,30 +266,6 @@
                 </svg>
               </p>
             </th>
-            <th
-              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-            >
-              <p
-                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-              >
-                Nº Horas
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                  class="w-4 h-4"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                  ></path>
-                </svg>
-              </p>
-            </th> -->
 
             <th
               class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
@@ -370,7 +325,7 @@
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ curso.id }}
+                    {{ curso.id }} - {{ curso.c_codfac }} - {{ curso.c_codesp }}
                   </p>
                 </div>
               </div>
@@ -407,46 +362,24 @@
                 </div>
               </div>
             </td>
-            <!-- <td class="p-4 border-b border-slate-200">
+            <td class="p-4 border-b border-slate-200">
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ horario.dia }}
+                    {{ curso.turno.c_grpcur }}
                   </p>
                 </div>
-              </div>
-            </td> -->
-            <!-- <td class="p-4 border-b border-slate-200">
-              <div class="flex items-center gap-3">
-                <div class="flex flex-col">
-                  <p class="text-sm font-semibold text-slate-700">
-                    {{ curso.Docente?.c_nomdoc || "-- -- -- -- -- -- --" }}
-                  </p>
-                </div>
-              </div>
-            </td> -->
-            <!-- <td class="p-4 border-b border-slate-200">
-              <div class="flex flex-col">
-                <p class="text-sm font-semibold text-slate-700">
-                  {{ horario.h_inicio }}
-                </p>
               </div>
             </td>
             <td class="p-4 border-b border-slate-200">
-              <div class="flex flex-col">
-                <p class="text-sm font-semibold text-slate-700">
-                  {{ horario.h_fin }}
-                </p>
+              <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ curso.turno.n_ciclo }}
+                  </p>
+                </div>
               </div>
-            </td> -->
-            <!-- <td class="p-4 border-b border-slate-200">
-              <div class="flex flex-col">
-                <p class="text-sm font-semibold text-slate-700">
-                  {{ horario.n_horas }}
-                </p>
-              </div>
-            </td> -->
-
+            </td>
             <td class="p-4 border-b border-slate-200">
               <!-- Botón agregar -->
               <button
@@ -514,12 +447,13 @@
           <span class="font-semibold">Código:</span> {{ curso.c_codcur }}
           <br />
           <span class="font-semibold">Nombre:</span> {{ curso.c_nomcur }}
+          <br />
+          <span class="font-semibold">Nombre:</span> {{ curso.c_codfac }}
+          <br />
+          <span class="font-semibold">Nombre:</span> {{ curso.c_codesp }}
         </p>
       </div>
-      <button
-        class="text-gray-500 hover:text-red-500"
-        (click)="mostrarModalCrear = false"
-      >
+      <button class="text-gray-500 hover:text-red-500" (click)="cerrarModal()">
         <i class="fa-solid fa-xmark text-xl"></i>
       </button>
     </div>
@@ -625,39 +559,36 @@
               <th class="px-4 py-2">Cod Plan</th>
               <th class="px-4 py-2">Curso</th>
               <th class="px-4 py-2">Sección</th>
-              <th class="px-4 py-2">Semestre</th>
+              <th class="px-4 py-2">Ciclo</th>
               <th class="px-4 py-2">Seleccionar</th>
             </tr>
           </thead>
           <tbody>
             <ng-container *ngFor="let curso of cursosFiltrados">
-              <ng-container
-                *ngIf="curso.horario_padre_id === null"
-                class="border-t"
-              >
-                <tr class="border-t">
-                  <td class="px-4 py-2">{{ curso.id }}</td>
-                  <td class="px-4 py-2">{{ curso.n_codper }}asds</td>
-                  <td class="px-4 py-2">
-                    ({{ curso.c_codcur }}) {{ curso.c_nomcur }}
-                  </td>
-                  <td class="px-4 py-2">{{ curso.turno.c_grpcur }}</td>
-                  <td class="px-4 py-2">{{ curso.turno.n_ciclo }}</td>
-                  <td class="px-4 py-2">
-                    <button
-                      class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-green-600 transition-all hover:bg-green-600/10 active:bg-green-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                      type="button"
-                      (click)="clickMasCursoTransversal(curso.id)"
+              <tr class="border-t">
+                <td class="px-4 py-2">
+                  {{ curso.id }} - {{ curso.c_codfac }} - {{ curso.c_codesp }}
+                </td>
+                <td class="px-4 py-2">{{ curso.n_codper }}</td>
+                <td class="px-4 py-2">
+                  ({{ curso.c_codcur }}) {{ curso.c_nomcur }}
+                </td>
+                <td class="px-4 py-2">{{ curso.turno.c_grpcur }}</td>
+                <td class="px-4 py-2">{{ curso.n_ciclo }}</td>
+                <td class="px-4 py-2">
+                  <button
+                    class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-green-600 transition-all hover:bg-green-600/10 active:bg-green-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                    type="button"
+                    (click)="clickMasCursoTransversal(curso.id)"
+                  >
+                    <span
+                      class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
                     >
-                      <span
-                        class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                      >
-                        <i class="fa-solid fa-plus fa-lg"></i>
-                      </span>
-                    </button>
-                  </td>
-                </tr>
-              </ng-container>
+                      <i class="fa-solid fa-plus fa-lg"></i>
+                    </span>
+                  </button>
+                </td>
+              </tr>
             </ng-container>
           </tbody>
         </table>
@@ -667,7 +598,7 @@
     <!-- Botones -->
     <div class="mt-6 flex justify-end gap-2">
       <button
-        (click)="mostrarModalCrear = false"
+        (click)="cerrarModal()"
         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
       >
         Cancelar

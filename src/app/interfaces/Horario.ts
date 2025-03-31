@@ -110,3 +110,7 @@ export interface Horario {
   Docente?: Docente;
   aula?: Aula;
 }
+//-----------Delete---------------
+export interface DeleteHorariosRequest {
+  horarios_id: number[];
+}

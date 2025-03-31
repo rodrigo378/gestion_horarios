@@ -92,34 +92,38 @@
         </div>
       </div>
     </div>
-  
   </div>
-  
-
-<div *ngIf="turnoData" class="shadow-lg p-3 bg-white rounded-lg mt-5">
-  <p class="text-2xl font-bold">
-    {{turnoData.n_codper}} -
-    {{ turnoData.n_codpla }} -
-    {{ turnoData.n_ciclo }}° Ciclo -
-    {{ turnoData.c_nommod }} -
-    Sección {{ turnoData.c_grpcur }} -
-    {{ turnoData.nomesp }}
-  </p>
 </div>
 
-<!-- 📅 Calendario -->
-<full-calendar  
-  *ngIf="mostrarCalendario"
-  #fullcalendar
-  [options]="calendarOptions"
-  class="mt-5 shadow-lg bg-white p-5 rounded-lg border border-gray-200">
-</full-calendar>
+  <div *ngIf="turnoData" class="shadow-lg p-3 bg-white rounded-lg mt-5">
+    <p class="text-2xl font-bold">
+      {{turnoData.n_codper}} -
+      {{ turnoData.n_codpla }} -
+      {{ turnoData.n_ciclo }}° Ciclo -
+      {{ turnoData.c_nommod }} -
+      Sección {{ turnoData.c_grpcur }} -
+      {{ turnoData.nomesp }}
+    </p>
+  </div>
 
-<button
-  (click)="guardarEventos()"
-  class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-  💾 Guardar horarios
-</button>
+  <!-- <button (click)="eliminarTodosLosHorarios()" class="btn btn-danger">
+    🗑️ Eliminar todos los horarios
+  </button> -->
+  
+
+  <!-- 📅 Calendario -->
+  <full-calendar  
+    *ngIf="mostrarCalendario"
+    #fullcalendar
+    [options]="calendarOptions"
+    class="mt-5 shadow-lg bg-white p-5 rounded-lg border border-gray-200">
+  </full-calendar>
+
+  <button
+    (click)="guardarEventos()"
+    class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+    💾 Guardar horarios
+  </button>
 
 <!-- modal guardar/editar -->
 <div *ngIf="modalHorasActivo" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
