@@ -32,6 +32,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { VerTurnosComponent } from './pages/ver-turnos/ver-turnos.component';
 import { VerCursosComponent } from './pages/ver-cursos/ver-cursos.component';
 import { PisoPipe } from './piso.pipe';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 registerLocaleData(en);
 
@@ -66,6 +67,7 @@ registerLocaleData(en);
     FullCalendarModule,
     BrowserAnimationsModule,
     FormsModule,
+    NgxPaginationModule,
   ],
   providers: [
     provideNzI18n(en_US),
