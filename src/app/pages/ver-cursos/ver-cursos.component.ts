@@ -15,6 +15,9 @@ export class VerCursosComponent implements OnInit {
   cursos: Curso2[] = [];
   curso!: Curso2;
 
+  paginaActual: number = 1;
+  todosSeleccionados: boolean = false;
+
   especialidades: Especialidad[] = [];
   especialidadesModal: Especialidad[] = [];
   cursosFiltrados: any[] = [];
@@ -43,6 +46,14 @@ export class VerCursosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {}
+
+  trackByCurso(index: number, curso: Curso2): number {
+    return curso.id;
+  }
+
+  totalPaginas(): number {
+    return Math.ceil(this.cursos.length / 20);
+  }
 
   getCursos() {
     this.horarioService
@@ -146,6 +157,10 @@ export class VerCursosComponent implements OnInit {
     this.cursosFiltrados = [];
   }
 
+  estaSeleccionado(id: number): boolean {
+    return this.arrayCheckboxCursos.includes(id);
+  }
+
   toggleSeleccionCurso(curso: any) {
     const index = this.arrayCheckboxCursos.indexOf(curso.id);
 
@@ -158,6 +173,16 @@ export class VerCursosComponent implements OnInit {
     console.log('Cursos seleccionados:', this.arrayCheckboxCursos);
   }
 
+  toggleSeleccionarTodos() {
+    this.todosSeleccionados = !this.todosSeleccionados;
+
+    if (this.todosSeleccionados) {
+      this.arrayCheckboxCursos = this.cursosFiltrados.map((c) => c.id);
+    } else {
+      this.arrayCheckboxCursos = [];
+    }
+  }
+
   clickGuardarModal() {
     console.log('padre_id => ', this.curso.id);
     console.log('hijos_id => ', this.arrayCheckboxCursos);
@@ -168,9 +193,20 @@ export class VerCursosComponent implements OnInit {
         next: (res: any) => {
           console.log(res);
           this.getCursos();
+          this.cursosFiltrados = [];
+          this.arrayCheckboxCursos = [];
+          this.filtros = {
+            c_codmod: '',
+            n_codper: '',
+            c_codfac: '',
+            c_codesp: '',
+          };
+          this.mostrarModalCrear = false;
+          this.alertService.success('Se creo grupo correctamente');
         },
         error: (err: HttpErrorResponse) => {
           console.log(err);
+          this.alertService.error('Error al crear grupo');
         },
       });
   }

@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import {
   CreateHorario,
+  CreateHorarioRequest,
   DeleteHorariosRequest,
   Horario,
   HorarioExtendido,
@@ -19,8 +20,8 @@ export class HorarioService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  guardarHorarios(dataArray: CreateHorario[]): Observable<any> {
-    return this.http.post(`${this.apiUrl}`, { dataArray });
+  guardarHorarios(data: CreateHorarioRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}`, data); // ✅ No lo vuelvas a meter en { dataArray }
   }
 
   getHorarioPorTurno(turno_id: number): Observable<HorarioExtendido[]> {

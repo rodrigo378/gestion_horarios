@@ -319,130 +319,157 @@
           </tr>
         </thead>
         <tbody>
-          @for (curso of cursos; track curso.id) { @if
-          ((curso.cursosPadres.length === 0 ||
-          curso.cursosPadres[0].padre_curso_id === curso.id) ) {
-          <tr>
-            <td class="p-4 border-b border-slate-200">
-              <div class="flex items-center gap-3">
-                <div class="flex flex-col">
-                  <p class="text-sm font-semibold text-slate-700">
-                    {{ curso.id }} - {{ curso.c_codfac }} -
-                    {{ curso.c_codesp }}
-                  </p>
+          <ng-container
+            *ngFor="
+              let curso of cursos
+                | paginate : { itemsPerPage: 20, currentPage: paginaActual };
+              trackBy: trackByCurso
+            "
+          >
+            <tr
+              *ngIf="
+                curso.cursosPadres.length === 0 ||
+                curso.cursosPadres[0].padre_curso_id === curso.id
+              "
+            >
+              <!-- columnas del curso -->
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="flex flex-col">
+                    <p class="text-sm font-semibold text-slate-700">
+                      {{ curso.id }} - {{ curso.c_codfac }} -
+                      {{ curso.c_codesp }}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td class="p-4 border-b border-slate-200">
-              <div class="flex items-center gap-3">
-                <div class="flex flex-col">
-                  <p class="text-sm font-semibold text-slate-700">
-                    {{ curso.c_codcur }}
-                  </p>
+              </td>
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="flex flex-col">
+                    <p class="text-sm font-semibold text-slate-700">
+                      {{ curso.c_codcur }}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td class="p-4 border-b border-slate-200">
-              <div class="flex items-center gap-3">
-                <div class="flex flex-col">
-                  <p class="text-sm font-semibold text-slate-700">
-                    {{ curso.c_nomcur }}
-                  </p>
+              </td>
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="flex flex-col">
+                    <p class="text-sm font-semibold text-slate-700">
+                      {{ curso.c_nomcur }}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td class="p-4 border-b border-slate-200">
-              <div class="flex items-center gap-3">
-                <div class="flex flex-col">
-                  @for (horario of curso.Horario; track horario.id) {
-                  <p class="text-sm font-semibold text-slate-700">
-                    {{ horario.Docente?.c_nomdoc || "sin docente" }}
-                    ({{ horario.dia }})
-                    {{ horario.h_inicio | date : "shortTime" }} -
-                    {{ horario.h_fin | date : "shortTime" }}
-                  </p>
+              </td>
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="flex flex-col">
+                    @if (curso.Horario.length !== 0) { @for (horario of
+                    curso.Horario; track horario.id) {
+                    <p class="text-sm font-semibold text-slate-700">
+                      {{ horario.Docente?.c_nomdoc || "sin docente" }}
+                      ({{ horario.dia }})
+                      {{ horario.h_inicio | date : "shortTime" }} -
+                      {{ horario.h_fin | date : "shortTime" }}
+                    </p>
+                    } } @else {
+                    <p class="text-sm font-semibold text-slate-700">
+                      Sin asignar
+                    </p>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="flex flex-col">
+                    <p class="text-sm font-semibold text-slate-700">
+                      {{ curso.turno.c_grpcur }}
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="flex flex-col">
+                    <p class="text-sm font-semibold text-slate-700">
+                      {{ curso.turno.n_ciclo }}
+                    </p>
+                  </div>
+                </div>
+              </td>
+
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex items-center justify-center gap-2">
+                  @if (curso.cursosPadres.length === 0) {
+                  <!-- Botón agregar -->
+                  <button
+                    class="relative h-10 w-10 rounded-lg text-green-600 hover:bg-green-600/10 active:bg-green-600/20 transition-all"
+                    type="button"
+                    (click)="clickMas(curso)"
+                  >
+                    <span
+                      class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                    >
+                      <i class="fa-solid fa-plus fa-lg"></i>
+                    </span>
+                  </button>
+                  } @if (curso.cursosPadres.length !== 0) {
+                  <!-- Botón eliminar -->
+                  <button
+                    class="relative h-10 w-10 rounded-lg text-red-600 hover:bg-red-600/10 active:bg-red-600/20 transition-all"
+                    type="button"
+                  >
+                    <span
+                      class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                    >
+                      <i class="fa-solid fa-trash fa-lg"></i>
+                    </span>
+                  </button>
                   }
                 </div>
-              </div>
-            </td>
-            <td class="p-4 border-b border-slate-200">
-              <div class="flex items-center gap-3">
-                <div class="flex flex-col">
-                  <p class="text-sm font-semibold text-slate-700">
-                    {{ curso.turno.c_grpcur }}
-                  </p>
-                </div>
-              </div>
-            </td>
-            <td class="p-4 border-b border-slate-200">
-              <div class="flex items-center gap-3">
-                <div class="flex flex-col">
-                  <p class="text-sm font-semibold text-slate-700">
-                    {{ curso.turno.n_ciclo }}
-                  </p>
-                </div>
-              </div>
-            </td>
-            <td class="p-4 border-b border-slate-200">
-              <!-- Botón agregar -->
-              <button
-                class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-green-600 transition-all hover:bg-green-600/10 active:bg-green-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                type="button"
-                (click)="clickMas(curso)"
-              >
-                <span
-                  class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                >
-                  <i class="fa-solid fa-plus fa-lg"></i>
-                </span>
-              </button>
-            </td>
-            <td class="p-4 border-b border-slate-200">
-              <div class="flex items-center gap-3">
-                <div class="flex flex-col">
-                  @for (hijo of curso.cursosHijos; track hijo.id) { @if
-                  (curso.id !== hijo.cursosHijo.id) {
-                  <p class="text-sm font-semibold text-slate-700">
-                    ({{ hijo.cursosHijo.n_codper }})
-                    {{ hijo.cursosHijo.c_codcur }} -
-                    {{ hijo.cursosHijo.turno?.c_grpcur }} ({{
-                      hijo.cursosHijo.c_codfac
-                    }}
-                    - {{ hijo.cursosHijo.c_codesp }})
-                  </p>
-                  } }
-                </div>
-              </div>
-            </td>
+              </td>
 
-            <!-- <td class="p-4 border-b border-slate-200">
-                    <div class="flex items-center gap-3">
-                      <div class="flex flex-col">
-                        @for (hijo of curso.hijos; track hijo.id) {
-                        <p class="text-sm font-semibold text-slate-700">
-                          - ({{ hijo.n_codper }}) {{ hijo.c_codcur }} -
-                          {{ horario.turno.c_grpcur }} ({{ horario.turno.c_codfac }} -
-                          {{ horario.turno.c_codesp }})
-                        </p>
-                        }
-                      </div>
-                    </div>
-                  </td> -->
-          </tr>
-          } }
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="flex flex-col">
+                    @for (hijo of curso.cursosHijos; track hijo.id) { @if
+                    (curso.id !== hijo.cursosHijo.id) {
+                    <p class="text-sm font-semibold text-slate-700">
+                      ({{ hijo.cursosHijo.id }}) ({{
+                        hijo.cursosHijo.n_codper
+                      }}) {{ hijo.cursosHijo.c_codcur }} -
+                      {{ hijo.cursosHijo.turno?.c_grpcur }} ({{
+                        hijo.cursosHijo.c_codfac
+                      }}
+                      - {{ hijo.cursosHijo.c_codesp }})
+                    </p>
+                    } }
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
         </tbody>
       </table>
     </div>
     <div class="flex items-center justify-between p-3">
-      <p class="block text-sm text-slate-500"></p>
+      <p class="text-sm text-slate-500 mt-2">
+        Página {{ paginaActual }} de {{ totalPaginas() }}
+      </p>
+
       <div class="flex gap-1">
         <button
           class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+          [disabled]="paginaActual === 1"
+          (click)="paginaActual = paginaActual - 1"
         >
           Anterior
         </button>
         <button
           class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+          [disabled]="paginaActual >= totalPaginas()"
+          (click)="paginaActual = paginaActual + 1"
         >
           Siguiente
         </button>
@@ -572,6 +599,17 @@
         Seleccionar curso
       </h3>
       <div class="overflow-auto max-h-64 border rounded-md">
+        <div class="flex justify-end mb-2">
+          <button
+            class="px-3 py-1 text-sm font-medium text-white bg-blue-700 rounded hover:bg-blue-800 transition"
+            (click)="toggleSeleccionarTodos()"
+          >
+            {{
+              todosSeleccionados ? "Deseleccionar todos" : "Seleccionar todos"
+            }}
+          </button>
+        </div>
+
         <table class="min-w-full text-sm text-left text-gray-700">
           <thead class="bg-gray-100">
             <tr>
@@ -598,8 +636,7 @@
                 <td class="px-4 py-2">
                   <input
                     type="checkbox"
-                    [value]="curso.id"
-                    [checked]="curso.seleccionado"
+                    [checked]="estaSeleccionado(curso.id)"
                     (change)="toggleSeleccionCurso(curso)"
                     class="form-checkbox h-4 w-4 text-blue-600"
                   />
