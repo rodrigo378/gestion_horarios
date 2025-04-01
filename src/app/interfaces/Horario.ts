@@ -123,6 +123,12 @@ export interface Horario {
   docente_id: number;
   Docente: Docente;
 }
+
+export interface UpdateHorarioData {
+  dataArray: UpdateHorarioItem[];
+  verificar: boolean;
+}
+
 //-----------Delete---------------
 export interface DeleteHorariosRequest {
   horarios_id: number[];
