@@ -85,4 +85,8 @@ export class HorarioService {
       hijos_id,
     });
   }
+
+  deleteTransversal(padre_id: number) {
+    return this.http.delete(`${this.apiUrl}/curso/transversal/${padre_id}`);
+  }
 }
