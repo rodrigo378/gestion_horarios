@@ -1,11 +1,4 @@
-import {
-  Component,
-  OnInit,
-  Output,
-  output,
-  ViewChild,
-  viewChild,
-} from '@angular/core';
+import { Component, OnInit, ViewChild} from '@angular/core';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -17,7 +10,7 @@ import { HorarioService } from '../../services/horario.service';
 import { ActivatedRoute } from '@angular/router';
 import { Curso } from '../../interfaces/Curso';
 import { CursoService } from '../../services/curso.service';
-import { CreateHorario, HorarioExtendido } from '../../interfaces/Horario';
+import { HorarioExtendido } from '../../interfaces/Horario';
 import { Turno } from '../../interfaces/turno';
 import { TurnoService } from '../../services/turno.service';
 import { FullCalendarComponent } from '@fullcalendar/angular';
@@ -60,10 +53,11 @@ export class AsignarhorarioComponent implements OnInit {
   mostrarCalendario: boolean = true;
   //nro vacamtes
   vacantesAula: number | null = null;
-
+  //new evento
   newEvent = { curso: '', h_inicio: '', h_fin: '', color: '' };
-
-  events: any[] = [];
+  events: any[] = []
+  //select turno
+  turnoSeleccionado: 'M' | 'N' | '' = '';
   //#endregion
 
   //#region Libreria del calendario
@@ -74,10 +68,10 @@ export class AsignarhorarioComponent implements OnInit {
     locale: esLocale,
     headerToolbar: { left: '', center: '', right: '' },
     buttonText: { today: 'Hoy', week: 'Semana' },
-    slotMinTime: '07:00:00',
+    slotMinTime: '08:00:00',
     slotMaxTime: '23:00:00',
-    slotDuration: '00:30:00',
-    slotLabelInterval: '00:30:00',
+    slotDuration: '01:00:00',
+    slotLabelInterval: '01:00:00',
     allDaySlot: false,
     editable: true,
     eventDurationEditable: false,
@@ -231,32 +225,7 @@ export class AsignarhorarioComponent implements OnInit {
     if (!this.turnoId) return;
     this.cargarDatosPorTurno(this.turnoId);
   }
-
-  private cargarCursos(data: any): void {
-    this.cursoService.obtenerCursos(data).subscribe((res) => {
-      this.cursos = [];
-
-      res.forEach((curso: Curso) => {
-        if (curso.n_ht && curso.n_ht > 0) {
-          this.cursos.push({
-            ...curso,
-            n_hp: undefined,
-            tipo: 'Teoría',
-            horasRestantes: curso.n_ht,
-          });
-        }
-
-        if (curso.n_hp && curso.n_hp > 0) {
-          this.cursos.push({
-            ...curso,
-            n_ht: undefined,
-            tipo: 'Práctica',
-            horasRestantes: curso.n_hp,
-          });
-        }
-      });
-    });
-  }
+  
 
   private inicializarDragAndDrop(): void {
     setTimeout(() => {
@@ -291,7 +260,7 @@ export class AsignarhorarioComponent implements OnInit {
 
     return false;
   }
-
+  
   private formatDateTime(date: Date): string {
     const horas = String(date.getHours()).padStart(2, '0');
     const minutos = String(date.getMinutes()).padStart(2, '0');
@@ -315,8 +284,8 @@ export class AsignarhorarioComponent implements OnInit {
   }
 
   //#endregion
-
-  //#region funcion para los eventos
+  
+  //#region funcion para los eventos y callender
   handleExternalDrop(info: any) {
     const draggedData = JSON.parse(info.draggedEl.getAttribute('data-event'));
     const index = this.cursos.findIndex(
@@ -430,6 +399,21 @@ export class AsignarhorarioComponent implements OnInit {
     // this.actualizarEvento();
   }
 
+  actualizarRangoPorTurno() {
+    if (this.turnoSeleccionado === 'M') {
+      this.calendarOptions.slotMinTime = '08:00:00';
+      this.calendarOptions.slotMaxTime = '18:00:00';
+    } else if (this.turnoSeleccionado === 'N') {
+      this.calendarOptions.slotMinTime = '18:00:00';
+      this.calendarOptions.slotMaxTime = '23:00:00';
+    }
+  
+    // 🔄 Forzar redibujado del calendario
+    const calendarApi = this.calendarComponent.getApi();
+    calendarApi.setOption('slotMinTime', this.calendarOptions.slotMinTime);
+    calendarApi.setOption('slotMaxTime', this.calendarOptions.slotMaxTime);
+  }  
+  
   //#endregion
 
   confirmarAsignacionHoras() {
@@ -471,8 +455,8 @@ export class AsignarhorarioComponent implements OnInit {
     start.setHours(hora, minutos, 0);
 
     const end = new Date(start);
-    end.setHours(start.getHours() + this.horasAsignadas);
-
+    end.setMinutes(start.getMinutes() + this.horasAsignadas * 50);
+  
     const eventoId = `temp-${Date.now()}`;
     this.ultimoEventoIdTemporal = eventoId;
 
@@ -574,11 +558,11 @@ export class AsignarhorarioComponent implements OnInit {
     // Paso 1: Armar horarios con datos mínimos + agrupador codCur
     const horarios = eventos.map((ev) => {
       const inicio = new Date(ev.start!);
-      const fin = new Date(ev.end!);
-      const horas = Math.round(
-        (fin.getTime() - inicio.getTime()) / (1000 * 60 * 60)
-      );
-
+      const fin = new Date(inicio);
+      fin.setMinutes(fin.getMinutes() + this.horasAsignadas * 50);  
+      const minutos = Math.round((fin.getTime() - inicio.getTime()) / (1000 * 60));
+      const horas = minutos / 50; // para convertir de minutos reales a horas académicas      
+  
       return {
         c_codcur: ev.extendedProps['codCur'], // Para agrupar luego
         horario: {
@@ -604,7 +588,7 @@ export class AsignarhorarioComponent implements OnInit {
 
       return {
         curso: {
-          n_codper: String(this.turnoData?.n_codper || ''),
+          n_codper: String(curso?.n_codper || ''),
           c_codmod: Number(curso?.c_codmod) || 0,
           c_codfac: curso?.c_codfac || '',
           c_codesp: curso?.c_codesp || '',
@@ -630,52 +614,42 @@ export class AsignarhorarioComponent implements OnInit {
       dataArray: dataArray,
       verificar: true,
     };
-    // Paso 3: Enviar al backend con verificación activa
-    this.horarioService
-      .guardarHorarios({ dataArray, verificar: true })
-      .subscribe({
-        next: (res) => {
-          if (res.success === false && res.errores?.length > 0) {
-            const errores = Array.isArray(res.errores)
-              ? (res.errores as string[])
-              : [];
-            const erroresHtml = errores
-              .map((err) => `<li>${err}</li>`)
-              .join('');
-            this.alertService
-              .confirmConConflictos(erroresHtml)
-              .then((confirmado) => {
-                if (confirmado) {
-                  // Volver a enviar con verificar en false
-                  this.horarioService
-                    .guardarHorarios({ dataArray, verificar: false })
-                    .subscribe({
-                      next: () => {
-                        this.alertService.success(
-                          '✅ Horarios guardados a pesar de los conflictos.'
-                        );
-                        this.cargarHorarios();
-                      },
-                      error: () => {
-                        this.alertService.error(
-                          '❌ Error al guardar los horarios con conflictos.'
-                        );
-                      },
-                    });
+    
+    this.horarioService.guardarHorarios(payload).subscribe({
+      next: (res) => {
+        if (res.success === false && res.errores?.length > 0) {
+          // Conflictos detectados
+          const errores = res.errores as string[];
+          const erroresHtml = errores.map(err => `<li>${err}</li>`).join('');
+          this.alertService.confirmConConflictos(erroresHtml).then(confirmado => {
+            if (confirmado) {
+              this.horarioService.guardarHorarios({ dataArray, verificar: false }).subscribe({
+                next: () => {
+                  this.alertService.success('✅ Horarios guardados a pesar de los conflictos.');
+                  this.cargarHorarios();
+                },
+                error: () => {
+                  this.alertService.error('❌ Error al guardar los horarios con conflictos.');
                 }
               });
-          } else {
-            this.alertService.success('✅ Horarios guardados correctamente.');
-            this.cargarHorarios();
-          }
-        },
-        error: (err: any) => {
-          this.alertService.error('❌ Error al guardar horarios.');
-          console.error(err);
-        },
-      });
-
-    console.log('📝 Data enviada al backend:', { dataArray, verificar: true });
+            }
+          });
+    
+        } else {
+          // Guardado correcto (aunque no venga `success`)
+          const mensaje = res.mensaje || '✅ Horarios guardados correctamente.';
+          this.alertService.success(mensaje);
+          this.cargarHorarios();
+        }
+      },
+      error: (err) => {
+        this.alertService.error('❌ Error al guardar horarios.');
+        console.error(err);
+      }
+    });
+    
+    
+    console.log('📝 Data enviada al backend:', payload);    
   }
 
   cargarHorarios(): void {
@@ -879,7 +853,7 @@ export class AsignarhorarioComponent implements OnInit {
 
     const curso = this.cursos.find((c) => c.c_codcur === codigo); // busca el curso asociado
 
-    const dataUpdate = {
+    const payload = {
       dataArray: [
         {
           curso: {
@@ -901,50 +875,61 @@ export class AsignarhorarioComponent implements OnInit {
               h_fin: fin.toISOString(),
               n_horas: this.horasAsignadas,
               c_color: this.eventoSeleccionado.backgroundColor || '#3788d8',
-              aula_id:
-                this.aulaSeleccionada != null
-                  ? Number(this.aulaSeleccionada)
-                  : null,
-              docente_id:
-                this.docenteSeleccionado != null
-                  ? Number(this.docenteSeleccionado)
-                  : null,
-              turno_id: this.turnoId,
-            },
-          ],
-        },
+              aula_id: this.aulaSeleccionada != null ? Number(this.aulaSeleccionada) : null,
+              docente_id: this.docenteSeleccionado != null ? Number(this.docenteSeleccionado) : null,
+              turno_id: this.turnoId
+            }
+          ]
+        }
       ],
+      verificar: true
     };
-
-    this.horarioService.updateHorarios(dataUpdate).subscribe({
-      next: () => {
-        this.actualizarHorasRestantes(codigo, tipo, diferencia);
-
-        this.eventoSeleccionado.setStart(base);
-        this.eventoSeleccionado.setEnd(fin);
-        this.eventoSeleccionado.setExtendedProp('n_horas', this.horasAsignadas);
-        this.eventoSeleccionado.setExtendedProp('dia', this.diaSeleccionado);
-        this.eventoSeleccionado.setExtendedProp(
-          'aula_id',
-          this.aulaSeleccionada
-        );
-        this.eventoSeleccionado.setExtendedProp(
-          'docente_id',
-          this.docenteSeleccionado
-        );
-
-        this.alertService.success('✅ Evento actualizado correctamente.');
-        this.modalHorasActivo = false;
-        this.eventoSeleccionado = null;
-        this.cargarHorarios();
+    
+    this.horarioService.updateHorarios(payload).subscribe({
+      next: (res) => {
+        if (res.success === false && res.errores?.length > 0) {
+          const errores = res.errores as string[];
+          const erroresHtml = errores.map(err => `<li>${err}</li>`).join('');
+          
+          this.alertService.confirmConConflictos(erroresHtml).then(confirmado => {
+            if (confirmado) {
+              this.horarioService.updateHorarios({ ...payload, verificar: false }).subscribe({
+                next: () => {
+                  this.procesarActualizacionExitosa(base, fin, codigo, tipo, diferencia);
+                },
+                error: () => {
+                  this.alertService.error('❌ Error al actualizar con conflictos.');
+                }
+              });
+            }
+          });
+    
+        } else {
+          this.procesarActualizacionExitosa(base, fin, codigo, tipo, diferencia);
+        }
       },
       error: (err) => {
         this.alertService.error('❌ Error al actualizar el evento.');
         console.error(err);
-      },
-    });
+      }
+    });    
   }
-
+  
+  procesarActualizacionExitosa(base: Date, fin: Date, codigo: string, tipo: string, diferencia: number): void {
+    this.actualizarHorasRestantes(codigo, tipo, diferencia);
+    this.eventoSeleccionado?.setStart(base);
+    this.eventoSeleccionado?.setEnd(fin);
+    this.eventoSeleccionado?.setExtendedProp('n_horas', this.horasAsignadas);
+    this.eventoSeleccionado?.setExtendedProp('dia', this.diaSeleccionado);
+    this.eventoSeleccionado?.setExtendedProp('aula_id', this.aulaSeleccionada);
+    this.eventoSeleccionado?.setExtendedProp('docente_id', this.docenteSeleccionado);
+  
+    this.alertService.success('✅ Evento actualizado correctamente.');
+    this.modalHorasActivo = false;
+    this.eventoSeleccionado = null;
+    this.cargarHorarios();
+  }
+  
   eliminarEvento(): void {
     if (!this.eventoSeleccionado) return;
 
@@ -993,40 +978,33 @@ export class AsignarhorarioComponent implements OnInit {
   }
 
   eliminarTodosLosHorarios(): void {
-    this.alertService
-      .confirm(
-        '¿Estás seguro de eliminar todos los horarios? Esta acción no se puede deshacer.',
-        'Eliminar horarios'
-      )
-      .then((isConfirmed) => {
-        if (!isConfirmed) return;
-
-        const ids: number[] = this.calendarComponent
-          .getApi()
-          .getEvents()
-          .filter((ev) => !ev.id.toString().startsWith('temp-')) // solo persistentes
-          .map((ev) => Number(ev.id));
-
-        if (ids.length === 0) {
-          this.alertService.info('No hay horarios guardados para eliminar.');
-          return;
+    this.alertService.confirm(
+      '¿Estás seguro de eliminar todos los horarios? Esta acción no se puede deshacer.',
+      'Eliminar horarios'
+    ).then((isConfirmed) => {
+      if (!isConfirmed) return;
+  
+      const ids: number[] = this.calendarComponent.getApi().getEvents()
+        .filter(ev => !ev.id.toString().startsWith('temp-')) // solo persistentes
+        .map(ev => Number(ev.id));
+  
+      if (ids.length === 0) {
+        this.alertService.info('No hay horarios guardados para eliminar.');
+        return;
+      }
+  
+      this.horarioService.deleteHorarios({ horarios_id: ids }).subscribe({
+        next: () => {
+          this.alertService.success('Todos los horarios fueron eliminados correctamente.');
+          this.cargarHorarios();
+          this.cargarDatosPorTurno(this.turnoId);
+        },
+        error: (err) => {
+          this.alertService.error('Ocurrió un error al eliminar los horarios.');
+          console.error(err);
         }
-
-        this.horarioService.deleteHorarios({ horarios_id: ids }).subscribe({
-          next: () => {
-            this.alertService.success(
-              'Todos los horarios fueron eliminados correctamente.'
-            );
-            this.cargarHorarios();
-          },
-          error: (err) => {
-            this.alertService.error(
-              'Ocurrió un error al eliminar los horarios.'
-            );
-            console.error(err);
-          },
-        });
       });
+    });
   }
 
   //#endregion

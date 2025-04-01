@@ -1,10 +1,10 @@
 /* 📌 Aumentar la altura de las franjas horarias normales */
 ::ng-deep .fc-timegrid-slot {
-  height: 40px !important; /* Ajusta la altura de las filas normales */
-  min-height: 80px !important;
+  height: 200px !important; /* Ajusta la altura de las filas normales */
+  min-height: 100px !important;
 }
 
-/* 📌 Ajustar el tamaño de las etiquetas de las horas */
+/* 📌 Ajustar el tamaño de las etiquetas de las horas (la cabezera de los dias practicamente) */
 ::ng-deep .fc-timegrid-axis {
   height: 30px !important;
   line-height: 80px !important;
@@ -17,14 +17,14 @@
 
 /* 📌 Ajustar el tamaño del texto de los eventos */
 ::ng-deep .fc-event {
-  font-size: 16px !important;
+  font-size: 20px !important;
   padding: 10px !important;
   line-height: 20px !important;
 }
 
 /* 📌 Personalizar el color del día actual (Eliminar amarillo) */
 ::ng-deep .fc-day-today {
-  background: none !important; /*Eliminar fondo amarillo*/
+  background: none !important;
 }
 
 /* 📌 Hacer que los eventos se vean más modernos */
