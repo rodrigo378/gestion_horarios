@@ -86,6 +86,7 @@ export class AsignarhorarioComponent implements OnInit {
     eventClick: this.onEventClick.bind(this),
     eventDrop: this.onEventDrop.bind(this),
     hiddenDays: [0],
+    eventDidMount: this.estilizarEvento.bind(this), // 👈 Importante
   };
   //#endregion;
 
@@ -216,6 +217,7 @@ export class AsignarhorarioComponent implements OnInit {
             this.cursos = resultado.cursos;
             this.cursosPlan2023 = resultado.cursosPlan2023;
             this.cursosPlan2025 = resultado.cursosPlan2025;
+            
           });
       });
     });
@@ -412,8 +414,24 @@ export class AsignarhorarioComponent implements OnInit {
     const calendarApi = this.calendarComponent.getApi();
     calendarApi.setOption('slotMinTime', this.calendarOptions.slotMinTime);
     calendarApi.setOption('slotMaxTime', this.calendarOptions.slotMaxTime);
-  }  
+  }
   
+  estilizarEvento(info: any): void {
+    const isTemporal = info.event.id.toString().startsWith('temp-') || info.event.extendedProps?.isNew;
+  
+    const badge = document.createElement('span');
+    badge.textContent = isTemporal ? 'Temporal' : 'Guardado';
+  
+    // ✅ Estilos Tailwind en forma manual
+    badge.className = `
+      absolute top-1 right-1 
+      text-[10px] text-white px-2 py-[2px] rounded 
+      ${isTemporal ? 'bg-pink-400' : 'bg-sky-400'}
+    `;
+    // Asegura que el evento tenga relative para posicionar
+    info.el.classList.add('relative');
+    info.el.appendChild(badge);
+  }
   //#endregion
 
   confirmarAsignacionHoras() {
@@ -658,22 +676,29 @@ export class AsignarhorarioComponent implements OnInit {
     this.horarioService
       .getHorarioPorTurno(this.turnoId)
       .subscribe((res: HorarioExtendido[]) => {
-        const eventos = res.map((h: HorarioExtendido) => ({
-          id: String(h.id),
-          title: h.curso.c_nomcur,
-          start: h.h_inicio,
-          end: h.h_fin,
-          backgroundColor: h.c_color || '#3788d8',
-          extendedProps: {
-            codCur: h.curso.c_codcur,
-            turno: h.turno_id,
-            dia: h.dia,
-            tipo: 'Teoría',
-            n_horas: h.n_horas,
-            aula_id: h.aula_id,
-            docente_id: h.docente_id,
-          },
-        }));
+        const eventos = res.map((h: HorarioExtendido) => {
+          const esPadre = h.curso && Array.isArray((h.curso as any).cursosPadres) && (h.curso as any).cursosPadres.length > 0;
+        
+          return {
+            id: String(h.id),
+            title: h.curso.c_nomcur,
+            start: h.h_inicio,
+            end: h.h_fin,
+            backgroundColor: esPadre ? '#EAB308' : h.c_color || '#3788d8',
+            borderColor: esPadre ? '#EAB308' : h.c_color || '#3788d8',
+            extendedProps: {
+              codCur: h.curso.c_codcur,
+              turno: h.turno_id,
+              dia: h.dia,
+              tipo: 'Teoría',
+              n_horas: h.n_horas,
+              aula_id: h.aula_id,
+              docente_id: h.docente_id,
+              esPadre: esPadre
+            }
+          };
+        });
+        
 
         this.mostrarCalendario = false;
         setTimeout(() => {

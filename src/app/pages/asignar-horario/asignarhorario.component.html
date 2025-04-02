@@ -131,12 +131,12 @@
                 [(ngModel)]="turnoSeleccionado" 
                 (change)="actualizarRangoPorTurno()"
                 class="w-full border-gray-300 rounded-lg shadow-sm text-sm">
-          <option value="" disabled selected>Turno</option>
-          <option value="M">Mañana</option>
+                <option value="" selected disabled>Seleccionar</option>
+                <option value="M">Mañana</option>
           <option value="N">Noche</option>
         </select>
       </div>
-  
+      
       <!-- Leyenda -->
       <div class="bg-white shadow-md rounded-xl p-3 text-sm space-y-2 border border-gray-200">
         <h3 class="font-semibold text-gray-700">📌 Leyenda</h3>
@@ -145,7 +145,7 @@
           <span>Conflicto de horario</span>
         </div>
         <div class="flex items-center space-x-2">
-          <div class="w-4 h-4 rounded bg-blue-500 shadow"></div>
+          <div class="w-4 h-4 rounded bg-yellow-500 shadow"></div>
           <span>Curso transversal</span>
         </div>
       </div>
