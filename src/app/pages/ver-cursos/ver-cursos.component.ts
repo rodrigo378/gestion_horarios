@@ -153,8 +153,16 @@ export class VerCursosComponent implements OnInit {
   }
 
   cerrarModal() {
+    this.todosSeleccionados = false;
     this.mostrarModalCrear = false;
     this.cursosFiltrados = [];
+    this.arrayCheckboxCursos = [];
+    this.filtros = {
+      c_codmod: '',
+      n_codper: '',
+      c_codfac: '',
+      c_codesp: '',
+    };
   }
 
   estaSeleccionado(id: number): boolean {
@@ -209,5 +217,18 @@ export class VerCursosComponent implements OnInit {
           this.alertService.error('Error al crear grupo');
         },
       });
+  }
+
+  clickDeleteTransversal(padre_id: number) {
+    this.horarioService.deleteTransversal(padre_id).subscribe({
+      next: (res: any) => {
+        console.log('se elimino => ', res);
+        this.getCursos();
+        this.alertService.success('Se borro este grupo correctamente');
+      },
+      error: (err: HttpErrorResponse) => {
+        this.alertService.error('Error al borrar grupo');
+      },
+    });
   }
 }

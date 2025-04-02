@@ -419,6 +419,7 @@
                   <button
                     class="relative h-10 w-10 rounded-lg text-red-600 hover:bg-red-600/10 active:bg-red-600/20 transition-all"
                     type="button"
+                    (click)="clickDeleteTransversal(curso.id)"
                   >
                     <span
                       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
@@ -598,18 +599,17 @@
       <h3 class="text-md font-semibold text-gray-700 mb-2">
         Seleccionar curso
       </h3>
+      @if (cursosFiltrados.length !== 0) {
+      <div class="flex justify-end mb-2">
+        <button
+          class="px-3 py-1 text-sm font-medium text-white bg-blue-700 rounded hover:bg-blue-800 transition"
+          (click)="toggleSeleccionarTodos()"
+        >
+          {{ todosSeleccionados ? "Deseleccionar todos" : "Seleccionar todos" }}
+        </button>
+      </div>
+      }
       <div class="overflow-auto max-h-64 border rounded-md">
-        <div class="flex justify-end mb-2">
-          <button
-            class="px-3 py-1 text-sm font-medium text-white bg-blue-700 rounded hover:bg-blue-800 transition"
-            (click)="toggleSeleccionarTodos()"
-          >
-            {{
-              todosSeleccionados ? "Deseleccionar todos" : "Seleccionar todos"
-            }}
-          </button>
-        </div>
-
         <table class="min-w-full text-sm text-left text-gray-700">
           <thead class="bg-gray-100">
             <tr>
@@ -657,6 +657,7 @@
         Cancelar
       </button>
       <button
+        [disabled]="arrayCheckboxCursos.length === 0"
         (click)="clickGuardarModal()"
         class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
       >
