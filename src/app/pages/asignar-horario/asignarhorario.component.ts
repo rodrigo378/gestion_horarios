@@ -724,7 +724,9 @@ export class AsignarhorarioComponent implements OnInit {
     diferencia: number
   ) {
     console.log('🧠 actualizando horas restantes desde:', new Error().stack);
-
+  
+    const procesados = new Set(); // ⛔ evita aplicar varias veces
+  
     const listas = [this.cursos, this.cursosPlan2023, this.cursosPlan2025];
   
     listas.forEach((lista) => {
@@ -732,25 +734,26 @@ export class AsignarhorarioComponent implements OnInit {
         (c) => c.c_codcur === codigo && c.tipo === tipo
       );
   
-      if (index !== -1) {
-        const antes = lista[index].horasRestantes ?? 0;
-        lista[index].horasRestantes = antes - diferencia;
+      if (index !== -1 && !procesados.has(lista[index])) {
+        const curso = lista[index];
+        procesados.add(curso);
+  
+        const antes = curso.horasRestantes ?? 0;
+        curso.horasRestantes = antes - diferencia;
   
         console.log('📘 Curso:', codigo, '-', tipo);
         console.log('Horas antes:', antes);
         console.log('Diferencia aplicada:', diferencia);
-        console.log('Horas después:', lista[index].horasRestantes);
+        console.log('Horas después:', curso.horasRestantes);
   
-        // Si quedó en 0 o menos y quieres ocultarlo, hazlo aquí:
-        if (lista[index].horasRestantes <= 0) {
-          lista[index].disabled = true; // si usas esa propiedad
+        if (curso.horasRestantes <= 0) {
+          curso.disabled = true;
           console.log('🚫 Curso ocultado por horas 0');
         }
       }
     });
   }
   
-
   private devolverCursoEliminado(
     codigo: string,
     tipo: string,
@@ -943,25 +946,18 @@ export class AsignarhorarioComponent implements OnInit {
 
   procesarActualizacionExitosa(base: Date, fin: Date, codigo: string, tipo: string, diferencia: number): void {
     console.log('🟢 Solo aquí debe ir la actualización de horas restantes');
-  
-    // 🧼 Cortamos referencias primero
-    const evento = this.eventoSeleccionado;
-    this.eventoSeleccionado = null;
-  
-    // Luego actualizamos horas
     this.actualizarHorasRestantes(codigo, tipo, diferencia);
-  
-    // Y recién tocamos el evento (ya sin riesgo de que reactive algo más)
-    evento?.setStart(base);
-    evento?.setEnd(fin);
-    evento?.setExtendedProp('n_horas', this.horasAsignadas);
-    evento?.setExtendedProp('dia', this.diaSeleccionado);
-    evento?.setExtendedProp('aula_id', this.aulaSeleccionada);
-    evento?.setExtendedProp('docente_id', this.docenteSeleccionado);
+    this.eventoSeleccionado?.setStart(base);
+    this.eventoSeleccionado?.setEnd(fin);
+    this.eventoSeleccionado?.setExtendedProp('n_horas', this.horasAsignadas);
+    this.eventoSeleccionado?.setExtendedProp('dia', this.diaSeleccionado);
+    this.eventoSeleccionado?.setExtendedProp('aula_id', this.aulaSeleccionada);
+    this.eventoSeleccionado?.setExtendedProp('docente_id', this.docenteSeleccionado);
   
     this.alertService.success('✅ Evento actualizado correctamente.');
     this.modalHorasActivo = false;
-    this.cargarHorarios(); // refresca desde el backend
+    this.eventoSeleccionado = null;
+    this.cargarHorarios();
   }
   
   eliminarEvento(): void {

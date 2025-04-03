@@ -6,11 +6,12 @@ import { CursoService } from '../../services/curso.service';
 import { ActivatedRoute } from '@angular/router';
 import { TurnoService } from '../../services/turno.service';
 import { Turno } from '../../interfaces/turno';
-import { Horario } from '../../interfaces/Horario';
+import { CreateHorarioRequest, Horario } from '../../interfaces/Horario';
 import { DocenteService } from '../../services/docente.service';
 import { AulaService } from '../../services/aula.service';
 import { Docente } from '../../interfaces/Docente';
 import { Aula } from '../../interfaces/Aula';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-ver-cursos',
@@ -34,7 +35,7 @@ export class VerCursosComponent implements OnInit {
     tipo: '',
     dia: '',
     h_inicio: '',
-    h_fin: '',
+    n_horas: 0,
   };
 
   constructor(
@@ -89,10 +90,11 @@ export class VerCursosComponent implements OnInit {
       id: horario.id || '',
       docente_id: horario.docente_id || '',
       aula_id: horario.aula_id || '',
-      tipo: horario.tipo || '',
-      dia: horario.dia || '',
-      h_inicio: horario.h_inicio?.substring(11, 16) || '',
-      h_fin: horario.h_fin?.substring(11, 16) || '',
+      tipo: horario.tipo,
+      dia: horario.dia,
+      h_inicio: horario.h_inicio?.substring(11, 16),
+      h_fin: horario.h_fin?.substring(11, 16),
+      n_horas: horario.n_horas,
     };
   }
 
@@ -104,8 +106,9 @@ export class VerCursosComponent implements OnInit {
       tipo: '',
       dia: '',
       h_inicio: '',
-      h_fin: '',
+      n_horas: 0,
     };
+    console.log(this.formHorario);
   }
 
   getAulas() {
@@ -120,5 +123,73 @@ export class VerCursosComponent implements OnInit {
       this.docentes = data;
       console.log('docentes => ', this.docentes);
     });
+  }
+
+  createHorario() {
+    console.log(this.formHorario);
+    console.log('curso => ', this.curso);
+
+    if (this.formHorario.id === 0) {
+      const [horaStr, minutoStr] = this.formHorario.h_inicio.split(':');
+      const hora = parseInt(horaStr, 10) + 5; // Sumar 5 horas reales
+      const minuto = parseInt(minutoStr, 10);
+
+      const inicio = new Date(Date.UTC(2024, 0, 1, hora, minuto)); // Enero = 0
+
+      const minutosTotales = Number(this.formHorario.n_horas) * 50;
+
+      const fin = new Date(inicio.getTime() + minutosTotales * 60000);
+
+      const h_inicio = inicio.toISOString();
+      const h_fin = fin.toISOString();
+
+      const newHorario: any = {
+        dataArray: [
+          {
+            curso: {
+              n_codper: this.curso.n_codper,
+              c_codmod: Number(this.curso.c_codmod),
+              c_codfac: this.curso.c_codfac,
+              c_codesp: this.curso.c_codesp,
+              c_codcur: this.curso.c_codcur,
+              c_nomcur: this.curso.c_nomcur,
+              n_ciclo: this.curso.n_ciclo,
+              c_area: this.curso.c_area,
+              turno_id: this.curso.turno_id,
+
+              n_codper_equ: this.curso.n_codper_equ || '',
+              c_codmod_equ: Number(this.curso.c_codmod_equ) || 0,
+              c_codfac_equ: this.curso.c_codfac_equ || '',
+              c_codesp_equ: this.curso.c_codesp_equ || '',
+              c_codcur_equ: this.curso.c_codcur_equ || '',
+              c_nomcur_equ: this.curso.c_nomcur_equ || '',
+            },
+            horarios: [
+              {
+                dia: this.formHorario.dia,
+                h_inicio: h_inicio,
+                h_fin: h_fin,
+                n_horas: Number(this.formHorario.n_horas),
+                c_color: '#3788d8',
+                aula_id: Number(this.formHorario.aula_id),
+                docente_id: Number(this.formHorario.docente_id),
+                turno_id: this.turno.id,
+                tipo: this.formHorario.tipo,
+              },
+            ],
+          },
+        ],
+        verificar: true,
+      };
+
+      this.horarioService.guardarHorarios(newHorario).subscribe({
+        next: (res: any) => {
+          console.log('res => ', res);
+        },
+        error: (err: HttpErrorResponse) => {
+          console.log('err => ', err);
+        },
+      });
+    }
   }
 }
