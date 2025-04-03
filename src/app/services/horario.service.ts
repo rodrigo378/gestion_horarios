@@ -60,7 +60,10 @@ export class HorarioService {
   }
 
   asociarHorarioTransversal(padre_id: number, hijo_id: number) {
-    return this.http.post(`${this.apiUrl}/transversal`, { padre_id, hijo_id });
+    return this.http.post(`${this.apiUrl}/transversal`, {
+      padre_id,
+      hijo_id,
+    });
   }
 
   getCurso(
@@ -98,10 +101,11 @@ export class HorarioService {
     }>(`${this.apiUrl}/curso`, { params });
   }
 
-  createTransversal(padre_id: number, hijos_id: number[]) {
+  createTransversal(padre_id: number, hijos_id: number[], tipo: number) {
     return this.http.post(`${this.apiUrl}/curso/transversal`, {
       padre_id,
       hijos_id,
+      tipo,
     });
   }
 

@@ -67,6 +67,7 @@ export class VerTransversalComponent implements OnInit {
         this.selectFacultadad,
         this.selectEspecialidad,
         undefined,
+        undefined,
         skip,
         take
       )
@@ -219,7 +220,7 @@ export class VerTransversalComponent implements OnInit {
     console.log('hijos_id => ', this.arrayCheckboxCursos);
 
     this.horarioService
-      .createTransversal(this.curso.id, this.arrayCheckboxCursos)
+      .createTransversal(this.curso.id, this.arrayCheckboxCursos, 1)
       .subscribe({
         next: (res: any) => {
           console.log(res);
