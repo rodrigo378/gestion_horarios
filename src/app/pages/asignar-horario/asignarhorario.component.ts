@@ -16,7 +16,7 @@ import { TurnoService } from '../../services/turno.service';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import { DocentecurService } from '../../services/docentecur.service';
 import { AulaService } from '../../services/aula.service';
-import { Docente } from '../../interfaces/Docente';
+import { Docente, docenten } from '../../interfaces/Docente';
 import { Aula } from '../../interfaces/Aula';
 @Component({
   selector: 'app-asignarhorario',
@@ -58,6 +58,67 @@ export class AsignarhorarioComponent implements OnInit {
   events: any[] = []
   //select turno
   turnoSeleccionado: 'M' | 'N' | '' = '';
+  //cargam Docente
+  // isModalOpen = false;
+  // selectedCategoria = '';
+  // categorias = ['Director/Decano/VRA', 'Jefe/Coordinador', 'TC'];
+  // formDataList: docenten[] = [
+  //   {
+  //     id: 1,
+  //     categoria: 'Director/Decano/VRA',
+  //     c_nomdoc: 'Juan Pérez',
+  //     h_min: 8,
+  //     h_max: 16,
+  //     tipo: 1,
+  //     h_total: 8
+  //   },
+  //   {
+  //     id: 2,
+  //     categoria: 'Jefe/Coordinador',
+  //     c_nomdoc: 'María López',
+  //     h_min: 9,
+  //     h_max: 17,
+  //     tipo: 2,
+  //     h_total: 8
+  //   },
+  //   {
+  //     id: 3,
+  //     categoria: 'TC',
+  //     c_nomdoc: 'Carlos Ramírez',
+  //     h_min: 7,
+  //     h_max: 15,
+  //     tipo: 3,
+  //     h_total: 8
+  //   },
+  //   {
+  //     id: 4,
+  //     categoria: 'Director/Decano/VRA',
+  //     c_nomdoc: 'Ana González',
+  //     h_min: 10,
+  //     h_max: 18,
+  //     tipo: 1,
+  //     h_total: 8
+  //   },
+  //   {
+  //     id: 5,
+  //     categoria: 'Jefe/Coordinador',
+  //     c_nomdoc: 'Pedro Sánchez',
+  //     h_min: 8,
+  //     h_max: 14,
+  //     tipo: 2,
+  //     h_total: 6
+  //   },
+  //   {
+  //     id: 6,
+  //     categoria: 'TC',
+  //     c_nomdoc: 'Lucía Fernández',
+  //     h_min: 12,
+  //     h_max: 20,
+  //     tipo: 3,
+  //     h_total: 8
+  //   }
+  // ];
+  
   //#endregion
 
   //#region Libreria del calendario
