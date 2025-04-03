@@ -3,8 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { provideNzI18n } from 'ng-zorro-antd/i18n';
-import { en_US } from 'ng-zorro-antd/i18n';
+import { es_ES, provideNzI18n } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import { FormsModule } from '@angular/forms';
@@ -33,6 +32,7 @@ import { VerTurnosComponent } from './pages/ver-turnos/ver-turnos.component';
 import { VerCursosComponent } from './pages/ver-cursos/ver-cursos.component';
 import { PisoPipe } from './piso.pipe';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { VerTransversalComponent } from './pages/ver-transversal/ver-transversal.component';
 
 registerLocaleData(en);
 
@@ -54,6 +54,7 @@ registerLocaleData(en);
     AsignarhorarioComponent,
     VerTurnosComponent,
     VerCursosComponent,
+    VerTransversalComponent,
     PisoPipe,
   ],
   imports: [
@@ -70,7 +71,7 @@ registerLocaleData(en);
     NgxPaginationModule,
   ],
   providers: [
-    provideNzI18n(en_US),
+    provideNzI18n(es_ES),
     provideAnimationsAsync(),
     provideHttpClient(),
   ],
