@@ -28,6 +28,7 @@ export class VerCursosComponent implements OnInit {
   id!: number;
 
   formHorario: any = {
+    id: 0,
     docente_id: '',
     aula_id: '',
     tipo: '',
@@ -82,7 +83,29 @@ export class VerCursosComponent implements OnInit {
   }
 
   clickRow(horario: Horario) {
-    console.log('log aca => ', horario);
+    console.log(horario);
+
+    this.formHorario = {
+      id: horario.id || '',
+      docente_id: horario.docente_id || '',
+      aula_id: horario.aula_id || '',
+      tipo: horario.tipo || '',
+      dia: horario.dia || '',
+      h_inicio: horario.h_inicio?.substring(11, 16) || '',
+      h_fin: horario.h_fin?.substring(11, 16) || '',
+    };
+  }
+
+  nuevoFormulario() {
+    this.formHorario = {
+      id: 0,
+      docente_id: '',
+      aula_id: '',
+      tipo: '',
+      dia: '',
+      h_inicio: '',
+      h_fin: '',
+    };
   }
 
   getAulas() {

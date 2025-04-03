@@ -723,6 +723,8 @@ export class AsignarhorarioComponent implements OnInit {
     tipo: string,
     diferencia: number
   ) {
+    console.log('🧠 actualizando horas restantes desde:', new Error().stack);
+
     const listas = [this.cursos, this.cursosPlan2023, this.cursosPlan2025];
   
     listas.forEach((lista) => {
@@ -827,7 +829,7 @@ export class AsignarhorarioComponent implements OnInit {
     this.eventoSeleccionado!.setExtendedProp('docente_id', this.selectedDocente?.id ?? null);
     this.eventoSeleccionado?.setExtendedProp('isNew', true);
   
-    this.actualizarHorasRestantes(codigo, tipo, diferencia);
+    // this.actualizarHorasRestantes(codigo, tipo, diferencia);
   
     const eventosActuales = (this.calendarOptions.events as any[]).map(ev => {
       if (ev.id === idEvento) {
@@ -852,6 +854,7 @@ export class AsignarhorarioComponent implements OnInit {
 
   //#endregion
   actualizarEvento() {
+    console.log('🧪 actualizandoEvento llamado')
     if (!this.eventoSeleccionado) return;
   
     const maxHoras = this.cursoSeleccionado?.horasDisponibles || 0;
@@ -940,18 +943,25 @@ export class AsignarhorarioComponent implements OnInit {
 
   procesarActualizacionExitosa(base: Date, fin: Date, codigo: string, tipo: string, diferencia: number): void {
     console.log('🟢 Solo aquí debe ir la actualización de horas restantes');
+  
+    // 🧼 Cortamos referencias primero
+    const evento = this.eventoSeleccionado;
+    this.eventoSeleccionado = null;
+  
+    // Luego actualizamos horas
     this.actualizarHorasRestantes(codigo, tipo, diferencia);
-    this.eventoSeleccionado?.setStart(base);
-    this.eventoSeleccionado?.setEnd(fin);
-    this.eventoSeleccionado?.setExtendedProp('n_horas', this.horasAsignadas);
-    this.eventoSeleccionado?.setExtendedProp('dia', this.diaSeleccionado);
-    this.eventoSeleccionado?.setExtendedProp('aula_id', this.aulaSeleccionada);
-    this.eventoSeleccionado?.setExtendedProp('docente_id', this.docenteSeleccionado);
+  
+    // Y recién tocamos el evento (ya sin riesgo de que reactive algo más)
+    evento?.setStart(base);
+    evento?.setEnd(fin);
+    evento?.setExtendedProp('n_horas', this.horasAsignadas);
+    evento?.setExtendedProp('dia', this.diaSeleccionado);
+    evento?.setExtendedProp('aula_id', this.aulaSeleccionada);
+    evento?.setExtendedProp('docente_id', this.docenteSeleccionado);
   
     this.alertService.success('✅ Evento actualizado correctamente.');
     this.modalHorasActivo = false;
-    this.eventoSeleccionado = null;
-    this.cargarHorarios();
+    this.cargarHorarios(); // refresca desde el backend
   }
   
   eliminarEvento(): void {

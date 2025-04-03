@@ -357,6 +357,7 @@
       <div class="md:col-span-2 flex justify-end gap-2 pt-5">
         <button
           type="button"
+          (click)="nuevoFormulario()"
           class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Nuevo
@@ -367,84 +368,70 @@
     <!-- Formulario -->
     <form class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
       <!-- Docente -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Docente</label
-        >
-        <select class="w-full border border-gray-300 rounded-md px-3 py-2">
-          <option value="">Seleccione docente</option>
-          @for (docente of docentes; track docente.id) {
-          <option value="{{ docente.id }}">{{ docente.c_nomdoc }}</option>
-          }
-        </select>
-      </div>
+      <select
+        [(ngModel)]="formHorario.docente_id"
+        name="docente_id"
+        class="w-full border border-gray-300 rounded-md px-3 py-2"
+      >
+        <option value="">Seleccione docente</option>
+        @for (docente of docentes; track docente.id) {
+        <option [value]="docente.id">{{ docente.c_nomdoc }}</option>
+        }
+      </select>
 
       <!-- Tipo -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-        <select class="w-full border border-gray-300 rounded-md px-3 py-2">
-          <option value="">Seleccione tipo</option>
-          <option value="teoria">Teoría</option>
-          <option value="practica">Práctica</option>
-        </select>
-      </div>
+      <select
+        [(ngModel)]="formHorario.tipo"
+        name="tipo"
+        class="w-full border border-gray-300 rounded-md px-3 py-2"
+      >
+        <option value="">Seleccione tipo</option>
+        <option value="Teoría">Teoría</option>
+        <option value="Práctica">Práctica</option>
+      </select>
 
       <!-- Día -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Día</label>
-        <select class="w-full border border-gray-300 rounded-md px-3 py-2">
-          <option value="">Seleccione día</option>
-          <option value="Lunes">Lunes</option>
-          <option value="Martes">Martes</option>
-          <option value="Miércoles">Miércoles</option>
-          <option value="Jueves">Jueves</option>
-          <option value="Viernes">Viernes</option>
-          <option value="Sábado">Sabado</option>
-        </select>
-      </div>
+      <select
+        [(ngModel)]="formHorario.dia"
+        name="dia"
+        class="w-full border border-gray-300 rounded-md px-3 py-2"
+      >
+        <option value="">Seleccione día</option>
+        <option value="Lunes">Lunes</option>
+        <option value="Martes">Martes</option>
+        <option value="Miércoles">Miércoles</option>
+        <option value="Jueves">Jueves</option>
+        <option value="Viernes">Viernes</option>
+        <option value="Sábado">Sábado</option>
+      </select>
 
-      <!-- Pabellón -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Pabellón</label
-        >
-        <select class="w-full border border-gray-300 rounded-md px-3 py-2">
-          <option value="">Seleccione pabellón</option>
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-        </select>
-      </div>
-
+      <!-- Pabellón (opcional) -->
       <!-- Aula -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Aula</label>
-        <select class="w-full border border-gray-300 rounded-md px-3 py-2">
-          <option value="">Seleccione aula</option>
-        </select>
-      </div>
+      <select
+        [(ngModel)]="formHorario.aula_id"
+        name="aula_id"
+        class="w-full border border-gray-300 rounded-md px-3 py-2"
+      >
+        <option value="">Seleccione aula</option>
+        @for (aula of aulas; track aula.id) {
+        <option [value]="aula.id">{{ aula.c_codaula }}</option>
+        }
+      </select>
 
       <!-- Hora de inicio -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Hora de inicio</label
-        >
-        <input
-          type="time"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-        />
-      </div>
+      <input
+        type="time"
+        [(ngModel)]="formHorario.h_inicio"
+        name="h_inicio"
+        class="w-full border border-gray-300 rounded-md px-3 py-2"
+      />
 
-      <!-- Hora de fin -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Hora de fin</label
-        >
-        <input
-          type="time"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-        />
-      </div>
+      <input
+        type="time"
+        [(ngModel)]="formHorario.h_fin"
+        name="h_fin"
+        class="w-full border border-gray-300 rounded-md px-3 py-2"
+      />
     </form>
 
     <!-- Botones debajo del formulario -->
