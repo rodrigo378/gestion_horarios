@@ -68,7 +68,7 @@ export interface CursoPadre {
   curso_id: number;
   padre_curso_id: number;
   shortname: string;
-  tipo: number;
+  tipo?: number;
   cursoPadre: CursoResumen;
 }
 
