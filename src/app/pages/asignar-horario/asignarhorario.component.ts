@@ -724,20 +724,30 @@ export class AsignarhorarioComponent implements OnInit {
     diferencia: number
   ) {
     const listas = [this.cursos, this.cursosPlan2023, this.cursosPlan2025];
-
+  
     listas.forEach((lista) => {
       const index = lista.findIndex(
         (c) => c.c_codcur === codigo && c.tipo === tipo
       );
+  
       if (index !== -1) {
-        lista[index].horasRestantes =
-          (lista[index].horasRestantes ?? 0) + diferencia;
-        // Si quedó en 0 o menos, lo removemos
+        const antes = lista[index].horasRestantes ?? 0;
+        lista[index].horasRestantes = antes - diferencia;
+  
+        console.log('📘 Curso:', codigo, '-', tipo);
+        console.log('Horas antes:', antes);
+        console.log('Diferencia aplicada:', diferencia);
+        console.log('Horas después:', lista[index].horasRestantes);
+  
+        // Si quedó en 0 o menos y quieres ocultarlo, hazlo aquí:
         if (lista[index].horasRestantes <= 0) {
+          lista[index].disabled = true; // si usas esa propiedad
+          console.log('🚫 Curso ocultado por horas 0');
         }
       }
     });
   }
+  
 
   private devolverCursoEliminado(
     codigo: string,
@@ -886,6 +896,7 @@ export class AsignarhorarioComponent implements OnInit {
           n_ciclo: Number(curso?.n_ciclo) || 0,
           c_area: curso?.c_area || '',
           turno_id: this.turnoId,
+          tipo: this.eventoSeleccionado.extendedProps.tipo ?? 'Teoría'
         },
         horarios: [{
           id: Number(idEvento),
@@ -928,6 +939,7 @@ export class AsignarhorarioComponent implements OnInit {
   
 
   procesarActualizacionExitosa(base: Date, fin: Date, codigo: string, tipo: string, diferencia: number): void {
+    console.log('🟢 Solo aquí debe ir la actualización de horas restantes');
     this.actualizarHorasRestantes(codigo, tipo, diferencia);
     this.eventoSeleccionado?.setStart(base);
     this.eventoSeleccionado?.setEnd(fin);
