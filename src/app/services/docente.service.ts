@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environment/environment';
 import { AuthService } from './auth.service';
 import { listadocentes } from '../interfaces/Docentes';
+import { Docente } from '../interfaces/Docente';
 
 @Injectable({
   providedIn: 'root',
@@ -21,15 +22,25 @@ export class DocenteService {
   }
 
   createDocente(docenteData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/docente`, docenteData, this.getTokenHeader() );
+    return this.http.post(
+      `${this.apiUrl}/docente`,
+      docenteData,
+      this.getTokenHeader()
+    );
   }
 
-  getDocentes(): Observable<listadocentes[]> {
-    return this.http.get<listadocentes[]>(this.apiUrl, this.getTokenHeader());
+  getDocentes(): Observable<Docente[]> {
+    return this.http.get<Docente[]>(
+      `${this.apiUrl}/docente`,
+      this.getTokenHeader()
+    );
   }
 
   getDocentePorUsuario(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/docente/user`, this.getTokenHeader());
+    return this.http.get<any>(
+      `${this.apiUrl}/docente/user`,
+      this.getTokenHeader()
+    );
   }
 
   // // Actualizar un docente
@@ -42,7 +53,7 @@ export class DocenteService {
       `${this.apiUrl}/docente/updateuser`,
       docenteData,
       this.getTokenHeader()
-    );    
+    );
   }
 
   getDocentesAprobados(): Observable<listadocentes[]> {

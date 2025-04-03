@@ -24,7 +24,7 @@ const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'welcome' },
       {

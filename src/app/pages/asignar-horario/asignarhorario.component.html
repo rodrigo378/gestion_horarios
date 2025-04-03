@@ -106,21 +106,6 @@
     </p>
   </div> -->
 
-  <!-- <div class="flex justify-end items-center gap-4 mt-5">
-    <button
-      (click)="eliminarTodosLosHorarios()"
-      class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-2xl shadow-md transition duration-200 flex items-center gap-2">
-      <span>🗑️</span>
-      <span>Eliminar todos los horarios</span>
-    </button>
-  
-    <button
-      (click)="guardarEventos()"
-      class="bg-green-600 text-white px-4 py-2 rounded-2xl hover:bg-green-700 transition">
-      💾 Guardar horarios
-    </button>
-  </div> -->
-
   <div class="flex justify-between items-center gap-4 mt-5">
     <!-- Contenedor izquierdo: select + leyenda en columnas separadas pero alineadas -->
     <div class="flex gap-4">
@@ -248,13 +233,40 @@
 
     <!-- Docente -->
     <div class="mb-6">
-      <label class="block text-sm font-semibold text-gray-600 mb-1">Docente</label>
-      <select class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="docenteSeleccionado">
-        <option [ngValue]="null">-- Selecciona un docente --</option>
-        <option *ngFor="let d of docentes" [value]="d.id">
-          {{ d.c_coddoc }} - {{ d.c_nomdoc }}
-        </option>
+      <label class="block text-sm font-semibold text-gray-600 mb-1">Asignar Docente</label>
+        <!-- Select para categoría -->
+      <label for="categoria" class="block text-sm font-medium text-gray-700">Categoría</label>
+      <select id="categoria" [(ngModel)]="selectedCategoria" (change)="filtrarDocentes()" class="mt-1 block w-full p-2 border rounded">
+        <option value="">Seleccione una categoría</option>
+        <option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</option>
       </select>
+      
+      <!-- Select de docentes filtrados -->
+      <div *ngIf="docentesFiltrados.length > 0" class="mt-4">
+        <label class="block text-sm font-medium text-gray-700">Docente</label>
+        <select [(ngModel)]="selectedDocente" class="mt-1 block w-full p-2 border rounded">
+          <option [ngValue]="null" disabled>Selecciona un Docente</option>        
+          <option *ngFor="let docente of docentesFiltrados" [ngValue]="docente">{{ docente.c_nomdoc }}</option>
+        </select>
+      </div>
+    
+      <!-- Datos del docente seleccionado -->
+      <div *ngIf="selectedDocente" class="mt-4 flex gap-4">
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700">Hora Mínima</label>
+          <input type="number" class="p-2 border rounded w-24" [(ngModel)]="selectedDocente.h_min" disabled>
+        </div>
+      
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700">Hora Máxima</label>
+          <input type="number" class="p-2 border rounded w-24" [(ngModel)]="selectedDocente.h_max" disabled>
+        </div>
+      
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700">Hora Total</label>
+          <input type="number" class="p-2 border rounded w-24" [(ngModel)]="selectedDocente.h_total">
+        </div>
+      </div>
     </div>
 
     <!-- Botones -->

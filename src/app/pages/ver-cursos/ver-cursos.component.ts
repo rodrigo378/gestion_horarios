@@ -6,6 +6,11 @@ import { CursoService } from '../../services/curso.service';
 import { ActivatedRoute } from '@angular/router';
 import { TurnoService } from '../../services/turno.service';
 import { Turno } from '../../interfaces/turno';
+import { Horario } from '../../interfaces/Horario';
+import { DocenteService } from '../../services/docente.service';
+import { AulaService } from '../../services/aula.service';
+import { Docente } from '../../interfaces/Docente';
+import { Aula } from '../../interfaces/Aula';
 
 @Component({
   selector: 'app-ver-cursos',
@@ -17,11 +22,24 @@ export class VerCursosComponent implements OnInit {
   cursos: Curso2[] = [];
   curso!: Curso2;
   turno!: Turno;
+  docentes: Docente[] = [];
+  aulas: Aula[] = [];
   mostrarModalCrear: boolean = false;
   id!: number;
 
+  formHorario: any = {
+    docente_id: '',
+    aula_id: '',
+    tipo: '',
+    dia: '',
+    h_inicio: '',
+    h_fin: '',
+  };
+
   constructor(
     private horarioService: HorarioService,
+    private docenteService: DocenteService,
+    private aulaService: AulaService,
     private turnoService: TurnoService,
     private alertService: AlertService,
     private route: ActivatedRoute
@@ -29,6 +47,10 @@ export class VerCursosComponent implements OnInit {
 
   ngOnInit(): void {
     this.id = Number(this.route.snapshot.paramMap.get('id')) || 0;
+    console.log('Id => ', this.id);
+
+    this.getAulas();
+    this.getDocentes();
     this.getCursos();
     this.getTurno();
   }
@@ -55,6 +77,25 @@ export class VerCursosComponent implements OnInit {
 
   clickAbrirModal(curso: Curso2) {
     this.mostrarModalCrear = true;
+    this.curso = curso;
     console.log('cursos1 => ', curso);
+  }
+
+  clickRow(horario: Horario) {
+    console.log('log aca => ', horario);
+  }
+
+  getAulas() {
+    this.aulaService.obtenerAulas().subscribe((data) => {
+      this.aulas = data;
+      console.log('aulas => ', this.aulas);
+    });
+  }
+
+  getDocentes() {
+    this.docenteService.getDocentes().subscribe((data) => {
+      this.docentes = data;
+      console.log('docentes => ', this.docentes);
+    });
   }
 }

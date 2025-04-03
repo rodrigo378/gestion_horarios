@@ -1,11 +1,11 @@
 // docente.ts
-export interface Docente {
-    id: number;
-    c_coddoc: string;
-    c_nomdoc: string;
-}
+// export interface Docente {
+//     id: number;
+//     c_coddoc: string;
+//     c_nomdoc: string;
+// }
 
-export interface docenten {
+export interface Docente {
     id: number;
     categoria: string;
     c_nomdoc: string;

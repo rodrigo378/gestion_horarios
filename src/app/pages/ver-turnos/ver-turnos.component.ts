@@ -8,8 +8,6 @@ import { CursoService } from '../../services/curso.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertService } from '../../services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { docenten } from '../../interfaces/Docente';
-
 @Component({
   selector: 'app-ver-turnos',
   standalone: false,
@@ -52,7 +50,7 @@ export class VerTurnosComponent implements OnInit {
   categorias = ['Director/Decano/VRA', 'Jefe/Coordinador', 'TC'];
 
   // Lista completa de docentes
-  docentes: docenten[] = [
+  docentes: any[] = [
     {
       id: 1,
       categoria: 'Director/Decano/VRA',
@@ -109,8 +107,8 @@ export class VerTurnosComponent implements OnInit {
     },
   ];
 
-  docentesFiltrados: docenten[] = [];
-  selectedDocente: docenten | null = null;
+  docentesFiltrados: any[] = [];
+  selectedDocente: any | null = null;
 
   constructor(
     private location: Location,
