@@ -56,15 +56,20 @@ export class VerCursosComponent implements OnInit {
     this.getCursos();
     this.getTurno();
   }
-
+  
   getCursos() {
     this.horarioService
       .getCurso(undefined, undefined, undefined, undefined, undefined, this.id)
       .subscribe((data) => {
-        this.cursos = data.data;
+        this.cursos = data.data.map((curso: Curso2) => ({
+          ...curso,
+          cursosPadres: curso.cursosPadres ?? [], // ← aquí garantizas que no sea undefined
+          cursosHijos: curso.cursosHijos ?? [],   // ← opcional, por si acaso
+        }));
         console.log('cursos => ', this.cursos);
       });
   }
+  
 
   getTurno() {
     this.turnoService.getTurnoById(this.id).subscribe((data) => {

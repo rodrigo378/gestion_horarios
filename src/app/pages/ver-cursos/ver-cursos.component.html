@@ -210,12 +210,12 @@
         </thead>
         <tbody>
           @for (curso of cursos; track curso.id) {
-          <tr
+            <tr
             *ngIf="
-              curso.cursosPadres.length === 0 ||
-              curso.cursosPadres[0].padre_curso_id === curso.id
+              !curso.cursosPadres || curso.cursosPadres.length === 0 ||
+              curso.cursosPadres[0]?.padre_curso_id === curso.id
             "
-          >
+          >          
             <!-- columnas del curso -->
             <!-- <td class="p-4 border-b border-slate-200">
               <div class="flex items-center gap-3">
@@ -242,16 +242,19 @@
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
                     {{
-                      curso.cursosPadres[0]?.tipo === 0
-                        ? "Transversal"
-                        : curso.cursosPadres[0]?.tipo === 1
-                        ? "Agrupado"
-                        : "No"
+                      curso.cursosPadres && curso.cursosPadres.length > 0
+                        ? curso.cursosPadres[0].tipo === 0
+                          ? "Transversal"
+                          : curso.cursosPadres[0].tipo === 1
+                          ? "Agrupado"
+                          : "No"
+                        : "No definido"
                     }}
                   </p>
                 </div>
               </div>
             </td>
+            
 
             <td class="p-4 border-b border-slate-200">
               <div class="flex items-center gap-3">

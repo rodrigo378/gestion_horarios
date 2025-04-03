@@ -59,7 +59,7 @@ export interface Curso2 {
   turno_id: number;
   Horario: Horario[];
   turno: Turno;
-  cursosPadres: CursoPadre[];
+  cursosPadres?: CursoPadre[];
   cursosHijos: CursoHijo[];
 }
 
