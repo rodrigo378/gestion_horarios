@@ -30,6 +30,12 @@ export interface HorarioExtendido {
     c_codcur_equ: string;
     c_nomcur_equ: string;
     turno_id: number;
+    cursosPadres?: {
+      id: number;
+      curso_id: number;
+      padre_curso_id: number;
+      shortname: string;
+    }[];
   };
 }
 

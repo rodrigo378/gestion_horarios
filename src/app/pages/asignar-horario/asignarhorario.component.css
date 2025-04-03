@@ -1,6 +1,6 @@
 /* 📌 Aumentar la altura de las franjas horarias normales */
 ::ng-deep .fc-timegrid-slot {
-  height: 200px !important; /* Ajusta la altura de las filas normales */
+  height: 100px !important; /* Ajusta la altura de las filas normales */
   min-height: 100px !important;
 }
 
@@ -40,6 +40,12 @@
   font-weight: bold !important;
   font-size: 15px;
 }
+
+::ng-deep .fc-event-title {
+  font-size: 0.75rem !important; /* o prueba con 12px */
+  font-weight: 500;
+}
+
 
 [draggable="true"] {
   user-select: none;

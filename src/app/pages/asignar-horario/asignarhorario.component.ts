@@ -16,7 +16,7 @@ import { TurnoService } from '../../services/turno.service';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import { DocentecurService } from '../../services/docentecur.service';
 import { AulaService } from '../../services/aula.service';
-import { Docente } from '../../interfaces/Docente';
+import { Docente, docenten } from '../../interfaces/Docente';
 import { Aula } from '../../interfaces/Aula';
 @Component({
   selector: 'app-asignarhorario',
@@ -58,6 +58,67 @@ export class AsignarhorarioComponent implements OnInit {
   events: any[] = []
   //select turno
   turnoSeleccionado: 'M' | 'N' | '' = '';
+  //cargam Docente
+  // isModalOpen = false;
+  // selectedCategoria = '';
+  // categorias = ['Director/Decano/VRA', 'Jefe/Coordinador', 'TC'];
+  // formDataList: docenten[] = [
+  //   {
+  //     id: 1,
+  //     categoria: 'Director/Decano/VRA',
+  //     c_nomdoc: 'Juan Pérez',
+  //     h_min: 8,
+  //     h_max: 16,
+  //     tipo: 1,
+  //     h_total: 8
+  //   },
+  //   {
+  //     id: 2,
+  //     categoria: 'Jefe/Coordinador',
+  //     c_nomdoc: 'María López',
+  //     h_min: 9,
+  //     h_max: 17,
+  //     tipo: 2,
+  //     h_total: 8
+  //   },
+  //   {
+  //     id: 3,
+  //     categoria: 'TC',
+  //     c_nomdoc: 'Carlos Ramírez',
+  //     h_min: 7,
+  //     h_max: 15,
+  //     tipo: 3,
+  //     h_total: 8
+  //   },
+  //   {
+  //     id: 4,
+  //     categoria: 'Director/Decano/VRA',
+  //     c_nomdoc: 'Ana González',
+  //     h_min: 10,
+  //     h_max: 18,
+  //     tipo: 1,
+  //     h_total: 8
+  //   },
+  //   {
+  //     id: 5,
+  //     categoria: 'Jefe/Coordinador',
+  //     c_nomdoc: 'Pedro Sánchez',
+  //     h_min: 8,
+  //     h_max: 14,
+  //     tipo: 2,
+  //     h_total: 6
+  //   },
+  //   {
+  //     id: 6,
+  //     categoria: 'TC',
+  //     c_nomdoc: 'Lucía Fernández',
+  //     h_min: 12,
+  //     h_max: 20,
+  //     tipo: 3,
+  //     h_total: 8
+  //   }
+  // ];
+  
   //#endregion
 
   //#region Libreria del calendario
@@ -86,6 +147,7 @@ export class AsignarhorarioComponent implements OnInit {
     eventClick: this.onEventClick.bind(this),
     eventDrop: this.onEventDrop.bind(this),
     hiddenDays: [0],
+    eventDidMount: this.estilizarEvento.bind(this), // 👈 Importante
   };
   //#endregion;
 
@@ -216,6 +278,7 @@ export class AsignarhorarioComponent implements OnInit {
             this.cursos = resultado.cursos;
             this.cursosPlan2023 = resultado.cursosPlan2023;
             this.cursosPlan2025 = resultado.cursosPlan2025;
+            
           });
       });
     });
@@ -412,8 +475,24 @@ export class AsignarhorarioComponent implements OnInit {
     const calendarApi = this.calendarComponent.getApi();
     calendarApi.setOption('slotMinTime', this.calendarOptions.slotMinTime);
     calendarApi.setOption('slotMaxTime', this.calendarOptions.slotMaxTime);
-  }  
+  }
   
+  estilizarEvento(info: any): void {
+    const isTemporal = info.event.id.toString().startsWith('temp-') || info.event.extendedProps?.isNew;
+  
+    const badge = document.createElement('span');
+    badge.textContent = isTemporal ? 'Temporal' : 'Guardado';
+  
+    // ✅ Estilos Tailwind en forma manual
+    badge.className = `
+      absolute top-1 right-1 
+      text-[10px] text-white px-2 py-[2px] rounded 
+      ${isTemporal ? 'bg-pink-400' : 'bg-sky-400'}
+    `;
+    // Asegura que el evento tenga relative para posicionar
+    info.el.classList.add('relative');
+    info.el.appendChild(badge);
+  }
   //#endregion
 
   confirmarAsignacionHoras() {
@@ -658,22 +737,29 @@ export class AsignarhorarioComponent implements OnInit {
     this.horarioService
       .getHorarioPorTurno(this.turnoId)
       .subscribe((res: HorarioExtendido[]) => {
-        const eventos = res.map((h: HorarioExtendido) => ({
-          id: String(h.id),
-          title: h.curso.c_nomcur,
-          start: h.h_inicio,
-          end: h.h_fin,
-          backgroundColor: h.c_color || '#3788d8',
-          extendedProps: {
-            codCur: h.curso.c_codcur,
-            turno: h.turno_id,
-            dia: h.dia,
-            tipo: 'Teoría',
-            n_horas: h.n_horas,
-            aula_id: h.aula_id,
-            docente_id: h.docente_id,
-          },
-        }));
+        const eventos = res.map((h: HorarioExtendido) => {
+          const esPadre = h.curso && Array.isArray((h.curso as any).cursosPadres) && (h.curso as any).cursosPadres.length > 0;
+        
+          return {
+            id: String(h.id),
+            title: h.curso.c_nomcur,
+            start: h.h_inicio,
+            end: h.h_fin,
+            backgroundColor: esPadre ? '#EAB308' : h.c_color || '#3788d8',
+            borderColor: esPadre ? '#EAB308' : h.c_color || '#3788d8',
+            extendedProps: {
+              codCur: h.curso.c_codcur,
+              turno: h.turno_id,
+              dia: h.dia,
+              tipo: 'Teoría',
+              n_horas: h.n_horas,
+              aula_id: h.aula_id,
+              docente_id: h.docente_id,
+              esPadre: esPadre
+            }
+          };
+        });
+        
 
         this.mostrarCalendario = false;
         setTimeout(() => {

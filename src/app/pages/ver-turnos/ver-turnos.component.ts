@@ -8,6 +8,7 @@ import { CursoService } from '../../services/curso.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertService } from '../../services/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { docenten } from '../../interfaces/Docente';
 
 @Component({
   selector: 'app-ver-turnos',
@@ -44,6 +45,72 @@ export class VerTurnosComponent implements OnInit {
   estados: { value: string; label: string }[] = [];
   secciones: string[] = [];
   modalidades: { value: string; label: string }[] = [];
+
+  //carga docente
+  isModalOpen = false;
+  selectedCategoria: string = '';
+  categorias = ['Director/Decano/VRA', 'Jefe/Coordinador', 'TC'];
+
+  // Lista completa de docentes
+  docentes: docenten[] = [
+    {
+      id: 1,
+      categoria: 'Director/Decano/VRA',
+      c_nomdoc: 'Juan Pérez',
+      h_min: 8,
+      h_max: 16,
+      tipo: 1,
+      h_total: 0,
+    },
+    {
+      id: 2,
+      categoria: 'Director/Decano/VRA',
+      c_nomdoc: 'Ana Gómez',
+      h_min: 9,
+      h_max: 17,
+      tipo: 1,
+      h_total: 0,
+    },
+    {
+      id: 3,
+      categoria: 'Jefe/Coordinador',
+      c_nomdoc: 'Carlos Ramírez',
+      h_min: 7,
+      h_max: 15,
+      tipo: 2,
+      h_total: 0,
+    },
+    {
+      id: 4,
+      categoria: 'Jefe/Coordinador',
+      c_nomdoc: 'María López',
+      h_min: 10,
+      h_max: 18,
+      tipo: 2,
+      h_total: 0,
+    },
+    {
+      id: 5,
+      categoria: 'TC',
+      c_nomdoc: 'Pedro Sánchez',
+      h_min: 6,
+      h_max: 14,
+      tipo: 3,
+      h_total: 0,
+    },
+    {
+      id: 6,
+      categoria: 'TC',
+      c_nomdoc: 'Elena Rojas',
+      h_min: 11,
+      h_max: 19,
+      tipo: 3,
+      h_total: 0,
+    },
+  ];
+
+  docentesFiltrados: docenten[] = [];
+  selectedDocente: docenten | null = null;
 
   constructor(
     private location: Location,
@@ -308,6 +375,24 @@ export class VerTurnosComponent implements OnInit {
           .includes(texto)
     );
     this.paginaActual = 1;
+  }
+
+  openModal() {
+    this.isModalOpen = true;
+    this.selectedCategoria = '';
+    this.docentesFiltrados = [];
+    this.selectedDocente = null;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
+  filtrarDocentes() {
+    this.docentesFiltrados = this.docentes.filter(
+      (d) => d.categoria === this.selectedCategoria
+    );
+    this.selectedDocente = null; // Resetear selección
   }
 
   editarTurno(turno_id: number) {
