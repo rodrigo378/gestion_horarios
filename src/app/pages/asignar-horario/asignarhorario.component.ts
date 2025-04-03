@@ -366,7 +366,9 @@ export class AsignarhorarioComponent implements OnInit {
     this.horaInicio = this.formatDateTime(fecha);
     this.horasAsignadas = evento.extendedProps.n_horas || 0;
     this.aulaSeleccionada = evento.extendedProps.aula_id ?? null;
-    this.docenteSeleccionado = evento.extendedProps.docente_id ?? null;
+    const idDocente = evento.extendedProps.docente_id ?? null;
+    this.docenteSeleccionado = idDocente;
+    this.selectedDocente = this.docentes.find(d => d.id === idDocente) ?? null;
   }
 
   onEventDrop(info: any): void {
@@ -831,8 +833,7 @@ export class AsignarhorarioComponent implements OnInit {
     this.eventoSeleccionado?.setExtendedProp('aula_id', this.aulaSeleccionada);
     this.eventoSeleccionado!.setExtendedProp('docente_id', this.selectedDocente?.id ?? null);
     this.eventoSeleccionado?.setExtendedProp('isNew', true);
-  
-    // this.actualizarHorasRestantes(codigo, tipo, diferencia);
+    this.actualizarHorasRestantes(codigo, tipo, diferencia);
   
     const eventosActuales = (this.calendarOptions.events as any[]).map(ev => {
       if (ev.id === idEvento) {
@@ -913,7 +914,7 @@ export class AsignarhorarioComponent implements OnInit {
           c_color: this.eventoSeleccionado.backgroundColor || '#3788d8',
           aula_id: this.aulaSeleccionada != null ? Number(this.aulaSeleccionada) : null,
           // docente_id: this.docenteSeleccionado != null ? Number(this.docenteSeleccionado) : null,
-          docente_id: this.selectedDocente?.id ?? 0, // ✅ correcto
+          docente_id: this.selectedDocente?.id ?? null, // ✅ correcto
           turno_id: this.turnoId
         }]
       }],
