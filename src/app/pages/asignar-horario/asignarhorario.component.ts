@@ -7,7 +7,7 @@ import { CalendarOptions } from '@fullcalendar/core';
 import esLocale from '@fullcalendar/core/locales/es';
 import { AlertService } from '../../services/alert.service';
 import { HorarioService } from '../../services/horario.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Curso } from '../../interfaces/Curso';
 import { CursoService } from '../../services/curso.service';
 import { HorarioExtendido } from '../../interfaces/Horario';
@@ -104,7 +104,8 @@ export class AsignarhorarioComponent implements OnInit {
     private turnoService: TurnoService,
     private route: ActivatedRoute,
     private docenteService: DocentecurService,
-    private aulaService: AulaService
+    private aulaService: AulaService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -202,6 +203,7 @@ export class AsignarhorarioComponent implements OnInit {
         c_codesp: turno.c_codesp,
         n_ciclo: turno.n_ciclo.toString(),
         c_codmod: turno.c_codmod,
+        c_grpcur: turno.c_grpcur
       };
 
       this.cursoService.obtenerCursos(dataCursos).subscribe((resCursos) => {
@@ -334,22 +336,37 @@ export class AsignarhorarioComponent implements OnInit {
 
   onEventClick(info: any) {
     const evento = info.event;
+  
+    // 🛡️ Si es curso padre, mostramos confirmación y redirigimos
+    if (evento.extendedProps?.esPadre) {
+      this.alertService.confirm(
+        'Este curso es un curso padre. ¿Deseas editarlo? Serás redirigido a la página de edición específica.',
+        'Curso Padre'
+      ).then(confirmado => {
+        if (confirmado) {
+          this.router.navigate(['/cursos/', this.turnoId]);
+        }
+      });
+      return; // 🔒 Detenemos el flujo aquí
+    }
+  
+    // Si no es padre, sigue el flujo normal
     this.eventoSeleccionado = evento;
     this.modalHorasActivo = true;
-
+  
     const codigo = evento.extendedProps.codCur;
     const tipo = evento.extendedProps.tipo;
     const curso = this.cursos.find(
       (c) => c.c_codcur === codigo && c.tipo === tipo
     );
-
+  
     let horasMaximas = 0;
     if (curso) {
       horasMaximas = tipo === 'Teoría' ? curso.n_ht ?? 0 : curso.n_hp ?? 0;
     }
-
+  
     this.vacantesAula = curso?.vacante ?? null;
-
+  
     this.cursoSeleccionado = {
       ...curso,
       title: evento.title,
@@ -359,13 +376,14 @@ export class AsignarhorarioComponent implements OnInit {
       },
       horasDisponibles: horasMaximas,
     };
-
+  
     const fecha = new Date(evento.start);
     this.fechaDrop = fecha;
     this.diaSeleccionado = this.obtenerDiaSemana(fecha);
     this.horaInicio = this.formatDateTime(fecha);
     this.horasAsignadas = evento.extendedProps.n_horas || 0;
     this.aulaSeleccionada = evento.extendedProps.aula_id ?? null;
+  
     const idDocente = evento.extendedProps.docente_id ?? null;
     this.docenteSeleccionado = idDocente;
     this.selectedDocente = this.docentes.find(d => d.id === idDocente) ?? null;
@@ -427,20 +445,36 @@ export class AsignarhorarioComponent implements OnInit {
   
   estilizarEvento(info: any): void {
     const isTemporal = info.event.id.toString().startsWith('temp-') || info.event.extendedProps?.isNew;
+    const esPadre = info.event.extendedProps?.esPadre;
   
+    // 🏷️ Badge de estado
     const badge = document.createElement('span');
     badge.textContent = isTemporal ? 'Temporal' : 'Guardado';
-  
-    // ✅ Estilos Tailwind en forma manual
     badge.className = `
       absolute top-1 right-1 
       text-[10px] text-white px-2 py-[2px] rounded 
       ${isTemporal ? 'bg-pink-400' : 'bg-sky-400'}
     `;
-    // Asegura que el evento tenga relative para posicionar
+  
+    // 🔒 Candado para cursos padres
+    if (esPadre) {
+      const candado = document.createElement('i');
+      candado.className = `
+        fa-solid fa-lock 
+        absolute bottom-1 right-1 
+        text-gray-700 text-[25px] 
+        pointer-events-none
+      `;
+      candado.title = 'Curso padre bloqueado';
+      info.el.appendChild(candado);
+      
+      info.el.appendChild(candado);
+    }
+  
     info.el.classList.add('relative');
     info.el.appendChild(badge);
   }
+  
   //#endregion
 
   confirmarAsignacionHoras() {
@@ -688,35 +722,34 @@ export class AsignarhorarioComponent implements OnInit {
       .getHorarioPorTurno(this.turnoId)
       .subscribe((res: HorarioExtendido[]) => {
         const eventos = res.map((h: HorarioExtendido) => {
-          const esPadre = h.curso && Array.isArray((h.curso as any).cursosPadres) && (h.curso as any).cursosPadres.length > 0;
-        
-          return {
-            id: String(h.id),
-            title: h.curso.c_nomcur,
-            start: h.h_inicio,
-            end: h.h_fin,
-            backgroundColor: esPadre ? '#EAB308' : h.c_color || '#3788d8',
-            borderColor: esPadre ? '#EAB308' : h.c_color || '#3788d8',
-            extendedProps: {
-              codCur: h.curso.c_codcur,
-              turno: h.turno_id,
-              dia: h.dia,
-              tipo: 'Teoría',
-              n_horas: h.n_horas,
-              aula_id: h.aula_id,
-              docente_id: h.docente_id,
-              esPadre: esPadre
-            }
-          };
-        });
-        
-
-        this.mostrarCalendario = false;
-        setTimeout(() => {
-          this.calendarOptions.events = eventos;
-          this.mostrarCalendario = true;
-        }, 10);
+          const esPadre = h.curso && Array.isArray((h.curso as any).cursosPadres) && (h.curso as any).cursosPadres.length > 0;  
+        return {
+          id: String(h.id),
+          title: h.curso.c_nomcur,
+          start: h.h_inicio,
+          end: h.h_fin,
+          backgroundColor: esPadre ? '#EAB308' : h.c_color || '#3788d8',
+          borderColor: esPadre ? '#EAB308' : h.c_color || '#3788d8',
+          extendedProps: {
+            codCur: h.curso.c_codcur,
+            turno: h.turno_id,
+            dia: h.dia,
+            tipo: 'Teoría',
+            n_horas: h.n_horas,
+            aula_id: h.aula_id,
+            docente_id: h.docente_id,
+            esPadre: esPadre
+          },
+          editable: !esPadre
+        };
       });
+
+      this.mostrarCalendario = false;
+      setTimeout(() => {
+        this.calendarOptions.events = eventos;
+        this.mostrarCalendario = true;
+      }, 10);
+    });
   }
 
   //#region metodos para en eliminar y actulizar
@@ -724,9 +757,7 @@ export class AsignarhorarioComponent implements OnInit {
     codigo: string,
     tipo: string,
     diferencia: number
-  ) {
-    console.log('🧠 actualizando horas restantes desde:', new Error().stack);
-  
+  ) {  
     const procesados = new Set(); // ⛔ evita aplicar varias veces
   
     const listas = [this.cursos, this.cursosPlan2023, this.cursosPlan2025];
