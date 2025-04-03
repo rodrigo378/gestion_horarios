@@ -69,6 +69,7 @@ export interface CreateHorario {
     aula_id: number;
     docente_id: number;
     turno_id: number;
+    tipo: string;
   }[];
 }
 
