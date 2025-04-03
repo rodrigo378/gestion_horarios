@@ -8,10 +8,9 @@
     >
       <div class="flex items-center justify-between">
         <div>
-          <h3 class="text-lg font-semibold text-slate-800">Asigna horarios</h3>
-          <p class="text-slate-500">
-            Asigna horarios de acuerdo a las secciones
-          </p>
+          <h3 class="text-lg font-semibold text-slate-800">
+            Asigna cursos transversales
+          </h3>
         </div>
         <div class="flex flex-col gap-2 shrink-0 sm:flex-row">
           <div class="w-full md:w-72">
@@ -36,8 +35,6 @@
                 </svg>
               </div>
               <input
-                [(ngModel)]="filtroBusqueda"
-                (input)="filtrarturnos()"
                 class="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 !pr-9 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
                 placeholder=" "
               />
@@ -52,86 +49,69 @@
       </div>
     </div>
 
-    <div class="flex justify-end items-center flex-wrap gap-3 mt-4 mb-4 mr-4">
-      <!-- Select: Sección
-            <select [(ngModel)]="filtros.c_grpcur"
-                    (change)="aplicarFiltros()"
-                    class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28">
-              <option value="">Sección</option>
-              <option *ngFor="let sec of secciones" [value]="sec">{{ sec }}</option>
-            </select> -->
-
-      <!-- Select: Facultad -->
+    <div class="flex justify-start items-center flex-wrap gap-3 mt-4 mb-4 mr-4">
       <select
-        [(ngModel)]="filtros.c_codfac"
-        (change)="onFacultadChange()"
         class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+        [(ngModel)]="selectFacultadad"
+        (change)="changeSelectFacultad()"
       >
         <option value="">Facultad</option>
-        <option *ngFor="let fac of facultades" [value]="fac">
-          {{ getNombreFacultad(fac) }}
-        </option>
+        <option value="S">CIENCIAS DE LA SALUD</option>
+        <option value="E">INGENIERÍA Y NEGOCIOS</option>
       </select>
 
       <!-- Select: Especialidad -->
       <select
-        [(ngModel)]="filtros.c_codesp"
-        (change)="aplicarFiltros()"
         class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-96"
+        [(ngModel)]="selectEspecialidad"
       >
         <option value="">Especialidad</option>
         <option
-          *ngFor="let esp of especialidadesFiltradas"
-          [value]="esp.codesp"
+          *ngFor="let especialidad of especialidades"
+          [value]="especialidad.codesp"
         >
-          {{ esp.nomesp }}
+          {{ especialidad.nomesp }}
         </option>
       </select>
 
       <!-- Select: Modalidad -->
       <select
-        [(ngModel)]="filtros.c_codmod"
-        (change)="aplicarFiltros()"
         class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+        [(ngModel)]="selectModalidad"
       >
         <option value="">Modalidad</option>
-        <option *ngFor="let mod of modalidades" [value]="mod.value">
-          {{ mod.label }}
-        </option>
+        <option value="1">Presencial</option>
+        <option value="2">Semipresencial</option>
+        <option value="3">Virtual</option>
       </select>
 
-      <!-- Select: Ciclo -->
       <select
-        [(ngModel)]="filtros.n_ciclo"
-        (change)="aplicarFiltros()"
         class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+        [(ngModel)]="selectPlan"
       >
-        <option value="">Ciclo</option>
-        <option *ngFor="let c of ciclos" [value]="c">{{ c }}</option>
+        <option value="">Plan</option>
+        <option value="2023">2023</option>
+        <option value="2025">2025</option>
       </select>
 
-      <!-- Select: Estado -->
       <select
-        [(ngModel)]="filtros.estado"
-        (change)="aplicarFiltros()"
         class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+        [(ngModel)]="selectPeriodo"
       >
-        <option value="">Estado</option>
-        <option [value]="1">Asignado</option>
-        <option [value]="2">No asignado</option>
+        <option value="">Periodo</option>
+        <option value="20241">2024-1</option>
+        <option value="20242">2024-4</option>
+        <option value="20251">2025-1</option>
       </select>
-      <!-- Botón Crear más moderno -->
-      <!-- <button class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300">
-                <i class="fa-solid fa-plus"></i>
-                Crear
-            </button> -->
+    </div>
 
+    <div class="flex justify-start items-center flex-wrap gap-3 mt-4 mb-4 mr-4">
       <button
-        (click)="mostrarModalCrear = true"
         class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
+        (click)="clickDefinirCursoTransversales()"
       >
         <i class="fa-solid fa-plus"></i>
-        Crear
+        Definir Cursos Transversales
       </button>
     </div>
 
@@ -145,7 +125,7 @@
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
               >
-                Periodo
+                Id
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -169,7 +149,7 @@
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
               >
-                Plan
+                Codigo
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -193,7 +173,7 @@
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
               >
-                Facultad
+                Curso
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -211,13 +191,14 @@
                 </svg>
               </p>
             </th>
+
             <th
               class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
             >
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
               >
-                Especialidad
+                Docente
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -235,6 +216,7 @@
                 </svg>
               </p>
             </th>
+
             <th
               class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
             >
@@ -259,6 +241,7 @@
                 </svg>
               </p>
             </th>
+
             <th
               class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
             >
@@ -283,54 +266,7 @@
                 </svg>
               </p>
             </th>
-            <th
-              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-            >
-              <p
-                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-              >
-                Modalidad
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                  class="w-4 h-4"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                  ></path>
-                </svg>
-              </p>
-            </th>
-            <th
-              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-            >
-              <p
-                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-              >
-                Estado
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                  class="w-4 h-4"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                  ></path>
-                </svg>
-              </p>
-            </th>
+
             <th
               class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
             >
@@ -355,15 +291,48 @@
                 </svg>
               </p>
             </th>
+
+            <th
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+              >
+                Equivalentes
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let turno of turnosPaginados">
+          @for (curso of cursos; track curso.id) {
+          <tr
+            *ngIf="
+              curso.cursosPadres.length === 0 ||
+              curso.cursosPadres[0].padre_curso_id === curso.id
+            "
+          >
+            <!-- columnas del curso -->
             <td class="p-4 border-b border-slate-200">
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ turno.n_codper }}
+                    {{ curso.id }} - {{ curso.c_codfac }} -
+                    {{ curso.c_codesp }}
                   </p>
                 </div>
               </div>
@@ -372,7 +341,7 @@
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ turno.n_codpla }}
+                    {{ curso.c_codcur }}
                   </p>
                 </div>
               </div>
@@ -381,115 +350,122 @@
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ turno.nom_fac }}
+                    {{ curso.c_nomcur }}
                   </p>
                 </div>
               </div>
             </td>
             <td class="p-4 border-b border-slate-200">
-              <div class="flex flex-col">
-                <p class="text-sm font-semibold text-slate-700">
-                  {{ turno.nomesp }}
-                </p>
+              <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                  @if (curso.Horario.length !== 0) { @for (horario of
+                  curso.Horario; track horario.id) {
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ horario.Docente?.c_nomdoc || "sin docente" }}
+                    ({{ horario.dia }})
+                    {{ horario.h_inicio | date : "shortTime" }} -
+                    {{ horario.h_fin | date : "shortTime" }}
+                  </p>
+                  } } @else {
+                  <p class="text-sm font-semibold text-slate-700">
+                    Sin asignar
+                  </p>
+                  }
+                </div>
               </div>
             </td>
             <td class="p-4 border-b border-slate-200">
-              <div class="flex flex-col">
-                <p class="text-sm font-semibold text-slate-700">
-                  {{ turno.c_grpcur }}
-                </p>
+              <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ curso.turno.c_grpcur }}
+                  </p>
+                </div>
               </div>
             </td>
             <td class="p-4 border-b border-slate-200">
-              <div class="flex flex-col">
-                <p class="text-sm font-semibold text-slate-700">
-                  {{ turno.n_ciclo }}
-                </p>
+              <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ curso.turno.n_ciclo }}
+                  </p>
+                </div>
               </div>
             </td>
+
             <td class="p-4 border-b border-slate-200">
-              <div class="flex flex-col">
-                <p class="text-sm font-semibold text-slate-700">
-                  {{ turno.c_nommod }}
-                </p>
-              </div>
-            </td>
-            <td class="p-4 border-b border-slate-200">
-              <div class="w-max">
-                <div>
+              <div class="flex items-center justify-center gap-2">
+                @if (curso.cursosPadres.length === 0) {
+                <!-- Botón agregar -->
+                <button
+                  class="relative h-10 w-10 rounded-lg text-green-600 hover:bg-green-600/10 active:bg-green-600/20 transition-all"
+                  type="button"
+                  (click)="clickMas(curso)"
+                >
                   <span
-                    [ngClass]="{
-                      'text-green-900 bg-green-500/20': turno.estado === 1,
-                      'text-slate-500 bg-slate-100': turno.estado === 2
-                    }"
-                    class="relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap"
+                    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                   >
-                    {{ turno.estado === 1 ? "asignado" : "no asignado" }}
+                    <i class="fa-solid fa-plus fa-lg"></i>
                   </span>
-                </div>
+                </button>
+                } @if (curso.cursosPadres.length !== 0) {
+                <!-- Botón eliminar -->
+                <button
+                  class="relative h-10 w-10 rounded-lg text-red-600 hover:bg-red-600/10 active:bg-red-600/20 transition-all"
+                  type="button"
+                  (click)="clickDeleteTransversal(curso.id)"
+                >
+                  <span
+                    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                  >
+                    <i class="fa-solid fa-trash fa-lg"></i>
+                  </span>
+                </button>
+                }
               </div>
             </td>
 
             <td class="p-4 border-b border-slate-200">
-              <!-- Botón ver cursos -->
-              <button
-                class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                type="button"
-                (click)="verCursos(turno)"
-              >
-                <span
-                  class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                >
-                  <i class="fa-solid fa-calendar-days fa-2x"></i>
-                </span>
-              </button>
-
-              <!-- Botón editar -->
-              <button
-                class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-yellow-600 transition-all hover:bg-yellow-600/10 active:bg-yellow-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
-                type="button"
-                (click)="editarTurno(turno.id)"
-              >
-                <span
-                  class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                >
-                  <i class="fa-solid fa-pen fa-lg"></i>
-                </span>
-              </button>
-
-              <!-- Botón eliminar -->
-              <button
-                class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-red-600 transition-all hover:bg-red-600/10 active:bg-red-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
-                type="button"
-                (click)="deleteTurno(turno.id)"
-              >
-                <span
-                  class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                >
-                  <i class="fa-solid fa-trash fa-lg"></i>
-                </span>
-              </button>
+              <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                  @for (hijo of curso.cursosHijos; track hijo.id) { @if
+                  (curso.id !== hijo.cursosHijo.id) {
+                  <p class="text-sm font-semibold text-slate-700">
+                    ({{ hijo.cursosHijo.id }}) ({{ hijo.cursosHijo.n_codper }})
+                    {{ hijo.cursosHijo.c_codcur }} -
+                    {{ hijo.cursosHijo.turno?.c_grpcur }} ({{
+                      hijo.cursosHijo.c_codfac
+                    }}
+                    - {{ hijo.cursosHijo.c_codesp }})
+                  </p>
+                  } }
+                </div>
+              </div>
             </td>
           </tr>
+          }
         </tbody>
       </table>
     </div>
-    <div class="flex items-center justify-between p-3">
-      <p class="block text-sm text-slate-500">
-        Página {{ paginaActual }} de {{ totalPaginas }}
+    <div class="flex items-center justify-between px-4 py-3">
+      <p class="text-sm text-slate-600">
+        Página {{ paginaActual }} de
+        {{ totalCursos ? Math.ceil(totalCursos / 20) : 1 }} — Total:
+        {{ totalCursos }} cursos
       </p>
-      <div class="flex gap-1">
+
+      <div class="flex gap-2">
         <button
-          (click)="anteriorPagina()"
+          class="rounded border border-slate-300 py-2 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
           [disabled]="paginaActual === 1"
-          class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+          (click)="retrocederPagina()"
         >
           Anterior
         </button>
         <button
-          (click)="siguientePagina()"
-          [disabled]="paginaActual === totalPaginas"
-          class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+          class="rounded border border-slate-300 py-2 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+          [disabled]="paginaActual === Math.ceil(totalCursos / 20)"
+          (click)="avanzarPagina()"
         >
           Siguiente
         </button>
@@ -503,31 +479,61 @@
   *ngIf="mostrarModalCrear"
   class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
 >
-  <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-md">
+  <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-4xl">
+    <!-- Cabecera -->
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold">Crear nuevo horario</h2>
-      <button
-        class="text-gray-500 hover:text-red-500"
-        (click)="mostrarModalCrear = false"
-      >
+      <div>
+        <h2 class="text-xl font-bold text-gray-800">
+          Definir curso transversal
+        </h2>
+        <p class="text-sm text-gray-600">
+          <span class="font-semibold">Código:</span> {{ curso.c_codcur }}
+          <br />
+          <span class="font-semibold">Nombre:</span> {{ curso.c_nomcur }}
+          <br />
+          <span class="font-semibold">Nombre:</span> {{ curso.c_codfac }}
+          <br />
+          <span class="font-semibold">Nombre:</span> {{ curso.c_codesp }}
+        </p>
+      </div>
+      <button class="text-gray-500 hover:text-red-500" (click)="cerrarModal()">
         <i class="fa-solid fa-xmark text-xl"></i>
       </button>
     </div>
 
-    <form [formGroup]="formularioHorario" class="flex flex-col gap-4">
+    <!-- Filtros -->
+    <form class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <!-- Modalidad -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Modalidad</label
+        >
+        <select
+          [(ngModel)]="filtros.c_codmod"
+          name="modalidad"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione modalidad</option>
+          <option value="1">Presencial</option>
+          <option value="2">Semipresencial</option>
+          <option value="3">Virtual</option>
+        </select>
+      </div>
+
       <!-- Facultad -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1"
           >Facultad</label
         >
         <select
-          formControlName="c_codfac"
-          (change)="onChangeFacultadFormulario()"
+          [(ngModel)]="filtros.c_codfac"
+          (change)="changeSelectFacultadModal()"
+          name="facultad"
           class="w-full border border-gray-300 rounded-md px-3 py-2"
         >
           <option value="">Seleccione facultad</option>
-          <option value="S">CIENCIAS DE LA SALUD</option>
-          <option value="E">INGENIERÍA Y NEGOCIOS</option>
+          <option value="S">Ciencias de la Salud</option>
+          <option value="E">Ingeniería y Negocios</option>
         </select>
       </div>
 
@@ -537,105 +543,91 @@
           >Especialidad</label
         >
         <select
-          formControlName="c_codesp"
-          (change)="aplicarFiltros()"
-          class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-96"
+          [(ngModel)]="filtros.c_codesp"
+          name="especialidad"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
         >
-          <option value="">Especialidad</option>
-          <option *ngFor="let esp of especialidades" [value]="esp.codesp">
+          <option value="">Seleccione especialidad</option>
+          <option *ngFor="let esp of especialidadesModal" [value]="esp.codesp">
             {{ esp.nomesp }}
           </option>
         </select>
       </div>
 
-      <!-- periodo -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Periodo</label
-        >
-        <select
-          formControlName="n_codper"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-        >
-          <option value="">Seleccione periodo</option>
-          <option value="20231">20231</option>
-          <option value="20232">20232</option>
-          <option value="20241">20241</option>
-          <option value="20242">20242</option>
-          <option value="20251">20251</option>
-          <option value="20252">20252</option>
-        </select>
-      </div>
-
-      <!-- periodo -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Periodo</label
-        >
-        <select
-          formControlName="n_codpla"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-        >
-          <option value="">Seleccione plan</option>
-          <option value="20231">2023</option>
-          <option value="20232">2025</option>
-        </select>
-      </div>
-
-      <!-- Sección -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Sección</label
-        >
-        <input
-          type="text"
-          formControlName="c_grpcur"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-          placeholder="Ej. A"
-        />
-      </div>
-
-      <!-- Ciclo -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Ciclo</label
-        >
-        <select
-          formControlName="n_ciclo"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-        >
-          <option value="">Seleccione ciclo</option>
-          <option *ngFor="let c of ciclos" [value]="c">{{ c }}</option>
-        </select>
-      </div>
-
-      <!-- Modalidad -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Modalidad</label
-        >
-        <select
-          formControlName="c_codmod"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-        >
-          <option value="">Seleccione modalidad</option>
-          <option *ngFor="let mod of modalidades" [value]="mod.value">
-            {{ mod.label }}
-          </option>
-        </select>
-      </div>
+      <button
+        class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
+        (click)="clickBuscarCursosModal()"
+      >
+        Buscar
+      </button>
     </form>
 
+    <!-- Tabla -->
+    <div>
+      <h3 class="text-md font-semibold text-gray-700 mb-2">
+        Seleccionar curso
+      </h3>
+      @if (cursosFiltrados.length !== 0) {
+      <div class="flex justify-end mb-2">
+        <button
+          class="px-3 py-1 text-sm font-medium text-white bg-blue-700 rounded hover:bg-blue-800 transition"
+          (click)="toggleSeleccionarTodos()"
+        >
+          {{ todosSeleccionados ? "Deseleccionar todos" : "Seleccionar todos" }}
+        </button>
+      </div>
+      }
+      <div class="overflow-auto max-h-64 border rounded-md">
+        <table class="min-w-full text-sm text-left text-gray-700">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2">Id</th>
+              <th class="px-4 py-2">Cod Plan</th>
+              <th class="px-4 py-2">Curso</th>
+              <th class="px-4 py-2">Sección</th>
+              <th class="px-4 py-2">Ciclo</th>
+              <th class="px-4 py-2">Seleccionar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let curso of cursosFiltrados">
+              <tr class="border-t">
+                <td class="px-4 py-2">
+                  {{ curso.id }} - {{ curso.c_codfac }} - {{ curso.c_codesp }}
+                </td>
+                <td class="px-4 py-2">{{ curso.n_codper }}</td>
+                <td class="px-4 py-2">
+                  ({{ curso.c_codcur }}) {{ curso.c_nomcur }}
+                </td>
+                <td class="px-4 py-2">{{ curso.turno.c_grpcur }}</td>
+                <td class="px-4 py-2">{{ curso.n_ciclo }}</td>
+                <td class="px-4 py-2">
+                  <input
+                    type="checkbox"
+                    [checked]="estaSeleccionado(curso.id)"
+                    (change)="toggleSeleccionCurso(curso)"
+                    class="form-checkbox h-4 w-4 text-blue-600"
+                  />
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Botones -->
     <div class="mt-6 flex justify-end gap-2">
       <button
-        (click)="mostrarModalCrear = false"
+        (click)="cerrarModal()"
         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
       >
         Cancelar
       </button>
       <button
+        [disabled]="arrayCheckboxCursos.length === 0"
+        (click)="clickGuardarModal()"
         class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
-        (click)="guardarHorario()"
       >
         Guardar
       </button>

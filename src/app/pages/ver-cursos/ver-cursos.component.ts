@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HorarioService } from '../../services/horario.service';
-import { Curso2, Especialidad } from '../../interfaces/Curso';
-import { CursoService } from '../../services/curso.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
+import { Curso2 } from '../../interfaces/Curso';
+import { CursoService } from '../../services/curso.service';
+import { ActivatedRoute } from '@angular/router';
+import { TurnoService } from '../../services/turno.service';
+import { Turno } from '../../interfaces/turno';
 
 @Component({
   selector: 'app-ver-cursos',
@@ -14,221 +16,45 @@ import { AlertService } from '../../services/alert.service';
 export class VerCursosComponent implements OnInit {
   cursos: Curso2[] = [];
   curso!: Curso2;
-
-  paginaActual: number = 1;
-  todosSeleccionados: boolean = false;
-
-  especialidades: Especialidad[] = [];
-  especialidadesModal: Especialidad[] = [];
-  cursosFiltrados: any[] = [];
-
-  selectFacultadad: string = '';
-  selectEspecialidad: string = '';
-  selectModalidad: string = '';
-  selectPlan: string = '';
-  selectPeriodo: string = '';
-
-  arrayCheckboxCursos: number[] = [];
-
+  turno!: Turno;
   mostrarModalCrear: boolean = false;
-
-  filtros = {
-    c_codmod: '',
-    n_codper: '',
-    c_codfac: '',
-    c_codesp: '',
-  };
+  id!: number;
 
   constructor(
     private horarioService: HorarioService,
-    private cursoService: CursoService,
-    private alertService: AlertService
+    private turnoService: TurnoService,
+    private alertService: AlertService,
+    private route: ActivatedRoute
   ) {}
 
-  ngOnInit(): void {}
-
-  trackByCurso(index: number, curso: Curso2): number {
-    return curso.id;
-  }
-
-  totalPaginas(): number {
-    return Math.ceil(this.cursos.length / 20);
+  ngOnInit(): void {
+    this.id = Number(this.route.snapshot.paramMap.get('id')) || 0;
+    this.getCursos();
+    this.getTurno();
   }
 
   getCursos() {
     this.horarioService
-      .getCurso(
-        Number(this.selectModalidad),
-        this.selectPeriodo,
-        this.selectFacultadad,
-        this.selectEspecialidad
-      )
+      .getCurso(undefined, undefined, undefined, undefined, undefined, this.id)
       .subscribe((data) => {
-        console.log('data => ', data);
-        this.cursos = data;
+        this.cursos = data.data;
+        console.log('cursos => ', this.cursos);
       });
   }
 
-  getCursoTransversal() {
-    this.horarioService
-      .getCurso(
-        Number(this.filtros.c_codmod),
-        this.filtros.n_codper,
-        this.filtros.c_codfac,
-        this.filtros.c_codesp
-      )
-      .subscribe((data) => {
-        this.cursosFiltrados = data.filter((curso) => {
-          const codA = this.curso.c_codcur;
-          const codAeq = this.curso.c_codcur_equ;
-          const codB = curso.c_codcur;
-          const codBeq = curso.c_codcur_equ;
-
-          const esMismoCurso = this.curso.id === curso.id;
-
-          return (
-            !esMismoCurso &&
-            (codA === codB ||
-              codA === codBeq ||
-              (codAeq && (codAeq === codB || codAeq === codBeq)))
-          );
-        });
-
-        console.log('📚 Cursos filtrados modal => ', this.cursosFiltrados);
-      });
-  }
-
-  changeSelectFacultad() {
-    this.cursoService.getEspecialidades().subscribe((data) => {
-      this.especialidades = data.filter(
-        (especialidad) => especialidad.codfac === this.selectFacultadad
-      );
-
-      this.selectEspecialidad = '';
+  getTurno() {
+    this.turnoService.getTurnoById(this.id).subscribe((data) => {
+      this.turno = data;
+      console.log('turno => ', this.turno);
     });
-  }
-
-  changeSelectFacultadModal() {
-    this.cursoService.getEspecialidades().subscribe((data) => {
-      this.especialidadesModal = data.filter(
-        (especialidad) => especialidad.codfac === this.filtros.c_codfac
-      );
-
-      this.filtros.c_codesp = '';
-    });
-  }
-
-  clickDefinirCursoTransversales() {
-    this.getCursos();
-  }
-
-  clickMas(curso: Curso2) {
-    console.log('curso => ', curso);
-    this.curso = curso;
-    this.mostrarModalCrear = true;
-  }
-
-  clickBuscarCursosModal() {
-    this.getCursoTransversal();
-  }
-
-  clickMasCursoTransversal(hijo_id: number) {
-    console.log('padre_id => ', this.curso.id);
-    console.log('hijo_id => ', hijo_id);
-
-    this.horarioService
-      .asociarHorarioTransversal(Number(this.curso.id), hijo_id)
-      .subscribe({
-        next: (res: any) => {
-          console.log(res);
-          this.getCursoTransversal();
-          this.getCursos();
-          this.alertService.success('Se crea el curso transversal');
-        },
-        error: (err: HttpErrorResponse) => {
-          this.alertService.error(err.error.message);
-          console.log(err);
-        },
-      });
   }
 
   cerrarModal() {
-    this.todosSeleccionados = false;
     this.mostrarModalCrear = false;
-    this.cursosFiltrados = [];
-    this.arrayCheckboxCursos = [];
-    this.filtros = {
-      c_codmod: '',
-      n_codper: '',
-      c_codfac: '',
-      c_codesp: '',
-    };
   }
 
-  estaSeleccionado(id: number): boolean {
-    return this.arrayCheckboxCursos.includes(id);
-  }
-
-  toggleSeleccionCurso(curso: any) {
-    const index = this.arrayCheckboxCursos.indexOf(curso.id);
-
-    if (index !== -1) {
-      this.arrayCheckboxCursos.splice(index, 1);
-    } else {
-      this.arrayCheckboxCursos.push(curso.id);
-    }
-
-    console.log('Cursos seleccionados:', this.arrayCheckboxCursos);
-  }
-
-  toggleSeleccionarTodos() {
-    this.todosSeleccionados = !this.todosSeleccionados;
-
-    if (this.todosSeleccionados) {
-      this.arrayCheckboxCursos = this.cursosFiltrados.map((c) => c.id);
-    } else {
-      this.arrayCheckboxCursos = [];
-    }
-  }
-
-  clickGuardarModal() {
-    console.log('padre_id => ', this.curso.id);
-    console.log('hijos_id => ', this.arrayCheckboxCursos);
-
-    this.horarioService
-      .createTransversal(this.curso.id, this.arrayCheckboxCursos)
-      .subscribe({
-        next: (res: any) => {
-          console.log(res);
-          this.getCursos();
-          this.cursosFiltrados = [];
-          this.arrayCheckboxCursos = [];
-          this.filtros = {
-            c_codmod: '',
-            n_codper: '',
-            c_codfac: '',
-            c_codesp: '',
-          };
-          this.mostrarModalCrear = false;
-          this.alertService.success('Se creo grupo correctamente');
-        },
-        error: (err: HttpErrorResponse) => {
-          console.log(err);
-          this.alertService.error('Error al crear grupo');
-        },
-      });
-  }
-
-  clickDeleteTransversal(padre_id: number) {
-    this.horarioService.deleteTransversal(padre_id).subscribe({
-      next: (res: any) => {
-        console.log('se elimino => ', res);
-        this.getCursos();
-        this.alertService.success('Se borro este grupo correctamente');
-      },
-      error: (err: HttpErrorResponse) => {
-        this.alertService.error('Error al borrar grupo');
-      },
-    });
+  clickAbrirModal(curso: Curso2) {
+    this.mostrarModalCrear = true;
+    console.log('cursos1 => ', curso);
   }
 }

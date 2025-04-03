@@ -309,4 +309,8 @@ export class VerTurnosComponent implements OnInit {
     );
     this.paginaActual = 1;
   }
+
+  editarTurno(turno_id: number) {
+    this.router.navigate([`/cursos/${turno_id}`]);
+  }
 }
