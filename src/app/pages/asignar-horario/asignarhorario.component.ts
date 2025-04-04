@@ -700,41 +700,22 @@ export class AsignarhorarioComponent implements OnInit {
     this.horarioService.guardarHorarios(payload).subscribe({
       next: (res) => {
         if (res.success === false && res.errores?.length > 0) {
-          // Conflictos detectados
           const errores = res.errores as string[];
           const erroresHtml = errores.map(err => `<li>${err}</li>`).join('');
-          this.alertService.confirmConConflictos(erroresHtml).then(confirmado => {
-            if (confirmado) {
-              dataArray.forEach(item => {
-                item.horarios.forEach(horario => {
-                  horario.c_color = '#EF4444';
-                });
-              });
-              this.horarioService.guardarHorarios({ dataArray, verificar: false }).subscribe({
-                next: () => {
-                  this.alertService.success('✅ Horarios guardados a pesar de los conflictos.');
-                  this.cargarHorarios();
-                },
-                error: () => {
-                  this.alertService.error('❌ Error al guardar los horarios con conflictos.');
-                }
-              });
-            }
-          });
-        } else {
-          // Guardado correcto (aunque no venga `success`)
-          const mensaje = res.mensaje || '✅ Horarios guardados correctamente.';
-          this.alertService.success(mensaje);
-          this.cargarHorarios();
+          this.alertService.confirmConConflictos(erroresHtml); // solo muestra
+          return;
         }
+    
+        // Guardado correcto
+        const mensaje = res.mensaje || '✅ Horarios guardados correctamente.';
+        this.alertService.success(mensaje);
+        this.cargarHorarios();
       },
       error: (err) => {
         this.alertService.error('❌ Error al guardar horarios.');
         console.error(err);
       }
-    });
-    
-    
+    });    
     console.log('📝 Data enviada al backend:', payload);    
   }
 
@@ -987,24 +968,17 @@ export class AsignarhorarioComponent implements OnInit {
       next: (res) => {
         if (res.success === false && res.errores?.length > 0) {
           const erroresHtml = res.errores.map((err: any) => `<li>${err}</li>`).join('');
-          this.alertService.confirmConConflictos(erroresHtml).then(confirmado => {
-            if (confirmado) {
-              
-              this.horarioService.updateHorarios({ ...payload, verificar: false }).subscribe({
-                next: () => this.procesarActualizacionExitosa(base, fin, codigo, tipo, diferencia),
-                error: () => this.alertService.error('❌ Error al actualizar con conflictos.')
-              });
-            }
-          });
-        } else {
-          this.procesarActualizacionExitosa(base, fin, codigo, tipo, diferencia);
+          this.alertService.confirmConConflictos(erroresHtml);
+          return;
         }
+    
+        this.procesarActualizacionExitosa(base, fin, codigo, tipo, diferencia);
       },
       error: (err) => {
         this.alertService.error('❌ Error al actualizar el evento.');
         console.error(err);
       }
-    });
+    });    
   }
 
   procesarActualizacionExitosa(base: Date, fin: Date, codigo: string, tipo: string, diferencia: number): void {

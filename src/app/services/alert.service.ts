@@ -75,11 +75,11 @@ export class AlertService {
       html: `<div style="text-align:left; font-size:15px;">
                 <p>Se encontraron los siguientes conflictos:</p>
                 <ul style="padding-left: 20px; margin-top:10px;">${htmlErrores}</ul>
-                <p style="margin-top:20px;">¿Deseas guardar los horarios a pesar de los conflictos?</p>
+                <p style="margin-top:20px;">Por favor asigna los horarios en otro momento sin conflictos.</p>
             </div>`,
       icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: '🛑 Guardar de todas formas',
+      confirmButtonText: 'Entendido',
+      showCancelButton: false,
       cancelButtonText: 'Cancelar',
       confirmButtonColor: '#d33', // rojo
       cancelButtonColor: '#3085d6',
