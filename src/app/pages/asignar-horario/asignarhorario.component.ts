@@ -638,9 +638,10 @@ export class AsignarhorarioComponent implements OnInit {
     const horarios = eventos.map((ev) => {
       const inicio = new Date(ev.start!);
       const fin = new Date(inicio);
-      fin.setMinutes(fin.getMinutes() + this.horasAsignadas * 50);  
+      const horasEvento = ev.extendedProps['n_horas'] ?? 1;
+      fin.setMinutes(fin.getMinutes() + horasEvento * 50);
       const minutos = Math.round((fin.getTime() - inicio.getTime()) / (1000 * 60));
-      const horas = minutos / 50; // para convertir de minutos reales a horas académicas      
+      const horas = minutos / 50;      
   
       return {
         c_codcur: ev.extendedProps['codCur'], // Para agrupar luego
@@ -651,7 +652,7 @@ export class AsignarhorarioComponent implements OnInit {
           n_horas: horas,
           c_color: ev.backgroundColor || '#3788d8',
           aula_id: Number(ev.extendedProps['aula_id']),
-          docente_id: Number(this.selectedDocente?.id || 0),
+          docente_id: Number(ev.extendedProps['docente_id']),
           // docente_id: Number(ev.extendedProps['docente_id']),
           turno_id: this.turnoId,
           tipo: ev.extendedProps['tipo'] ?? 'Teoria'
@@ -762,7 +763,8 @@ export class AsignarhorarioComponent implements OnInit {
             docente_id: h.docente_id,
             esPadre: esPadre
           },
-          editable: !esPadre
+          editable: !esPadre,
+          durationEditable: false
         };
       });
 
@@ -987,6 +989,7 @@ export class AsignarhorarioComponent implements OnInit {
           const erroresHtml = res.errores.map((err: any) => `<li>${err}</li>`).join('');
           this.alertService.confirmConConflictos(erroresHtml).then(confirmado => {
             if (confirmado) {
+              
               this.horarioService.updateHorarios({ ...payload, verificar: false }).subscribe({
                 next: () => this.procesarActualizacionExitosa(base, fin, codigo, tipo, diferencia),
                 error: () => this.alertService.error('❌ Error al actualizar con conflictos.')
