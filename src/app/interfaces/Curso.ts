@@ -17,6 +17,7 @@ export interface Curso {
   c_nomcur: string;
   n_ht?: number;
   n_hp?: number;
+  tipoAgrupado?: string;
   tipo?: string;
   horasRestantes?: number;
   vacante?: number;

@@ -243,7 +243,7 @@ export class VerTransversalComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           console.log(err);
-          this.alertService.error('Error al crear grupo');
+          this.alertService.error(`${err.error.errores}`);
         },
       });
   }
@@ -256,7 +256,8 @@ export class VerTransversalComponent implements OnInit {
         this.alertService.success('Se borro este grupo correctamente');
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.error('Error al borrar grupo');
+        console.log(err);
+        this.alertService.error(`${err.error.errores}`);
       },
     });
   }
