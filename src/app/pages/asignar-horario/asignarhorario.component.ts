@@ -59,9 +59,8 @@ export class AsignarhorarioComponent implements OnInit {
   //select turno
   turnoSeleccionado: 'M' | 'N' | '' = '';
   //carga docente
-  isModalOpen = false;
   selectedCategoria: string = '';
-  categorias = ['Director/Decano/VRA', 'Jefe/Coordinador', 'TC'];
+  categorias: String[] = [];
 
   docentesFiltrados: Docente[] = [];
   selectedDocente: Docente | null = null;
@@ -144,6 +143,9 @@ export class AsignarhorarioComponent implements OnInit {
     this.docenteService.obtenerDocentes().subscribe((data) => {
       console.log('📚 DOCENTES:', data);
       this.docentes = data;
+
+      const categoriaSet = new Set(data.map(d => d.categoria));
+      this.categorias = Array.from(categoriaSet)
     });
   }
 
@@ -383,10 +385,26 @@ export class AsignarhorarioComponent implements OnInit {
     this.horaInicio = this.formatDateTime(fecha);
     this.horasAsignadas = evento.extendedProps.n_horas || 0;
     this.aulaSeleccionada = evento.extendedProps.aula_id ?? null;
-  
-    const idDocente = evento.extendedProps.docente_id ?? null;
-    this.docenteSeleccionado = idDocente;
-    this.selectedDocente = this.docentes.find(d => d.id === idDocente) ?? null;
+
+    const idDocente = evento.extendedProps.docente_id;
+
+    if (idDocente != null) {
+      const docente = this.docentes.find(d => d.id === idDocente);
+
+      if (docente) {
+        this.selectedDocente = docente;
+        this.selectedCategoria = docente.categoria;
+        this.filtrarDocentes(); // Esto actualizará docentesFiltrados con la categoría correcta
+      } else {
+        this.selectedDocente = null;
+        this.selectedCategoria = '';
+        this.docentesFiltrados = [];
+      }
+    } else {
+      this.selectedDocente = null;
+      this.selectedCategoria = '';
+      this.docentesFiltrados = [];
+    }
   }
 
   onEventDrop(info: any): void {
@@ -686,6 +704,11 @@ export class AsignarhorarioComponent implements OnInit {
           const erroresHtml = errores.map(err => `<li>${err}</li>`).join('');
           this.alertService.confirmConConflictos(erroresHtml).then(confirmado => {
             if (confirmado) {
+              dataArray.forEach(item => {
+                item.horarios.forEach(horario => {
+                  horario.c_color = '#EF4444';
+                });
+              });
               this.horarioService.guardarHorarios({ dataArray, verificar: false }).subscribe({
                 next: () => {
                   this.alertService.success('✅ Horarios guardados a pesar de los conflictos.');
@@ -697,7 +720,6 @@ export class AsignarhorarioComponent implements OnInit {
               });
             }
           });
-    
         } else {
           // Guardado correcto (aunque no venga `success`)
           const mensaje = res.mensaje || '✅ Horarios guardados correctamente.';
@@ -934,7 +956,15 @@ export class AsignarhorarioComponent implements OnInit {
           n_ciclo: Number(curso?.n_ciclo) || 0,
           c_area: curso?.c_area || '',
           turno_id: this.turnoId,
-          tipo: this.eventoSeleccionado.extendedProps.tipo ?? 'Teoría'
+          tipo: this.eventoSeleccionado.extendedProps.tipo ?? 'Teoría',
+          n_codper_equ:
+            curso?.n_codper_equ != null ? String(curso.n_codper_equ) : null,
+          c_codmod_equ:
+            curso?.c_codmod_equ != null ? String(curso.c_codmod_equ) : null,
+          c_codfac_equ: curso?.c_codfac_equ ?? null,
+          c_codesp_equ: curso?.c_codesp_equ ?? null,
+          c_codcur_equ: curso?.c_codcur_equ ?? null,
+          c_nomcur_equ: curso?.c_nomcur_equ ?? null,
         },
         horarios: [{
           id: Number(idEvento),
@@ -944,8 +974,7 @@ export class AsignarhorarioComponent implements OnInit {
           n_horas: this.horasAsignadas,
           c_color: this.eventoSeleccionado.backgroundColor || '#3788d8',
           aula_id: this.aulaSeleccionada != null ? Number(this.aulaSeleccionada) : null,
-          // docente_id: this.docenteSeleccionado != null ? Number(this.docenteSeleccionado) : null,
-          docente_id: this.selectedDocente?.id ?? null, // ✅ correcto
+          docente_id: this.selectedDocente?.id ?? null,
           turno_id: this.turnoId
         }]
       }],
@@ -974,7 +1003,6 @@ export class AsignarhorarioComponent implements OnInit {
       }
     });
   }
-  
 
   procesarActualizacionExitosa(base: Date, fin: Date, codigo: string, tipo: string, diferencia: number): void {
     console.log('🟢 Solo aquí debe ir la actualización de horas restantes');
@@ -1082,20 +1110,19 @@ export class AsignarhorarioComponent implements OnInit {
     this.fechaDrop = null;
     this.ultimoEventoIdTemporal = null;
   }
-  
-  openModal() {
-    this.isModalOpen = true;
-    this.selectedCategoria = '';
-    this.docentesFiltrados = [];
-    this.selectedDocente = null;
-  }
-
-  closeModal() {
-    this.isModalOpen = false;
-  }
 
   filtrarDocentes() {
-    this.docentesFiltrados = this.docentes.filter(d => d.categoria === this.selectedCategoria);
-    this.selectedDocente = null; // Resetear selección
+    this.docentesFiltrados = this.docentes.filter(
+      (d) => d.categoria === this.selectedCategoria
+    );
+  
+    // Si el docente previamente seleccionado ya no está en la lista filtrada, lo quitamos
+    if (
+      this.selectedDocente &&
+      !this.docentesFiltrados.some(d => d.id === this.selectedDocente?.id)
+    ) {
+      this.selectedDocente = null;
+    }
   }
+  
 }

@@ -33,6 +33,7 @@ import { VerCursosComponent } from './pages/ver-cursos/ver-cursos.component';
 import { PisoPipe } from './piso.pipe';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { VerTransversalComponent } from './pages/ver-transversal/ver-transversal.component';
+import { AsignarHoraDocenteComponent } from './pages/asignar-hora-docente/asignar-hora-docente.component';
 
 registerLocaleData(en);
 
@@ -56,6 +57,7 @@ registerLocaleData(en);
     VerCursosComponent,
     VerTransversalComponent,
     PisoPipe,
+    AsignarHoraDocenteComponent,
   ],
   imports: [
     BrowserModule,

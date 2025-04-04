@@ -100,7 +100,7 @@
           [nzOpen]="selectedMenu === 'director'"
           (nzOpenChange)="toggleMenuOp('director', $event)">
         <ul>
-          <li nz-menu-item nzMatchRouter>
+          <!-- <li nz-menu-item nzMatchRouter>
             <a routerLink="/listadocentes">Lista de doncentes</a>
           </li>
           <li nz-menu-item nzMatchRouter>
@@ -108,14 +108,19 @@
           </li>
           <li nz-menu-item nzMatchRouter>
             <a routerLink="/docentesrechazados">Lista de doncentes rechazados</a>
-          </li>
+          </li> -->
           <!-- <li nz-menu-item nzMatchRouter>
             <a routerLink="/asignarhorario">Asignar horario</a>
           </li> -->
           <li nz-menu-item nzMatchRouter>
+            <a routerLink="/transversal">Definir Cursos transversales</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
             <a routerLink="/verturnos">Asignar Horarios</a>
           </li>
-
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/listdocente">Lista de doncentes</a>
+          </li>
         </ul>
       </li>
     </ul>
