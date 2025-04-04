@@ -642,11 +642,12 @@ export class AsignarhorarioComponent implements OnInit {
     const horarios = eventos.map((ev) => {
       const inicio = new Date(ev.start!);
       const fin = new Date(inicio);
-      fin.setMinutes(fin.getMinutes() + this.horasAsignadas * 50);
+      const horasEvento = ev.extendedProps['n_horas'] ?? 1;
+      fin.setMinutes(fin.getMinutes() + horasEvento * 50);
       const minutos = Math.round(
         (fin.getTime() - inicio.getTime()) / (1000 * 60)
       );
-      const horas = minutos / 50; // para convertir de minutos reales a horas académicas
+      const horas = minutos / 50;
 
       return {
         c_codcur: ev.extendedProps['codCur'], // Para agrupar luego
@@ -657,7 +658,7 @@ export class AsignarhorarioComponent implements OnInit {
           n_horas: horas,
           c_color: ev.backgroundColor || '#3788d8',
           aula_id: Number(ev.extendedProps['aula_id']),
-          docente_id: Number(this.selectedDocente?.id || 0),
+          docente_id: Number(ev.extendedProps['docente_id']),
           // docente_id: Number(ev.extendedProps['docente_id']),
           turno_id: this.turnoId,
           tipo: ev.extendedProps['tipo'] ?? 'Teoria',
@@ -705,48 +706,22 @@ export class AsignarhorarioComponent implements OnInit {
     this.horarioService.guardarHorarios(payload).subscribe({
       next: (res) => {
         if (res.success === false && res.errores?.length > 0) {
-          // Conflictos detectados
           const errores = res.errores as string[];
           const erroresHtml = errores.map((err) => `<li>${err}</li>`).join('');
-          this.alertService
-            .confirmConConflictos(erroresHtml)
-            .then((confirmado) => {
-              if (confirmado) {
-                dataArray.forEach((item) => {
-                  item.horarios.forEach((horario) => {
-                    horario.c_color = '#EF4444';
-                  });
-                });
-                this.horarioService
-                  .guardarHorarios({ dataArray, verificar: false })
-                  .subscribe({
-                    next: () => {
-                      this.alertService.success(
-                        '✅ Horarios guardados a pesar de los conflictos.'
-                      );
-                      this.cargarHorarios();
-                    },
-                    error: () => {
-                      this.alertService.error(
-                        '❌ Error al guardar los horarios con conflictos.'
-                      );
-                    },
-                  });
-              }
-            });
-        } else {
-          // Guardado correcto (aunque no venga `success`)
-          const mensaje = res.mensaje || '✅ Horarios guardados correctamente.';
-          this.alertService.success(mensaje);
-          this.cargarHorarios();
+          this.alertService.confirmConConflictos(erroresHtml); // solo muestra
+          return;
         }
+
+        // Guardado correcto
+        const mensaje = res.mensaje || '✅ Horarios guardados correctamente.';
+        this.alertService.success(mensaje);
+        this.cargarHorarios();
       },
       error: (err) => {
         this.alertService.error('❌ Error al guardar horarios.');
         console.error(err);
       },
     });
-
     console.log('📝 Data enviada al backend:', payload);
   }
 
@@ -779,6 +754,7 @@ export class AsignarhorarioComponent implements OnInit {
               esPadre: esPadre,
             },
             editable: !esPadre,
+            durationEditable: false,
           };
         });
 
@@ -1036,37 +1012,11 @@ export class AsignarhorarioComponent implements OnInit {
           const erroresHtml = res.errores
             .map((err: any) => `<li>${err}</li>`)
             .join('');
-          this.alertService
-            .confirmConConflictos(erroresHtml)
-            .then((confirmado) => {
-              if (confirmado) {
-                this.horarioService
-                  .updateHorarios({ ...payload, verificar: false })
-                  .subscribe({
-                    next: () =>
-                      this.procesarActualizacionExitosa(
-                        base,
-                        fin,
-                        codigo,
-                        tipo,
-                        diferencia
-                      ),
-                    error: () =>
-                      this.alertService.error(
-                        '❌ Error al actualizar con conflictos.'
-                      ),
-                  });
-              }
-            });
-        } else {
-          this.procesarActualizacionExitosa(
-            base,
-            fin,
-            codigo,
-            tipo,
-            diferencia
-          );
+          this.alertService.confirmConConflictos(erroresHtml);
+          return;
         }
+
+        this.procesarActualizacionExitosa(base, fin, codigo, tipo, diferencia);
       },
       error: (err) => {
         this.alertService.error('❌ Error al actualizar el evento.');
