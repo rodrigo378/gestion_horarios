@@ -108,10 +108,15 @@ export class VerTransversalComponent implements OnInit {
           const codB = curso.c_codcur;
           const codBeq = curso.c_codcur_equ;
 
+          const turno_idA = this.curso.turno_id;
+          const turno_idB = curso.turno_id;
+
           const esMismoCurso = this.curso.id === curso.id;
+          const esMismoTurno = turno_idA === turno_idB;
 
           return (
             !esMismoCurso &&
+            !esMismoTurno && // 👈 condición añadida para ignorar mismo turno
             (codA === codB ||
               codA === codBeq ||
               (codAeq && (codAeq === codB || codAeq === codBeq)))
