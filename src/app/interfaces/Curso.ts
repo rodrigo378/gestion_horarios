@@ -17,7 +17,7 @@ export interface Curso {
   c_nomcur: string;
   n_ht?: number;
   n_hp?: number;
-  tipoAgrupado?: string
+  tipoAgrupado?: string;
   tipo?: string;
   horasRestantes?: number;
   vacante?: number;
@@ -60,7 +60,7 @@ export interface Curso2 {
   turno_id: number;
   Horario: Horario[];
   turno: Turno;
-  cursosPadres?: CursoPadre[];
+  cursosPadres: CursoPadre[];
   cursosHijos: CursoHijo[];
 }
 
@@ -69,7 +69,7 @@ export interface CursoPadre {
   curso_id: number;
   padre_curso_id: number;
   shortname: string;
-  tipo: number;
+  tipo?: number;
   cursoPadre: CursoResumen;
 }
 

@@ -6,19 +6,24 @@ import { Curso, Especialidad } from '../interfaces/Curso';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CursoService {
   private apiUrl = `${environment.api}/sigu`;
-  
+
   constructor(private http: HttpClient, private authService: AuthService) {}
-  
-  obtenerCursos(data: { c_codfac: string, c_codesp: string, n_ciclo: string, c_codmod: string }): Observable<Curso[]> {
+
+  obtenerCursos(data: {
+    c_codfac: string;
+    c_codesp: string;
+    n_ciclo: number;
+    c_codmod: number;
+    c_grpcur: string;
+  }): Observable<Curso[]> {
     return this.http.post<Curso[]>(`${this.apiUrl}/curso`, data);
-}
+  }
 
   getEspecialidades(): Observable<Especialidad[]> {
     return this.http.get<Especialidad[]>(`${this.apiUrl}/especialidades`);
   }
-  
 }

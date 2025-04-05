@@ -108,10 +108,15 @@ export class VerTransversalComponent implements OnInit {
           const codB = curso.c_codcur;
           const codBeq = curso.c_codcur_equ;
 
+          const turno_idA = this.curso.turno_id;
+          const turno_idB = curso.turno_id;
+
           const esMismoCurso = this.curso.id === curso.id;
+          const esMismoTurno = turno_idA === turno_idB;
 
           return (
             !esMismoCurso &&
+            !esMismoTurno && // 👈 condición añadida para ignorar mismo turno
             (codA === codB ||
               codA === codBeq ||
               (codAeq && (codAeq === codB || codAeq === codBeq)))
@@ -220,7 +225,7 @@ export class VerTransversalComponent implements OnInit {
     console.log('hijos_id => ', this.arrayCheckboxCursos);
 
     this.horarioService
-      .createTransversal(this.curso.id, this.arrayCheckboxCursos, 1)
+      .createTransversal(this.curso.id, this.arrayCheckboxCursos, 0)
       .subscribe({
         next: (res: any) => {
           console.log(res);
@@ -238,7 +243,7 @@ export class VerTransversalComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           console.log(err);
-          this.alertService.error('Error al crear grupo');
+          this.alertService.error(`${err.error.errores}`);
         },
       });
   }
@@ -251,7 +256,8 @@ export class VerTransversalComponent implements OnInit {
         this.alertService.success('Se borro este grupo correctamente');
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.error('Error al borrar grupo');
+        console.log(err);
+        this.alertService.error(`${err.error.errores}`);
       },
     });
   }

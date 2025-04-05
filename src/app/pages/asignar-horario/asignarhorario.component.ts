@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild} from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -55,7 +55,7 @@ export class AsignarhorarioComponent implements OnInit {
   vacantesAula: number | null = null;
   //new evento
   newEvent = { curso: '', h_inicio: '', h_fin: '', color: '' };
-  events: any[] = []
+  events: any[] = [];
   //select turno
   turnoSeleccionado: 'M' | 'N' | '' = '';
   //carga docente
@@ -144,8 +144,8 @@ export class AsignarhorarioComponent implements OnInit {
       console.log('📚 DOCENTES:', data);
       this.docentes = data;
 
-      const categoriaSet = new Set(data.map(d => d.categoria));
-      this.categorias = Array.from(categoriaSet)
+      const categoriaSet = new Set(data.map((d) => d.categoria));
+      this.categorias = Array.from(categoriaSet);
     });
   }
 
@@ -203,10 +203,12 @@ export class AsignarhorarioComponent implements OnInit {
       const dataCursos = {
         c_codfac: turno.c_codfac,
         c_codesp: turno.c_codesp,
-        n_ciclo: turno.n_ciclo.toString(),
-        c_codmod: turno.c_codmod,
-        c_grpcur: turno.c_grpcur
+        n_ciclo: turno.n_ciclo,
+        c_codmod: Number(turno.c_codmod),
+        c_grpcur: turno.c_grpcur,
       };
+
+      console.log('AIZ => ', turno.c_grpcur);
 
       this.cursoService.obtenerCursos(dataCursos).subscribe((resCursos) => {
         this.horarioService
@@ -228,7 +230,6 @@ export class AsignarhorarioComponent implements OnInit {
             this.cursos = resultado.cursos;
             this.cursosPlan2023 = resultado.cursosPlan2023;
             this.cursosPlan2025 = resultado.cursosPlan2025;
-            
           });
       });
     });
@@ -238,7 +239,6 @@ export class AsignarhorarioComponent implements OnInit {
     if (!this.turnoId) return;
     this.cargarDatosPorTurno(this.turnoId);
   }
-  
 
   private inicializarDragAndDrop(): void {
     setTimeout(() => {
@@ -273,7 +273,7 @@ export class AsignarhorarioComponent implements OnInit {
 
     return false;
   }
-  
+
   private formatDateTime(date: Date): string {
     const horas = String(date.getHours()).padStart(2, '0');
     const minutos = String(date.getMinutes()).padStart(2, '0');
@@ -297,7 +297,7 @@ export class AsignarhorarioComponent implements OnInit {
   }
 
   //#endregion
-  
+
   //#region funcion para los eventos y callender
   handleExternalDrop(info: any) {
     const draggedData = JSON.parse(info.draggedEl.getAttribute('data-event'));
@@ -338,37 +338,39 @@ export class AsignarhorarioComponent implements OnInit {
 
   onEventClick(info: any) {
     const evento = info.event;
-  
+
     // 🛡️ Si es curso padre, mostramos confirmación y redirigimos
     if (evento.extendedProps?.esPadre) {
-      this.alertService.confirm(
-        'Este curso es un curso padre. ¿Deseas editarlo? Serás redirigido a la página de edición específica.',
-        'Curso Padre'
-      ).then(confirmado => {
-        if (confirmado) {
-          this.router.navigate(['/cursos/', this.turnoId]);
-        }
-      });
+      this.alertService
+        .confirm(
+          'Este curso es un curso padre. ¿Deseas editarlo? Serás redirigido a la página de edición específica.',
+          'Curso Padre'
+        )
+        .then((confirmado) => {
+          if (confirmado) {
+            this.router.navigate(['/cursos/', this.turnoId]);
+          }
+        });
       return; // 🔒 Detenemos el flujo aquí
     }
-  
+
     // Si no es padre, sigue el flujo normal
     this.eventoSeleccionado = evento;
     this.modalHorasActivo = true;
-  
+
     const codigo = evento.extendedProps.codCur;
     const tipo = evento.extendedProps.tipo;
     const curso = this.cursos.find(
       (c) => c.c_codcur === codigo && c.tipo === tipo
     );
-  
+
     let horasMaximas = 0;
     if (curso) {
       horasMaximas = tipo === 'Teoría' ? curso.n_ht ?? 0 : curso.n_hp ?? 0;
     }
-  
+
     this.vacantesAula = curso?.vacante ?? null;
-  
+
     this.cursoSeleccionado = {
       ...curso,
       title: evento.title,
@@ -378,7 +380,7 @@ export class AsignarhorarioComponent implements OnInit {
       },
       horasDisponibles: horasMaximas,
     };
-  
+
     const fecha = new Date(evento.start);
     this.fechaDrop = fecha;
     this.diaSeleccionado = this.obtenerDiaSemana(fecha);
@@ -389,7 +391,7 @@ export class AsignarhorarioComponent implements OnInit {
     const idDocente = evento.extendedProps.docente_id;
 
     if (idDocente != null) {
-      const docente = this.docentes.find(d => d.id === idDocente);
+      const docente = this.docentes.find((d) => d.id === idDocente);
 
       if (docente) {
         this.selectedDocente = docente;
@@ -454,17 +456,19 @@ export class AsignarhorarioComponent implements OnInit {
       this.calendarOptions.slotMinTime = '18:00:00';
       this.calendarOptions.slotMaxTime = '23:00:00';
     }
-  
+
     // 🔄 Forzar redibujado del calendario
     const calendarApi = this.calendarComponent.getApi();
     calendarApi.setOption('slotMinTime', this.calendarOptions.slotMinTime);
     calendarApi.setOption('slotMaxTime', this.calendarOptions.slotMaxTime);
   }
-  
+
   estilizarEvento(info: any): void {
-    const isTemporal = info.event.id.toString().startsWith('temp-') || info.event.extendedProps?.isNew;
+    const isTemporal =
+      info.event.id.toString().startsWith('temp-') ||
+      info.event.extendedProps?.isNew;
     const esPadre = info.event.extendedProps?.esPadre;
-  
+
     // 🏷️ Badge de estado
     const badge = document.createElement('span');
     badge.textContent = isTemporal ? 'Temporal' : 'Guardado';
@@ -473,7 +477,7 @@ export class AsignarhorarioComponent implements OnInit {
       text-[10px] text-white px-2 py-[2px] rounded 
       ${isTemporal ? 'bg-pink-400' : 'bg-sky-400'}
     `;
-  
+
     // 🔒 Candado para cursos padres
     if (esPadre) {
       const candado = document.createElement('i');
@@ -485,14 +489,14 @@ export class AsignarhorarioComponent implements OnInit {
       `;
       candado.title = 'Curso padre bloqueado';
       info.el.appendChild(candado);
-      
+
       info.el.appendChild(candado);
     }
-  
+
     info.el.classList.add('relative');
     info.el.appendChild(badge);
   }
-  
+
   //#endregion
 
   confirmarAsignacionHoras() {
@@ -535,7 +539,7 @@ export class AsignarhorarioComponent implements OnInit {
 
     const end = new Date(start);
     end.setMinutes(start.getMinutes() + this.horasAsignadas * 50);
-  
+
     const eventoId = `temp-${Date.now()}`;
     this.ultimoEventoIdTemporal = eventoId;
 
@@ -640,9 +644,11 @@ export class AsignarhorarioComponent implements OnInit {
       const fin = new Date(inicio);
       const horasEvento = ev.extendedProps['n_horas'] ?? 1;
       fin.setMinutes(fin.getMinutes() + horasEvento * 50);
-      const minutos = Math.round((fin.getTime() - inicio.getTime()) / (1000 * 60));
-      const horas = minutos / 50;      
-  
+      const minutos = Math.round(
+        (fin.getTime() - inicio.getTime()) / (1000 * 60)
+      );
+      const horas = minutos / 50;
+
       return {
         c_codcur: ev.extendedProps['codCur'], // Para agrupar luego
         horario: {
@@ -655,7 +661,7 @@ export class AsignarhorarioComponent implements OnInit {
           docente_id: Number(ev.extendedProps['docente_id']),
           // docente_id: Number(ev.extendedProps['docente_id']),
           turno_id: this.turnoId,
-          tipo: ev.extendedProps['tipo'] ?? 'Teoria'
+          tipo: ev.extendedProps['tipo'] ?? 'Teoria',
         },
       };
     });
@@ -682,7 +688,7 @@ export class AsignarhorarioComponent implements OnInit {
           n_codper_equ:
             curso?.n_codper_equ != null ? String(curso.n_codper_equ) : null,
           c_codmod_equ:
-            curso?.c_codmod_equ != null ? String(curso.c_codmod_equ) : null,
+            curso?.c_codmod_equ != null ? curso?.c_codmod_equ : null,
           c_codfac_equ: curso?.c_codfac_equ ?? null,
           c_codesp_equ: curso?.c_codesp_equ ?? null,
           c_codcur_equ: curso?.c_codcur_equ ?? null,
@@ -696,16 +702,16 @@ export class AsignarhorarioComponent implements OnInit {
       dataArray: dataArray,
       verificar: true,
     };
-    
+
     this.horarioService.guardarHorarios(payload).subscribe({
       next: (res) => {
         if (res.success === false && res.errores?.length > 0) {
           const errores = res.errores as string[];
-          const erroresHtml = errores.map(err => `<li>${err}</li>`).join('');
+          const erroresHtml = errores.map((err) => `<li>${err}</li>`).join('');
           this.alertService.confirmConConflictos(erroresHtml); // solo muestra
           return;
         }
-    
+
         // Guardado correcto
         const mensaje = res.mensaje || '✅ Horarios guardados correctamente.';
         this.alertService.success(mensaje);
@@ -714,9 +720,9 @@ export class AsignarhorarioComponent implements OnInit {
       error: (err) => {
         this.alertService.error('❌ Error al guardar horarios.');
         console.error(err);
-      }
-    });    
-    console.log('📝 Data enviada al backend:', payload);    
+      },
+    });
+    console.log('📝 Data enviada al backend:', payload);
   }
 
   cargarHorarios(): void {
@@ -750,12 +756,12 @@ export class AsignarhorarioComponent implements OnInit {
         };
       });
 
-      this.mostrarCalendario = false;
-      setTimeout(() => {
-        this.calendarOptions.events = eventos;
-        this.mostrarCalendario = true;
-      }, 10);
-    });
+        this.mostrarCalendario = false;
+        setTimeout(() => {
+          this.calendarOptions.events = eventos;
+          this.mostrarCalendario = true;
+        }, 10);
+      });
   }
 
   //#region metodos para en eliminar y actulizar
@@ -763,28 +769,28 @@ export class AsignarhorarioComponent implements OnInit {
     codigo: string,
     tipo: string,
     diferencia: number
-  ) {  
+  ) {
     const procesados = new Set(); // ⛔ evita aplicar varias veces
-  
+
     const listas = [this.cursos, this.cursosPlan2023, this.cursosPlan2025];
-  
+
     listas.forEach((lista) => {
       const index = lista.findIndex(
         (c) => c.c_codcur === codigo && c.tipo === tipo
       );
-  
+
       if (index !== -1 && !procesados.has(lista[index])) {
         const curso = lista[index];
         procesados.add(curso);
-  
+
         const antes = curso.horasRestantes ?? 0;
         curso.horasRestantes = antes - diferencia;
-  
+
         console.log('📘 Curso:', codigo, '-', tipo);
         console.log('Horas antes:', antes);
         console.log('Diferencia aplicada:', diferencia);
         console.log('Horas después:', curso.horasRestantes);
-  
+
         if (curso.horasRestantes <= 0) {
           curso.disabled = true;
           console.log('🚫 Curso ocultado por horas 0');
@@ -792,7 +798,7 @@ export class AsignarhorarioComponent implements OnInit {
       }
     });
   }
-  
+
   private devolverCursoEliminado(
     codigo: string,
     tipo: string,
@@ -837,10 +843,16 @@ export class AsignarhorarioComponent implements OnInit {
     }
   }
 
-  private validarYCalcularFechas(): { base: Date, fin: Date } | null {
+  private validarYCalcularFechas(): { base: Date; fin: Date } | null {
     const [hora, minutos] = this.horaInicio.split(':').map(Number);
     const diaAFecha: Record<string, number> = {
-      Domingo: 0, Lunes: 1, Martes: 2, Miércoles: 3, Jueves: 4, Viernes: 5, Sábado: 6,
+      Domingo: 0,
+      Lunes: 1,
+      Martes: 2,
+      Miércoles: 3,
+      Jueves: 4,
+      Viernes: 5,
+      Sábado: 6,
     };
 
     const base = new Date(this.fechaDrop!);
@@ -855,24 +867,36 @@ export class AsignarhorarioComponent implements OnInit {
     const nuevoHorario = { start: base, end: fin };
 
     if (this.verificaCruceHorario(nuevoHorario)) {
-      this.alertService.error('⛔ Este curso se cruza con un curso ya asignado.');
+      this.alertService.error(
+        '⛔ Este curso se cruza con un curso ya asignado.'
+      );
       return null;
     }
 
     return { base, fin };
   }
 
-  private actualizarEventoTemporal(base: Date, fin: Date, codigo: string, tipo: string, idEvento: string, diferencia: number) {
+  private actualizarEventoTemporal(
+    base: Date,
+    fin: Date,
+    codigo: string,
+    tipo: string,
+    idEvento: string,
+    diferencia: number
+  ) {
     this.eventoSeleccionado?.setStart(base);
     this.eventoSeleccionado?.setEnd(fin);
     this.eventoSeleccionado?.setExtendedProp('n_horas', this.horasAsignadas);
     this.eventoSeleccionado?.setExtendedProp('dia', this.diaSeleccionado);
     this.eventoSeleccionado?.setExtendedProp('aula_id', this.aulaSeleccionada);
-    this.eventoSeleccionado!.setExtendedProp('docente_id', this.selectedDocente?.id ?? null);
+    this.eventoSeleccionado!.setExtendedProp(
+      'docente_id',
+      this.selectedDocente?.id ?? null
+    );
     this.eventoSeleccionado?.setExtendedProp('isNew', true);
     this.actualizarHorasRestantes(codigo, tipo, diferencia);
-  
-    const eventosActuales = (this.calendarOptions.events as any[]).map(ev => {
+
+    const eventosActuales = (this.calendarOptions.events as any[]).map((ev) => {
       if (ev.id === idEvento) {
         return {
           ...ev,
@@ -884,8 +908,8 @@ export class AsignarhorarioComponent implements OnInit {
             dia: this.diaSeleccionado,
             aula_id: this.aulaSeleccionada,
             docente_id: this.docenteSeleccionado,
-            isNew: true
-          }
+            isNew: true,
+          },
         };
       }
       return ev;
@@ -895,21 +919,22 @@ export class AsignarhorarioComponent implements OnInit {
 
   //#endregion
   actualizarEvento() {
-    console.log('🧪 actualizandoEvento llamado')
+    console.log('🧪 actualizandoEvento llamado');
     if (!this.eventoSeleccionado) return;
-  
+
     const maxHoras = this.cursoSeleccionado?.horasDisponibles || 0;
     if (this.horasAsignadas > maxHoras || this.horasAsignadas < 1) {
-      const msg = this.horasAsignadas < 1
-        ? '❌ Debes asignar al menos 1 hora.'
-        : `❌ No puedes asignar más de ${maxHoras} hora(s).`;
+      const msg =
+        this.horasAsignadas < 1
+          ? '❌ Debes asignar al menos 1 hora.'
+          : `❌ No puedes asignar más de ${maxHoras} hora(s).`;
       this.alertService.error(msg);
       return;
     }
-  
+
     const result = this.validarYCalcularFechas();
     if (!result) return;
-  
+
     const { base, fin } = result;
     const idEvento = this.eventoSeleccionado.id;
     const codigo = this.eventoSeleccionado.extendedProps.codCur;
@@ -917,58 +942,74 @@ export class AsignarhorarioComponent implements OnInit {
     const horasAntes = this.eventoSeleccionado.extendedProps.n_horas ?? 0;
     const diferencia = this.horasAsignadas - horasAntes;
     const esTemporal = idEvento.toString().startsWith('temp-');
-  
+
     if (esTemporal) {
-      this.actualizarEventoTemporal(base, fin, codigo, tipo, idEvento, diferencia);
+      this.actualizarEventoTemporal(
+        base,
+        fin,
+        codigo,
+        tipo,
+        idEvento,
+        diferencia
+      );
       this.alertService.success('📝 Evento temporal actualizado.');
       this.modalHorasActivo = false;
       this.eventoSeleccionado = null;
       return;
     }
-  
+
     // Si no es temporal => construir payload
     const curso = this.cursos.find((c) => c.c_codcur === codigo);
     const payload = {
-      dataArray: [{
-        curso: {
-          n_codper: String(this.turnoData?.n_codper || ''),
-          c_codmod: Number(curso?.c_codmod) || 0,
-          c_codfac: curso?.c_codfac || '',
-          c_codesp: curso?.c_codesp || '',
-          c_codcur: curso?.c_codcur || '',
-          c_nomcur: curso?.c_nomcur || '',
-          n_ciclo: Number(curso?.n_ciclo) || 0,
-          c_area: curso?.c_area || '',
-          turno_id: this.turnoId,
-          tipo: this.eventoSeleccionado.extendedProps.tipo ?? 'Teoría',
-          n_codper_equ:
-            curso?.n_codper_equ != null ? String(curso.n_codper_equ) : null,
-          c_codmod_equ:
-            curso?.c_codmod_equ != null ? String(curso.c_codmod_equ) : null,
-          c_codfac_equ: curso?.c_codfac_equ ?? null,
-          c_codesp_equ: curso?.c_codesp_equ ?? null,
-          c_codcur_equ: curso?.c_codcur_equ ?? null,
-          c_nomcur_equ: curso?.c_nomcur_equ ?? null,
+      dataArray: [
+        {
+          curso: {
+            n_codper: String(this.turnoData?.n_codper || ''),
+            c_codmod: Number(curso?.c_codmod) || 0,
+            c_codfac: curso?.c_codfac || '',
+            c_codesp: curso?.c_codesp || '',
+            c_codcur: curso?.c_codcur || '',
+            c_nomcur: curso?.c_nomcur || '',
+            n_ciclo: Number(curso?.n_ciclo) || 0,
+            c_area: curso?.c_area || '',
+            turno_id: this.turnoId,
+            tipo: this.eventoSeleccionado.extendedProps.tipo ?? 'Teoría',
+            n_codper_equ:
+              curso?.n_codper_equ != null ? String(curso.n_codper_equ) : null,
+            c_codmod_equ:
+              curso?.c_codmod_equ != null ? String(curso.c_codmod_equ) : null,
+            c_codfac_equ: curso?.c_codfac_equ ?? null,
+            c_codesp_equ: curso?.c_codesp_equ ?? null,
+            c_codcur_equ: curso?.c_codcur_equ ?? null,
+            c_nomcur_equ: curso?.c_nomcur_equ ?? null,
+          },
+          horarios: [
+            {
+              id: Number(idEvento),
+              dia: this.diaSeleccionado,
+              h_inicio: base.toISOString(),
+              h_fin: fin.toISOString(),
+              n_horas: this.horasAsignadas,
+              c_color: this.eventoSeleccionado.backgroundColor || '#3788d8',
+              aula_id:
+                this.aulaSeleccionada != null
+                  ? Number(this.aulaSeleccionada)
+                  : null,
+              docente_id: this.selectedDocente?.id ?? null,
+              turno_id: this.turnoId,
+            },
+          ],
         },
-        horarios: [{
-          id: Number(idEvento),
-          dia: this.diaSeleccionado,
-          h_inicio: base.toISOString(),
-          h_fin: fin.toISOString(),
-          n_horas: this.horasAsignadas,
-          c_color: this.eventoSeleccionado.backgroundColor || '#3788d8',
-          aula_id: this.aulaSeleccionada != null ? Number(this.aulaSeleccionada) : null,
-          docente_id: this.selectedDocente?.id ?? null,
-          turno_id: this.turnoId
-        }]
-      }],
-      verificar: true
+      ],
+      verificar: true,
     };
-  
+
     this.horarioService.updateHorarios(payload).subscribe({
       next: (res) => {
         if (res.success === false && res.errores?.length > 0) {
-          const erroresHtml = res.errores.map((err: any) => `<li>${err}</li>`).join('');
+          const erroresHtml = res.errores
+            .map((err: any) => `<li>${err}</li>`)
+            .join('');
           this.alertService.confirmConConflictos(erroresHtml);
           return;
         }
@@ -977,11 +1018,17 @@ export class AsignarhorarioComponent implements OnInit {
       error: (err) => {
         this.alertService.error('❌ Error al actualizar el evento.');
         console.error(err);
-      }
-    });    
+      },
+    });
   }
 
-  procesarActualizacionExitosa(base: Date, fin: Date, codigo: string, tipo: string, diferencia: number): void {
+  procesarActualizacionExitosa(
+    base: Date,
+    fin: Date,
+    codigo: string,
+    tipo: string,
+    diferencia: number
+  ): void {
     console.log('🟢 Solo aquí debe ir la actualización de horas restantes');
     this.actualizarHorasRestantes(codigo, tipo, diferencia);
     this.eventoSeleccionado?.setStart(base);
@@ -989,14 +1036,17 @@ export class AsignarhorarioComponent implements OnInit {
     this.eventoSeleccionado?.setExtendedProp('n_horas', this.horasAsignadas);
     this.eventoSeleccionado?.setExtendedProp('dia', this.diaSeleccionado);
     this.eventoSeleccionado?.setExtendedProp('aula_id', this.aulaSeleccionada);
-    this.eventoSeleccionado?.setExtendedProp('docente_id', this.docenteSeleccionado);
-  
+    this.eventoSeleccionado?.setExtendedProp(
+      'docente_id',
+      this.docenteSeleccionado
+    );
+
     this.alertService.success('✅ Evento actualizado correctamente.');
     this.modalHorasActivo = false;
     this.eventoSeleccionado = null;
     this.cargarHorarios();
   }
-  
+
   eliminarEvento(): void {
     if (!this.eventoSeleccionado) return;
 
@@ -1045,33 +1095,41 @@ export class AsignarhorarioComponent implements OnInit {
   }
 
   eliminarTodosLosHorarios(): void {
-    this.alertService.confirm(
-      '¿Estás seguro de eliminar todos los horarios? Esta acción no se puede deshacer.',
-      'Eliminar horarios'
-    ).then((isConfirmed) => {
-      if (!isConfirmed) return;
-  
-      const ids: number[] = this.calendarComponent.getApi().getEvents()
-        .filter(ev => !ev.id.toString().startsWith('temp-')) // solo persistentes
-        .map(ev => Number(ev.id));
-  
-      if (ids.length === 0) {
-        this.alertService.info('No hay horarios guardados para eliminar.');
-        return;
-      }
-  
-      this.horarioService.deleteHorarios({ horarios_id: ids }).subscribe({
-        next: () => {
-          this.alertService.success('Todos los horarios fueron eliminados correctamente.');
-          this.cargarHorarios();
-          this.cargarDatosPorTurno(this.turnoId);
-        },
-        error: (err) => {
-          this.alertService.error('Ocurrió un error al eliminar los horarios.');
-          console.error(err);
+    this.alertService
+      .confirm(
+        '¿Estás seguro de eliminar todos los horarios? Esta acción no se puede deshacer.',
+        'Eliminar horarios'
+      )
+      .then((isConfirmed) => {
+        if (!isConfirmed) return;
+
+        const ids: number[] = this.calendarComponent
+          .getApi()
+          .getEvents()
+          .filter((ev) => !ev.id.toString().startsWith('temp-')) // solo persistentes
+          .map((ev) => Number(ev.id));
+
+        if (ids.length === 0) {
+          this.alertService.info('No hay horarios guardados para eliminar.');
+          return;
         }
+
+        this.horarioService.deleteHorarios({ horarios_id: ids }).subscribe({
+          next: () => {
+            this.alertService.success(
+              'Todos los horarios fueron eliminados correctamente.'
+            );
+            this.cargarHorarios();
+            this.cargarDatosPorTurno(this.turnoId);
+          },
+          error: (err) => {
+            this.alertService.error(
+              'Ocurrió un error al eliminar los horarios.'
+            );
+            console.error(err);
+          },
+        });
       });
-    });
   }
 
   //#endregion
@@ -1107,14 +1165,13 @@ export class AsignarhorarioComponent implements OnInit {
     this.docentesFiltrados = this.docentes.filter(
       (d) => d.categoria === this.selectedCategoria
     );
-  
+
     // Si el docente previamente seleccionado ya no está en la lista filtrada, lo quitamos
     if (
       this.selectedDocente &&
-      !this.docentesFiltrados.some(d => d.id === this.selectedDocente?.id)
+      !this.docentesFiltrados.some((d) => d.id === this.selectedDocente?.id)
     ) {
       this.selectedDocente = null;
     }
   }
-  
 }
