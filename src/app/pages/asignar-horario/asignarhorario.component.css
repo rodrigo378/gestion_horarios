@@ -42,7 +42,7 @@
 }
 
 ::ng-deep .fc-event-title {
-  font-size: 18px !important; /* o prueba con 12px */
+  font-size: 12px !important; /* o prueba con 12px */
   font-weight: 500;
 }
 

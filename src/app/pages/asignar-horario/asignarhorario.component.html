@@ -146,10 +146,6 @@
       <div class="bg-white shadow-md rounded-xl p-3 text-sm space-y-2 border border-gray-200">
         <h3 class="font-semibold text-gray-700">📌 Leyenda</h3>
         <div class="flex items-center space-x-2">
-          <div class="w-4 h-4 rounded bg-red-500 shadow"></div>
-          <span>Conflicto de horario</span>
-        </div>
-        <div class="flex items-center space-x-2">
           <div class="w-4 h-4 rounded bg-yellow-500 shadow"></div>
           <span>Curso agrupado</span>
         </div>
@@ -190,9 +186,9 @@
   <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg relative text-left">
     
     <!-- Botón cerrar arriba -->
-    <button (click)="cancelarAsignacionHoras()" class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-xl">
+    <!-- <button (click)="cancelarAsignacionHoras()" class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-xl">
       <i class="fa-solid fa-xmark"></i>
-    </button>
+    </button> -->
 
     <h2 class="text-xl font-bold text-gray-800 mb-5 border-b pb-2">
       {{ eventoSeleccionado ? 'Editar horario de:' : 'Asignar horario a:' }}
@@ -295,23 +291,35 @@
 
     <!-- Botones -->
     <div class="flex flex-wrap justify-end gap-3">
+      <!-- Botón ASIGNAR (solo si no hay evento seleccionado) -->
       <button *ngIf="!eventoSeleccionado"
               (click)="confirmarAsignacionHoras()"
               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
         ➕ Asignar
       </button>
-
+    
+      <!-- Botón ACTUALIZAR (solo si hay evento seleccionado) -->
       <button *ngIf="eventoSeleccionado"
               (click)="actualizarEvento()"
               class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
         🔄 Actualizar
       </button>
-
+    
+      <!-- Botón ELIMINAR (solo si hay evento seleccionado) -->
       <button *ngIf="eventoSeleccionado"
               (click)="eliminarEvento()"
               class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
         🗑️ Eliminar
       </button>
+    
+      <!-- Botón CANCELAR (solo si es edición real, no evento temporal) -->
+      <button *ngIf="eventoSeleccionado"
+        (click)="cancelarEdicion()"
+        class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
+        ❌ Cancelar
+      </button>
+
     </div>
+    
   </div>
 </div>
