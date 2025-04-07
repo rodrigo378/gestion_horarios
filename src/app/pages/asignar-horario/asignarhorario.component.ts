@@ -395,6 +395,7 @@ export class AsignarhorarioComponent implements OnInit {
 
       if (docente) {
         this.selectedDocente = docente;
+        this.docenteSeleccionado = docente.id;
         this.selectedCategoria = docente.categoria;
         this.filtrarDocentes(); // Esto actualizará docentesFiltrados con la categoría correcta
       } else {
@@ -404,6 +405,7 @@ export class AsignarhorarioComponent implements OnInit {
       }
     } else {
       this.selectedDocente = null;
+      this.docenteSeleccionado = null;
       this.selectedCategoria = '';
       this.docentesFiltrados = [];
     }
@@ -563,7 +565,7 @@ export class AsignarhorarioComponent implements OnInit {
         isNew: true,
         n_horas: this.horasAsignadas, // 👈🔥 ESTO ES CLAVE
         aula_id: this.aulaSeleccionada ?? null,
-        docente_id: this.docenteSeleccionado ?? null,
+        docente_id: this.selectedDocente?.id ?? null,
       },
     };
 
@@ -604,14 +606,32 @@ export class AsignarhorarioComponent implements OnInit {
       }
     }
 
+    // // 🧹 Limpieza final
+    // this.modalHorasActivo = false;
+    // this.cursoSeleccionado = null;
+    // this.fechaDrop = null;
+    // // this.ultimoEventoIdTemporal = null;
+    // this.horaInicio = '';
+    // this.diaSeleccionado = '';
+    // this.vacantesAula = null;
+
+    this.resetCamposModal()
+
     // 🧹 Limpieza final
     this.modalHorasActivo = false;
     this.cursoSeleccionado = null;
     this.fechaDrop = null;
-    // this.ultimoEventoIdTemporal = null;
+    this.ultimoEventoIdTemporal = null;
     this.horaInicio = '';
     this.diaSeleccionado = '';
     this.vacantesAula = null;
+
+    // 👇 Esto es lo nuevo: limpiamos campos seleccionados también
+    this.aulaSeleccionada = null;
+    this.docenteSeleccionado = null;
+    this.selectedDocente = null;
+    this.selectedCategoria = '';
+    this.docentesFiltrados = [];
   }
 
   //#region Listar, Guardar y Editar eventos
@@ -889,11 +909,9 @@ export class AsignarhorarioComponent implements OnInit {
     this.eventoSeleccionado?.setExtendedProp('n_horas', this.horasAsignadas);
     this.eventoSeleccionado?.setExtendedProp('dia', this.diaSeleccionado);
     this.eventoSeleccionado?.setExtendedProp('aula_id', this.aulaSeleccionada);
-    this.eventoSeleccionado!.setExtendedProp(
-      'docente_id',
-      this.selectedDocente?.id ?? null
-    );
-    this.eventoSeleccionado?.setExtendedProp('isNew', true);
+    const docenteId = this.selectedDocente?.id ?? null;
+    this.eventoSeleccionado?.setExtendedProp('docente_id', docenteId);
+        this.eventoSeleccionado?.setExtendedProp('isNew', true);
     this.actualizarHorasRestantes(codigo, tipo, diferencia);
 
     const eventosActuales = (this.calendarOptions.events as any[]).map((ev) => {
@@ -907,7 +925,7 @@ export class AsignarhorarioComponent implements OnInit {
             n_horas: this.horasAsignadas,
             dia: this.diaSeleccionado,
             aula_id: this.aulaSeleccionada,
-            docente_id: this.docenteSeleccionado,
+            docente_id: docenteId,
             isNew: true,
           },
         };
@@ -1145,21 +1163,6 @@ export class AsignarhorarioComponent implements OnInit {
   //   this.fechaDrop = null;
   //   this.ultimoEventoIdTemporal = null;
   // }
-
-  cancelarEdicion(): void {
-    this.modalHorasActivo = false;
-    this.eventoSeleccionado = null;
-    this.cursoSeleccionado = null;
-    this.fechaDrop = null;
-    this.horaInicio = '';
-    this.diaSeleccionado = '';
-    this.horasAsignadas = 1;
-    this.aulaSeleccionada = null;
-    this.docenteSeleccionado = null;
-    this.selectedDocente = null;
-    this.selectedCategoria = '';
-    this.docentesFiltrados = [];
-  }
   
   filtrarDocentes() {
     this.docentesFiltrados = this.docentes.filter(
@@ -1174,4 +1177,23 @@ export class AsignarhorarioComponent implements OnInit {
       this.selectedDocente = null;
     }
   }
+
+  cancelarEdicion(): void {
+    this.modalHorasActivo = false;
+    this.eventoSeleccionado = null;
+    this.cursoSeleccionado = null;
+    this.fechaDrop = null;
+    this.horaInicio = '';
+    this.diaSeleccionado = '';
+    this.resetCamposModal(); // 👈 limpia campos comunes
+  }
+  
+  private resetCamposModal(): void {
+    this.selectedDocente = null;
+    this.selectedCategoria = '';
+    this.docentesFiltrados = [];
+    this.aulaSeleccionada = null;
+    this.horasAsignadas = 1;
+  }
+  
 }
