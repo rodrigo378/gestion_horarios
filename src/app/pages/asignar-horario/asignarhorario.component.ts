@@ -615,7 +615,7 @@ export class AsignarhorarioComponent implements OnInit {
     // this.diaSeleccionado = '';
     // this.vacantesAula = null;
 
-    this.resetCamposModal()
+    this.resetCamposModal();
 
     // 🧹 Limpieza final
     this.modalHorasActivo = false;
@@ -708,7 +708,7 @@ export class AsignarhorarioComponent implements OnInit {
           n_codper_equ:
             curso?.n_codper_equ != null ? String(curso.n_codper_equ) : null,
           c_codmod_equ:
-            curso?.c_codmod_equ != null ? curso?.c_codmod_equ : null,
+            curso?.c_codmod_equ != null ? Number(curso?.c_codmod_equ) : null,
           c_codfac_equ: curso?.c_codfac_equ ?? null,
           c_codesp_equ: curso?.c_codesp_equ ?? null,
           c_codcur_equ: curso?.c_codcur_equ ?? null,
@@ -752,29 +752,32 @@ export class AsignarhorarioComponent implements OnInit {
       .getHorarioPorTurno(this.turnoId)
       .subscribe((res: HorarioExtendido[]) => {
         const eventos = res.map((h: HorarioExtendido) => {
-          const esPadre = h.curso && Array.isArray((h.curso as any).cursosPadres) && (h.curso as any).cursosPadres.length > 0;
-          const tipoEvento = h.tipo ?? 'Teoria'
-        return {
-          id: String(h.id),
-          title: `${h.curso.c_nomcur} (${tipoEvento})`,
-          start: h.h_inicio,
-          end: h.h_fin,
-          backgroundColor: esPadre ? '#EAB308' : h.c_color || '#3788d8',
-          borderColor: esPadre ? '#EAB308' : h.c_color || '#3788d8',
-          extendedProps: {
-            codCur: h.curso.c_codcur,
-            turno: h.turno_id,
-            dia: h.dia,
-            tipo: 'Teoría',
-            n_horas: h.n_horas,
-            aula_id: h.aula_id,
-            docente_id: h.docente_id,
-            esPadre: esPadre
-          },
-          editable: !esPadre,
-          durationEditable: false
-        };
-      });
+          const esPadre =
+            h.curso &&
+            Array.isArray((h.curso as any).cursosPadres) &&
+            (h.curso as any).cursosPadres.length > 0;
+          const tipoEvento = h.tipo ?? 'Teoria';
+          return {
+            id: String(h.id),
+            title: `${h.curso.c_nomcur} (${tipoEvento})`,
+            start: h.h_inicio,
+            end: h.h_fin,
+            backgroundColor: esPadre ? '#EAB308' : h.c_color || '#3788d8',
+            borderColor: esPadre ? '#EAB308' : h.c_color || '#3788d8',
+            extendedProps: {
+              codCur: h.curso.c_codcur,
+              turno: h.turno_id,
+              dia: h.dia,
+              tipo: 'Teoría',
+              n_horas: h.n_horas,
+              aula_id: h.aula_id,
+              docente_id: h.docente_id,
+              esPadre: esPadre,
+            },
+            // editable: !esPadre,
+            durationEditable: false,
+          };
+        });
 
         this.mostrarCalendario = false;
         setTimeout(() => {
@@ -911,7 +914,7 @@ export class AsignarhorarioComponent implements OnInit {
     this.eventoSeleccionado?.setExtendedProp('aula_id', this.aulaSeleccionada);
     const docenteId = this.selectedDocente?.id ?? null;
     this.eventoSeleccionado?.setExtendedProp('docente_id', docenteId);
-        this.eventoSeleccionado?.setExtendedProp('isNew', true);
+    this.eventoSeleccionado?.setExtendedProp('isNew', true);
     this.actualizarHorasRestantes(codigo, tipo, diferencia);
 
     const eventosActuales = (this.calendarOptions.events as any[]).map((ev) => {
@@ -995,7 +998,7 @@ export class AsignarhorarioComponent implements OnInit {
             n_codper_equ:
               curso?.n_codper_equ != null ? String(curso.n_codper_equ) : null,
             c_codmod_equ:
-              curso?.c_codmod_equ != null ? String(curso.c_codmod_equ) : null,
+              curso?.c_codmod_equ != null ? Number(curso.c_codmod_equ) : null,
             c_codfac_equ: curso?.c_codfac_equ ?? null,
             c_codesp_equ: curso?.c_codesp_equ ?? null,
             c_codcur_equ: curso?.c_codcur_equ ?? null,
@@ -1163,7 +1166,7 @@ export class AsignarhorarioComponent implements OnInit {
   //   this.fechaDrop = null;
   //   this.ultimoEventoIdTemporal = null;
   // }
-  
+
   filtrarDocentes() {
     this.docentesFiltrados = this.docentes.filter(
       (d) => d.categoria === this.selectedCategoria
@@ -1187,7 +1190,7 @@ export class AsignarhorarioComponent implements OnInit {
     this.diaSeleccionado = '';
     this.resetCamposModal(); // 👈 limpia campos comunes
   }
-  
+
   private resetCamposModal(): void {
     this.selectedDocente = null;
     this.selectedCategoria = '';
@@ -1195,5 +1198,4 @@ export class AsignarhorarioComponent implements OnInit {
     this.aulaSeleccionada = null;
     this.horasAsignadas = 1;
   }
-  
 }

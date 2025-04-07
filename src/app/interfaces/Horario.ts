@@ -54,7 +54,7 @@ export interface CreateHorario {
     turno_id: number;
 
     n_codper_equ: string | null;
-    c_codmod_equ: string | null;
+    c_codmod_equ: number | null;
     c_codfac_equ: string | null;
     c_codesp_equ: string | null;
     c_codcur_equ: string | null;
