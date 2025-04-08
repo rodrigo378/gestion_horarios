@@ -684,6 +684,7 @@ export class AsignarhorarioComponent implements OnInit {
 
     // Paso 2: Agrupar por curso
     const cursosUnicos = [...new Set(horarios.map((h) => h.c_codcur))];
+
     const dataArray = cursosUnicos.map((codCur) => {
       const curso = this.cursos.find((c) => c.c_codcur === codCur);
       const horariosDelCurso = horarios
@@ -1010,7 +1011,9 @@ export class AsignarhorarioComponent implements OnInit {
         h_fin,
         n_horas: isEdited ? this.horasAsignadas : ev.extendedProps['n_horas'],
         c_color: ev.backgroundColor || '#3788d8',
-        aula_id: null,
+        aula_id: isEdited
+          ? this.aulaSeleccionada ?? null
+          : ev.extendedProps['aula_id'] ?? null,
         docente_id: isEdited
           ? this.selectedDocente?.id ?? null
           : ev.extendedProps['docente_id'] ?? null,
