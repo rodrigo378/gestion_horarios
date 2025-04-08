@@ -108,6 +108,14 @@ export class HorarioService {
     });
   }
 
+  createGrupo(padre_id: number, hijos_id: number[], tipo: number) {
+    return this.http.post(`${this.apiUrl}/curso/grupo`, {
+      padre_id,
+      hijos_id,
+      tipo,
+    });
+  }
+
   deleteTransversal(padre_id: number) {
     return this.http.delete(`${this.apiUrl}/curso/transversal/${padre_id}`);
   }
