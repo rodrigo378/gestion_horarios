@@ -520,6 +520,10 @@ export class AsignarhorarioComponent implements OnInit {
       return;
     }
 
+    if (this.selectedDocente) {
+      this.selectedDocente.h_total = this.horasAsignadas;
+    }  
+
     const diaAFecha: Record<string, number> = {
       Domingo: 0,
       Lunes: 1,
@@ -606,15 +610,6 @@ export class AsignarhorarioComponent implements OnInit {
       }
     }
 
-    // // 🧹 Limpieza final
-    // this.modalHorasActivo = false;
-    // this.cursoSeleccionado = null;
-    // this.fechaDrop = null;
-    // // this.ultimoEventoIdTemporal = null;
-    // this.horaInicio = '';
-    // this.diaSeleccionado = '';
-    // this.vacantesAula = null;
-
     this.resetCamposModal()
 
     // 🧹 Limpieza final
@@ -680,6 +675,7 @@ export class AsignarhorarioComponent implements OnInit {
           aula_id: Number(ev.extendedProps['aula_id']),
           docente_id: Number(ev.extendedProps['docente_id']),
           // docente_id: Number(ev.extendedProps['docente_id']),
+          h_total: horas,
           turno_id: this.turnoId,
           tipo: ev.extendedProps['tipo'] ?? 'Teoria',
         },
@@ -736,6 +732,7 @@ export class AsignarhorarioComponent implements OnInit {
         const mensaje = res.mensaje || '✅ Horarios guardados correctamente.';
         this.alertService.success(mensaje);
         this.cargarHorarios();
+        this.cargarDocentes();
       },
       error: (err) => {
         this.alertService.error('❌ Error al guardar horarios.');
@@ -936,6 +933,7 @@ export class AsignarhorarioComponent implements OnInit {
   }
 
   //#endregion
+  
   actualizarEvento() {
     console.log('🧪 actualizandoEvento llamado');
     if (!this.eventoSeleccionado) return;
@@ -1063,6 +1061,8 @@ export class AsignarhorarioComponent implements OnInit {
     this.modalHorasActivo = false;
     this.eventoSeleccionado = null;
     this.cargarHorarios();
+    this.cargarDocentes();
+    this.resetCamposModal();
   }
 
   eliminarEvento(): void {
@@ -1097,6 +1097,7 @@ export class AsignarhorarioComponent implements OnInit {
               next: () => {
                 this.alertService.success('🗑️ Evento eliminado correctamente.');
                 this.recargarCursosSegunTurno();
+                this.cargarDocentes()
               },
               error: (err) => {
                 this.alertService.error('❌ Error al eliminar el evento.');
@@ -1109,6 +1110,7 @@ export class AsignarhorarioComponent implements OnInit {
 
         this.modalHorasActivo = false;
         this.eventoSeleccionado = null;
+        this.resetCamposModal()
       });
   }
 
@@ -1139,6 +1141,7 @@ export class AsignarhorarioComponent implements OnInit {
             );
             this.cargarHorarios();
             this.cargarDatosPorTurno(this.turnoId);
+            this.cargarDocentes()
           },
           error: (err) => {
             this.alertService.error(
@@ -1149,20 +1152,6 @@ export class AsignarhorarioComponent implements OnInit {
         });
       });
   }
-
-  //#endregion
-  // cancelarAsignacionHoras() {
-  //   if (this.ultimoEventoIdTemporal) {
-  //     this.calendarOptions.events = (
-  //       this.calendarOptions.events as any[]
-  //     ).filter((ev) => ev.id !== this.ultimoEventoIdTemporal);
-  //   }
-
-  //   this.modalHorasActivo = false;
-  //   this.cursoSeleccionado = null;
-  //   this.fechaDrop = null;
-  //   this.ultimoEventoIdTemporal = null;
-  // }
   
   filtrarDocentes() {
     this.docentesFiltrados = this.docentes.filter(
