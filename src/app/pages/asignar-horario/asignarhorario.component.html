@@ -115,52 +115,53 @@
   </div>
 </div>
 
-<div class="flex justify-between items-center gap-4 mt-5">
-  <!-- Contenedor izquierdo: select + leyenda en columnas separadas pero alineadas -->
-  <div class="flex gap-4">
-    <!-- Select de turno -->
-    <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-40">
-      <label for="turno" class="block font-medium text-gray-700 mb-1">Selecciona Turno</label>
-      <select id="turno" 
-              [(ngModel)]="turnoSeleccionado" 
-              (change)="actualizarRangoPorTurno()"
-              class="w-full border-gray-300 rounded-lg shadow-sm text-sm">
-              <option value="" selected disabled>Seleccionar</option>
-              <option value="M">Mañana</option>
-        <option value="N">Noche</option>
-      </select>
+
+  <div class="flex justify-between items-center gap-4 mt-5">
+    <!-- Contenedor izquierdo: select + leyenda en columnas separadas pero alineadas -->
+    <div class="flex gap-4">
+      <!-- Select de turno -->
+      <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-40">
+        <label for="turno" class="block font-medium text-gray-700 mb-1">Selecciona Turno</label>
+        <select id="turno" 
+                [(ngModel)]="turnoSeleccionado" 
+                (change)="actualizarRangoPorTurno()"
+                class="w-full border-gray-300 rounded-lg shadow-sm text-sm">
+                <option value="" selected disabled>Seleccionar</option>
+                <option value="M">Mañana</option>
+          <option value="N">Noche</option>
+        </select>
+      </div>
+      
+      <!-- Leyenda -->
+      <div class="bg-white shadow-md rounded-xl p-3 text-sm space-y-2 border border-gray-200">
+        <h3 class="font-semibold text-gray-700">📌 Leyenda</h3>
+        <div class="flex items-center space-x-2">
+          <div class="w-4 h-4 rounded bg-yellow-500 shadow"></div>
+          <span>Curso transversal</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="w-4 h-4 rounded bg-[#76ff03] shadow"></div>
+          <span>Curso agrupado</span>
+        </div>
+      </div>
     </div>
-    
-    <!-- Leyenda -->
-    <div class="bg-white shadow-md rounded-xl p-3 text-sm space-y-2 border border-gray-200">
-      <h3 class="font-semibold text-gray-700">📌 Leyenda</h3>
-      <div class="flex items-center space-x-2">
-        <div class="w-4 h-4 rounded bg-yellow-500 shadow"></div>
-        <span>Curso agrupado</span>
-      </div>
-      <div class="flex items-center space-x-2">
-        <div class="w-4 h-4 rounded bg-[#76ff03] shadow"></div>
-        <span>Curso transversal</span>
-      </div>
+  
+    <!-- Botones a la derecha -->
+    <div class="flex items-center gap-4">
+      <button
+        (click)="eliminarTodosLosHorarios()"
+        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-2xl shadow-md transition duration-200 flex items-center gap-2">
+        <span>🗑️</span>
+        <span>Eliminar todos los horarios</span>
+      </button>
+  
+      <button
+        (click)="guardarEventos()"
+        class="bg-green-600 text-white px-4 py-2 rounded-2xl hover:bg-green-700 transition">
+        💾 Guardar horarios
+      </button>
     </div>
   </div>
-
-  <!-- Botones a la derecha -->
-  <div class="flex items-center gap-4">
-    <button
-      (click)="eliminarTodosLosHorarios()"
-      class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-2xl shadow-md transition duration-200 flex items-center gap-2">
-      <span>🗑️</span>
-      <span>Eliminar todos los horarios</span>
-    </button>
-
-    <button
-      (click)="guardarEventos()"
-      class="bg-green-600 text-white px-4 py-2 rounded-2xl hover:bg-green-700 transition">
-      💾 Guardar horarios
-    </button>
-  </div>
-</div>
   
   <!-- 📅 Calendario -->
   <full-calendar  
@@ -271,11 +272,6 @@
           <input type="number" class="p-2 border rounded w-24 border-gray-300" [(ngModel)]="selectedDocente.h_max" disabled>
         </div>
       
-        <div class="flex flex-col">
-          <label class="text-sm font-medium text-gray-700">Hora Asignada</label>
-          <input type="number" class="p-2 border rounded w-24 border-gray-300" [(ngModel)]="horasAsignadas">
-        </div>
-
         <div class="flex flex-col">
           <label class="text-sm font-medium text-gray-700">Hora Total</label>
           <input type="number" class="p-2 border rounded w-24 border-gray-300" [(ngModel)]="selectedDocente.h_total">

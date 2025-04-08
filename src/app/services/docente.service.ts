@@ -29,9 +29,16 @@ export class DocenteService {
     );
   }
 
+  // getDocentes(): Observable<Docente[]> {
+  //   return this.http.get<Docente[]>(
+  //     `${this.apiUrl}/docente`,
+  //     this.getTokenHeader()
+  //   );
+  // }
+
   getDocentes(): Observable<Docente[]> {
     return this.http.get<Docente[]>(
-      `${this.apiUrl}/docente`,
+      `${this.apiUrl}/docente?horario=true&curso=true`,
       this.getTokenHeader()
     );
   }
@@ -42,11 +49,6 @@ export class DocenteService {
       this.getTokenHeader()
     );
   }
-
-  // // Actualizar un docente
-  // updateDocente(id: number, docenteData: any): Observable<any> {
-  //   return this.http.put(`${this.apiUrl}/${id}`, docenteData, this.getTokenHeader());
-  // }
 
   updateDocenteUsuario(docenteData: any): Observable<any> {
     return this.http.patch(
@@ -86,35 +88,4 @@ export class DocenteService {
     );
   }
 
-  //#region Api Ubicaciones
-  // getDepartamentos(): Observable<{ departamentos: any[] }> {
-  //   const token = this.authService.getToken();
-  //   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-  //   return this.http.get<{ departamentos: any[] }>(
-  //     `${this.apiUrlUbi}/ubi/departamento`,
-  //     { headers }
-  //   );
-  // }
-
-  // getProvincias(departamentoId: number): Observable<{ provincias: any[] }> {
-  //   const token = this.authService.getToken();
-  //   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-  //   return this.http.get<{ provincias: any[] }>(
-  //     `${this.apiUrlUbi}/ubi/provincia/${departamentoId}`,
-  //     { headers }
-  //   );
-  // }
-
-  // getDistritos(provinciaId: number): Observable<{ distritos: any[] }> {
-  //   const token = this.authService.getToken();
-  //   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-  //   return this.http.get<{ distritos: any[] }>(
-  //     `${this.apiUrlUbi}/ubi/distrito/${provinciaId}`,
-  //     { headers }
-  //   );
-  // }
-  //#endregion
 }

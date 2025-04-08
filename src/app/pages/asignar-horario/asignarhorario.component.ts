@@ -3,7 +3,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { Draggable } from '@fullcalendar/interaction';
-import { CalendarOptions } from '@fullcalendar/core';
+import { CalendarOptions, EventApi } from '@fullcalendar/core';
 import esLocale from '@fullcalendar/core/locales/es';
 import { AlertService } from '../../services/alert.service';
 import { HorarioService } from '../../services/horario.service';
@@ -520,6 +520,10 @@ export class AsignarhorarioComponent implements OnInit {
       return;
     }
 
+    if (this.selectedDocente) {
+      this.selectedDocente.h_total = this.horasAsignadas;
+    }
+
     const diaAFecha: Record<string, number> = {
       Domingo: 0,
       Lunes: 1,
@@ -606,15 +610,6 @@ export class AsignarhorarioComponent implements OnInit {
       }
     }
 
-    // // 🧹 Limpieza final
-    // this.modalHorasActivo = false;
-    // this.cursoSeleccionado = null;
-    // this.fechaDrop = null;
-    // // this.ultimoEventoIdTemporal = null;
-    // this.horaInicio = '';
-    // this.diaSeleccionado = '';
-    // this.vacantesAula = null;
-
     this.resetCamposModal();
 
     // 🧹 Limpieza final
@@ -680,6 +675,7 @@ export class AsignarhorarioComponent implements OnInit {
           aula_id: Number(ev.extendedProps['aula_id']),
           docente_id: Number(ev.extendedProps['docente_id']),
           // docente_id: Number(ev.extendedProps['docente_id']),
+          h_total: horas,
           turno_id: this.turnoId,
           tipo: ev.extendedProps['tipo'] ?? 'Teoria',
         },
@@ -736,6 +732,7 @@ export class AsignarhorarioComponent implements OnInit {
         const mensaje = res.mensaje || '✅ Horarios guardados correctamente.';
         this.alertService.success(mensaje);
         this.cargarHorarios();
+        this.cargarDocentes();
       },
       error: (err) => {
         this.alertService.error('❌ Error al guardar horarios.');
@@ -939,6 +936,7 @@ export class AsignarhorarioComponent implements OnInit {
   }
 
   //#endregion
+
   actualizarEvento() {
     console.log('🧪 actualizandoEvento llamado');
     if (!this.eventoSeleccionado) return;
@@ -981,7 +979,48 @@ export class AsignarhorarioComponent implements OnInit {
 
     // Si no es temporal => construir payload
     const curso = this.cursos.find((c) => c.c_codcur === codigo);
+
+    // 1️⃣ Buscar todos los eventos del mismo curso padre
+    const calendarApi = this.calendarComponent.getApi();
+
+    const eventosDelCurso: EventApi[] = calendarApi
+      .getEvents()
+      .filter(
+        (ev: EventApi) =>
+          ev.extendedProps['codCur'] === codigo &&
+          ev.extendedProps['tipo'] === tipo
+      );
+
+    // 2️⃣ Armar lista de horarios
+    const horarios = eventosDelCurso.map((ev) => {
+      const isEdited = ev.id === idEvento;
+
+      const h_inicio = isEdited
+        ? base?.toISOString() || ''
+        : ev.start?.toISOString() || '';
+
+      const h_fin = isEdited
+        ? fin?.toISOString() || ''
+        : ev.end?.toISOString() || '';
+
+      return {
+        id: Number(ev.id),
+        dia: ev.extendedProps['dia'],
+        h_inicio,
+        h_fin,
+        n_horas: isEdited ? this.horasAsignadas : ev.extendedProps['n_horas'],
+        c_color: ev.backgroundColor || '#3788d8',
+        aula_id: null,
+        docente_id: isEdited
+          ? this.selectedDocente?.id ?? null
+          : ev.extendedProps['docente_id'] ?? null,
+        turno_id: this.turnoId,
+      };
+    });
+
+    // 3️⃣ Armar el payload completo
     const payload = {
+      verificar: true,
       dataArray: [
         {
           curso: {
@@ -994,7 +1033,7 @@ export class AsignarhorarioComponent implements OnInit {
             n_ciclo: Number(curso?.n_ciclo) || 0,
             c_area: curso?.c_area || '',
             turno_id: this.turnoId,
-            tipo: this.eventoSeleccionado.extendedProps.tipo ?? 'Teoría',
+            tipo: tipo ?? 'Teoría',
             n_codper_equ:
               curso?.n_codper_equ != null ? String(curso.n_codper_equ) : null,
             c_codmod_equ:
@@ -1004,25 +1043,9 @@ export class AsignarhorarioComponent implements OnInit {
             c_codcur_equ: curso?.c_codcur_equ ?? null,
             c_nomcur_equ: curso?.c_nomcur_equ ?? null,
           },
-          horarios: [
-            {
-              id: Number(idEvento),
-              dia: this.diaSeleccionado,
-              h_inicio: base.toISOString(),
-              h_fin: fin.toISOString(),
-              n_horas: this.horasAsignadas,
-              c_color: this.eventoSeleccionado.backgroundColor || '#3788d8',
-              aula_id:
-                this.aulaSeleccionada != null
-                  ? Number(this.aulaSeleccionada)
-                  : null,
-              docente_id: this.selectedDocente?.id ?? null,
-              turno_id: this.turnoId,
-            },
-          ],
+          horarios,
         },
       ],
-      verificar: true,
     };
 
     this.horarioService.updateHorarios(payload).subscribe({
@@ -1066,6 +1089,8 @@ export class AsignarhorarioComponent implements OnInit {
     this.modalHorasActivo = false;
     this.eventoSeleccionado = null;
     this.cargarHorarios();
+    this.cargarDocentes();
+    this.resetCamposModal();
   }
 
   eliminarEvento(): void {
@@ -1100,6 +1125,7 @@ export class AsignarhorarioComponent implements OnInit {
               next: () => {
                 this.alertService.success('🗑️ Evento eliminado correctamente.');
                 this.recargarCursosSegunTurno();
+                this.cargarDocentes();
               },
               error: (err) => {
                 this.alertService.error('❌ Error al eliminar el evento.');
@@ -1112,6 +1138,7 @@ export class AsignarhorarioComponent implements OnInit {
 
         this.modalHorasActivo = false;
         this.eventoSeleccionado = null;
+        this.resetCamposModal();
       });
   }
 
@@ -1142,6 +1169,7 @@ export class AsignarhorarioComponent implements OnInit {
             );
             this.cargarHorarios();
             this.cargarDatosPorTurno(this.turnoId);
+            this.cargarDocentes();
           },
           error: (err) => {
             this.alertService.error(
@@ -1152,20 +1180,6 @@ export class AsignarhorarioComponent implements OnInit {
         });
       });
   }
-
-  //#endregion
-  // cancelarAsignacionHoras() {
-  //   if (this.ultimoEventoIdTemporal) {
-  //     this.calendarOptions.events = (
-  //       this.calendarOptions.events as any[]
-  //     ).filter((ev) => ev.id !== this.ultimoEventoIdTemporal);
-  //   }
-
-  //   this.modalHorasActivo = false;
-  //   this.cursoSeleccionado = null;
-  //   this.fechaDrop = null;
-  //   this.ultimoEventoIdTemporal = null;
-  // }
 
   filtrarDocentes() {
     this.docentesFiltrados = this.docentes.filter(
