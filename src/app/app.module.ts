@@ -34,6 +34,7 @@ import { PisoPipe } from './piso.pipe';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { VerTransversalComponent } from './pages/ver-transversal/ver-transversal.component';
 import { ReporteriaComponent } from './pages/reporteria/reporteria.component';
+import { AgruparCursosComponent } from './pages/agrupar-cursos/agrupar-cursos.component';
 
 registerLocaleData(en);
 
@@ -58,6 +59,7 @@ registerLocaleData(en);
     VerTransversalComponent,
     PisoPipe,
     ReporteriaComponent,
+    AgruparCursosComponent,
   ],
   imports: [
     BrowserModule,

@@ -772,7 +772,7 @@ export class AsignarhorarioComponent implements OnInit {
               n_horas: h.n_horas,
               aula_id: h.aula_id,
               docente_id: h.docente_id,
-              esPadre: esPadre,
+              // esPadre: esPadre,
             },
             // editable: !esPadre,
             durationEditable: false,
@@ -985,7 +985,7 @@ export class AsignarhorarioComponent implements OnInit {
       dataArray: [
         {
           curso: {
-            n_codper: String(this.turnoData?.n_codper || ''),
+            n_codper: String(curso?.n_codper || ''),
             c_codmod: Number(curso?.c_codmod) || 0,
             c_codfac: curso?.c_codfac || '',
             c_codesp: curso?.c_codesp || '',
@@ -1188,7 +1188,7 @@ export class AsignarhorarioComponent implements OnInit {
     this.fechaDrop = null;
     this.horaInicio = '';
     this.diaSeleccionado = '';
-    this.resetCamposModal(); // 👈 limpia campos comunes
+    this.resetCamposModal();
   }
 
   private resetCamposModal(): void {

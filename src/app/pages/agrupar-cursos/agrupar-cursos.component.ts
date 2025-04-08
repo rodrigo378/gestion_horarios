@@ -1,17 +1,17 @@
-import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component } from '@angular/core';
 import { Curso2, Especialidad } from '../../interfaces/Curso';
 import { HorarioService } from '../../services/horario.service';
 import { CursoService } from '../../services/curso.service';
 import { AlertService } from '../../services/alert.service';
 
 @Component({
-  selector: 'app-ver-transversal',
+  selector: 'app-agrupar-cursos',
   standalone: false,
-  templateUrl: './ver-transversal.component.html',
-  styleUrl: './ver-transversal.component.css',
+  templateUrl: './agrupar-cursos.component.html',
+  styleUrl: './agrupar-cursos.component.css',
 })
-export class VerTransversalComponent implements OnInit {
+export class AgruparCursosComponent {
   cursos: Curso2[] = [];
   curso!: Curso2;
 
@@ -24,7 +24,7 @@ export class VerTransversalComponent implements OnInit {
 
   especialidades: Especialidad[] = [];
   especialidadesModal: Especialidad[] = [];
-  cursosFiltrados: any[] = [];
+  cursosFiltrados: Curso2[] = [];
 
   selectFacultadad: string = '';
   selectEspecialidad: string = '';
@@ -103,24 +103,26 @@ export class VerTransversalComponent implements OnInit {
       )
       .subscribe((data) => {
         this.cursosFiltrados = data.data.filter((curso) => {
-          const codA = this.curso.c_codcur;
-          const codAeq = this.curso.c_codcur_equ;
-          const codB = curso.c_codcur;
-          const codBeq = curso.c_codcur_equ;
+          return curso.turno_id !== this.curso.turno_id;
 
-          const turno_idA = this.curso.turno_id;
-          const turno_idB = curso.turno_id;
+          // const codA = this.curso.c_codcur;
+          // const codAeq = this.curso.c_codcur_equ;
+          // const codB = curso.c_codcur;
+          // const codBeq = curso.c_codcur_equ;
 
-          const esMismoCurso = this.curso.id === curso.id;
-          const esMismoTurno = turno_idA === turno_idB;
+          // const turno_idA = this.curso.turno_id;
+          // const turno_idB = curso.turno_id;
 
-          return (
-            !esMismoCurso &&
-            !esMismoTurno &&
-            (codA === codB ||
-              codA === codBeq ||
-              (codAeq && (codAeq === codB || codAeq === codBeq)))
-          );
+          // const esMismoCurso = this.curso.id === curso.id;
+          // const esMismoTurno = turno_idA === turno_idB;
+
+          // return (
+          //   !esMismoCurso &&
+          //   !esMismoTurno &&
+          //   (codA === codB ||
+          //     codA === codBeq ||
+          //     (codAeq && (codAeq === codB || codAeq === codBeq)))
+          // );
         });
 
         console.log('📚 Cursos filtrados modal => ', this.cursosFiltrados);
