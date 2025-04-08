@@ -696,7 +696,7 @@ export class AsignarhorarioComponent implements OnInit {
 
     if (this.selectedDocente) {
       this.selectedDocente.h_total = this.horasAsignadas;
-    }  
+    }
 
     const diaAFecha: Record<string, number> = {
       Domingo: 0,
@@ -784,7 +784,7 @@ export class AsignarhorarioComponent implements OnInit {
       }
     }
 
-    this.resetCamposModal()
+    this.resetCamposModal();
 
     // 🧹 Limpieza final
     this.modalHorasActivo = false;
@@ -1425,7 +1425,7 @@ export class AsignarhorarioComponent implements OnInit {
               next: () => {
                 this.alertService.success('🗑️ Evento eliminado correctamente.');
                 this.recargarCursosSegunTurno();
-                this.cargarDocentes()
+                this.cargarDocentes();
               },
               error: (err) => {
                 this.alertService.error('❌ Error al eliminar el evento.');
@@ -1438,7 +1438,7 @@ export class AsignarhorarioComponent implements OnInit {
 
         this.modalHorasActivo = false;
         this.eventoSeleccionado = null;
-        this.resetCamposModal()
+        this.resetCamposModal();
       });
   }
 
@@ -1469,7 +1469,7 @@ export class AsignarhorarioComponent implements OnInit {
             );
             this.cargarHorarios();
             this.cargarDatosPorTurno(this.turnoId);
-            this.cargarDocentes()
+            this.cargarDocentes();
           },
           error: (err) => {
             this.alertService.error(
@@ -1480,7 +1480,7 @@ export class AsignarhorarioComponent implements OnInit {
         });
       });
   }
-  
+
   filtrarDocentes() {
     this.docentesFiltrados = this.docentes.filter(
       (d) => d.categoria === this.selectedCategoria

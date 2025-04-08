@@ -109,7 +109,7 @@
         (click)="clickDefinirCursoTransversales()"
       >
         <i class="fa-solid fa-plus"></i>
-        Definir Cursos Transversales
+        Definir Cursos Agrupados
       </button>
     </div>
 
@@ -607,7 +607,8 @@
             <ng-container *ngFor="let curso of cursosFiltrados">
               <tr class="border-t">
                 <td class="px-4 py-2">
-                  {{ curso.id }} - {{ curso.c_codfac }} - {{ curso.c_codesp }}
+                  {{ curso.id }} - {{ curso.c_codfac }} - {{ curso.c_codesp }} .
+                  {{ curso.turno_id }}
                 </td>
                 <td class="px-4 py-2">{{ curso.n_codper }}</td>
                 <td class="px-4 py-2">

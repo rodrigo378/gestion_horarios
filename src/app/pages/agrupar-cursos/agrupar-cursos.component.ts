@@ -227,7 +227,7 @@ export class AgruparCursosComponent {
     console.log('hijos_id => ', this.arrayCheckboxCursos);
 
     this.horarioService
-      .createTransversal(this.curso.id, this.arrayCheckboxCursos, 0)
+      .createGrupo(this.curso.id, this.arrayCheckboxCursos, 0)
       .subscribe({
         next: (res: any) => {
           console.log(res);
