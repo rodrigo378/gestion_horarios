@@ -19,6 +19,7 @@ import { VerTurnosComponent } from './pages/ver-turnos/ver-turnos.component';
 import { VerCursosComponent } from './pages/ver-cursos/ver-cursos.component';
 import { VerTransversalComponent } from './pages/ver-transversal/ver-transversal.component';
 import { ReporteriaComponent } from './pages/reporteria/reporteria.component';
+import { AgruparCursosComponent } from './pages/agrupar-cursos/agrupar-cursos.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -47,7 +48,8 @@ const routes: Routes = [
       { path: 'verturnos', component: VerTurnosComponent },
       { path: 'transversal', component: VerTransversalComponent },
       { path: 'cursos/:id', component: VerCursosComponent },
-      { path: 'reporteria', component: ReporteriaComponent }
+      { path: 'reporteria', component: ReporteriaComponent },
+      { path: 'agrupar', component: AgruparCursosComponent },
     ],
   },
   { path: '**', component: NotFountComponent },
