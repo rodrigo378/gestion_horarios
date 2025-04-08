@@ -1,5 +1,3 @@
-import { Aula } from './Aula';
-import { Docente } from './Docente';
 import { Horario } from './Horario';
 import { Turno } from './turno';
 
@@ -30,6 +28,7 @@ export interface Curso {
   c_codcur_equ?: string;
   c_nomcur_equ?: string;
   disabled?: boolean;
+  cursosHijos?: CursoHijo[];
 }
 
 export interface Especialidad {
