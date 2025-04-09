@@ -500,145 +500,134 @@
 
 <!-- Modal -->
 <div
-  *ngIf="mostrarModalCrear"
-  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+    *ngIf="mostrarModalCrear"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
 >
-  <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-md">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold">Crear nuevo horario</h2>
-      <button
-        class="text-gray-500 hover:text-red-500"
-        (click)="mostrarModalCrear = false"
-      >
-        <i class="fa-solid fa-xmark text-xl"></i>
-      </button>
+    <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-4xl">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold">Crear nuevo horario</h2>
+        <button
+            class="text-gray-500 hover:text-red-500"
+            (click)="mostrarModalCrear = false"
+        >
+            <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+        </div>
+
+        <!-- Formulario -->
+        <form [formGroup]="formularioHorario" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Facultad -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Facultad</label>
+            <select
+            formControlName="c_codfac"
+            (change)="onChangeFacultadFormulario()"
+            class="w-full border border-gray-300 rounded-md px-3 py-2"
+            >
+            <option value="">Seleccione facultad</option>
+            <option value="S">CIENCIAS DE LA SALUD</option>
+            <option value="E">INGENIERÍA Y NEGOCIOS</option>
+            </select>
+        </div>
+
+        <!-- Especialidad -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Especialidad</label>
+            <select
+            formControlName="c_codesp"
+            (change)="aplicarFiltros()"
+            class="w-full border border-gray-300 rounded-md px-3 py-2"
+            >
+            <option value="">Especialidad</option>
+            <option *ngFor="let esp of especialidades" [value]="esp.codesp">
+                {{ esp.nomesp }}
+            </option>
+            </select>
+        </div>
+
+        <!-- Periodo -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Periodo</label>
+            <select
+            formControlName="n_codper"
+            class="w-full border border-gray-300 rounded-md px-3 py-2"
+            >
+            <option value="">Seleccione periodo</option>
+            <option value="20231">20231</option>
+            <option value="20232">20232</option>
+            <option value="20241">20241</option>
+            <option value="20242">20242</option>
+            <option value="20251">20251</option>
+            <option value="20252">20252</option>
+            </select>
+        </div>
+
+        <!-- Plan -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Plan</label>
+            <select
+            formControlName="n_codpla"
+            class="w-full border border-gray-300 rounded-md px-3 py-2"
+            >
+            <option value="">Seleccione plan</option>
+            <option value="20231">2023</option>
+            <option value="20232">2025</option>
+            </select>
+        </div>
+
+        <!-- Sección -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Sección</label>
+            <input
+            type="text"
+            formControlName="c_grpcur"
+            class="w-full border border-gray-300 rounded-md px-3 py-2"
+            placeholder="Ej. A"
+            />
+        </div>
+
+        <!-- Ciclo -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Ciclo</label>
+            <select
+            formControlName="n_ciclo"
+            class="w-full border border-gray-300 rounded-md px-3 py-2"
+            >
+            <option value="">Seleccione ciclo</option>
+            <option *ngFor="let c of ciclos" [value]="c">{{ c }}</option>
+            </select>
+        </div>
+
+        <!-- Modalidad -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Modalidad</label>
+            <select
+            formControlName="c_codmod"
+            class="w-full border border-gray-300 rounded-md px-3 py-2"
+            >
+            <option value="">Seleccione modalidad</option>
+            <option *ngFor="let mod of modalidades" [value]="mod.value">
+                {{ mod.label }}
+            </option>
+            </select>
+        </div>
+        </form>
+
+        <!-- Acciones -->
+        <div class="mt-6 flex justify-end gap-3">
+        <button
+            (click)="mostrarModalCrear = false"
+            class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+        >
+            Cancelar
+        </button>
+        <button
+            class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
+            (click)="guardarHorario()"
+        >
+            Guardar
+        </button>
+        </div>
     </div>
-
-    <form [formGroup]="formularioHorario" class="flex flex-col gap-4">
-      <!-- Facultad -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Facultad</label
-        >
-        <select
-          formControlName="c_codfac"
-          (change)="onChangeFacultadFormulario()"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-        >
-          <option value="">Seleccione facultad</option>
-          <option value="S">CIENCIAS DE LA SALUD</option>
-          <option value="E">INGENIERÍA Y NEGOCIOS</option>
-        </select>
-      </div>
-
-      <!-- Especialidad -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Especialidad</label
-        >
-        <select
-          formControlName="c_codesp"
-          (change)="aplicarFiltros()"
-          class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-96"
-        >
-          <option value="">Especialidad</option>
-          <option *ngFor="let esp of especialidades" [value]="esp.codesp">
-            {{ esp.nomesp }}
-          </option>
-        </select>
-      </div>
-
-      <!-- periodo -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Periodo</label
-        >
-        <select
-          formControlName="n_codper"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-        >
-          <option value="">Seleccione periodo</option>
-          <option value="20231">20231</option>
-          <option value="20232">20232</option>
-          <option value="20241">20241</option>
-          <option value="20242">20242</option>
-          <option value="20251">20251</option>
-          <option value="20252">20252</option>
-        </select>
-      </div>
-
-      <!-- periodo -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Periodo</label
-        >
-        <select
-          formControlName="n_codpla"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-        >
-          <option value="">Seleccione plan</option>
-          <option value="20231">2023</option>
-          <option value="20232">2025</option>
-        </select>
-      </div>
-
-      <!-- Sección -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Sección</label
-        >
-        <input
-          type="text"
-          formControlName="c_grpcur"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-          placeholder="Ej. A"
-        />
-      </div>
-
-      <!-- Ciclo -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Ciclo</label
-        >
-        <select
-          formControlName="n_ciclo"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-        >
-          <option value="">Seleccione ciclo</option>
-          <option *ngFor="let c of ciclos" [value]="c">{{ c }}</option>
-        </select>
-      </div>
-
-      <!-- Modalidad -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Modalidad</label
-        >
-        <select
-          formControlName="c_codmod"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-        >
-          <option value="">Seleccione modalidad</option>
-          <option *ngFor="let mod of modalidades" [value]="mod.value">
-            {{ mod.label }}
-          </option>
-        </select>
-      </div>
-    </form>
-
-    <div class="mt-6 flex justify-end gap-2">
-      <button
-        (click)="mostrarModalCrear = false"
-        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-      >
-        Cancelar
-      </button>
-      <button
-        class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
-        (click)="guardarHorario()"
-      >
-        Guardar
-      </button>
-    </div>
-  </div>
 </div>

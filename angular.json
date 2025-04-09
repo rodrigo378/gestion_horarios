@@ -44,9 +44,12 @@
             ],
             "styles": [
               "src/theme.less",
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/tippy.js/dist/tippy.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/tippy.js/dist/tippy.umd.min.js"
+            ]
           },
           "configurations": {
             "production": {

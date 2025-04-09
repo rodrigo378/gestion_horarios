@@ -21,12 +21,12 @@ import { Aula } from '../../interfaces/Aula';
 import tippy from 'tippy.js'
 
 @Component({
-  selector: 'app-asignarhorario',
+  selector: 'app-asignar-horario-dr',
   standalone: false,
-  templateUrl: './asignarhorario.component.html',
-  styleUrl: './asignarhorario.component.css',
+  templateUrl: './asignar-horario-dr.component.html',
+  styleUrl: './asignar-horario-dr.component.css'
 })
-export class AsignarhorarioComponent implements OnInit {
+export class AsignarHorarioDrComponent implements OnInit{
   @ViewChild('fullcalendar') calendarComponent!: FullCalendarComponent;
   //#region Variables
   // variables para agregar horas

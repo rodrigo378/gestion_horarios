@@ -35,6 +35,8 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { VerTransversalComponent } from './pages/ver-transversal/ver-transversal.component';
 import { ReporteriaComponent } from './pages/reporteria/reporteria.component';
 import { AgruparCursosComponent } from './pages/agrupar-cursos/agrupar-cursos.component';
+import { AsignarHorarioDrComponent } from './pages/asignar-horario-dr/asignar-horario-dr.component';
+import { VerTurnoDrComponent } from './pages/ver-turno-dr/ver-turno-dr.component';
 
 registerLocaleData(en);
 
@@ -60,6 +62,8 @@ registerLocaleData(en);
     PisoPipe,
     ReporteriaComponent,
     AgruparCursosComponent,
+    AsignarHorarioDrComponent,
+    VerTurnoDrComponent,
   ],
   imports: [
     BrowserModule,
