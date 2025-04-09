@@ -75,7 +75,7 @@ export class VerTurnosComponent implements OnInit {
       c_grpcur: ['', Validators.required],
       n_ciclo: ['', Validators.required],
       c_codmod: ['', Validators.required],
-      n_codpla: ['', Validators.required], // puedes ponerlo dinámico si es necesario
+      n_codpla: ['', Validators.required],
     });
   }
 
@@ -103,24 +103,20 @@ export class VerTurnosComponent implements OnInit {
   }
 
   obtenerNombreModalidad(codmod: string): string {
-    const modalidad = this.modalidades.find((m) => m.value === codmod);
-    console.log('obtenerNombreModalidad => ', modalidad?.label || '');
+    const modalidad = this.modalidades.find((m) => m.value == codmod);
     return modalidad?.label || '';
   }
 
-  guardarHorario() {
+  guardarTurno() {
     console.log('guardarHorario');
 
     if (this.formularioHorario.invalid) {
-      console.log('invalido');
-
       this.formularioHorario.markAllAsTouched();
       this.alertService.error('Todos los campos son necesarios');
       return;
     }
 
     const form = this.formularioHorario.value;
-    console.log('form =>', form);
 
     const turno = {
       ...form,
@@ -131,9 +127,8 @@ export class VerTurnosComponent implements OnInit {
       nom_fac: this.getNombreFacultad(form.c_codfac),
       nomesp: this.obtenerNombreEspecialidad(form.c_codesp),
       c_nommod: this.obtenerNombreModalidad(form.c_codmod),
+      c_codmod: Number(form.c_codmod),
     };
-
-    console.log('turno => ', turno);
 
     this.turnoServices.createTurno(turno).subscribe({
       next: (res: any) => {
@@ -143,15 +138,24 @@ export class VerTurnosComponent implements OnInit {
           this.turnos = data;
           this.turnosFiltrados = data;
           this.extraerValoresUnicos(data);
+          this.mostrarModalCrear = false;
+
+          this.formularioHorario.reset({
+            c_codfac: '',
+            c_codesp: '',
+            n_codper: '',
+            c_grpcur: '',
+            n_ciclo: '',
+            c_codmod: '',
+            n_codpla: '',
+          });
         });
       },
       error: (er: HttpErrorResponse) => {
         console.log('er => ', er);
+        this.alertService.error('Este Turno ya existe.');
       },
     });
-
-    this.mostrarModalCrear = false;
-    this.formularioHorario.reset();
   }
 
   onChangeFacultadFormulario() {
