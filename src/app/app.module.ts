@@ -35,8 +35,12 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { VerTransversalComponent } from './pages/ver-transversal/ver-transversal.component';
 import { ReporteriaComponent } from './pages/reporteria/reporteria.component';
 import { AgruparCursosComponent } from './pages/agrupar-cursos/agrupar-cursos.component';
+<<<<<<< HEAD
 import { AsignarHorarioDrComponent } from './pages/asignar-horario-dr/asignar-horario-dr.component';
 import { VerTurnoDrComponent } from './pages/ver-turno-dr/ver-turno-dr.component';
+=======
+import { PermisosUsuariosComponent } from './pages/admin/permisos-usuarios/permisos-usuarios.component';
+>>>>>>> 07a2f60118b92eb28752f4f19fa30442c139c6ac
 
 registerLocaleData(en);
 
@@ -62,8 +66,12 @@ registerLocaleData(en);
     PisoPipe,
     ReporteriaComponent,
     AgruparCursosComponent,
+<<<<<<< HEAD
     AsignarHorarioDrComponent,
     VerTurnoDrComponent,
+=======
+    PermisosUsuariosComponent,
+>>>>>>> 07a2f60118b92eb28752f4f19fa30442c139c6ac
   ],
   imports: [
     BrowserModule,
