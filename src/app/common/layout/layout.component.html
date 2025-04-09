@@ -13,6 +13,7 @@
         <h1>Gestion de docentes</h1>
       </a>
     </div>
+    @if (permisosMap) {
     <ul
       nz-menu
       nzTheme="dark"
@@ -36,16 +37,17 @@
 
       <li
         nz-submenu
-        nzTitle="Gestión Usuario"
+        nzTitle="Gestion de Usuario"
         nzIcon="usergroup-add"
-        [nzOpen]="selectedMenu === 'usuarios'"
-        (nzOpenChange)="toggleMenuOp('usuarios', $event)"
+        [nzOpen]="selectedMenu === 'docente'"
+        (nzOpenChange)="toggleMenuOp('docente', $event)"
+        *ngIf="hasPermiso('1.1') || hasPermiso('1.2')"
       >
         <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/listausuarios">Listar usuarios</a>
+          <li nz-menu-item *ngIf="hasPermiso('1.1')">
+            <a routerLink="/listausuarios">Listar Usuario</a>
           </li>
-          <li nz-menu-item nzMatchRouter>
+          <li nz-menu-item *ngIf="hasPermiso('1.2')">
             <a routerLink="/permisos">Permisos de usuarios</a>
           </li>
         </ul>
@@ -53,29 +55,39 @@
 
       <li
         nz-submenu
-        nzTitle="Postular Docentes"
-        nzIcon="audit"
-        [nzOpen]="selectedMenu === 'postular'"
-        (nzOpenChange)="toggleMenuOp('postular', $event)"
+        nzTitle="Asignar Horario"
+        nzIcon="usergroup-add"
+        [nzOpen]="selectedMenu === 'director'"
+        (nzOpenChange)="toggleMenuOp('director', $event)"
+        *ngIf="
+          hasPermiso('2.1') ||
+          hasPermiso('2.2') ||
+          hasPermiso('2.3') ||
+          hasPermiso('2.4') ||
+          hasPermiso('2.5')
+        "
       >
         <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/registrodocentes">Registra tu informacion</a>
+          <li nz-menu-item *ngIf="hasPermiso('2.1')">
+            <a routerLink="/verturnos">Asignar Horarios</a>
           </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/verinformacion">Ver tu informacion</a>
+          <li nz-menu-item *ngIf="hasPermiso('2.2')">
+            <a routerLink="/reporteria">Reporte docente</a>
           </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/cursoelegir">Llenar prospecto</a>
+          <li nz-menu-item *ngIf="hasPermiso('2.3')">
+            <a routerLink="/reporteria">Reporte Aula</a>
           </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/postularcurso">Postular Curso</a>
+          <li nz-menu-item *ngIf="hasPermiso('2.4')">
+            <a routerLink="/transversal">Definir cursos transversales</a>
           </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/verhorario">Ver horario</a>
+          <li nz-menu-item *ngIf="hasPermiso('2.5')">
+            <a routerLink="/agrupar">Definir cursos agrupados</a>
           </li>
         </ul>
       </li>
+
+      <!-- <li
+        
 
       <li
         nz-submenu
@@ -104,6 +116,7 @@
           </li>
         </ul>
       </li>
+
       <li
         nz-submenu
         nzTitle="Director"
@@ -112,18 +125,6 @@
         (nzOpenChange)="toggleMenuOp('director', $event)"
       >
         <ul>
-          <!-- <li nz-menu-item nzMatchRouter>
-            <a routerLink="/listadocentes">Lista de doncentes</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/docenteaprobados">Lista de doncentes aprobados</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/docentesrechazados">Lista de doncentes rechazados</a>
-          </li> -->
-          <!-- <li nz-menu-item nzMatchRouter>
-            <a routerLink="/asignarhorario">Asignar horario</a>
-          </li> -->
           <li nz-menu-item nzMatchRouter>
             <a routerLink="/transversal">Definir Cursos transversales</a>
           </li>
@@ -137,8 +138,9 @@
             <a routerLink="/reporteria">Reporteria</a>
           </li>
         </ul>
-      </li>
+      </li> -->
     </ul>
+    }
   </nz-sider>
   <nz-layout>
     <nav class="bg-gray-800">
