@@ -37,6 +37,8 @@ export class PermisosUsuariosComponent implements OnInit {
       next: (res: any) => {
         this.userPermisos = res.permisos;
         this.user = res.user;
+        console.log('userPermisos )> ', this.userPermisos);
+
         this.boolPermisos = true;
       },
       error: (err: HttpErrorResponse) => {
@@ -64,7 +66,7 @@ export class PermisosUsuariosComponent implements OnInit {
 
   guardarPermisos() {
     if (!this.email.trim()) {
-      alert('Por favor ingrese un correo válido.');
+      this.alertService.error('Por favor ingrese un correo válido.');
       return;
     }
 
@@ -72,15 +74,16 @@ export class PermisosUsuariosComponent implements OnInit {
       (p) => p.estado === 'A'
     );
 
-    const itemsId = permisosSeleccionados.map((pe) => pe.id);
+    const itemsId = permisosSeleccionados.map((pe) => pe.itemId); // 🔧 corrección
 
     this.userService.actualizarPermisos(this.user.id, itemsId).subscribe({
       next: (res: any) => {
-        console.log('res => ', res);
-        this.alertService.confirm('Permisos Actualizado correctamente');
+        console.log('Permisos actualizados =>', res);
+        this.alertService.success('Permisos actualizados correctamente');
       },
       error: (err: HttpErrorResponse) => {
-        console.log('err => ', err);
+        console.error('Error al guardar permisos =>', err);
+        this.alertService.error('Error al actualizar los permisos');
       },
     });
   }
