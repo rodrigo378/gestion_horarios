@@ -55,10 +55,10 @@
 
       <li
         nz-submenu
-        nzTitle="Asignar Horario"
+        nzTitle="COA"
         nzIcon="usergroup-add"
-        [nzOpen]="selectedMenu === 'director'"
-        (nzOpenChange)="toggleMenuOp('director', $event)"
+        [nzOpen]="selectedMenu === 'coa'"
+        (nzOpenChange)="toggleMenuOp('coa', $event)"
         *ngIf="
           hasPermiso('2.1') ||
           hasPermiso('2.2') ||
@@ -85,6 +85,23 @@
           </li>
         </ul>
       </li>
+
+      <li
+      nz-submenu
+      nzTitle="Director"
+      nzIcon="user"
+      [nzOpen]="selectedMenu === 'dr'"
+      (nzOpenChange)="toggleMenuOp('dr', $event)"
+      *ngIf="
+        hasPermiso('3.1')
+      "
+      >
+      <ul>
+        <li nz-menu-item nzMatchRouter *ngIf="hasPermiso('3.1')">
+          <a routerLink="/verturnodr" >Asignar Horario</a>
+        </li>
+      </ul>
+    </li>
 
       <!-- <li
         
