@@ -22,6 +22,7 @@ import { ReporteriaComponent } from './pages/reporteria/reporteria.component';
 import { AgruparCursosComponent } from './pages/agrupar-cursos/agrupar-cursos.component';
 import { AsignarHorarioDrComponent } from './pages/asignar-horario-dr/asignar-horario-dr.component';
 import { VerTurnoDrComponent } from './pages/ver-turno-dr/ver-turno-dr.component';
+import { ReporteriaAulaComponent } from './pages/reporteria-aula/reporteria-aula.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -53,7 +54,8 @@ const routes: Routes = [
       { path: 'reporteria', component: ReporteriaComponent },
       { path: 'agrupar', component: AgruparCursosComponent },
       { path: 'verturnodr', component:VerTurnoDrComponent },
-      { path: 'asignarhorariodr', component: AsignarHorarioDrComponent }
+      { path: 'asignarhorariodr', component: AsignarHorarioDrComponent },
+      { path: 'reporteriaaula', component: ReporteriaAulaComponent }
     ],
   },
   { path: '**', component: NotFountComponent },
