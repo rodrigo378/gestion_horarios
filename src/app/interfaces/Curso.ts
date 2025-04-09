@@ -28,7 +28,6 @@ export interface Curso {
   c_codcur_equ?: string;
   c_nomcur_equ?: string;
   disabled?: boolean;
-  cursosHijos?: CursoHijo[];
 }
 
 export interface Especialidad {

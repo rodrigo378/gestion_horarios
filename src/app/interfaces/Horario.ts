@@ -36,6 +36,7 @@ export interface HorarioExtendido {
       curso_id: number;
       padre_curso_id: number;
       shortname: string;
+      tipo: number
     }[];
   };
 }

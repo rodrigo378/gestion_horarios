@@ -119,10 +119,10 @@
 
       <li
         nz-submenu
-        nzTitle="Director"
+        nzTitle="COA"
         nzIcon="project"
-        [nzOpen]="selectedMenu === 'director'"
-        (nzOpenChange)="toggleMenuOp('director', $event)"
+        [nzOpen]="selectedMenu === 'coa'"
+        (nzOpenChange)="toggleMenuOp('coa', $event)"
       >
         <ul>
           <li nz-menu-item nzMatchRouter>
@@ -138,7 +138,26 @@
             <a routerLink="/reporteria">Reporteria</a>
           </li>
         </ul>
+<<<<<<< HEAD
+      </li>
+
+      <li
+      nz-submenu
+      nzTitle="Director"
+      nzIcon="user"
+      [nzOpen]="selectedMenu === 'dr'"
+      (nzOpenChange)="toggleMenuOp('dr', $event)"
+    >
+      <ul>
+        <li nz-menu-item nzMatchRouter>
+          <a routerLink="/verturnodr" >Asignar Horario</a>
+        </li>
+      </ul>
+    </li>
+
+=======
       </li> -->
+>>>>>>> 07a2f60118b92eb28752f4f19fa30442c139c6ac
     </ul>
     }
   </nz-sider>
