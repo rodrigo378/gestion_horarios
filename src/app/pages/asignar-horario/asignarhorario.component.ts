@@ -1078,7 +1078,7 @@ export class AsignarhorarioComponent implements OnInit {
   
       return {
         id: Number(ev.id),
-        dia: ev.extendedProps['dia'],
+        dia: isEdited ? this.diaSeleccionado : ev.extendedProps['dia'],
         h_inicio,
         h_fin,
         n_horas: isEdited ? this.horasAsignadas : ev.extendedProps['n_horas'],

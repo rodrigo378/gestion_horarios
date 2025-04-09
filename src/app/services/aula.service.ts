@@ -28,7 +28,7 @@ export class AulaService {
 
   getAula(): Observable<AulaReporte[]> {
     return this.http.get<AulaReporte[]>(
-      `${this.apiUrl}/?horario=true&curso=true`,
+      `${this.apiUrl}/?horario=true&curso=true&docente=true`,
       this.getTokenHeader()
     )
   }

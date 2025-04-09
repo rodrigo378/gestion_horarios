@@ -145,17 +145,17 @@
                         <p class="text-sm text-slate-700">{{ obtenerNombrePiso(aula.n_piso) }}</p>
                     </td>
                     
-                    <!-- Categoría -->
+                    <!-- pabellon -->
                     <td class="p-4 border-b border-slate-200">
                         <p class="text-sm text-slate-700">{{ aula.pabellon }}</p>
                     </td>
 
-                    <!-- Categoría -->
+                    <!-- n_capacidad -->
                     <td class="p-4 border-b border-slate-200">
                         <p class="text-sm text-slate-700"> Aforo ({{ aula.n_capacidad }})</p>
                     </td>
 
-                    <!-- Horas mín -->
+                    <!-- observaciones -->
                     <td class="p-4 border-b border-slate-200">
                         {{ aula.c_obs || 'Sin observaciones'  }}
                     </td>
@@ -178,25 +178,31 @@
                 
                     <!-- Fila expandida con detalle de horarios -->
                     <tr *ngIf="aula.expanded">
-                    <td colspan="7" class="bg-gray-100 p-4">
-                        <p class="font-medium text-slate-700">Horarios asignados:</p>
-                        <ul class="list-disc ml-5 mt-2 text-sm text-gray-600">
-                        <li *ngFor="let h of aula.Horario">
-                            <strong>{{ h.dia }}</strong>:
-                            {{ h.h_inicio | date:'shortTime' }} - {{ h.h_fin | date:'shortTime' }}
-                            ({{ h.n_horas }} horas <span class="italic text-gray-500">· {{ h.tipo }}</span>)
-                            <span *ngIf="h.curso_id">| Curso: {{ h.curso_id }} | </span>
-                            <span>Docente:
-                                <span *ngIf="h.docente_id">
-                                    {{ h.docente_id }}
+                        <td colspan="7" class="bg-gray-100 p-4">
+                            <p class="font-medium text-slate-700">Horarios asignados:</p>
+                            <ul class="list-disc ml-5 mt-2 text-sm text-gray-600 space-y-1">
+                                <li *ngFor="let h of aula.Horario">
+                                <strong>{{ h.dia }}</strong>:
+                                {{ h.h_inicio | date:'shortTime' }} - {{ h.h_fin | date:'shortTime' }}
+                                ({{ h.n_horas }} horas <span class="italic text-gray-500">· {{ h.tipo }}</span>)
+                        
+                                <!-- Curso -->
+                                <span *ngIf="h.curso">
+                                    | Curso: <span class="text-blue-700 font-semibold">{{ h.curso.c_nomcur }}</span>
                                 </span>
-                                <span *ngIf="!h.docente_id" class="italic text-gray-400">
-                                    No asignado
+                        
+                                <!-- Docente -->
+                                <span> | Docente:
+                                    <span *ngIf="h.Docente; else sinDocente" class="text-green-700 font-medium">
+                                    {{ h.Docente.c_nomdoc }}
+                                    </span>
+                                    <ng-template #sinDocente>
+                                    <span class="italic text-gray-400">No asignado</span>
+                                    </ng-template>
                                 </span>
-                            </span>
-                        </li>
-                        </ul>
-                    </td>
+                                </li>
+                            </ul>
+                        </td>
                     </tr>
                 </ng-container>
             </tbody>
