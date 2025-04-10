@@ -39,6 +39,8 @@ import { AsignarHorarioDrComponent } from './pages/asignar-horario-dr/asignar-ho
 import { VerTurnoDrComponent } from './pages/ver-turno-dr/ver-turno-dr.component';
 import { PermisosUsuariosComponent } from './pages/admin/permisos-usuarios/permisos-usuarios.component';
 import { ReporteriaAulaComponent } from './pages/reporteria-aula/reporteria-aula.component';
+import { CalenderAulaComponent } from './pages/calender-aula/calender-aula.component';
+import { CalenderDocenteComponent } from './pages/calender-docente/calender-docente.component';
 
 registerLocaleData(en);
 
@@ -68,6 +70,8 @@ registerLocaleData(en);
     VerTurnoDrComponent,
     PermisosUsuariosComponent,
     ReporteriaAulaComponent,
+    CalenderAulaComponent,
+    CalenderDocenteComponent,
   ],
   imports: [
     BrowserModule,

@@ -66,6 +66,11 @@ export class AsignarHorarioDrComponent implements OnInit{
 
   docentesFiltrados: Docente[] = [];
   selectedDocente: Docente | null = null;
+  // para guardar datos temporales
+  originalStart: Date | null = null;
+  originalEnd: Date | null = null;
+  eventoMovido: any = null;
+
   //#endregion
 
   //#region Libreria del calendario
@@ -338,7 +343,7 @@ export class AsignarHorarioDrComponent implements OnInit{
 
   onEventClick(info: any) {
     const evento = info.event;
-  
+
     // 🛡️ Si es curso padre, mostramos confirmación y redirigimos
     if (evento.extendedProps?.esPadre) {
       this.alertService
@@ -424,7 +429,12 @@ export class AsignarHorarioDrComponent implements OnInit{
 
   onEventDrop(info: any): void {
     const evento = info.event;
-  
+
+    // 🧠 Guardamos la posición original para revertir si se cancela
+    this.originalStart = new Date(info.oldEvent.start);
+    this.originalEnd = new Date(info.oldEvent.end);
+    this.eventoMovido = evento;
+    
     const nuevo = {
       start: new Date(evento.start),
       end: new Date(evento.end),
@@ -490,7 +500,6 @@ export class AsignarHorarioDrComponent implements OnInit{
     };
   }
   
-
   actualizarRangoPorTurno() {
     if (this.turnoSeleccionado === 'M') {
       this.calendarOptions.slotMinTime = '08:00:00';
@@ -544,9 +553,7 @@ export class AsignarHorarioDrComponent implements OnInit{
     let tooltipText = '';
 
     if (aula && docente) {
-      tooltipText = '✅ Aula y Docente asignados';
-    } else if (!aula && docente) {
-      tooltipText = '⚠️ Falta asignar aula';
+      tooltipText = '✅ Docente asignados';
     } else if (aula && !docente) {
       tooltipText = '⚠️ Falta asignar docente';
     } else {
@@ -1078,7 +1085,7 @@ export class AsignarHorarioDrComponent implements OnInit{
   
       return {
         id: Number(ev.id),
-        dia: ev.extendedProps['dia'],
+        dia: isEdited ? this.diaSeleccionado : ev.extendedProps['dia'],
         h_inicio,
         h_fin,
         n_horas: isEdited ? this.horasAsignadas : ev.extendedProps['n_horas'],
@@ -1266,6 +1273,20 @@ export class AsignarHorarioDrComponent implements OnInit{
   }
 
   cancelarEdicion(): void {
+    console.log('⛔ CANCELANDO EDICIÓN');
+  
+    if (this.eventoMovido && this.originalStart && this.originalEnd) {
+      console.log('↩️ Revirtiendo evento a su posición original');
+      this.eventoMovido.setDates(this.originalStart, this.originalEnd); // 💥 usa setDates()
+    }else {
+      console.warn('⚠️ No hay evento movido o fechas originales');
+    }
+  
+    // Limpieza
+    this.originalStart = null;
+    this.originalEnd = null;
+    this.eventoMovido = null;
+  
     this.modalHorasActivo = false;
     this.eventoSeleccionado = null;
     this.cursoSeleccionado = null;
@@ -1274,7 +1295,7 @@ export class AsignarHorarioDrComponent implements OnInit{
     this.diaSeleccionado = '';
     this.resetCamposModal();
   }
-
+  
   private resetCamposModal(): void {
     this.selectedDocente = null;
     this.selectedCategoria = '';

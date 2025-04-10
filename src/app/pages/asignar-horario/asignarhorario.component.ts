@@ -66,6 +66,11 @@ export class AsignarhorarioComponent implements OnInit {
 
   docentesFiltrados: Docente[] = [];
   selectedDocente: Docente | null = null;
+  // para guardar datos temporales
+  originalStart: Date | null = null;
+  originalEnd: Date | null = null;
+  eventoMovido: any = null;
+  
   //#endregion
 
   //#region Libreria del calendario
@@ -421,9 +426,21 @@ export class AsignarhorarioComponent implements OnInit {
       this.docentesFiltrados = [];
     }
   }
-
   onEventDrop(info: any): void {
     const evento = info.event;
+  
+    // 🔁 Restaurar extendedProps desde oldEvent si faltan
+    if (!evento.extendedProps.docente_id && info.oldEvent?.extendedProps) {
+      console.log('🔁 Recuperando extendedProps perdidos desde oldEvent');
+      Object.entries(info.oldEvent.extendedProps).forEach(([key, value]) => {
+        evento.setExtendedProp(key, value);
+      });
+    }
+  
+    // 🧠 Guardamos la posición original para revertir si se cancela
+    this.originalStart = new Date(info.oldEvent.start);
+    this.originalEnd = new Date(info.oldEvent.end);
+    this.eventoMovido = evento;
   
     const nuevo = {
       start: new Date(evento.start),
@@ -441,7 +458,7 @@ export class AsignarhorarioComponent implements OnInit {
   
     if (seCruza) {
       this.alertService.error('⛔ Este curso se cruza con un curso ya asignado.');
-      info.revert(); // 👈 Revertimos visualmente el movimiento
+      info.revert();
       return;
     }
   
@@ -459,9 +476,7 @@ export class AsignarhorarioComponent implements OnInit {
   
     const codigo = evento.extendedProps.codCur;
     const tipo = evento.extendedProps.tipo;
-    const curso = this.cursos.find(
-      (c) => c.c_codcur === codigo && c.tipo === tipo
-    );
+    const curso = this.cursos.find((c) => c.c_codcur === codigo && c.tipo === tipo);
   
     // 🧠 Calcular horas restantes excluyendo el evento actual
     let horasAsignadasTotales = 0;
@@ -488,9 +503,36 @@ export class AsignarhorarioComponent implements OnInit {
       },
       horasDisponibles,
     };
+  
+    // 🧩 Restaurar información del docente si existe
+    const idDocente = evento.extendedProps.docente_id;
+    console.log('👨‍🏫 ID del docente leído del evento:', idDocente);
+  
+    if (idDocente != null) {
+      const docente = this.docentes.find((d) => d.id === idDocente);
+      console.log('📚 Docente encontrado:', docente);
+  
+      if (docente) {
+        this.selectedDocente = docente;
+        this.docenteSeleccionado = docente.id;
+        this.selectedCategoria = docente.categoria;
+        this.filtrarDocentes();
+      } else {
+        console.warn('⚠️ Docente con ese ID no encontrado en la lista.');
+        this.selectedDocente = null;
+        this.docenteSeleccionado = null;
+        this.selectedCategoria = '';
+        this.docentesFiltrados = [];
+      }
+    } else {
+      console.warn('❌ No hay docente_id en el evento.');
+      this.selectedDocente = null;
+      this.docenteSeleccionado = null;
+      this.selectedCategoria = '';
+      this.docentesFiltrados = [];
+    }
   }
   
-
   actualizarRangoPorTurno() {
     if (this.turnoSeleccionado === 'M') {
       this.calendarOptions.slotMinTime = '08:00:00';
@@ -1266,6 +1308,20 @@ export class AsignarhorarioComponent implements OnInit {
   }
 
   cancelarEdicion(): void {
+    console.log('⛔ CANCELANDO EDICIÓN');
+  
+    if (this.eventoMovido && this.originalStart && this.originalEnd) {
+      console.log('↩️ Revirtiendo evento a su posición original');
+      this.eventoMovido.setDates(this.originalStart, this.originalEnd); // 💥 usa setDates()
+    }else {
+      console.warn('⚠️ No hay evento movido o fechas originales');
+    }
+  
+    // Limpieza
+    this.originalStart = null;
+    this.originalEnd = null;
+    this.eventoMovido = null;
+  
     this.modalHorasActivo = false;
     this.eventoSeleccionado = null;
     this.cursoSeleccionado = null;
