@@ -32,7 +32,7 @@ export class UserService {
   }
 
   getModulos(): Observable<Modulo[]> {
-    return this.http.get<Modulo[]>(`${this.apiUrl}/modulo`);
+    return this.http.get<Modulo[]>(`${this.apiUrl}/admin/modulo`);
   }
 
   actualizarPermisos(user_id: number, items_id: number[]) {
