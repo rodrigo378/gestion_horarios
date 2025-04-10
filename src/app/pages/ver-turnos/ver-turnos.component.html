@@ -419,12 +419,13 @@
                 <div>
                   <span
                     [ngClass]="{
-                      'text-green-900 bg-green-500/20': turno.estado === 1,
-                      'text-slate-500 bg-slate-100': turno.estado === 2
+                      'text-green-900 bg-green-500/20': turno.estado === 3,
+                      'text-yellow-700 bg-yellow-500/20': turno.estado === 2,
+                      'text-slate-500 bg-slate-500/20': turno.estado === 1,
                     }"
                     class="relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap"
                   >
-                    {{ turno.estado === 1 ? "asignado" : "no asignado" }}
+                    {{ turno.estado === 3 ? "asignado" : (turno.estado === 1 ? "no asignado" : "pendiente") }}
                   </span>
                 </div>
               </div>

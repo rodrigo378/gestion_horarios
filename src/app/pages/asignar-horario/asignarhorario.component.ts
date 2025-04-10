@@ -91,7 +91,8 @@ export class AsignarhorarioComponent implements OnInit {
     eventResizableFromStart: false,
     selectable: true,
     events: [],
-    droppable: false,
+    droppable: true,
+    dropAccept:() => true,
     height: 'auto',
     dayHeaderFormat: { weekday: 'long' },
     slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
@@ -305,30 +306,63 @@ export class AsignarhorarioComponent implements OnInit {
 
   //#region funcion para los eventos y callender
   handleExternalDrop(info: any) {
+    const calendarApi = this.calendarComponent.getApi();
+  
+    // 🧠 Agarramos ID de eventos antes del drop
+    const eventosAntes = calendarApi.getEvents().map(ev => ev.id);
+  
     const draggedData = JSON.parse(info.draggedEl.getAttribute('data-event'));
+    const dropDate = info.date;
+    const diaSemana = this.obtenerDiaSemana(dropDate);
+    const [hora, minutos] = this.formatDateTime(dropDate).split(':').map(Number);
+  
+    const start = new Date(dropDate);
+    start.setHours(hora, minutos, 0);
+  
+    const end = new Date(start);
+    end.setMinutes(start.getMinutes() + 50);
+  
+    const cruce = this.verificaCruceHorario({ start, end });
+  
+    // 🛑 Si hay cruce, borramos el evento que FullCalendar ya pintó
+    if (cruce) {
+      this.alertService.error('⛔ Este curso se cruza con uno ya asignado.');
+  
+      // ⏳ Eliminamos visualmente cualquier evento nuevo que se haya agregado
+      setTimeout(() => {
+        const eventosDespues = calendarApi.getEvents();
+        const nuevosEventos = eventosDespues.filter(
+          (ev) => !eventosAntes.includes(ev.id)
+        );
+        nuevosEventos.forEach((ev) => ev.remove());
+      }, 10);
+  
+      return;
+    }
+  
+    // ✅ Si no hay cruce, abrir modal de asignar
     const index = this.cursos.findIndex(
       (c) =>
         c.c_codcur === draggedData.extendedProps.codigo &&
         c.tipo === draggedData.extendedProps.tipo
     );
-
+  
     this.eventoSeleccionado = null;
-
+    this.fechaDrop = info.date;
+    this.diaSeleccionado = diaSemana;
+    this.horaInicio = this.formatDateTime(info.date);
+    this.horasAsignadas = 1;
+  
     this.cursoSeleccionado = {
       ...draggedData,
       horasDisponibles: this.cursos[index].horasRestantes,
       tipo: draggedData.extendedProps.tipo,
       index: index,
     };
-    this.fechaDrop = info.date;
-    if (this.fechaDrop) {
-      this.diaSeleccionado = this.obtenerDiaSemana(this.fechaDrop);
-      this.horaInicio = this.formatDateTime(this.fechaDrop);
-    }
-    this.horasAsignadas = 1;
+  
     this.modalHorasActivo = true;
   }
-
+  
   stringifyEvent(curso: any): string {
     return JSON.stringify({
       title: curso.c_nomcur,

@@ -1,6 +1,5 @@
 import { Aula } from './Aula';
 import { Docente } from './Docente';
-import { Turno } from './turno';
 
 export interface HorarioExtendido {
   id: number;
@@ -136,4 +135,10 @@ export interface UpdateHorarioData {
 //-----------Delete---------------
 export interface DeleteHorariosRequest {
   horarios_id: number[];
+}
+
+//---------Turno-----------------
+export interface Turno {
+  id: number;
+  estado: number;
 }

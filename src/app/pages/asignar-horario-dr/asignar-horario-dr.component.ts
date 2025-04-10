@@ -92,6 +92,7 @@ export class AsignarHorarioDrComponent implements OnInit{
     selectable: true,
     events: [],
     droppable: false,
+    dropAccept: () => false,
     height: 'auto',
     dayHeaderFormat: { weekday: 'long' },
     slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
@@ -305,30 +306,61 @@ export class AsignarHorarioDrComponent implements OnInit{
 
   //#region funcion para los eventos y callender
   handleExternalDrop(info: any) {
+    const calendarApi = this.calendarComponent.getApi();
+    const eventosAntes = calendarApi.getEvents().map(ev => ev.id);
+  
     const draggedData = JSON.parse(info.draggedEl.getAttribute('data-event'));
+  
+    const dropDate = info.date;
+    const diaSemana = this.obtenerDiaSemana(dropDate);
+    const [hora, minutos] = this.formatDateTime(dropDate).split(':').map(Number);
+  
+    const start = new Date(dropDate);
+    start.setHours(hora, minutos, 0);
+  
+    const end = new Date(start);
+    end.setMinutes(start.getMinutes() + 50);
+  
+    const cruce = this.verificaCruceHorario({ start, end });
+  
+    if (cruce) {
+      this.alertService.error('⛔ Este curso se cruza con uno ya asignado.');
+  
+      // 🧹 BORRAR si se agregó visualmente (aunque no debería)
+      setTimeout(() => {
+        const eventosDespues = calendarApi.getEvents();
+        const nuevosEventos = eventosDespues.filter(
+          (ev) => !eventosAntes.includes(ev.id)
+        );
+        nuevosEventos.forEach((ev) => ev.remove());
+      }, 10); // Pequeño delay para asegurar render
+  
+      return;
+    }
+  
+    // Si no hay cruce, sigue flujo normal
     const index = this.cursos.findIndex(
       (c) =>
         c.c_codcur === draggedData.extendedProps.codigo &&
         c.tipo === draggedData.extendedProps.tipo
     );
-
+  
     this.eventoSeleccionado = null;
-
+    this.fechaDrop = info.date;
+    this.diaSeleccionado = this.obtenerDiaSemana(info.date);
+    this.horaInicio = this.formatDateTime(info.date);
+    this.horasAsignadas = 1;
+  
     this.cursoSeleccionado = {
       ...draggedData,
       horasDisponibles: this.cursos[index].horasRestantes,
       tipo: draggedData.extendedProps.tipo,
       index: index,
     };
-    this.fechaDrop = info.date;
-    if (this.fechaDrop) {
-      this.diaSeleccionado = this.obtenerDiaSemana(this.fechaDrop);
-      this.horaInicio = this.formatDateTime(this.fechaDrop);
-    }
-    this.horasAsignadas = 1;
+  
     this.modalHorasActivo = true;
   }
-
+  
   stringifyEvent(curso: any): string {
     return JSON.stringify({
       title: curso.c_nomcur,
@@ -429,12 +461,20 @@ export class AsignarHorarioDrComponent implements OnInit{
 
   onEventDrop(info: any): void {
     const evento = info.event;
-
+  
+    // 🔁 Restaurar extendedProps desde oldEvent si faltan
+    if (!evento.extendedProps.docente_id && info.oldEvent?.extendedProps) {
+      console.log('🔁 Recuperando extendedProps perdidos desde oldEvent');
+      Object.entries(info.oldEvent.extendedProps).forEach(([key, value]) => {
+        evento.setExtendedProp(key, value);
+      });
+    }
+  
     // 🧠 Guardamos la posición original para revertir si se cancela
     this.originalStart = new Date(info.oldEvent.start);
     this.originalEnd = new Date(info.oldEvent.end);
     this.eventoMovido = evento;
-    
+  
     const nuevo = {
       start: new Date(evento.start),
       end: new Date(evento.end),
@@ -451,7 +491,7 @@ export class AsignarHorarioDrComponent implements OnInit{
   
     if (seCruza) {
       this.alertService.error('⛔ Este curso se cruza con un curso ya asignado.');
-      info.revert(); // 👈 Revertimos visualmente el movimiento
+      info.revert();
       return;
     }
   
@@ -469,9 +509,7 @@ export class AsignarHorarioDrComponent implements OnInit{
   
     const codigo = evento.extendedProps.codCur;
     const tipo = evento.extendedProps.tipo;
-    const curso = this.cursos.find(
-      (c) => c.c_codcur === codigo && c.tipo === tipo
-    );
+    const curso = this.cursos.find((c) => c.c_codcur === codigo && c.tipo === tipo);
   
     // 🧠 Calcular horas restantes excluyendo el evento actual
     let horasAsignadasTotales = 0;
@@ -498,6 +536,34 @@ export class AsignarHorarioDrComponent implements OnInit{
       },
       horasDisponibles,
     };
+  
+    // 🧩 Restaurar información del docente si existe
+    const idDocente = evento.extendedProps.docente_id;
+    console.log('👨‍🏫 ID del docente leído del evento:', idDocente);
+  
+    if (idDocente != null) {
+      const docente = this.docentes.find((d) => d.id === idDocente);
+      console.log('📚 Docente encontrado:', docente);
+  
+      if (docente) {
+        this.selectedDocente = docente;
+        this.docenteSeleccionado = docente.id;
+        this.selectedCategoria = docente.categoria;
+        this.filtrarDocentes();
+      } else {
+        console.warn('⚠️ Docente con ese ID no encontrado en la lista.');
+        this.selectedDocente = null;
+        this.docenteSeleccionado = null;
+        this.selectedCategoria = '';
+        this.docentesFiltrados = [];
+      }
+    } else {
+      console.warn('❌ No hay docente_id en el evento.');
+      this.selectedDocente = null;
+      this.docenteSeleccionado = null;
+      this.selectedCategoria = '';
+      this.docentesFiltrados = [];
+    }
   }
   
   actualizarRangoPorTurno() {
@@ -1295,7 +1361,7 @@ export class AsignarHorarioDrComponent implements OnInit{
     this.diaSeleccionado = '';
     this.resetCamposModal();
   }
-  
+
   private resetCamposModal(): void {
     this.selectedDocente = null;
     this.selectedCategoria = '';
