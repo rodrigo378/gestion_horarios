@@ -1,5 +1,7 @@
 import { Location } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { User, Usernew } from '../../../interfaces/User';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-listar-usuarios',
@@ -7,87 +9,117 @@ import { Component } from '@angular/core';
   templateUrl: './listar-usuarios.component.html',
   styleUrl: './listar-usuarios.component.css'
 })
-export class ListarUsuariosComponent {
-
+export class ListarUsuariosComponent  implements OnInit {
   itemsPorPagina = 5;
   paginaActual = 1;
-
   modalAbierto = false;
+  loading = true;
+  error: string | null = null;
 
-  usuarios = [
-    { nombre: 'John Michael', email: 'john@example.com', grado: 'Manager', estado: 'activo', tipo: 'Organization' },
-    { nombre: 'Alexa Liras', email: 'alexa@example.com', grado: 'Designer', estado: 'inactivo', tipo: 'Marketing' },
-    { nombre: 'Carlos Gómez', email: 'carlos@example.com', grado: 'Supervisor', estado: 'activo', tipo: 'Finance' },
-    { nombre: 'María López', email: 'maria@example.com', grado: 'Usuario', estado: 'inactivo', tipo: 'HR' },
-    { nombre: 'Michael Levi', email: 'michael@example.com', grado: 'Designer', estado: 'activo', tipo: 'Developer' },
-    { nombre: 'Juan Pérez', email: 'juan@example.com', grado: 'Admin', estado: 'activo', tipo: 'CEO' },
-    { nombre: 'Ana Torres', email: 'ana@example.com', grado: 'Gerente', estado: 'inactivo', tipo: 'Ventas' },
-    { nombre: 'Pedro Ramirez', email: 'pedro@example.com', grado: 'Lider', estado: 'activo', tipo: 'Producción' },
-    { nombre: 'Luis Mendoza', email: 'luis@example.com', grado: 'Asistente', estado: 'activo', tipo: 'Soporte' },
-    { nombre: 'Diana Rojas', email: 'diana@example.com', grado: 'Coordinador', estado: 'inactivo', tipo: 'Marketing' },
-  ];
+  // Reemplazamos el array estático por uno que se llenará desde el servicio
+  usuarios: Usernew[] = [];
+  usuariosFiltrados: Usernew[] = [];
+  filtroBusqueda = '';
 
   usuario = {
     nombre: '',
     apellidos: '',
     email: '',
     grado: '',
-    estado: 'activo',
+    estado: 'A', // 'A' para activo, que es el valor del JSON original
     contrasena: ''
   };
 
   constructor(
     private location: Location,
-  ){}
+    private userService: UserService
+  ) {}
 
-  siguientePagina() {
+  ngOnInit(): void {
+    this.cargarUsuarios();
+  }
+
+  cargarUsuarios(): void {
+    this.loading = true;
+    this.error = null;
+    
+    this.userService.getUserInfo().subscribe({
+      next: (data: Usernew[]) => {
+        this.usuarios = data;
+        this.usuariosFiltrados = [...this.usuarios];
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Error al cargar la lista de usuarios';
+        this.loading = false;
+        console.error(err);
+      }
+    });
+  }
+
+  // Métodos de paginación
+  siguientePagina(): void {
     if (this.paginaActual < this.totalPaginas) {
       this.paginaActual++;
     }
   }
 
-  anteriorPagina() {
+  anteriorPagina(): void {
     if (this.paginaActual > 1) {
       this.paginaActual--;
     }
   }
   
-  get totalPaginas() {
+  get totalPaginas(): number {
     return Math.ceil(this.usuariosFiltrados.length / this.itemsPorPagina);
   }
   
-  get usuariosPaginados() {
+  get usuariosPaginados(): Usernew[] {
     const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
     return this.usuariosFiltrados.slice(inicio, inicio + this.itemsPorPagina);
   }
 
-  abrirModal() {
+  // Métodos del modal
+  abrirModal(): void {
     this.modalAbierto = true;
   }
 
-  cerrarModal() {
+  cerrarModal(): void {
     this.modalAbierto = false;
   }
 
-  guardarUsuario(){
-    console.log('usuario guardado: ', this.usuario),
+  guardarUsuario(): void {
+    console.log('Usuario guardado: ', this.usuario);
     this.cerrarModal();
+    // Aquí podrías agregar la llamada al servicio para guardar el usuario
   }
 
-  cancel(){
+  cancel(): void {
     this.location.back();
   }
 
-  usuariosFiltrados = [...this.usuarios];
-  filtroBusqueda: string = ''; 
+  // Método de filtrado
+  filtrarUsuarios(): void {
+    if (!this.filtroBusqueda) {
+      this.usuariosFiltrados = [...this.usuarios];
+      return;
+    }
 
-  filtrarUsuarios() {
-    this.usuariosFiltrados = this.usuarios.filter(usuario => 
-      usuario.nombre.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) ||
-      usuario.email.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) ||
-      usuario.grado.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) ||
-      usuario.estado.toLowerCase().includes(this.filtroBusqueda.toLowerCase())
-    );
+    const busqueda = this.filtroBusqueda.toLowerCase();
+    this.usuariosFiltrados = this.usuarios.filter(usuario => {
+      return (
+        (usuario.nombre?.toLowerCase().includes(busqueda) ||
+        (usuario.apellido?.toLowerCase().includes(busqueda)) ||
+        (usuario.email.toLowerCase().includes(busqueda)) ||
+        (usuario.grado?.toLowerCase().includes(busqueda)) ||
+        (usuario.estado.toLowerCase().includes(busqueda))
+      ));
+    });
+    this.paginaActual = 1; // Resetear a la primera página al filtrar
   }
 
+  // Método para mostrar el estado de forma legible
+  mostrarEstado(estado: string): string {
+    return estado === 'A' ? 'Activo' : 'Inactivo';
+  }
 }
