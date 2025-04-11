@@ -42,15 +42,32 @@ export class ReporteriaComponent implements OnInit {
     });
   }
 
-  getHorariosPorCarrera(docente: Docente): { [key: string]: HorarioAsignado[] } {
+  getHorariosPorFacultad(docente: Docente): { [key: string]: HorarioAsignado[] } {
     const agrupado: { [key: string]: HorarioAsignado[] } = {};
   
     if (!docente.Horario || docente.Horario.length === 0) return agrupado;
   
-    const clave = docente.nom_fac || 'Sin Facultad';
-    agrupado[clave] = docente.Horario;
+    docente.Horario.forEach((h) => {
+      const codfac = h.curso?.c_codfac || 'N/A';
+      if (!agrupado[codfac]) {
+        agrupado[codfac] = [];
+      }
+      agrupado[codfac].push(h);
+    });
   
     return agrupado;
+  }
+
+  nombreFacultad(cod: string): string {
+    switch (cod) {
+      case 'S': return 'CIENCIAS DE LA SALUD';
+      case 'E': return 'INGENIERÍA Y NEGOCIOS';
+      default: return 'FACULTAD DESCONOCIDA';
+    }
+  }  
+
+  sumarHoras(grupo: HorarioAsignado[]): number {
+    return grupo.reduce((acc, h) => acc + h.n_horas, 0);
   }  
 
   siguientePagina() {
