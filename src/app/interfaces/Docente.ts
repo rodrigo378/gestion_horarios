@@ -8,6 +8,8 @@
 export interface Docente {
     id: number;
     categoria: string;
+    c_codfac: string;
+    nom_fac: string;
     c_nomdoc: string;
     h_min: number;
     h_max: number;

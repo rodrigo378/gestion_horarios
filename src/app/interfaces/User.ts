@@ -16,3 +16,12 @@ export interface Usernew {
   email: string;
   authProvider: string;
 }
+
+export interface CreateUserDTO {
+  nombre: string;
+  apellido: string;
+  genero: string;
+  grado: string;
+  email: string;
+  password: string;
+}

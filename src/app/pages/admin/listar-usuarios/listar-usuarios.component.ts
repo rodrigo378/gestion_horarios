@@ -2,6 +2,8 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { User, Usernew } from '../../../interfaces/User';
 import { UserService } from '../../../services/user.service';
+import { generate } from 'rxjs';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
   selector: 'app-listar-usuarios',
@@ -24,15 +26,17 @@ export class ListarUsuariosComponent  implements OnInit {
   usuario = {
     nombre: '',
     apellidos: '',
+    genero: 'M',
     email: '',
     grado: '',
     estado: 'A', // 'A' para activo, que es el valor del JSON original
-    contrasena: ''
+    password: ''
   };
 
   constructor(
     private location: Location,
-    private userService: UserService
+    private userService: UserService,
+    private alerService: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -89,10 +93,59 @@ export class ListarUsuariosComponent  implements OnInit {
   }
 
   guardarUsuario(): void {
-    console.log('Usuario guardado: ', this.usuario);
-    this.cerrarModal();
-    // Aquí podrías agregar la llamada al servicio para guardar el usuario
+    const nuevoUsuario = {
+      nombre: this.usuario.nombre,
+      apellido: this.usuario.apellidos,
+      genero: this.usuario.genero,
+      grado: this.usuario.grado,
+      email: this.usuario.email,
+      estado: this. usuario.estado,
+      password: this.usuario.password
+    };
+  
+    this.userService.createUser(nuevoUsuario).subscribe({
+      next: (res) => {
+        this.alerService.success('✅ Usuario creado:');
+        this.cerrarModal();
+        this.cargarUsuarios(); // recarga la tabla
+      },
+      error: (err) => {
+        console.error('❌ Error al guardar usuario:', err);
+      
+        let mensajes: string[] = [];
+      
+        // Si es un array de errores
+        if (Array.isArray(err.error.message)) {
+          mensajes = err.error.message.map((msg: string) => this.traducirMensaje(msg));
+        } 
+        // Si es solo un string
+        else if (typeof err.error.message === 'string') {
+          mensajes = [this.traducirMensaje(err.error.message)];
+        }
+      
+        const mensajeFormateado = mensajes.join('<br>');
+        this.alerService.error(`❌ Errores:${mensajeFormateado}`);
+      }            
+    });
   }
+
+  traducirMensaje(msg: string): string {
+    if (msg.includes('should not be empty')) {
+      const campo = msg.split(' ')[0];
+      return `El campo ${campo} es obligatorio.`;
+    }
+  
+    if (msg.toLowerCase().includes('correo')) {
+      return msg.replace('correo', 'El correo');
+    }
+  
+    // Otros ejemplos específicos
+    if (msg.includes('La contraseña debe tener')) return msg;
+    if (msg.includes('El correo no es válido')) return msg;
+  
+    return msg; // Si no se reconoce, se muestra tal cual
+  }
+  
 
   cancel(): void {
     this.location.back();

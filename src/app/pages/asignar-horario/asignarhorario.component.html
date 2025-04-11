@@ -116,52 +116,82 @@
 </div>
 
 
-  <div class="flex justify-between items-center gap-4 mt-5">
-    <!-- Contenedor izquierdo: select + leyenda en columnas separadas pero alineadas -->
-    <div class="flex gap-4">
-      <!-- Select de turno -->
-      <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-40">
-        <label for="turno" class="block font-medium text-gray-700 mb-1">Selecciona Turno</label>
-        <select id="turno" 
-                [(ngModel)]="turnoSeleccionado" 
-                (change)="actualizarRangoPorTurno()"
-                class="w-full border-gray-300 rounded-lg shadow-sm text-sm">
-                <option value="" selected disabled>Seleccionar</option>
-                <option value="M">Mañana</option>
-          <option value="N">Noche</option>
-        </select>
-      </div>
-      
-      <!-- Leyenda -->
-      <div class="bg-white shadow-md rounded-xl p-3 text-sm space-y-2 border border-gray-200">
-        <h3 class="font-semibold text-gray-700">📌 Leyenda</h3>
-        <div class="flex items-center space-x-2">
-          <div class="w-4 h-4 rounded bg-yellow-500 shadow"></div>
-          <span>Curso transversal</span>
-        </div>
-        <div class="flex items-center space-x-2">
-          <div class="w-4 h-4 rounded bg-purple-700 shadow"></div>
-          <span>Curso agrupado</span>
-        </div>
-      </div>
+<div class="flex justify-between items-center gap-4 mt-5">
+
+  <!-- 🧩 Contenedor izquierdo: select de turno + estado + leyenda -->
+  <div class="flex gap-4 items-start">
+
+    <!-- Select de turno -->
+    <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-40">
+      <label for="turno" class="block font-medium text-gray-700 mb-1">Selecciona Turno</label>
+      <select id="turno" 
+              [(ngModel)]="turnoSeleccionado" 
+              (change)="actualizarRangoPorTurno()"
+              class="w-full border-gray-300 rounded-lg shadow-sm text-sm">
+        <option value="" selected disabled>Seleccionar</option>
+        <option value="M">Mañana</option>
+        <option value="N">Noche</option>
+      </select>
     </div>
-  
-    <!-- Botones a la derecha -->
-    <div class="flex items-center gap-4">
-      <button
-        (click)="eliminarTodosLosHorarios()"
-        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-2xl shadow-md transition duration-200 flex items-center gap-2">
-        <span>🗑️</span>
-        <span>Eliminar todos los horarios</span>
-      </button>
-  
-      <button
-        (click)="guardarEventos()"
-        class="bg-green-600 text-white px-4 py-2 rounded-2xl hover:bg-green-700 transition">
-        💾 Guardar horarios
-      </button>
+
+    <!-- Select de estado del turno -->
+    <!-- <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-48">
+      <label for="estado" class="block font-medium text-gray-700 mb-1">Estado del turno</label>
+      <select id="estado"
+              class="w-full border-gray-300 rounded-lg shadow-sm text-sm"
+              [value]="turnoData?.estado"
+              (change)="cambiarEstadoSelect($event)">
+        <option [value]="0">No asignado</option>
+        <option [value]="1">Pendiente</option>
+        <option [value]="2">Asignado</option>
+      </select>
+    </div> -->
+
+    <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-48">
+      <label for="estado" class="block font-medium text-gray-700 mb-1">Estado del turno</label>
+      <select
+        class="w-full border-gray-300 rounded-lg shadow-sm text-sm"
+        [value]="turnoData?.estado"
+        (change)="cambiarEstadoSelect($event)"
+      >
+        <option [value]="2">Asignado</option>
+        <option [value]="1">Pendiente</option>
+        <option [value]="0">No asignado</option>
+      </select>
+    </div>
+
+    <!-- Leyenda visual -->
+    <div class="bg-white shadow-md rounded-xl p-3 text-sm space-y-2 border border-gray-200">
+      <h3 class="font-semibold text-gray-700">📌 Leyenda</h3>
+      <div class="flex items-center space-x-2">
+        <div class="w-4 h-4 rounded bg-yellow-500 shadow"></div>
+        <span>Curso transversal</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <div class="w-4 h-4 rounded bg-purple-700 shadow"></div>
+        <span>Curso agrupado</span>
+      </div>
     </div>
   </div>
+
+  <!-- 🧨 Botones a la derecha -->
+  <div class="flex items-center gap-4">
+    <button
+      (click)="eliminarTodosLosHorarios()"
+      class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-2xl shadow-md transition duration-200 flex items-center gap-2">
+      <span>🗑️</span>
+      <span>Eliminar todos los horarios</span>
+    </button>
+
+    <button
+      (click)="guardarEventos()"
+      class="bg-green-600 text-white px-4 py-2 rounded-2xl hover:bg-green-700 transition">
+      💾 Guardar horarios
+    </button>
+  </div>
+
+</div>
+
   
   <!-- 📅 Calendario -->
   <full-calendar  
@@ -243,11 +273,21 @@
     <div class="mb-6">
       <label class="block text-sm font-semibold text-gray-600 mb-1">Asignar Docente</label>
         <!-- Select para categoría -->
-      <label for="categoria" class="block text-sm font-medium text-gray-700">Categoría</label>
-      <select id="categoria" [(ngModel)]="selectedCategoria" (change)="filtrarDocentes()" class="mt-1 block w-full p-2 border rounded border-gray-300">
-        <option value="">Seleccione una categoría</option>
-        <option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</option>
+      <label for="nom_fac" class="block text-sm font-medium text-gray-700">Facultad</label>
+      <select id="nom_fac" [(ngModel)]="selectedFacultad" (change)="filtrarDocentes()" class="mt-1 block w-full p-2 border rounded border-gray-300">
+        <option value="">Seleccione una facultad</option>
+        <option *ngFor="let fac of nom_facultad" [value]="fac">{{ fac }}</option>
       </select>
+
+      <!-- <p class="text-sm text-gray-500">
+        Total general de docentes: 
+        <span class="font-semibold text-slate-800">{{ docentes.length }}</span>
+      </p>
+      
+      <p *ngIf="selectedFacultad" class="text-sm text-gray-600 mt-2">
+        Total de docentes en "{{ selectedFacultad }}": 
+        <span class="font-semibold text-slate-800">{{ docentesFiltrados.length }}</span>
+      </p> -->
       
       <!-- Select de docentes filtrados -->
       <div *ngIf="docentesFiltrados.length > 0" class="mt-4">
@@ -259,7 +299,7 @@
       </div>
     
       <!-- Datos del docente seleccionado -->
-      <div *ngIf="selectedDocente && selectedCategoria" class="mt-4 flex gap-4 border-gray-300">
+      <div *ngIf="selectedDocente && selectedFacultad" class="mt-4 flex gap-4 border-gray-300">
         <div class="flex flex-col">
           <label class="text-sm font-medium text-gray-700">Hora Mínima</label>
           <input type="number" class="p-2 border rounded w-24 border-gray-300" [(ngModel)]="selectedDocente.h_min" disabled>

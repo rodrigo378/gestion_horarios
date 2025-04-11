@@ -48,7 +48,7 @@
                             </svg>
                             </p>
                         </th>
-                        <th
+                        <!-- <th
                             class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
                             <p
                             class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black">
@@ -59,7 +59,7 @@
                                 d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
                             </svg>
                             </p>
-                        </th>
+                        </th> -->
                         <th
                             class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
                             <p
@@ -141,9 +141,9 @@
                       </td>
                 
                       <!-- Categoría -->
-                      <td class="p-4 border-b border-slate-200">
+                      <!-- <td class="p-4 border-b border-slate-200">
                         <p class="text-sm text-slate-700">{{ docente.categoria }}</p>
-                      </td>
+                      </td> -->
                 
                       <!-- Horas mín -->
                       <td class="p-4 border-b border-slate-200">
@@ -193,18 +193,21 @@
                 
                     <!-- Fila expandida con detalle de horarios -->
                     <tr *ngIf="docente.expanded">
-                      <td colspan="7" class="bg-gray-100 p-4">
-                        <p class="font-medium text-slate-700">Horarios asignados:</p>
-                        <ul class="list-disc ml-5 mt-2 text-sm text-gray-600">
-                          <li *ngFor="let h of docente.Horario">
-                            <strong>{{ h.dia }}</strong>:
-                            {{ h.h_inicio | date:'shortTime' }} - {{ h.h_fin | date:'shortTime' }}
-                            ({{ h.n_horas }} horas) |
-                            Curso: {{ h.curso.c_nomcur }}
+                      <td colspan="7" class="bg-slate-50 p-4 border-t border-b border-slate-200">
+                        <p class="text-base font-semibold text-slate-800 underline mb-2">🗓️ Horarios Asignados:</p>
+                        <ul class="space-y-1">
+                          <li *ngFor="let h of docente.Horario" class="text-sm text-slate-700 px-3 py-1 rounded border border-slate-200 bg-white shadow-sm">
+                            <span class="font-medium text-slate-900">{{ h.dia }}</span> |
+                            {{ h.h_inicio | date:'shortTime' }} - {{ h.h_fin | date:'shortTime' }} ({{ h.n_horas }} hora) |
+                            <span class="font-medium text-slate-900">Curso:</span> {{ h.curso.c_nomcur }} |
+                            <span class="font-medium text-slate-900">Carrera:</span> {{ docente.nom_fac }} |
+                            <span class="font-medium text-slate-900">Ciclo:</span> {{ h.curso.n_ciclo }} |
+                            <span class="font-medium text-slate-900">Sección:</span> {{ false }}
                           </li>
                         </ul>
                       </td>
-                    </tr>
+                    </tr>                    
+                    
                   </ng-container>
                 </tbody>
                 

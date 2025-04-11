@@ -19,6 +19,7 @@ import { AulaService } from '../../services/aula.service';
 import { Docente } from '../../interfaces/Docente';
 import { Aula } from '../../interfaces/Aula';
 import tippy from 'tippy.js'
+import { EstadoTurnoService } from '../../services/estado-turno.service';
 
 @Component({
   selector: 'app-asignar-horario-dr',
@@ -112,7 +113,8 @@ export class AsignarHorarioDrComponent implements OnInit{
     private route: ActivatedRoute,
     private docenteService: DocentecurService,
     private aulaService: AulaService,
-    private router: Router
+    private router: Router,
+    private estadoTurnoService: EstadoTurnoService
   ) {}
 
   ngOnInit(): void {

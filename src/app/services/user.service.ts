@@ -4,7 +4,7 @@ import { environment } from '../../environment/environment';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import { Modulo } from '../interfaces/Modulo';
-import { User, Usernew } from '../interfaces/User';
+import { CreateUserDTO, User, Usernew } from '../interfaces/User';
 
 @Injectable({
   providedIn: 'root',
@@ -43,4 +43,10 @@ export class UserService {
     return this.http.get<Usernew[]>(`${this.apiUrl}/user`, this.getTokenHeader());
   }
 
+  createUser(data: CreateUserDTO): Observable<{ message: string; user: User }> {
+    return this.http.post<{ message: string; user: User }>(
+      `${this.apiUrl}/auth/signup`,
+      data
+    );
+  }  
 }

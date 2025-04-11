@@ -19,6 +19,7 @@ import { AulaService } from '../../services/aula.service';
 import { Docente } from '../../interfaces/Docente';
 import { Aula } from '../../interfaces/Aula';
 import tippy from 'tippy.js'
+import { EstadoTurnoService } from '../../services/estado-turno.service';
 
 @Component({
   selector: 'app-asignarhorario',
@@ -61,8 +62,8 @@ export class AsignarhorarioComponent implements OnInit {
   //select turno
   turnoSeleccionado: 'M' | 'N' | '' = '';
   //carga docente
-  selectedCategoria: string = '';
-  categorias: String[] = [];
+  nom_facultad: string[] = [];
+  selectedFacultad: string = '';
 
   docentesFiltrados: Docente[] = [];
   selectedDocente: Docente | null = null;
@@ -112,7 +113,8 @@ export class AsignarhorarioComponent implements OnInit {
     private route: ActivatedRoute,
     private docenteService: DocentecurService,
     private aulaService: AulaService,
-    private router: Router
+    private router: Router,
+    private estadoTurnoService: EstadoTurnoService,
   ) {}
 
   ngOnInit(): void {
@@ -150,8 +152,8 @@ export class AsignarhorarioComponent implements OnInit {
     this.docenteService.obtenerDocentes().subscribe((data) => {
       this.docentes = data;
 
-      const categoriaSet = new Set(data.map((d) => d.categoria));
-      this.categorias = Array.from(categoriaSet);
+      const nom_facSet = new Set(data.map((d) => d.nom_fac));
+      this.nom_facultad = Array.from(nom_facSet);
     });
   }
 
@@ -446,17 +448,17 @@ export class AsignarhorarioComponent implements OnInit {
       if (docente) {
         this.selectedDocente = docente;
         this.docenteSeleccionado = docente.id;
-        this.selectedCategoria = docente.categoria;
+        this.selectedFacultad = docente.nom_fac;
         this.filtrarDocentes(); // Esto actualizará docentesFiltrados con la categoría correcta
       } else {
         this.selectedDocente = null;
-        this.selectedCategoria = '';
+        this.selectedFacultad = '';
         this.docentesFiltrados = [];
       }
     } else {
       this.selectedDocente = null;
       this.docenteSeleccionado = null;
-      this.selectedCategoria = '';
+      this.selectedFacultad = '';
       this.docentesFiltrados = [];
     }
   }
@@ -549,20 +551,20 @@ export class AsignarhorarioComponent implements OnInit {
       if (docente) {
         this.selectedDocente = docente;
         this.docenteSeleccionado = docente.id;
-        this.selectedCategoria = docente.categoria;
+        this.selectedFacultad = docente.nom_fac;
         this.filtrarDocentes();
       } else {
         console.warn('⚠️ Docente con ese ID no encontrado en la lista.');
         this.selectedDocente = null;
         this.docenteSeleccionado = null;
-        this.selectedCategoria = '';
+        this.selectedFacultad = '';
         this.docentesFiltrados = [];
       }
     } else {
       console.warn('❌ No hay docente_id en el evento.');
       this.selectedDocente = null;
       this.docenteSeleccionado = null;
-      this.selectedCategoria = '';
+      this.selectedFacultad = '';
       this.docentesFiltrados = [];
     }
   }
@@ -765,7 +767,7 @@ export class AsignarhorarioComponent implements OnInit {
     this.aulaSeleccionada = null;
     this.docenteSeleccionado = null;
     this.selectedDocente = null;
-    this.selectedCategoria = '';
+    this.selectedFacultad = '';
     this.docentesFiltrados = [];
   }
 
@@ -1327,12 +1329,12 @@ export class AsignarhorarioComponent implements OnInit {
       });
   }
 
-  filtrarDocentes() {
+  filtrarDocentes(): void {
     this.docentesFiltrados = this.docentes.filter(
-      (d) => d.categoria === this.selectedCategoria
+      (d) => d.nom_fac === this.selectedFacultad
     );
-
-    // Si el docente previamente seleccionado ya no está en la lista filtrada, lo quitamos
+  
+    // Si el docente seleccionado actual no pertenece a la nueva facultad, se limpia
     if (
       this.selectedDocente &&
       !this.docentesFiltrados.some((d) => d.id === this.selectedDocente?.id)
@@ -1340,6 +1342,7 @@ export class AsignarhorarioComponent implements OnInit {
       this.selectedDocente = null;
     }
   }
+  
 
   cancelarEdicion(): void {
     console.log('⛔ CANCELANDO EDICIÓN');
@@ -1367,9 +1370,32 @@ export class AsignarhorarioComponent implements OnInit {
 
   private resetCamposModal(): void {
     this.selectedDocente = null;
-    this.selectedCategoria = '';
+    this.selectedFacultad = '';
     this.docentesFiltrados = [];
     this.aulaSeleccionada = null;
     this.horasAsignadas = 1;
   }
+  
+  cambiarEstadoSelect(event: Event) {
+    const nuevoEstado = +(event.target as HTMLSelectElement).value;
+  
+    this.turnoService.actualizarEstado(this.turnoData!.id, nuevoEstado).subscribe(() => {
+      this.turnoData!.estado = nuevoEstado;
+      this.turnoService.emitirCambioEstado(this.turnoData!.id);
+  
+      // Mostrar alerta personalizada según el estado
+      switch (nuevoEstado) {
+        case 0:
+          this.alertService.success('El turno ha sido marcado como asignado.', '✅ Turno asignado');
+          break;
+        case 1:
+          this.alertService.info('Este turno se ha marcado como pendiente.');
+          break;
+        case 2:
+          this.alertService.error('Este turno no ha sido asignado aún.', '🛑 No asignado');
+          break;
+      }
+    });
+  }
+  
 }

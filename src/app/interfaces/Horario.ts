@@ -136,9 +136,3 @@ export interface UpdateHorarioData {
 export interface DeleteHorariosRequest {
   horarios_id: number[];
 }
-
-//---------Turno-----------------
-export interface Turno {
-  id: number;
-  estado: number;
-}

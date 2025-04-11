@@ -65,7 +65,23 @@ export class VerTurnosComponent implements OnInit {
       this.especialidadesCompletas = data;
       this.especialidades = data;
     });
+
+    this.turnoServices.onCambioEstado().subscribe((turnoId) => {
+      if (turnoId !== null) {
+        this.actualizarEstadoEnListado(turnoId);
+      }
+    });
   }
+
+  actualizarEstadoEnListado(turnoId: number) {
+    this.turnoServices.getTurnoById(turnoId).subscribe(turnoActualizado => {
+      const index = this.turnos.findIndex(t => t.id === turnoId);
+      if (index !== -1) {
+        this.turnos[index].estado = turnoActualizado.estado;
+      }
+    });
+  }
+  
 
   inicializarFormulario() {
     this.formularioHorario = this.fb.group({

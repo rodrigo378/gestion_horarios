@@ -3,7 +3,7 @@ import { environment } from '../../environment/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Turno } from '../interfaces/turno';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -32,5 +32,19 @@ export class TurnoService {
 
   deleteTurno(id: number) {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  actualizarEstado(id: number, estado: number) {
+    return this.http.put(`${this.apiUrl}/${id}`, { estado });
+  }
+
+  private estadoActualizado = new BehaviorSubject<number | null>(null);
+  
+  emitirCambioEstado(turnoId: number) {
+    this.estadoActualizado.next(turnoId);
+  }
+  
+  onCambioEstado() {
+    return this.estadoActualizado.asObservable();
   }
 }
