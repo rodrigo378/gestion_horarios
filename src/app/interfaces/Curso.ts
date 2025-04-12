@@ -19,6 +19,7 @@ export interface Curso {
   tipo?: string;
   horasRestantes?: number;
   vacante?: number;
+  h_umaPlus?: number;
 
   // equivalencias
   n_codper_equ?: number;

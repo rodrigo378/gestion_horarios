@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DocenteService } from '../../services/docente.service';
 import { AlertService } from '../../services/alert.service';
 import { Location } from '@angular/common';
-import { DocenteExtendido } from '../../interfaces/Docente';
+import { Docente, DocenteExtendido, HorarioAsignado } from '../../interfaces/Docente';
 
 @Component({
   selector: 'app-reporteria',
@@ -41,6 +41,17 @@ export class ReporteriaComponent implements OnInit {
       },
     });
   }
+
+  getHorariosPorCarrera(docente: Docente): { [key: string]: HorarioAsignado[] } {
+    const agrupado: { [key: string]: HorarioAsignado[] } = {};
+  
+    if (!docente.Horario || docente.Horario.length === 0) return agrupado;
+  
+    const clave = docente.nom_fac || 'Sin Facultad';
+    agrupado[clave] = docente.Horario;
+  
+    return agrupado;
+  }  
 
   siguientePagina() {
     if (this.paginaActual < this.totalPaginas) {

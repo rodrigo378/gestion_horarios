@@ -9,6 +9,7 @@ export interface HorarioExtendido {
   n_horas: number;
   c_color: string;
   tipo: string;
+  h_umaPlus: number,
   aula_id: number | null;
   docente_id: number | null;
   curso_id: number;

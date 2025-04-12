@@ -104,7 +104,7 @@ export class ListarUsuariosComponent  implements OnInit {
     };
   
     this.userService.createUser(nuevoUsuario).subscribe({
-      next: (res) => {
+      next: () => {
         this.alerService.success('✅ Usuario creado:');
         this.cerrarModal();
         this.cargarUsuarios(); // recarga la tabla
