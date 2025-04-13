@@ -19,7 +19,10 @@ export interface Curso {
   tipo?: string;
   horasRestantes?: number;
   vacante?: number;
+  turno_id?: number;
   h_umaPlus?: number;
+
+  guardadoAsync?: boolean;
 
   // equivalencias
   n_codper_equ?: number;

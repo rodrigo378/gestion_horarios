@@ -71,8 +71,8 @@ export class AsignarhorarioComponent implements OnInit {
   originalStart: Date | null = null;
   originalEnd: Date | null = null;
   eventoMovido: any = null;
-  //uma plus
-  
+  //paginato calender
+  paginaActual: 'calendar' | 'async' = 'calendar'; 
   //#endregion
 
   //#region Libreria del calendario
@@ -1468,5 +1468,103 @@ export class AsignarhorarioComponent implements OnInit {
       }
     });
   }
+  
+  stringifyCursoAsync(curso: any): string {
+    return JSON.stringify({
+      n_codper: String(curso.n_codper),
+      c_codmod: String(curso.c_codmod),
+      c_codfac: curso.c_codfac,
+      c_codesp: curso.c_codesp,
+      c_codcur: curso.c_codcur,
+      c_nomcur: curso.c_nomcur,
+      n_ciclo: Number(curso.n_ciclo),
+      c_area: curso.c_area,
+      n_codper_equ: String(curso.n_codper_equ),
+      c_codmod_equ: String(curso.c_codmod_equ),
+      c_codfac_equ: curso.c_codfac_equ,
+      c_codesp_equ: curso.c_codesp_equ,
+      c_codcur_equ: curso.c_codcur_equ,
+      c_nomcur_equ: curso.c_nomcur_equ,
+      turno_id: curso.turno_id ?? this.turnoId,
+      tipo: curso.tipo,
+      horasRestantes: Number(curso.horasRestantes ?? 1)
+    });
+  }
+  
+  
+  onDragStartAsync(event: DragEvent) {
+    const element = event.target as HTMLElement;
+    const data = element.getAttribute('data-curso');
+    if (data) {
+      event.dataTransfer?.setData('text/plain', data);
+    }
+  }
+  
+  allowDrop(event: DragEvent) {
+    event.preventDefault(); // Permite soltar
+  }
+
+  mostrarPlan2023: boolean = false;
+  mostrarPlan2025: boolean = false;
+  
+  handleAsyncDrop(event: DragEvent) {
+    event.preventDefault();
+  
+    const data = event.dataTransfer?.getData('text/plain');
+    if (!data) return;
+  
+    const curso = JSON.parse(data);
+  
+    this.alertService.confirm(
+      `¿Deseas registrar el curso ${curso.c_nomcur} como curso asíncrono?`,
+      ''
+    ).then((confirmado) => {
+      if (!confirmado) return;
+  
+      const payload = {
+        curso: {
+          n_codper: String(curso.n_codper),
+          c_codmod: Number(curso.c_codmod),
+          c_codfac: curso.c_codfac,
+          c_codesp: curso.c_codesp,
+          c_codcur: curso.c_codcur,
+          c_nomcur: curso.c_nomcur,
+          n_ciclo: Number(curso.n_ciclo),
+          c_area: curso.c_area,
+          n_codper_equ: String(curso.n_codper_equ),
+          c_codmod_equ: Number(curso.c_codmod_equ),
+          c_codfac_equ: curso.c_codfac_equ,
+          c_codesp_equ: curso.c_codesp_equ,
+          c_codcur_equ: curso.c_codcur_equ,
+          c_nomcur_equ: curso.c_nomcur_equ,
+          turno_id: Number(curso.turno_id),
+        },
+        horario: {
+          n_horas: Number(curso.horasRestantes ?? 1),
+          tipo: curso.tipo,
+          turno_id: Number(curso.turno_id),
+        }
+      };
+  
+      console.log('📤 Payload Async listo:', payload);
+  
+      this.horarioService.guardarHorarioAsync(payload).subscribe({
+        next: (res) => {
+          this.alertService.success(res.mensaje || '✅ Registrado correctamente');
+
+          // 🔄 Buscar y marcar curso como guardado
+          const index = this.cursosPlan2025.findIndex(c => c.c_codcur === curso.c_codcur && c.tipo === curso.tipo);
+          if (index !== -1) {
+            this.cursosPlan2025[index].guardadoAsync = true;
+          }
+        },
+        error: (err) => {
+          this.alertService.error('⛔ Error al guardar');
+          console.error(err);
+        }
+      });
+    });
+  }
+  
   
 }

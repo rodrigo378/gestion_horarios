@@ -120,7 +120,7 @@ export class HorarioService {
     return this.http.delete(`${this.apiUrl}/curso/transversal/${padre_id}`);
   }
 
-  registrarAsincronico(data: any): Observable<any> {
+  guardarHorarioAsync(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/async`, data);
   }
   

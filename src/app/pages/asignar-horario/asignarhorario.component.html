@@ -120,19 +120,6 @@
   </div>
 </div>
 
-<!-- 📦 ZONA PARA CURSOS ASINCRÓNICOS -->
-<div id="zona-asincronica"
-     class="mt-8 border-2 border-dashed border-indigo-400 bg-indigo-50 p-4 rounded-lg min-h-[150px] flex flex-col items-center justify-center text-center transition-all hover:bg-indigo-100">
-  <i class="fa-solid fa-cloud-upload fa-2x text-indigo-500 mb-2"></i>
-  <p class="text-indigo-700 font-semibold text-sm">
-    Arrastra aquí los cursos asincrónicos para registrarlos sin horario
-  </p>
-  <p class="text-xs text-gray-600 italic">
-    Solo se registrará el curso sin día ni hora asignada
-  </p>
-</div>
-
-
 
 <div class="flex justify-between items-center bg-white shadow-lg border p-5 rounded-xl mt-5">
 
@@ -209,14 +196,95 @@
   </div>
 </div>
 
+<!-- 🔀 Botones de cambio de página -->
+<div class="flex justify-end gap-3 mb-4 mt-4">
+  <button *ngIf="paginaActual === 'calendar'"
+          (click)="paginaActual = 'async'"
+          class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
+    ➕ Ver cursos asincrónicos
+  </button>
+
+  <button *ngIf="paginaActual === 'async'"
+          (click)="paginaActual = 'calendar'"
+          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+    ⬅️ Volver al calendario
+  </button>
+</div>
+
+<div *ngIf="paginaActual === 'async'">
+  <div id="async-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
+    <h2 class="text-xl font-bold text-green-700 mb-4 border-b border-slate-200 pb-2">
+      📤 Cursos asíncronos
+    </h2>
   
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- 📘 Plan 2023 -->
+      <div>
+        <button (click)="mostrarPlan2023 = !mostrarPlan2023"
+                class="flex items-center justify-between w-full text-left bg-blue-100 hover:bg-blue-200 px-4 py-2 rounded-md font-semibold text-blue-800 mb-2">
+          📘 Plan 2023 ({{ cursosPlan2023Visibles.length }} cursos)
+          <span>{{ mostrarPlan2023 ? '🔽' : '▶️' }}</span>
+        </button>
+  
+        <div *ngIf="mostrarPlan2023" class="space-y-3">
+          <div *ngFor="let curso of cursosPlan2023Visibles"
+              class="fc-event bg-blue-100 hover:bg-blue-200 transition duration-200 border border-blue-300 rounded-lg px-4 py-3 cursor-move"
+              [attr.data-curso]="stringifyCursoAsync(curso)"
+              [draggable]="!curso.guardadoAsync"
+              [ngClass]="{ 'opacity-50 pointer-events-none': curso.guardadoAsync }"
+              (dragstart)="!curso.guardadoAsync && onDragStartAsync($event)">
+            
+            <p class="text-sm font-medium text-blue-900 flex items-center gap-2">
+              <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+              <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
+            </p>
+            <p class="text-xs text-blue-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- 📗 Plan 2025 -->
+      <div>
+        <button (click)="mostrarPlan2025 = !mostrarPlan2025"
+                class="flex items-center justify-between w-full text-left bg-green-100 hover:bg-green-200 px-4 py-2 rounded-md font-semibold text-green-800 mb-2">
+          📗 Plan 2025 ({{ cursosPlan2025Visibles.length }} cursos)
+          <span>{{ mostrarPlan2025 ? '🔽' : '▶️' }}</span>
+        </button>
+  
+        <div *ngIf="mostrarPlan2025" class="space-y-3">
+          <div *ngFor="let curso of cursosPlan2025Visibles"
+              class="fc-event bg-green-100 hover:bg-green-200 transition duration-200 border border-green-300 rounded-lg px-4 py-3 cursor-move"
+              [attr.data-curso]="stringifyCursoAsync(curso)"
+              [draggable]="!curso.guardadoAsync"
+              [ngClass]="{ 'opacity-50 pointer-events-none': curso.guardadoAsync }"
+              (dragstart)="!curso.guardadoAsync && onDragStartAsync($event)">
+            
+            <p class="text-sm font-medium text-emerald-800 flex items-center gap-2">
+              <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+              <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
+            </p>
+            <p class="text-xs text-green-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="drop-zone-async"
+        (drop)="handleAsyncDrop($event)"
+        (dragover)="allowDrop($event)"
+        class="mt-5 p-6 border-2 border-dashed border-green-500 bg-green-50 rounded-xl text-center">
+    📥 Suelta aquí el curso asíncronos para registrarlos
+  </div>
+</div>
+
   <!-- 📅 Calendario -->
   <full-calendar  
-    *ngIf="mostrarCalendario"
-    #fullcalendar
-    [options]="calendarOptions"
-    class="mt-5 shadow-lg bg-white p-5 rounded-lg border border-gray-200">
-  </full-calendar>
+  *ngIf="paginaActual === 'calendar' && mostrarCalendario"
+  #fullcalendar
+  [options]="calendarOptions"
+  class="mt-5 shadow-lg bg-white p-5 rounded-lg border border-gray-200">
+</full-calendar>
 
 <!-- modal guardar/editar -->
 <div *ngIf="modalHorasActivo" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
