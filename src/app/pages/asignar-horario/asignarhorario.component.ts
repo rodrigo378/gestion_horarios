@@ -159,53 +159,6 @@ export class AsignarhorarioComponent implements OnInit {
     });
   }
 
-  // private calcularHorasRestantesPorCurso(
-  //   cursos: Curso[],
-  //   horasAsignadas: Record<string, number>
-  // ): {
-  //   cursos: Curso[];
-  //   cursosPlan2023: Curso[];
-  //   cursosPlan2025: Curso[];
-  // } {
-  //   const cursosResult: Curso[] = [];
-  //   const plan2023: Curso[] = [];
-  //   const plan2025: Curso[] = [];
-
-  //   cursos.forEach((curso) => {
-  //     const horasAsignadasCurso = horasAsignadas[curso.c_codcur] || 0;
-
-  //     if (curso.n_ht && curso.n_ht > 0) {
-  //       const horasRestantes = curso.n_ht - horasAsignadasCurso;
-  //       const cursoTeoria: Curso = {
-  //         ...curso,
-  //         tipo: 'Teoría',
-  //         horasRestantes,
-  //       };
-  //       cursosResult.push(cursoTeoria);
-  //       if (curso.n_codper === 2023) plan2023.push(cursoTeoria);
-  //       if (curso.n_codper === 2025) plan2025.push(cursoTeoria);
-  //     }
-
-  //     if (curso.n_hp && curso.n_hp > 0) {
-  //       const horasRestantes = curso.n_hp - horasAsignadasCurso;
-  //       const cursoPractica: Curso = {
-  //         ...curso,
-  //         tipo: 'Práctica',
-  //         horasRestantes,
-  //       };
-  //       cursosResult.push(cursoPractica);
-  //       if (curso.n_codper === 2023) plan2023.push(cursoPractica);
-  //       if (curso.n_codper === 2025) plan2025.push(cursoPractica);
-  //     }
-  //   });
-
-  //   return {
-  //     cursos: cursosResult,
-  //     cursosPlan2023: plan2023,
-  //     cursosPlan2025: plan2025,
-  //   };
-  // }
-
   private calcularHorasRestantesPorCurso(
     cursos: Curso[],
     horasAsignadas: Record<string, number>
