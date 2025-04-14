@@ -11,191 +11,6 @@
   <p class="text-slate-500 mt-1">Asigne horarios a los docentes:</p>
 </div>
 
-<div id="external-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
-  <h2 class="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">
-    📚 Cursos por Plan
-  </h2>
-
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-    <!-- 📘 Plan 2023 -->
-    <div>
-      <h3 class="text-lg font-semibold text-blue-600 mb-3">
-        📘 Plan 2023 ({{ cursosPlan2023Visibles.length }} cursos) - Asignados {{ cursosPlan2023Asignados }}
-      </h3>
-      <div class="space-y-3">
-        <div *ngFor="let curso of cursosPlan2023Visibles"
-            class="relative fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3 cursor-move"
-            [ngClass]="{ 'opacity-50 pointer-events-none': curso.disabled }"
-            [attr.data-event]="stringifyEvent(curso)"
-            >
-  
-          <!-- Área -->
-          <span class="absolute right-1 bottom-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-r-lg">
-            {{ curso.c_nom_cur_area }}
-          </span>
-          
-          <!-- BADGE: tipoAgrupado -->
-          <span *ngIf="curso.tipoAgrupado !== null"
-                class="absolute top-1 right-1 text-[15px] font-semibold px-2 py-1 rounded-md text-white"
-                [ngClass]="{
-                  'bg-yellow-500': +curso.tipoAgrupado! === 0,
-                  'bg-purple-700': +curso.tipoAgrupado! === 1
-                }">
-            {{ +curso.tipoAgrupado! === 1 ? 'Agrupado' : 'Transversal' }}
-          </span>
-
-          <!-- Curso principal -->
-          <p class="text-sm text-slate-800 font-medium">
-            <span class="font-semibold text-indigo-600">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
-          </p>
-  
-          <!-- Tipo y horas -->
-          <p class="text-xs text-gray-600 mt-1">
-            {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
-            <span *ngIf="(curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
-              (umaPlus + {{ curso.h_umaPlus ?? 0 }})
-            </span>
-          </p>
-  
-          <!-- Modalidad -->
-          <p class="text-xs text-gray-500">
-            {{ curso.c_nommod }}
-          </p>
-        </div>
-      </div>
-    </div>
-  
-    <!-- 📗 Plan 2025 -->
-    <div>
-      <h3 class="text-lg font-semibold text-green-600 mb-3">
-        📗 Plan 2025 ({{ cursosPlan2025Visibles.length }} cursos) - Asignados {{ cursosPlan2025Asignado }}
-      </h3>
-      <div class="space-y-3">
-        <div *ngFor="let curso of cursosPlan2025Visibles"
-            class="relative fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3 cursor-move"
-            [attr.data-event]="stringifyEvent(curso)">
-  
-          <!-- Área -->
-          <span class="absolute right-1 bottom-2 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-r-lg">
-            {{ curso.c_nom_cur_area }}
-          </span>
-
-          <!-- BADGE: tipoAgrupado -->
-          <span *ngIf="curso.tipoAgrupado !== null"
-                class="absolute top-1 right-1 text-[15px] font-semibold px-2 py-1 rounded-md text-white"
-                [ngClass]="{
-                  'bg-yellow-500': +curso.tipoAgrupado! === 0,
-                  'bg-purple-700': +curso.tipoAgrupado! === 1
-                }">
-            {{ +curso.tipoAgrupado! === 1 ? 'Agrupado' : 'Transversal' }}
-          </span>
-  
-          <!-- Curso principal -->
-          <p class="text-sm text-slate-800 font-medium">
-            <span class="font-semibold text-emerald-600">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
-          </p>
-  
-          <!-- Equivalente si existe y es distinto -->
-          <ng-container *ngIf="curso.c_codcur_equ && curso.c_codcur_equ !== curso.c_codcur">
-            <p class="text-sm text-slate-500 font-medium mt-1">
-              <span class="font-semibold">Equiv: [{{ curso.c_codcur_equ }}]</span> - {{ curso.c_nomcur_equ }}
-            </p>
-          </ng-container>
-  
-          <!-- Tipo y horas -->
-          <p class="text-xs text-gray-600 mt-1">
-            {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
-            <span *ngIf="(curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
-              (umaPlus + {{ curso.h_umaPlus ?? 0 }})
-            </span>
-          </p>  
-          <!-- Modalidad -->
-          <p class="text-xs text-gray-500">
-            {{ curso.c_nommod }}
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<div class="flex justify-between items-center bg-white shadow-lg border p-5 rounded-xl mt-5">
-
-  <!-- 🧩 Contenedor izquierdo: select de turno + estado + leyenda -->
-  <div class="flex gap-4 items-start">
-
-    <!-- Select de turno -->
-    <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-40">
-      <label for="turno" class="block font-medium text-gray-700 mb-1">Selecciona Turno</label>
-      <select id="turno" 
-              [(ngModel)]="turnoSeleccionado" 
-              (change)="actualizarRangoPorTurno()"
-              class="w-full border-gray-300 rounded-lg shadow-sm text-sm">
-        <option value="" selected disabled>Seleccionar</option>
-        <option value="M">Mañana</option>
-        <option value="N">Noche</option>
-      </select>
-    </div>
-
-    <!-- Select de estado del turno -->
-    <!-- <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-48">
-      <label for="estado" class="block font-medium text-gray-700 mb-1">Estado del turno</label>
-      <select id="estado"
-              class="w-full border-gray-300 rounded-lg shadow-sm text-sm"
-              [value]="turnoData?.estado"
-              (change)="cambiarEstadoSelect($event)">
-        <option [value]="0">No asignado</option>
-        <option [value]="1">Pendiente</option>
-        <option [value]="2">Asignado</option>
-      </select>
-    </div> -->
-
-    <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-48">
-      <label for="estado" class="block font-medium text-gray-700 mb-1">Estado del turno</label>
-      <select
-        class="w-full border-gray-300 rounded-lg shadow-sm text-sm"
-        [value]="turnoData?.estado"
-        (change)="cambiarEstadoSelect($event)"
-      >
-        <option [value]="2">Asignado</option>
-        <option [value]="1">Pendiente</option>
-        <option [value]="0">No asignado</option>
-      </select>
-    </div>
-
-    <!-- Leyenda visual -->
-    <div class="bg-white shadow-md rounded-xl p-3 text-sm space-y-2 border border-gray-200">
-      <h3 class="font-semibold text-gray-700">📌 Leyenda</h3>
-      <div class="flex items-center space-x-2">
-        <div class="w-4 h-4 rounded bg-yellow-500 shadow"></div>
-        <span>Curso transversal</span>
-      </div>
-      <div class="flex items-center space-x-2">
-        <div class="w-4 h-4 rounded bg-purple-700 shadow"></div>
-        <span>Curso agrupado</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- 🧨 Botones a la derecha -->
-  <div class="flex items-center gap-4">
-    <button
-      (click)="eliminarTodosLosHorarios()"
-      class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-2xl shadow-md transition duration-200 flex items-center gap-2">
-      <span>🗑️</span>
-      <span>Eliminar todos los horarios</span>
-    </button>
-
-    <button
-      (click)="guardarEventos()"
-      class="bg-green-600 text-white px-4 py-2 rounded-2xl hover:bg-green-700 transition">
-      💾 Guardar horarios
-    </button>
-  </div>
-</div>
-
 <!-- 🔀 Botones de cambio de página -->
 <div class="flex justify-end gap-3 mb-4 mt-4">
   <button *ngIf="paginaActual === 'calendar'"
@@ -209,6 +24,201 @@
           class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
     ⬅️ Volver al calendario
   </button>
+</div>
+
+<div *ngIf="paginaActual === 'calendar'">
+  <div id="external-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
+    <h2 class="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">
+      📚 Cursos por Plan
+    </h2>
+  
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  
+      <!-- 📘 Plan 2023 -->
+      <div>
+        <h3 class="text-lg font-semibold text-blue-600 mb-3">
+          📘 Plan 2023 ({{ cursosPlan2023Visibles.length }} cursos) - Asignados {{ cursosPlan2023Asignados }}
+        </h3>
+        <div class="space-y-3">
+          <div *ngFor="let curso of cursosPlan2023Visibles"
+              class="relative fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3 cursor-move"
+              [ngClass]="{ 'opacity-50 pointer-events-none': curso.disabled }"
+              [attr.data-event]="stringifyEvent(curso)"
+              >
+    
+            <!-- Área -->
+            <span class="absolute right-1 bottom-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-r-lg">
+              {{ curso.c_nom_cur_area }}
+            </span>
+            
+            <!-- BADGE: tipoAgrupado -->
+            <span *ngIf="curso.tipoAgrupado !== null"
+                  class="absolute top-1 right-1 text-[15px] font-semibold px-2 py-1 rounded-md text-white"
+                  [ngClass]="{
+                    'bg-yellow-500': +curso.tipoAgrupado! === 0,
+                    'bg-purple-700': +curso.tipoAgrupado! === 1
+                  }">
+              {{ +curso.tipoAgrupado! === 1 ? 'Agrupado' : 'Transversal' }}
+            </span>
+  
+            <!-- Curso principal -->
+            <p class="text-sm text-slate-800 font-medium">
+              <span class="font-semibold text-indigo-600">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+            </p>
+    
+            <!-- Tipo y horas -->
+            <p class="text-xs text-gray-600 mt-1">
+              {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
+              <span *ngIf="(curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
+                (umaPlus + {{ curso.h_umaPlus ?? 0 }})
+              </span>
+            </p>
+    
+            <!-- Modalidad -->
+            <p class="text-xs text-gray-500">
+              {{ curso.c_nommod }}
+            </p>
+          </div>
+        </div>
+      </div>
+    
+      <!-- 📗 Plan 2025 -->
+      <div>
+        <h3 class="text-lg font-semibold text-green-600 mb-3">
+          📗 Plan 2025 ({{ cursosPlan2025Visibles.length }} cursos) - Asignados {{ cursosPlan2025Asignado }}
+        </h3>
+        <div class="space-y-3">
+          <div *ngFor="let curso of cursosPlan2025Visibles"
+              class="relative fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3 cursor-move"
+              [attr.data-event]="stringifyEvent(curso)">
+    
+            <!-- Área -->
+            <span class="absolute right-1 bottom-2 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-r-lg">
+              {{ curso.c_nom_cur_area }}
+            </span>
+  
+            <!-- BADGE: tipoAgrupado -->
+            <span *ngIf="curso.tipoAgrupado !== null"
+                  class="absolute top-1 right-1 text-[15px] font-semibold px-2 py-1 rounded-md text-white"
+                  [ngClass]="{
+                    'bg-yellow-500': +curso.tipoAgrupado! === 0,
+                    'bg-purple-700': +curso.tipoAgrupado! === 1
+                  }">
+              {{ +curso.tipoAgrupado! === 1 ? 'Agrupado' : 'Transversal' }}
+            </span>
+    
+            <!-- Curso principal -->
+            <p class="text-sm text-slate-800 font-medium">
+              <span class="font-semibold text-emerald-600">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+            </p>
+    
+            <!-- Equivalente si existe y es distinto -->
+            <ng-container *ngIf="curso.c_codcur_equ && curso.c_codcur_equ !== curso.c_codcur">
+              <p class="text-sm text-slate-500 font-medium mt-1">
+                <span class="font-semibold">Equiv: [{{ curso.c_codcur_equ }}]</span> - {{ curso.c_nomcur_equ }}
+              </p>
+            </ng-container>
+    
+            <!-- Tipo y horas -->
+            <p class="text-xs text-gray-600 mt-1">
+              {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
+              <span *ngIf="(curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
+                (umaPlus + {{ curso.h_umaPlus ?? 0 }})
+              </span>
+            </p>  
+            <!-- Modalidad -->
+            <p class="text-xs text-gray-500">
+              {{ curso.c_nommod }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="flex justify-between items-center bg-white shadow-lg border p-5 rounded-xl mt-5">
+  
+    <!-- 🧩 Contenedor izquierdo: select de turno + estado + leyenda -->
+    <div class="flex gap-4 items-start">
+  
+      <!-- Select de turno -->
+      <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-40">
+        <label for="turno" class="block font-medium text-gray-700 mb-1">Selecciona Turno</label>
+        <select id="turno" 
+                [(ngModel)]="turnoSeleccionado" 
+                (change)="actualizarRangoPorTurno()"
+                class="w-full border-gray-300 rounded-lg shadow-sm text-sm">
+          <option value="" selected disabled>Seleccionar</option>
+          <option value="M">Mañana</option>
+          <option value="N">Noche</option>
+        </select>
+      </div>
+  
+      <!-- Select de estado del turno -->
+      <!-- <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-48">
+        <label for="estado" class="block font-medium text-gray-700 mb-1">Estado del turno</label>
+        <select id="estado"
+                class="w-full border-gray-300 rounded-lg shadow-sm text-sm"
+                [value]="turnoData?.estado"
+                (change)="cambiarEstadoSelect($event)">
+          <option [value]="0">No asignado</option>
+          <option [value]="1">Pendiente</option>
+          <option [value]="2">Asignado</option>
+        </select>
+      </div> -->
+  
+      <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-48">
+        <label for="estado" class="block font-medium text-gray-700 mb-1">Estado del turno</label>
+        <select
+          class="w-full border-gray-300 rounded-lg shadow-sm text-sm"
+          [value]="turnoData?.estado"
+          (change)="cambiarEstadoSelect($event)"
+        >
+          <option [value]="2">Asignado</option>
+          <option [value]="1">Pendiente</option>
+          <option [value]="0">No asignado</option>
+        </select>
+      </div>
+  
+      <!-- Leyenda visual -->
+      <div class="bg-white shadow-md rounded-xl p-3 text-sm space-y-2 border border-gray-200">
+        <h3 class="font-semibold text-gray-700">📌 Leyenda</h3>
+        <div class="flex items-center space-x-2">
+          <div class="w-4 h-4 rounded bg-yellow-500 shadow"></div>
+          <span>Curso transversal</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="w-4 h-4 rounded bg-purple-700 shadow"></div>
+          <span>Curso agrupado</span>
+        </div>
+      </div>
+    </div>
+  
+    <!-- 🧨 Botones a la derecha -->
+    <div class="flex items-center gap-4">
+      <button
+        (click)="eliminarTodosLosHorarios()"
+        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-2xl shadow-md transition duration-200 flex items-center gap-2">
+        <span>🗑️</span>
+        <span>Eliminar todos los horarios</span>
+      </button>
+  
+      <button
+        (click)="guardarEventos()"
+        class="bg-green-600 text-white px-4 py-2 rounded-2xl hover:bg-green-700 transition">
+        💾 Guardar horarios
+      </button>
+    </div>
+  </div>
+  
+    <!-- 📅 Calendario -->
+    <full-calendar  
+    *ngIf="mostrarCalendario"
+    #fullcalendar
+    [options]="calendarOptions"
+    class="mt-5 shadow-lg bg-white p-5 rounded-lg border border-gray-200">
+  </full-calendar>
 </div>
 
 <div *ngIf="paginaActual === 'async'">
@@ -230,9 +240,8 @@
           <div *ngFor="let curso of cursosPlan2023Visibles"
               class="fc-event bg-blue-100 hover:bg-blue-200 transition duration-200 border border-blue-300 rounded-lg px-4 py-3 cursor-move"
               [attr.data-curso]="stringifyCursoAsync(curso)"
-              [draggable]="!curso.guardadoAsync"
-              [ngClass]="{ 'opacity-50 pointer-events-none': curso.guardadoAsync }"
-              (dragstart)="!curso.guardadoAsync && onDragStartAsync($event)">
+              [draggable]="true"
+              (dragstart)="onDragStartAsync($event)">
             
             <p class="text-sm font-medium text-blue-900 flex items-center gap-2">
               <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
@@ -255,9 +264,8 @@
           <div *ngFor="let curso of cursosPlan2025Visibles"
               class="fc-event bg-green-100 hover:bg-green-200 transition duration-200 border border-green-300 rounded-lg px-4 py-3 cursor-move"
               [attr.data-curso]="stringifyCursoAsync(curso)"
-              [draggable]="!curso.guardadoAsync"
-              [ngClass]="{ 'opacity-50 pointer-events-none': curso.guardadoAsync }"
-              (dragstart)="!curso.guardadoAsync && onDragStartAsync($event)">
+              [draggable]="true"
+              (dragstart)="onDragStartAsync($event)">
             
             <p class="text-sm font-medium text-emerald-800 flex items-center gap-2">
               <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
@@ -276,15 +284,65 @@
         class="mt-5 p-6 border-2 border-dashed border-green-500 bg-green-50 rounded-xl text-center">
     📥 Suelta aquí el curso asíncronos para registrarlos
   </div>
-</div>
 
-  <!-- 📅 Calendario -->
-  <full-calendar  
-  *ngIf="paginaActual === 'calendar' && mostrarCalendario"
-  #fullcalendar
-  [options]="calendarOptions"
-  class="mt-5 shadow-lg bg-white p-5 rounded-lg border border-gray-200">
-</full-calendar>
+  <div id="async-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
+    <h2 class="text-xl font-bold text-green-700 mb-4 border-b border-slate-200 pb-2">
+      📤 Cursos asíncronos guardados
+    </h2>
+  
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- 📘 Plan 2023 -->
+      <div>
+        <button (click)="mostrarPlan2023 = !mostrarPlan2023"
+                class="flex items-center justify-between w-full text-left bg-blue-100 hover:bg-blue-200 px-4 py-2 rounded-md font-semibold text-blue-800 mb-2">
+          📘 Plan 2023 ({{ cursosPlan2023Async.length }} cursos)
+          <span>{{ mostrarPlan2023 ? '🔽' : '▶️' }}</span>
+        </button>
+  
+        <div *ngIf="mostrarPlan2023" class="space-y-3">
+          <div *ngFor="let curso of cursosPlan2023Async"
+              class="fc-event bg-blue-100 hover:bg-blue-200 transition duration-200 border border-blue-300 rounded-lg px-4 py-3 cursor-move"
+              [attr.data-curso]="stringifyCursoAsync(curso)"
+              [draggable]="!curso.guardadoAsync"
+              [ngClass]="{ 'opacity-50 pointer-events-none': curso.guardadoAsync }"
+              (dragstart)="!curso.guardadoAsync && onDragStartAsync($event)">
+            
+            <p class="text-sm font-medium text-blue-900 flex items-center gap-2">
+              <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+              <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
+            </p>
+            <p class="text-xs text-blue-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- 📗 Plan 2025 -->
+      <div>
+        <button (click)="mostrarPlan2025 = !mostrarPlan2025"
+                class="flex items-center justify-between w-full text-left bg-green-100 hover:bg-green-200 px-4 py-2 rounded-md font-semibold text-green-800 mb-2">
+          📗 Plan 2025 ({{ cursosPlan2025Async.length }} cursos)
+          <span>{{ mostrarPlan2025 ? '🔽' : '▶️' }}</span>
+        </button>
+  
+        <div *ngIf="mostrarPlan2025" class="space-y-3">
+          <div *ngFor="let curso of cursosPlan2025Async"
+              class="fc-event bg-green-100 hover:bg-green-200 transition duration-200 border border-green-300 rounded-lg px-4 py-3 cursor-move"
+              [attr.data-curso]="stringifyCursoAsync(curso)"
+              [draggable]="!curso.guardadoAsync"
+              [ngClass]="{ 'opacity-50 pointer-events-none': curso.guardadoAsync }"
+              (dragstart)="!curso.guardadoAsync && onDragStartAsync($event)">
+            
+            <p class="text-sm font-medium text-emerald-800 flex items-center gap-2">
+              <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+              <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
+            </p>
+            <p class="text-xs text-green-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- modal guardar/editar -->
 <div *ngIf="modalHorasActivo" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">

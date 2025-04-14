@@ -73,6 +73,7 @@ export class AsignarhorarioComponent implements OnInit {
   eventoMovido: any = null;
   //paginato calender
   paginaActual: 'calendar' | 'async' = 'calendar'; 
+  cursosAsyncDesdeAPI: Curso[] = [];
   //#endregion
 
   //#region Libreria del calendario
@@ -957,57 +958,93 @@ export class AsignarhorarioComponent implements OnInit {
 
   cargarHorarios(): void {
     if (!this.turnoId) return;
-  
+
     this.horarioService
       .getHorarioPorTurno(this.turnoId)
       .subscribe((res: HorarioExtendido[]) => {
-        const eventos = res.map((h: HorarioExtendido) => {
-          const curso = h.curso;
-          const tipoEvento = h.tipo ?? 'Teoría';
+        // 🟢 1. Mapeo de eventos normales para el calendario
+        const eventos = res
+          .filter((h) => h.h_inicio && h.h_fin && h.dia) // solo los que tienen fechas
+          .map((h: HorarioExtendido) => {
+            const curso = h.curso;
+            const tipoEvento = h.tipo ?? 'Teoría';
 
-          let color = '#3788d8';
-          let tipoAgrupado = null;
-  
-          if (curso?.cursosPadres!.length > 0) {
-            const padre = curso.cursosPadres![0];
-            tipoAgrupado = padre.tipo;
-  
-            if (padre.tipo === 0) {
-              color = '#EAB308';
-            } else if (padre.tipo === 1) {
-              color = '#7E22CE';
+            let color = '#3788d8';
+            let tipoAgrupado = null;
+
+            if (curso?.cursosPadres!.length > 0) {
+              const padre = curso.cursosPadres![0];
+              tipoAgrupado = padre.tipo;
+
+              if (padre.tipo === 0) {
+                color = '#EAB308';
+              } else if (padre.tipo === 1) {
+                color = '#7E22CE';
+              }
             }
-          }
-  
-          return {
-            id: String(h.id),
-            title: `${curso.c_nomcur} (${tipoEvento})`,
-            start: h.h_inicio,
-            end: h.h_fin,
-            backgroundColor: color,
-            borderColor: color,
-            extendedProps: {
-              codCur: curso.c_codcur,
-              turno: h.turno_id,
-              dia: h.dia,
-              tipo: tipoEvento,
-              n_horas: h.n_horas,
-              aula_id: h.aula_id,
-              docente_id: h.docente_id,
-              tipoAgrupado: tipoAgrupado,
-            },
-            durationEditable: false,
-          };
-        });
-  
+
+            return {
+              id: String(h.id),
+              title: `${curso.c_nomcur} (${tipoEvento})`,
+              start: h.h_inicio,
+              end: h.h_fin,
+              backgroundColor: color,
+              borderColor: color,
+              extendedProps: {
+                codCur: curso.c_codcur,
+                turno: h.turno_id,
+                dia: h.dia,
+                tipo: tipoEvento,
+                n_horas: h.n_horas,
+                aula_id: h.aula_id,
+                docente_id: h.docente_id,
+                tipoAgrupado: tipoAgrupado,
+              },
+              durationEditable: false,
+            };
+          });
+
+        // 🔄 2. Cargar eventos en el calendario (como ya lo hacías)
         this.mostrarCalendario = false;
         setTimeout(() => {
           this.calendarOptions.events = eventos;
           this.mostrarCalendario = true;
         }, 10);
+
+        // ✨ 3. EXTRA: Detectar cursos asíncronos desde la misma respuesta
+        this.cursosAsyncDesdeAPI = res
+        .filter((h) => h.h_inicio === null && h.h_fin === null && h.dia === null)
+        .map((h) => {
+          const curso = h.curso;
+          return {
+            n_codper: +curso.n_codper,
+            c_codmod: curso.c_codmod?.toString(),
+            c_nommod: this.turnoData?.c_nommod || '',
+            c_codfac: curso.c_codfac,
+            c_codesp: curso.c_codesp,
+            c_area: curso.c_area,
+            n_ciclo: curso.n_ciclo?.toString(),
+            c_ciclo: curso.n_ciclo?.toString(),
+            c_codcur: curso.c_codcur,
+            c_nomcur: curso.c_nomcur,
+            // Omitimos n_ht y n_hp si no están
+            tipo: h.tipo,
+            horasRestantes: h.n_horas,
+            turno_id: curso.turno_id,
+            h_umaPlus: h.h_umaPlus ?? 0,    
+            guardadoAsync: true,
+      
+            n_codper_equ: curso.n_codper_equ ? +curso.n_codper_equ : undefined,
+            c_codmod_equ: curso.c_codmod_equ,
+            c_codfac_equ: curso.c_codfac_equ,
+            c_codesp_equ: curso.c_codesp_equ,
+            c_codcur_equ: curso.c_codcur_equ,
+            c_nomcur_equ: curso.c_nomcur_equ,
+            disabled: false
+          } as Curso;
+        });
       });
   }
-  
 
   //#region metodos para en eliminar y actulizar
   private actualizarHorasRestantes(
@@ -1504,8 +1541,8 @@ export class AsignarhorarioComponent implements OnInit {
     event.preventDefault(); // Permite soltar
   }
 
-  mostrarPlan2023: boolean = false;
-  mostrarPlan2025: boolean = false;
+  mostrarPlan2023: boolean = true;
+  mostrarPlan2025: boolean = true;
   
   handleAsyncDrop(event: DragEvent) {
     event.preventDefault();
@@ -1551,11 +1588,13 @@ export class AsignarhorarioComponent implements OnInit {
       this.horarioService.guardarHorarioAsync(payload).subscribe({
         next: (res) => {
           this.alertService.success(res.mensaje || '✅ Registrado correctamente');
-
+          this.cargarDatosPorTurno(this.turnoId);
+          
           // 🔄 Buscar y marcar curso como guardado
           const index = this.cursosPlan2025.findIndex(c => c.c_codcur === curso.c_codcur && c.tipo === curso.tipo);
           if (index !== -1) {
             this.cursosPlan2025[index].guardadoAsync = true;
+            this.cargarHorarios()
           }
         },
         error: (err) => {
@@ -1566,5 +1605,12 @@ export class AsignarhorarioComponent implements OnInit {
     });
   }
   
+  get cursosPlan2023Async(): Curso[] {
+    return this.cursosAsyncDesdeAPI.filter(c => +c.n_codper === 2023);
+  }
+  
+  get cursosPlan2025Async(): Curso[] {
+    return this.cursosAsyncDesdeAPI.filter(c => +c.n_codper === 2025);
+  }
   
 }
