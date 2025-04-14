@@ -14,13 +14,15 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(user: Partial<User>): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/signin`, user);
+    return this.http.post(`${this.apiUrl}/auth/signin`, user, {
+      withCredentials: true,
+    });
   }
 
   setToken(token: string): void {
     document.cookie = `token=${token}; path=/; max-age=${
       60 * 60 * 24
-    }; Secure; SameSite=Strict`;
+    }; SameSite=Lax`; // Usar Lax o eliminar SameSite si no es necesario
   }
 
   isAuthenticated(): boolean {
