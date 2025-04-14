@@ -36,7 +36,16 @@ export interface CursoAsignado {
     c_codcur_equ: string;
     c_nomcur_equ: string;
     turno_id: number;
+    cursosPadres: CursoPadre[]
 }
+
+export interface CursoPadre {
+    id: number;
+    curso_id: number;
+    padre_curso_id: number;
+    tipo: number;
+    shortname: string;
+}  
 
 export interface HorarioAsignado {
     id: number;

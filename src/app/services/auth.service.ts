@@ -9,7 +9,6 @@ import { User } from '../interfaces/User';
 })
 export class AuthService {
   private apiUrl = `${environment.api}`; // backticks
-  private apiUrlUbi = `${environment.api}`;
 
   constructor(private http: HttpClient) {}
 
@@ -33,9 +32,13 @@ export class AuthService {
     return tokenCookie ? tokenCookie.split('=')[1] : null;
   }
 
-  logout() {
+  logout(): Observable<any> {
+    // 🔥 Borrar cookie manualmente en el cliente (por si no es HttpOnly)
     document.cookie =
-      'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure';
-    return this.http.post(`${this.apiUrl}/logout`, {});
+      'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure; SameSite=Strict';
+  
+    // Llamar al backend para eliminar la cookie si es HttpOnly
+    return this.http.post(`${this.apiUrl}/auth/logout`, {});
   }
+  
 }

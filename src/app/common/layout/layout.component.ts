@@ -68,7 +68,15 @@ export class LayoutComponent implements OnInit {
   }
 
   logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+    this.authService.logout().subscribe({
+      next: () => {
+        window.location.href = '/login'; // 👈 redirección total
+      },
+      error: err => {
+        console.error('Error al cerrar sesión', err);
+        window.location.href = '/login';
+      }
+    });
   }
+  
 }

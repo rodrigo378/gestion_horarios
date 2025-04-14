@@ -3,6 +3,9 @@ import { DocenteService } from '../../services/docente.service';
 import { AlertService } from '../../services/alert.service';
 import { Location } from '@angular/common';
 import { Docente, DocenteExtendido, HorarioAsignado } from '../../interfaces/Docente';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { format, toZonedTime } from 'date-fns-tz';
 
 @Component({
   selector: 'app-reporteria',
@@ -100,26 +103,123 @@ export class ReporteriaComponent implements OnInit {
   }  
 
   filtrarUsuarios() {
-    this.usuariosFiltrados = this.docentes.filter(
-      (docente) =>
-        docente.c_nomdoc
-          .toLowerCase()
-          .includes(this.filtroBusqueda.toLowerCase()) ||
-        docente.categoria
-          .toLowerCase()
-          .includes(this.filtroBusqueda.toLowerCase()) ||
-        docente.h_min
-          .toString()
-          .toLowerCase()
-          .includes(this.filtroBusqueda.toLowerCase()) ||
-        docente.h_max
-        .toString()
-          .toLowerCase()
-          .includes(this.filtroBusqueda.toLowerCase()) ||
-        docente.h_total
-          .toString()
-          .toLowerCase()
-          .includes(this.filtroBusqueda.toLowerCase())
-    );
+    const filtro = this.filtroBusqueda.trim().toLowerCase();
+  
+    if (!filtro) {
+      this.usuariosFiltrados = [...this.docentes]; // mostrar todo si está vacío
+      return;
+    }
+  
+    this.usuariosFiltrados = this.docentes.filter((docente) => {
+      const nombre = docente.c_nomdoc?.toLowerCase() || '';
+      const categoria = docente.categoria?.toLowerCase() || '';
+      const hMin = docente.h_min?.toString() || '';
+      const hMax = docente.h_max?.toString() || '';
+      const hTotal = docente.h_total?.toString() || '';
+  
+      return (
+        nombre.includes(filtro) ||
+        categoria.includes(filtro) ||
+        hMin.includes(filtro) ||
+        hMax.includes(filtro) ||
+        hTotal.includes(filtro)
+      );
+    });
+  
+    this.paginaActual = 1; // Reinicia paginación
   }
+
+
+  exportarExcel(): void {
+    const rows: any[] = [];
+    const zonaHoraria = 'America/Lima';
+  
+    this.usuariosFiltrados.forEach((docente) => {
+      const horarios = docente.Horario || [];
+      const asignado = horarios.length;
+  
+      horarios.forEach((h, index) => {
+        const cursoPadre = h.curso?.cursosPadres?.[0];
+        const tipoCursoPadre = cursoPadre
+          ? cursoPadre.tipo === 0
+            ? 'Transversal'
+            : cursoPadre.tipo === 1
+            ? 'Agrupado'
+            : 'Otro'
+          : '';
+  
+        const shortname = cursoPadre?.shortname || '';
+  
+        const horaInicio = h.h_inicio
+          ? format(toZonedTime(new Date(h.h_inicio), zonaHoraria), 'HH:mm')
+          : '';
+  
+        const horaFin = h.h_fin
+          ? format(toZonedTime(new Date(h.h_fin), zonaHoraria), 'HH:mm')
+          : '';
+  
+        rows.push({
+          Docente: index === 0 ? docente.c_nomdoc : '',
+          'H. Min': index === 0 ? docente.h_min : '',
+          'H. Max': index === 0 ? docente.h_max : '',
+          'H. Académicas': index === 0 ? docente.h_total : '',
+          Tipo: index === 0 ? (docente.tipo === 0 ? 'Tiempo Completo' : 'Tiempo Parcial') : '',
+          Asignado: index === 0 ? asignado : '',
+          Día: h.dia,
+          'Hora Inicio': horaInicio,
+          'Hora Fin': horaFin,
+          'Nro Horas': h.n_horas,
+          Curso: h.curso?.c_nomcur,
+          Ciclo: h.curso?.n_ciclo,
+          Facultad: this.nombreFacultad(h.curso?.c_codfac),
+          'Tipo Curso': tipoCursoPadre,
+          'Shortname Curso': shortname
+        });
+      });
+  
+      // Si no tiene horarios, aún se agrega una fila básica
+      if (horarios.length === 0) {
+        rows.push({
+          Docente: docente.c_nomdoc,
+          'H. Min': docente.h_min,
+          'H. Max': docente.h_max,
+          'H. Académicas': docente.h_total,
+          Tipo: docente.tipo === 0 ? 'Tiempo Completo' : 'Tiempo Parcial',
+          Asignado: 0,
+          Día: '',
+          'Hora Inicio': '',
+          'Hora Fin': '',
+          'Nro Horas': '',
+          Curso: '',
+          Ciclo: '',
+          Facultad: '',
+          'Tipo Curso': '',
+          'Shortname Curso': ''
+        });
+      }
+    });
+  
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(rows);
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Reporte Docentes': worksheet },
+      SheetNames: ['Reporte Docentes'],
+    };
+  
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+  
+    const blob: Blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+  
+    FileSaver.saveAs(blob, `reporte-docentes-${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+  }
+
+  cambiarItemsPorPagina(valor: number) {
+    this.itemsPorPagina = valor;
+    this.paginaActual = 1; // Reinicia a la primera página
+  }
+  
 }
