@@ -15,7 +15,7 @@ export class VerTransversalComponent implements OnInit {
   cursos: Curso2[] = [];
   curso!: Curso2;
 
-  Math = Math; // 👈 Esto permite usar Math.ceil() en el HTML
+  Math = Math;
 
   totalCursos!: number;
 
@@ -43,6 +43,8 @@ export class VerTransversalComponent implements OnInit {
     c_codesp: '',
   };
 
+  filtroBusqueda: string = '';
+
   constructor(
     private horarioService: HorarioService,
     private cursoService: CursoService,
@@ -51,31 +53,63 @@ export class VerTransversalComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  // getCursos() {
+  //   const itemsPorPagina = 20;
+  //   const skip = (this.paginaActual - 1) * itemsPorPagina;
+  //   const take = itemsPorPagina;
+
+  //   console.log('itemsPorPagina => ', itemsPorPagina);
+  //   console.log('skip => ', skip);
+  //   console.log('take => ', take);
+
+  //   this.horarioService
+  //     .getCurso(
+  //       Number(this.selectModalidad),
+  //       this.selectPeriodo,
+  //       this.selectFacultadad,
+  //       this.selectEspecialidad,
+  //       undefined,
+  //       undefined,
+  //       skip,
+  //       take
+  //     )
+  //     .subscribe((data) => {
+  //       console.log('data => ', data);
+  //       this.cursos = data.data;
+  //       this.totalCursos = data.total;
+  //       this.filtrarCursos();
+  //     });
+  // }
+
   getCursos() {
     const itemsPorPagina = 20;
     const skip = (this.paginaActual - 1) * itemsPorPagina;
     const take = itemsPorPagina;
 
-    console.log('itemsPorPagina => ', itemsPorPagina);
-    console.log('skip => ', skip);
-    console.log('take => ', take);
-
     this.horarioService
       .getCurso(
         Number(this.selectModalidad),
-        this.selectPeriodo,
+        this.selectPlan,
         this.selectFacultadad,
         this.selectEspecialidad,
         undefined,
+        this.filtroBusqueda.trim(),
         undefined,
         skip,
         take
       )
       .subscribe((data) => {
-        console.log('data => ', data);
         this.cursos = data.data;
         this.totalCursos = data.total;
       });
+  }
+
+  buscarDesdeInput() {
+    console.log('buscarDesdeInput');
+    console.log('=> ', this.filtroBusqueda);
+
+    this.paginaActual = 1;
+    this.getCursos();
   }
 
   avanzarPagina() {

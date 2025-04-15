@@ -43,6 +43,8 @@ export class AgruparCursosComponent {
     c_codesp: '',
   };
 
+  filtroBusqueda: string = '';
+
   constructor(
     private horarioService: HorarioService,
     private cursoService: CursoService,
@@ -50,32 +52,35 @@ export class AgruparCursosComponent {
   ) {}
 
   ngOnInit(): void {}
-
   getCursos() {
     const itemsPorPagina = 20;
     const skip = (this.paginaActual - 1) * itemsPorPagina;
     const take = itemsPorPagina;
 
-    console.log('itemsPorPagina => ', itemsPorPagina);
-    console.log('skip => ', skip);
-    console.log('take => ', take);
-
     this.horarioService
       .getCurso(
         Number(this.selectModalidad),
-        this.selectPeriodo,
+        this.selectPlan,
         this.selectFacultadad,
         this.selectEspecialidad,
         undefined,
+        this.filtroBusqueda.trim(),
         undefined,
         skip,
         take
       )
       .subscribe((data) => {
-        console.log('data => ', data);
         this.cursos = data.data;
         this.totalCursos = data.total;
       });
+  }
+
+  buscarDesdeInput() {
+    console.log('buscarDesdeInput');
+    console.log('=> ', this.filtroBusqueda);
+
+    this.paginaActual = 1;
+    this.getCursos();
   }
 
   avanzarPagina() {
@@ -104,25 +109,6 @@ export class AgruparCursosComponent {
       .subscribe((data) => {
         this.cursosFiltrados = data.data.filter((curso) => {
           return curso.turno_id !== this.curso.turno_id;
-
-          // const codA = this.curso.c_codcur;
-          // const codAeq = this.curso.c_codcur_equ;
-          // const codB = curso.c_codcur;
-          // const codBeq = curso.c_codcur_equ;
-
-          // const turno_idA = this.curso.turno_id;
-          // const turno_idB = curso.turno_id;
-
-          // const esMismoCurso = this.curso.id === curso.id;
-          // const esMismoTurno = turno_idA === turno_idB;
-
-          // return (
-          //   !esMismoCurso &&
-          //   !esMismoTurno &&
-          //   (codA === codB ||
-          //     codA === codBeq ||
-          //     (codAeq && (codAeq === codB || codAeq === codBeq)))
-          // );
         });
 
         console.log('📚 Cursos filtrados modal => ', this.cursosFiltrados);

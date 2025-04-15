@@ -8,7 +8,7 @@ import { User } from '../interfaces/User';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = `${environment.api}`; // backticks
+  private apiUrl = `${environment.api}`;
 
   constructor(private http: HttpClient) {}
 
