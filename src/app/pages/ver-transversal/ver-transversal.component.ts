@@ -31,10 +31,13 @@ export class VerTransversalComponent implements OnInit {
   selectModalidad: string = '';
   selectPlan: string = '';
   selectPeriodo: string = '';
+  selectCiclo: string = '';
 
   arrayCheckboxCursos: number[] = [];
 
   mostrarModalCrear: boolean = false;
+
+  itemsPorPagina: number = 20;
 
   filtros = {
     c_codmod: '',
@@ -53,38 +56,11 @@ export class VerTransversalComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  // getCursos() {
-  //   const itemsPorPagina = 20;
-  //   const skip = (this.paginaActual - 1) * itemsPorPagina;
-  //   const take = itemsPorPagina;
-
-  //   console.log('itemsPorPagina => ', itemsPorPagina);
-  //   console.log('skip => ', skip);
-  //   console.log('take => ', take);
-
-  //   this.horarioService
-  //     .getCurso(
-  //       Number(this.selectModalidad),
-  //       this.selectPeriodo,
-  //       this.selectFacultadad,
-  //       this.selectEspecialidad,
-  //       undefined,
-  //       undefined,
-  //       skip,
-  //       take
-  //     )
-  //     .subscribe((data) => {
-  //       console.log('data => ', data);
-  //       this.cursos = data.data;
-  //       this.totalCursos = data.total;
-  //       this.filtrarCursos();
-  //     });
-  // }
-
   getCursos() {
-    const itemsPorPagina = 20;
-    const skip = (this.paginaActual - 1) * itemsPorPagina;
-    const take = itemsPorPagina;
+    const skip = (this.paginaActual - 1) * this.itemsPorPagina;
+    const take = this.itemsPorPagina;
+
+    console.log('this.selectCiclo => ', this.selectCiclo);
 
     this.horarioService
       .getCurso(
@@ -93,8 +69,9 @@ export class VerTransversalComponent implements OnInit {
         this.selectFacultadad,
         this.selectEspecialidad,
         undefined,
-        this.filtroBusqueda.trim(),
+        Number(this.selectCiclo),
         undefined,
+        this.filtroBusqueda.trim(),
         skip,
         take
       )
@@ -179,10 +156,6 @@ export class VerTransversalComponent implements OnInit {
 
       this.filtros.c_codesp = '';
     });
-  }
-
-  clickDefinirCursoTransversales() {
-    this.getCursos();
   }
 
   clickMas(curso: Curso2) {
@@ -294,5 +267,11 @@ export class VerTransversalComponent implements OnInit {
         this.alertService.error(`${err.error.errores}`);
       },
     });
+  }
+
+  cambiarItemsPorPagina(valor: number) {
+    this.itemsPorPagina = valor;
+    this.paginaActual = 1;
+    this.getCursos();
   }
 }

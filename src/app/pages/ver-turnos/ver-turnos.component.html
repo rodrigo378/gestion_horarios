@@ -475,25 +475,46 @@
         </tbody>
       </table>
     </div>
-    <div class="flex items-center justify-between p-3">
-      <p class="block text-sm text-slate-500">
-        Página {{ paginaActual }} de {{ totalPaginas }}
-      </p>
-      <div class="flex gap-1">
-        <button
-          (click)="anteriorPagina()"
-          [disabled]="paginaActual === 1"
-          class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-3 py-3">
+      <!-- Select de cantidad por página -->
+      <div class="flex items-center gap-2">
+        <label for="cantidad" class="text-sm text-slate-500">Mostrar:</label>
+        <select
+          id="cantidad"
+          [ngModel]="itemsPorPagina"
+          (ngModelChange)="cambiarItemsPorPagina($event)"
+          class="rounded border border-slate-300 px-4 py-1 text-sm text-slate-700"
         >
-          Anterior
-        </button>
-        <button
-          (click)="siguientePagina()"
-          [disabled]="paginaActual === totalPaginas"
-          class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
-        >
-          Siguiente
-        </button>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="20">20</option>
+          <option [ngValue]="50">50</option>
+          <option [ngValue]="100">100</option>
+          <option [ngValue]="200">200</option>
+          <option [ngValue]="300">300</option>
+          <option [ngValue]="400">400</option>
+          <option [ngValue]="500">500</option>
+        </select>
+      </div>
+    
+      <!-- Navegación de páginas -->
+      <div class="flex items-center gap-3">
+        <p class="text-sm text-slate-500">
+          Página {{ paginaActual }} de {{ totalPaginas }}
+        </p>
+        <div class="flex gap-1">
+          <button
+            (click)="anteriorPagina()"
+            [disabled]="paginaActual === 1"
+            class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50">
+            Anterior
+          </button>
+          <button
+            (click)="siguientePagina()"
+            [disabled]="paginaActual === totalPaginas"
+            class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50">
+            Siguiente
+          </button>
+        </div>
       </div>
     </div>
   </div>

@@ -1,633 +1,671 @@
 <!-- component -->
 <div class="max-w-[100%] mx-auto">
     <div
-        class="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border"
+      class="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border"
     >
-        <div
-            class="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border"
-        >
-            <div class="flex items-center justify-between">
-            <div>
-                <h3 class="text-lg font-semibold text-slate-800">Asigna horarios</h3>
-                <p class="text-slate-500">
-                Asigna horarios de acuerdo a las secciones
-                </p>
-            </div>
-            <div class="flex flex-col gap-2 shrink-0 sm:flex-row">
-                <div class="w-full md:w-72">
-                <div class="relative h-10 w-full min-w-[200px]">
-                    <div
-                    class="absolute grid w-5 h-5 top-2/4 right-3 -translate-y-2/4 place-items-center text-blue-gray-500"
-                    >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                        class="w-5 h-5"
-                    >
-                        <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                        ></path>
-                    </svg>
-                    </div>
-                    <input
-                    [(ngModel)]="filtroBusqueda"
-                    (input)="filtrarturnos()"
-                    class="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 !pr-9 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
-                    placeholder=" "
-                    />
-                    <label
-                    class="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none !overflow-visible truncate text-[11px] font-normal leading-tight text-gray-500 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-gray-900 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-gray-900 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500"
-                    >
-                    Search
-                    </label>
-                </div>
-                </div>
-            </div>
-            </div>
-        </div>
-    
-        <div class="flex justify-end items-center flex-wrap gap-3 mt-4 mb-4 mr-4">
-            <!-- Select: Sección
-                <select [(ngModel)]="filtros.c_grpcur"
-                        (change)="aplicarFiltros()"
-                        class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28">
-                    <option value="">Sección</option>
-                    <option *ngFor="let sec of secciones" [value]="sec">{{ sec }}</option>
-                </select> -->
-    
-            <!-- Select: Facultad -->
-            <select
-            [(ngModel)]="filtros.c_codfac"
-            (change)="onFacultadChange()"
-            class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
-            >
-            <option value="">Facultad</option>
-            <option *ngFor="let fac of facultades" [value]="fac">
-                {{ getNombreFacultad(fac) }}
-            </option>
-            </select>
-    
-            <!-- Select: Especialidad -->
-            <select
-            [(ngModel)]="filtros.c_codesp"
-            (change)="aplicarFiltros()"
-            class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-96"
-            >
-            <option value="">Especialidad</option>
-            <option
-                *ngFor="let esp of especialidadesFiltradas"
-                [value]="esp.codesp"
-            >
-                {{ esp.nomesp }}
-            </option>
-            </select>
-    
-            <!-- Select: Modalidad -->
-            <select
-            [(ngModel)]="filtros.c_codmod"
-            (change)="aplicarFiltros()"
-            class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
-            >
-            <option value="">Modalidad</option>
-            <option *ngFor="let mod of modalidades" [value]="mod.value">
-                {{ mod.label }}
-            </option>
-            </select>
-    
-            <!-- Select: Ciclo -->
-            <select
-            [(ngModel)]="filtros.n_ciclo"
-            (change)="aplicarFiltros()"
-            class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
-            >
-            <option value="">Ciclo</option>
-            <option *ngFor="let c of ciclos" [value]="c">{{ c }}</option>
-            </select>
-    
-            <!-- Select: Estado -->
-            <select
-            [(ngModel)]="filtros.estado"
-            (change)="aplicarFiltros()"
-            class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
-            >
-            <option value="">Estado</option>
-            <option [value]="1">Asignado</option>
-            <option [value]="2">No asignado</option>
-            </select>
-            <!-- Botón Crear más moderno -->
-            <!-- <button class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300">
-                    <i class="fa-solid fa-plus"></i>
-                    Crear
-                </button> -->
-    
-            <button
-            (click)="mostrarModalCrear = true"
-            class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
-            >
-            <i class="fa-solid fa-plus"></i>
-            Crear
-            </button>
-        </div>
-    
-        <div class="p-0 overflow-scroll">
-            <table class="w-full mt-4 text-left table-auto min-w-max">
-            <thead>
-                <tr>
-                <th
-                    class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-                >
-                    <p
-                    class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-                    >
-                    Periodo
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                        class="w-4 h-4"
-                    >
-                        <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                        ></path>
-                    </svg>
-                    </p>
-                </th>
-                <th
-                    class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-                >
-                    <p
-                    class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-                    >
-                    Plan
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                        class="w-4 h-4"
-                    >
-                        <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                        ></path>
-                    </svg>
-                    </p>
-                </th>
-                <th
-                    class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-                >
-                    <p
-                    class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-                    >
-                    Facultad
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                        class="w-4 h-4"
-                    >
-                        <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                        ></path>
-                    </svg>
-                    </p>
-                </th>
-                <th
-                    class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-                >
-                    <p
-                    class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-                    >
-                    Especialidad
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                        class="w-4 h-4"
-                    >
-                        <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                        ></path>
-                    </svg>
-                    </p>
-                </th>
-                <th
-                    class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-                >
-                    <p
-                    class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-                    >
-                    Seccion
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                        class="w-4 h-4"
-                    >
-                        <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                        ></path>
-                    </svg>
-                    </p>
-                </th>
-                <th
-                    class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-                >
-                    <p
-                    class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-                    >
-                    Ciclo
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                        class="w-4 h-4"
-                    >
-                        <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                        ></path>
-                    </svg>
-                    </p>
-                </th>
-                <th
-                    class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-                >
-                    <p
-                    class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-                    >
-                    Modalidad
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                        class="w-4 h-4"
-                    >
-                        <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                        ></path>
-                    </svg>
-                    </p>
-                </th>
-                <th
-                    class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-                >
-                    <p
-                    class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-                    >
-                    Estado
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                        class="w-4 h-4"
-                    >
-                        <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                        ></path>
-                    </svg>
-                    </p>
-                </th>
-                <th
-                    class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-                >
-                    <p
-                    class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-                    >
-                    Acciónes
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                        class="w-4 h-4"
-                    >
-                        <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                        ></path>
-                    </svg>
-                    </p>
-                </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let turno of turnosPaginados">
-                <td class="p-4 border-b border-slate-200">
-                    <div class="flex items-center gap-3">
-                    <div class="flex flex-col">
-                        <p class="text-sm font-semibold text-slate-700">
-                        {{ turno.n_codper }}
-                        </p>
-                    </div>
-                    </div>
-                </td>
-                <td class="p-4 border-b border-slate-200">
-                    <div class="flex items-center gap-3">
-                    <div class="flex flex-col">
-                        <p class="text-sm font-semibold text-slate-700">
-                        {{ turno.n_codpla }}
-                        </p>
-                    </div>
-                    </div>
-                </td>
-                <td class="p-4 border-b border-slate-200">
-                    <div class="flex items-center gap-3">
-                    <div class="flex flex-col">
-                        <p class="text-sm font-semibold text-slate-700">
-                        {{ turno.nom_fac }}
-                        </p>
-                    </div>
-                    </div>
-                </td>
-                <td class="p-4 border-b border-slate-200">
-                    <div class="flex flex-col">
-                    <p class="text-sm font-semibold text-slate-700">
-                        {{ turno.nomesp }}
-                    </p>
-                    </div>
-                </td>
-                <td class="p-4 border-b border-slate-200">
-                    <div class="flex flex-col">
-                    <p class="text-sm font-semibold text-slate-700">
-                        {{ turno.c_grpcur }}
-                    </p>
-                    </div>
-                </td>
-                <td class="p-4 border-b border-slate-200">
-                    <div class="flex flex-col">
-                    <p class="text-sm font-semibold text-slate-700">
-                        {{ turno.n_ciclo }}
-                    </p>
-                    </div>
-                </td>
-                <td class="p-4 border-b border-slate-200">
-                    <div class="flex flex-col">
-                    <p class="text-sm font-semibold text-slate-700">
-                        {{ turno.c_nommod }}
-                    </p>
-                    </div>
-                </td>
-                <td class="p-4 border-b border-slate-200">
-                    <div class="w-max">
-                    <div>
-                        <span
-                        [ngClass]="{
-                            'text-green-900 bg-green-500/20': turno.estado === 1,
-                            'text-slate-500 bg-slate-100': turno.estado === 2
-                        }"
-                        class="relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap"
-                        >
-                        {{ turno.estado === 1 ? "asignado" : "no asignado" }}
-                        </span>
-                    </div>
-                    </div>
-                </td>
-    
-                <td class="p-4 border-b border-slate-200">
-                    <!-- Botón ver cursos -->
-                    <button
-                    class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                    type="button"
-                    (click)="verCursos(turno)"
-                    >
-                    <span
-                        class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                    >
-                        <i class="fa-solid fa-calendar-days fa-2x"></i>
-                    </span>
-                    </button>
-    
-                    <!-- Botón editar -->
-                    <!-- <button
-                    class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-yellow-600 transition-all hover:bg-yellow-600/10 active:bg-yellow-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
-                    type="button"
-                    (click)="editarTurno(turno.id)"
-                    >
-                    <span
-                        class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                    >
-                        <i class="fa-solid fa-pen fa-lg"></i>
-                    </span>
-                    </button> -->
-    
-                    <!-- Botón eliminar -->
-                    <button
-                    class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-red-600 transition-all hover:bg-red-600/10 active:bg-red-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
-                    type="button"
-                    (click)="deleteTurno(turno.id)"
-                    >
-                    <span
-                        class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                    >
-                        <i class="fa-solid fa-trash fa-lg"></i>
-                    </span>
-                    </button>
-                </td>
-                </tr>
-            </tbody>
-            </table>
-        </div>
-        <div class="flex items-center justify-between p-3">
-            <p class="block text-sm text-slate-500">
-            Página {{ paginaActual }} de {{ totalPaginas }}
+      <div
+        class="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-slate-800">Asigna horarios</h3>
+            <p class="text-slate-500">
+              Asigna horarios de acuerdo a las secciones
             </p>
-            <div class="flex gap-1">
-            <button
-                (click)="anteriorPagina()"
-                [disabled]="paginaActual === 1"
-                class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
-            >
-                Anterior
-            </button>
-            <button
-                (click)="siguientePagina()"
-                [disabled]="paginaActual === totalPaginas"
-                class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
-            >
-                Siguiente
-            </button>
+          </div>
+          <div class="flex flex-col gap-2 shrink-0 sm:flex-row">
+            <div class="w-full md:w-72">
+              <div class="relative h-10 w-full min-w-[200px]">
+                <div
+                  class="absolute grid w-5 h-5 top-2/4 right-3 -translate-y-2/4 place-items-center text-blue-gray-500"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                    class="w-5 h-5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                    ></path>
+                  </svg>
+                </div>
+                <input
+                  [(ngModel)]="filtroBusqueda"
+                  (input)="filtrarturnos()"
+                  class="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 !pr-9 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                  placeholder=" "
+                />
+                <label
+                  class="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none !overflow-visible truncate text-[11px] font-normal leading-tight text-gray-500 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-gray-900 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-gray-900 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500"
+                >
+                  Search
+                </label>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
+  
+      <div class="flex justify-end items-center flex-wrap gap-3 mt-4 mb-4 mr-4">
+        <!-- Select: Sección
+              <select [(ngModel)]="filtros.c_grpcur"
+                      (change)="aplicarFiltros()"
+                      class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28">
+                <option value="">Sección</option>
+                <option *ngFor="let sec of secciones" [value]="sec">{{ sec }}</option>
+              </select> -->
+  
+        <!-- Select: Facultad -->
+        <select
+          [(ngModel)]="filtros.c_codfac"
+          (change)="onFacultadChange()"
+          class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+        >
+          <option value="">Facultad</option>
+          <option *ngFor="let fac of facultades" [value]="fac">
+            {{ getNombreFacultad(fac) }}
+          </option>
+        </select>
+  
+        <!-- Select: Especialidad -->
+        <select
+          [(ngModel)]="filtros.c_codesp"
+          (change)="aplicarFiltros()"
+          class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-96"
+        >
+          <option value="">Especialidad</option>
+          <option
+            *ngFor="let esp of especialidadesFiltradas"
+            [value]="esp.codesp"
+          >
+            {{ esp.nomesp }}
+          </option>
+        </select>
+  
+        <!-- Select: Modalidad -->
+        <select
+          [(ngModel)]="filtros.c_codmod"
+          (change)="aplicarFiltros()"
+          class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+        >
+          <option value="">Modalidad</option>
+          <option *ngFor="let mod of modalidades" [value]="mod.value">
+            {{ mod.label }}
+          </option>
+        </select>
+  
+        <!-- Select: Ciclo -->
+        <select
+          [(ngModel)]="filtros.n_ciclo"
+          (change)="aplicarFiltros()"
+          class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+        >
+          <option value="">Ciclo</option>
+          <option *ngFor="let c of ciclos" [value]="c">{{ c }}</option>
+        </select>
+  
+        <!-- Select: Estado -->
+        <select
+          [(ngModel)]="filtros.estado"
+          (change)="aplicarFiltros()"
+          class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+        >
+          <option value="">Estado</option>
+          <option [value]="1">Asignado</option>
+          <option [value]="2">No asignado</option>
+        </select>
+        <!-- Botón Crear más moderno -->
+        <!-- <button class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300">
+                  <i class="fa-solid fa-plus"></i>
+                  Crear
+              </button> -->
+  
+        <button
+          (click)="mostrarModalCrear = true"
+          class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
+        >
+          <i class="fa-solid fa-plus"></i>
+          Crear
+        </button>
+      </div>
+  
+      <div class="p-0 overflow-scroll">
+        <table class="w-full mt-4 text-left table-auto min-w-max">
+          <thead>
+            <tr>
+              <th
+                class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              >
+                <p
+                  class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+                >
+                  Periodo
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                    ></path>
+                  </svg>
+                </p>
+              </th>
+              <th
+                class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              >
+                <p
+                  class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+                >
+                  Plan
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                    ></path>
+                  </svg>
+                </p>
+              </th>
+              <th
+                class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              >
+                <p
+                  class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+                >
+                  Facultad
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                    ></path>
+                  </svg>
+                </p>
+              </th>
+              <th
+                class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              >
+                <p
+                  class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+                >
+                  Especialidad
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                    ></path>
+                  </svg>
+                </p>
+              </th>
+              <th
+                class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              >
+                <p
+                  class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+                >
+                  Seccion
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                    ></path>
+                  </svg>
+                </p>
+              </th>
+              <th
+                class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              >
+                <p
+                  class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+                >
+                  Ciclo
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                    ></path>
+                  </svg>
+                </p>
+              </th>
+              <th
+                class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              >
+                <p
+                  class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+                >
+                  Modalidad
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                    ></path>
+                  </svg>
+                </p>
+              </th>
+              <th
+                class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              >
+                <p
+                  class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+                >
+                  Estado
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                    ></path>
+                  </svg>
+                </p>
+              </th>
+              <th
+                class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              >
+                <p
+                  class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
+                >
+                  Acciónes
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                    ></path>
+                  </svg>
+                </p>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let turno of turnosPaginados">
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="flex flex-col">
+                    <p class="text-sm font-semibold text-slate-700">
+                      {{ turno.n_codper }}
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="flex flex-col">
+                    <p class="text-sm font-semibold text-slate-700">
+                      {{ turno.n_codpla }}
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="flex flex-col">
+                    <p class="text-sm font-semibold text-slate-700">
+                      {{ turno.nom_fac }}
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex flex-col">
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ turno.nomesp }}
+                  </p>
+                </div>
+              </td>
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex flex-col">
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ turno.c_grpcur }}
+                  </p>
+                </div>
+              </td>
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex flex-col">
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ turno.n_ciclo }}
+                  </p>
+                </div>
+              </td>
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex flex-col">
+                  <p class="text-sm font-semibold text-slate-700">
+                    {{ turno.c_nommod }}
+                  </p>
+                </div>
+              </td>
+              <td class="p-4 border-b border-slate-200">
+                <div class="w-max">
+                  <div>
+                    <span
+                      [ngClass]="{
+                        'text-green-900 bg-green-500/20': turno.estado === 2,
+                        'text-yellow-700 bg-yellow-500/20': turno.estado === 1,
+                        'text-slate-500 bg-slate-100': turno.estado === 0,
+                      }"
+                      class="relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap"
+                    >
+                      {{ turno.estado === 2 ? "asignado" : (turno.estado === 0 ? "no asignado" : "pendiente") }}
+                    </span>
+                  </div>
+                </div>
+              </td>
+  
+              <td class="p-4 border-b border-slate-200">
+                <!-- Botón ver cursos -->
+                <button
+                  class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                  type="button"
+                  (click)="verCursos(turno)"
+                >
+                  <span
+                    class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                  >
+                    <i class="fa-solid fa-calendar-days fa-2x"></i>
+                  </span>
+                </button>
+  
+                <!-- Botón editar -->
+                <!-- <button
+                  class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-yellow-600 transition-all hover:bg-yellow-600/10 active:bg-yellow-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
+                  type="button"
+                  (click)="editarTurno(turno.id)"
+                >
+                  <span
+                    class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                  >
+                    <i class="fa-solid fa-pen fa-lg"></i>
+                  </span>
+                </button> -->
+  
+                <!-- Botón eliminar -->
+                <button
+                  class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-red-600 transition-all hover:bg-red-600/10 active:bg-red-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
+                  type="button"
+                  (click)="deleteTurno(turno.id)"
+                >
+                  <span
+                    class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                  >
+                    <i class="fa-solid fa-trash fa-lg"></i>
+                  </span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-3 py-3">
+        <!-- Select de cantidad por página -->
+        <div class="flex items-center gap-2">
+          <label for="cantidad" class="text-sm text-slate-500">Mostrar:</label>
+          <select
+            id="cantidad"
+            [ngModel]="itemsPorPagina"
+            (ngModelChange)="cambiarItemsPorPagina($event)"
+            class="rounded border border-slate-300 px-4 py-1 text-sm text-slate-700"
+          >
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="20">20</option>
+            <option [ngValue]="50">50</option>
+            <option [ngValue]="100">100</option>
+            <option [ngValue]="200">200</option>
+            <option [ngValue]="300">300</option>
+            <option [ngValue]="400">400</option>
+            <option [ngValue]="500">500</option>
+          </select>
+        </div>
+      
+        <!-- Navegación de páginas -->
+        <div class="flex items-center gap-3">
+          <p class="text-sm text-slate-500">
+            Página {{ paginaActual }} de {{ totalPaginas }}
+          </p>
+          <div class="flex gap-1">
+            <button
+              (click)="anteriorPagina()"
+              [disabled]="paginaActual === 1"
+              class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50">
+              Anterior
+            </button>
+            <button
+              (click)="siguientePagina()"
+              [disabled]="paginaActual === totalPaginas"
+              class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50">
+              Siguiente
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
-
-<!-- Modal -->
-<div
+  </div>
+  
+  <!-- Modal -->
+  <div
     *ngIf="mostrarModalCrear"
     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
->
+  >
     <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-4xl">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-4">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-semibold">Crear nuevo horario</h2>
         <button
-            class="text-gray-500 hover:text-red-500"
-            (click)="mostrarModalCrear = false"
+          class="text-gray-500 hover:text-red-500"
+          (click)="mostrarModalCrear = false"
         >
-            <i class="fa-solid fa-xmark text-xl"></i>
+          <i class="fa-solid fa-xmark text-xl"></i>
         </button>
-        </div>
-
-        <!-- Formulario -->
-        <form [formGroup]="formularioHorario" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      </div>
+  
+      <!-- Formulario -->
+      <form
+        [formGroup]="formularioHorario"
+        class="grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
         <!-- Facultad -->
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Facultad</label>
-            <select
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Facultad</label
+          >
+          <select
             formControlName="c_codfac"
             (change)="onChangeFacultadFormulario()"
             class="w-full border border-gray-300 rounded-md px-3 py-2"
-            >
+          >
             <option value="">Seleccione facultad</option>
             <option value="S">CIENCIAS DE LA SALUD</option>
             <option value="E">INGENIERÍA Y NEGOCIOS</option>
-            </select>
+          </select>
         </div>
-
+  
         <!-- Especialidad -->
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Especialidad</label>
-            <select
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Especialidad</label
+          >
+          <select
             formControlName="c_codesp"
             (change)="aplicarFiltros()"
             class="w-full border border-gray-300 rounded-md px-3 py-2"
-            >
+          >
             <option value="">Especialidad</option>
             <option *ngFor="let esp of especialidades" [value]="esp.codesp">
-                {{ esp.nomesp }}
+              {{ esp.nomesp }}
             </option>
-            </select>
+          </select>
         </div>
-
+  
         <!-- Periodo -->
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Periodo</label>
-            <select
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Periodo</label
+          >
+          <select
             formControlName="n_codper"
             class="w-full border border-gray-300 rounded-md px-3 py-2"
-            >
+          >
             <option value="">Seleccione periodo</option>
-            <option value="20231">20231</option>
-            <option value="20232">20232</option>
-            <option value="20241">20241</option>
-            <option value="20242">20242</option>
-            <option value="20251">20251</option>
-            <option value="20252">20252</option>
-            </select>
+            <option value="20231">2023-1</option>
+            <option value="20232">2023-2</option>
+            <option value="20241">2024-1</option>
+            <option value="20242">2024-2</option>
+            <option value="20251">2025-1</option>
+            <option value="20252">2025-2</option>
+          </select>
         </div>
-
+  
         <!-- Plan -->
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Plan</label>
-            <select
+          <label class="block text-sm font-medium text-gray-700 mb-1">Plan</label>
+          <select
             formControlName="n_codpla"
             class="w-full border border-gray-300 rounded-md px-3 py-2"
-            >
+          >
             <option value="">Seleccione plan</option>
-            <option value="20231">2023</option>
-            <option value="20232">2025</option>
-            </select>
+            <option value="2023">2023</option>
+            <option value="2025">2025</option>
+          </select>
         </div>
-
+  
         <!-- Sección -->
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Sección</label>
-            <input
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Sección</label
+          >
+          <input
             type="text"
             formControlName="c_grpcur"
             class="w-full border border-gray-300 rounded-md px-3 py-2"
             placeholder="Ej. A"
-            />
+          />
         </div>
-
+  
         <!-- Ciclo -->
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Ciclo</label>
-            <select
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Ciclo</label
+          >
+          <select
             formControlName="n_ciclo"
             class="w-full border border-gray-300 rounded-md px-3 py-2"
-            >
+          >
             <option value="">Seleccione ciclo</option>
             <option *ngFor="let c of ciclos" [value]="c">{{ c }}</option>
-            </select>
+          </select>
         </div>
-
+  
         <!-- Modalidad -->
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Modalidad</label>
-            <select
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Modalidad</label
+          >
+          <select
             formControlName="c_codmod"
             class="w-full border border-gray-300 rounded-md px-3 py-2"
-            >
+          >
             <option value="">Seleccione modalidad</option>
             <option *ngFor="let mod of modalidades" [value]="mod.value">
-                {{ mod.label }}
+              {{ mod.label }}
             </option>
-            </select>
+          </select>
         </div>
-        </form>
-
-        <!-- Acciones -->
-        <div class="mt-6 flex justify-end gap-3">
+      </form>
+  
+      <!-- Acciones -->
+      <div class="mt-6 flex justify-end gap-3">
         <button
-            (click)="mostrarModalCrear = false"
-            class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+          (click)="mostrarModalCrear = false"
+          class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
         >
-            Cancelar
+          Cancelar
         </button>
         <button
-            class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
-            (click)="guardarHorario()"
+          class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
+          (click)="guardarTurno()"
         >
-            Guardar
+          Guardar
         </button>
-        </div>
+      </div>
     </div>
-</div>
+  </div>
+  

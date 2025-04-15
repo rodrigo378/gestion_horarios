@@ -31,10 +31,13 @@ export class AgruparCursosComponent {
   selectModalidad: string = '';
   selectPlan: string = '';
   selectPeriodo: string = '';
+  selectCiclo: string = '';
 
   arrayCheckboxCursos: number[] = [];
 
   mostrarModalCrear: boolean = false;
+
+  itemsPorPagina: number = 20;
 
   filtros = {
     c_codmod: '',
@@ -53,9 +56,8 @@ export class AgruparCursosComponent {
 
   ngOnInit(): void {}
   getCursos() {
-    const itemsPorPagina = 20;
-    const skip = (this.paginaActual - 1) * itemsPorPagina;
-    const take = itemsPorPagina;
+    const skip = (this.paginaActual - 1) * this.itemsPorPagina;
+    const take = this.itemsPorPagina;
 
     this.horarioService
       .getCurso(
@@ -64,8 +66,9 @@ export class AgruparCursosComponent {
         this.selectFacultadad,
         this.selectEspecialidad,
         undefined,
-        this.filtroBusqueda.trim(),
+        Number(this.selectCiclo),
         undefined,
+        this.filtroBusqueda.trim(),
         skip,
         take
       )
@@ -248,5 +251,11 @@ export class AgruparCursosComponent {
         this.alertService.error(`${err.error.errores}`);
       },
     });
+  }
+
+  cambiarItemsPorPagina(valor: number) {
+    this.itemsPorPagina = valor;
+    this.paginaActual = 1;
+    this.getCursos();
   }
 }

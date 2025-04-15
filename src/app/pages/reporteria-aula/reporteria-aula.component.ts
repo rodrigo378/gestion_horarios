@@ -195,4 +195,34 @@ export class ReporteriaAulaComponent implements OnInit{
     this.paginaActual = 1; // Reinicia a la primera página
   }
   
+  sortColumn: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+
+  sortBy(column: string) {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+
+    this.sortData();
+  }
+
+  sortData() {
+    this.usuariosFiltrados.sort((a, b) => {
+      const valA = (a as any)[this.sortColumn];
+      const valB = (b as any)[this.sortColumn];
+
+      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  getSortIconClass(column: string): string {
+    if (this.sortColumn !== column) return '';
+
+    return this.sortDirection === 'asc' ? 'rotate-180' : '';
+  }
 }

@@ -80,7 +80,7 @@
             <p class="text-xs text-gray-600 mt-1">
               {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
               <span *ngIf="(curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
-                (umaPlus + {{ curso.h_umaPlus ?? 0 }})
+                (umaPlus {{ curso.h_umaPlus ?? 0 }})
               </span>
             </p>
     
@@ -133,7 +133,7 @@
             <p class="text-xs text-gray-600 mt-1">
               {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
               <span *ngIf="(curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
-                (umaPlus + {{ curso.h_umaPlus ?? 0 }})
+                (umaPlus {{ curso.h_umaPlus ?? 0 }})
               </span>
             </p>  
             <!-- Modalidad -->
@@ -165,20 +165,7 @@
         </select>
       </div>
   
-      <!-- Select de estado del turno -->
       <!-- <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-48">
-        <label for="estado" class="block font-medium text-gray-700 mb-1">Estado del turno</label>
-        <select id="estado"
-                class="w-full border-gray-300 rounded-lg shadow-sm text-sm"
-                [value]="turnoData?.estado"
-                (change)="cambiarEstadoSelect($event)">
-          <option [value]="0">No asignado</option>
-          <option [value]="1">Pendiente</option>
-          <option [value]="2">Asignado</option>
-        </select>
-      </div> -->
-  
-      <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-48">
         <label for="estado" class="block font-medium text-gray-700 mb-1">Estado del turno</label>
         <select
           class="w-full border-gray-300 rounded-lg shadow-sm text-sm"
@@ -189,7 +176,7 @@
           <option [value]="1">Pendiente</option>
           <option [value]="0">No asignado</option>
         </select>
-      </div>
+      </div> -->
   
       <!-- Leyenda visual -->
       <div class="bg-white shadow-md rounded-xl p-3 text-sm space-y-2 border border-gray-200">
@@ -427,14 +414,31 @@
     <label class="block text-sm font-semibold text-gray-600 mb-1">Asignar Docente</label>
 
     <!-- Select para Facultad -->
-    <label for="nom_fac" class="block text-sm font-medium text-gray-700">Facultad</label>
+    <!-- <label for="nom_fac" class="block text-sm font-medium text-gray-700">Facultad</label>
     <select id="nom_fac"
             [(ngModel)]="selectedFacultad"
             (change)="filtrarDocentes()"
             class="mt-1 block w-full p-2 border rounded border-gray-300">
       <option value="">Seleccione una facultad</option>
       <option *ngFor="let fac of nom_facultad" [value]="fac">{{ fac }}</option>
-    </select>
+    </select> -->
+
+    <!-- Buscador general -->
+    <div class="mb-3">
+      <input type="text"
+            class="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Escribe el nombre del docente"
+            [(ngModel)]="busquedaDocente"
+            (input)="filtrarDocentesBusquedaGeneral()" />
+      
+      <ul *ngIf="resultadosBusqueda.length > 0" class="mt-2 border rounded bg-white max-h-40 overflow-y-auto shadow">
+        <li *ngFor="let docente of resultadosBusqueda"
+            (click)="seleccionarDocenteDesdeBusqueda(docente)"
+            class="px-3 py-2 hover:bg-blue-100 cursor-pointer">
+          {{ docente.c_nomdoc }}
+        </li>
+      </ul>
+    </div>
 
     <!-- Select de docentes filtrados -->
     <div *ngIf="docentesFiltrados.length > 0" class="mt-4">
