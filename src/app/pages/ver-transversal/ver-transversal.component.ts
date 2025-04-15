@@ -112,7 +112,10 @@ export class VerTransversalComponent implements OnInit {
         this.filtros.c_codfac,
         this.filtros.c_codesp
       )
+
       .subscribe((data) => {
+        console.log('data => ', data);
+
         this.cursosFiltrados = data.data.filter((curso) => {
           const codA = this.curso.c_codcur;
           const codAeq = this.curso.c_codcur_equ;
@@ -195,7 +198,7 @@ export class VerTransversalComponent implements OnInit {
     this.arrayCheckboxCursos = [];
     this.filtros = {
       c_codmod: '',
-      n_codper: '',
+      n_codper: '2025',
       c_codfac: '',
       c_codesp: '',
     };
@@ -241,7 +244,7 @@ export class VerTransversalComponent implements OnInit {
           this.arrayCheckboxCursos = [];
           this.filtros = {
             c_codmod: '',
-            n_codper: '',
+            n_codper: '2025',
             c_codfac: '',
             c_codesp: '',
           };

@@ -582,7 +582,7 @@
   *ngIf="mostrarModalCrear"
   class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
 >
-  <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-4xl">
+  <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-5xl">
     <!-- Cabecera -->
     <div class="flex justify-between items-center mb-4">
       <div>
@@ -700,7 +700,8 @@
         <table class="min-w-full text-sm text-left text-gray-700">
           <thead class="bg-gray-100">
             <tr>
-              <th class="px-4 py-2">Id</th>
+              <th class="px-4 py-2">Facultad</th>
+              <th class="px-4 py-2">Especialidad</th>
               <th class="px-4 py-2">Cod Plan</th>
               <th class="px-4 py-2">Curso</th>
               <th class="px-4 py-2">Sección</th>
@@ -712,8 +713,11 @@
             <ng-container *ngFor="let curso of cursosFiltrados">
               <tr class="border-t">
                 <td class="px-4 py-2">
-                  {{ curso.id }} - {{ curso.c_codfac }} - {{ curso.c_codesp }} .
-                  {{ curso.turno_id }}
+                  {{ curso.nom_fac }}
+                </td>
+
+                <td class="px-4 py-2">
+                  {{ curso.nomesp }}
                 </td>
                 <td class="px-4 py-2">{{ curso.n_codper }}</td>
                 <td class="px-4 py-2">
@@ -721,7 +725,7 @@
                 </td>
                 <td class="px-4 py-2">{{ curso.turno.c_grpcur }}</td>
                 <td class="px-4 py-2">{{ curso.n_ciclo }}</td>
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-center align-middle">
                   <input
                     type="checkbox"
                     [checked]="estaSeleccionado(curso.id)"

@@ -403,7 +403,7 @@
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ curso.n_codper }}
+                    {{ curso.turno_id }} - {{ curso.n_codper }}
                   </p>
                 </div>
               </div>
@@ -588,7 +588,7 @@
   *ngIf="mostrarModalCrear"
   class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
 >
-  <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-4xl">
+  <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-5xl">
     <!-- Cabecera -->
     <div class="flex justify-between items-center mb-4">
       <div>
@@ -665,15 +665,13 @@
 
       <!-- plan -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Especialidad</label
-        >
+        <label class="block text-sm font-medium text-gray-700 mb-1">Plan</label>
         <select
           [(ngModel)]="filtros.n_codper"
           name="n_codper"
           class="w-full border border-gray-300 rounded-md px-3 py-2"
         >
-          <option value="">Seleccione especialidad</option>
+          <option value="">Seleccione Plan</option>
           <option value="2023">2023</option>
           <option value="2025">2025</option>
         </select>
@@ -706,7 +704,8 @@
         <table class="min-w-full text-sm text-left text-gray-700">
           <thead class="bg-gray-100">
             <tr>
-              <th class="px-4 py-2">Id</th>
+              <th class="px-4 py-2">Facultad</th>
+              <th class="px-4 py-2">Especialidad</th>
               <th class="px-4 py-2">Cod Plan</th>
               <th class="px-4 py-2">Curso</th>
               <th class="px-4 py-2">Sección</th>
@@ -718,7 +717,11 @@
             <ng-container *ngFor="let curso of cursosFiltrados">
               <tr class="border-t">
                 <td class="px-4 py-2">
-                  {{ curso.id }} - {{ curso.c_codfac }} - {{ curso.c_codesp }}
+                  {{ curso.turno.id }} {{ curso.nom_fac }}
+                </td>
+
+                <td class="px-4 py-2">
+                  {{ curso.nomesp }}
                 </td>
                 <td class="px-4 py-2">{{ curso.n_codper }}</td>
                 <td class="px-4 py-2">

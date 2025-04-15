@@ -72,6 +72,7 @@ registerLocaleData(en);
     ReporteriaAulaComponent,
     CalenderAulaComponent,
     CalenderDocenteComponent,
+    VerTransversalComponent,
   ],
   imports: [
     BrowserModule,
