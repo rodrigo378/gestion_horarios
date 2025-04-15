@@ -723,7 +723,7 @@ export class AsignarhorarioComponent implements OnInit {
 
     const evento = {
       id: eventoId,
-      title: `${this.cursoSeleccionado.title} (${this.cursoSeleccionado.tipo})`,
+      title: `${this.cursoSeleccionado.title} (${this.cursoSeleccionado.tipo}) - ${this.selectedDocente?.c_nomdoc}`,
       start: start,
       end: end,
       backgroundColor:
@@ -777,6 +777,7 @@ export class AsignarhorarioComponent implements OnInit {
     }
 
     this.resetCamposModal();
+    this.verificarEstadoTurnoAutomatico();
 
     // 🧹 Limpieza final
     this.modalHorasActivo = false;
@@ -906,6 +907,7 @@ export class AsignarhorarioComponent implements OnInit {
         console.error(err);
       },
     });
+    this.verificarEstadoTurnoAutomatico();
     console.log('📝 Data enviada al backend:', payload);
   }
 
@@ -936,9 +938,10 @@ export class AsignarhorarioComponent implements OnInit {
               }
             }
 
+            const docente = this.docentes.find(d => d.id === h.docente_id);
             return {
               id: String(h.id),
-              title: `${curso.c_nomcur} (${tipoEvento})`,
+              title: `${curso.c_nomcur} (${tipoEvento}) - ${docente?.c_nomdoc}`,
               start: h.h_inicio,
               end: h.h_fin,
               backgroundColor: color,
@@ -1348,6 +1351,7 @@ export class AsignarhorarioComponent implements OnInit {
         this.modalHorasActivo = false;
         this.eventoSeleccionado = null;
         this.resetCamposModal();
+        this.verificarEstadoTurnoAutomatico();
       });
   }
 
@@ -1437,27 +1441,53 @@ export class AsignarhorarioComponent implements OnInit {
     this.horasAsignadas = 1;
   }
   
-  cambiarEstadoSelect(event: Event) {
-    const nuevoEstado = +(event.target as HTMLSelectElement).value;
+  // cambiarEstadoSelect(event: Event) {
+  //   const nuevoEstado = +(event.target as HTMLSelectElement).value;
   
-    this.turnoService.actualizarEstado(this.turnoData!.id, nuevoEstado).subscribe(() => {
-      this.turnoData!.estado = nuevoEstado;
-      this.turnoService.emitirCambioEstado(this.turnoData!.id);
+  //   this.turnoService.actualizarEstado(this.turnoData!.id, nuevoEstado).subscribe(() => {
+  //     this.turnoData!.estado = nuevoEstado;
+  //     this.turnoService.emitirCambioEstado(this.turnoData!.id);
   
-      // Mostrar alerta personalizada según el estado
-      switch (nuevoEstado) {
-        case 2:
-          this.alertService.success('El turno ha sido marcado como asignado.', '✅ Turno asignado');
-          break;
-        case 1:
-          this.alertService.info('Este turno se ha marcado como pendiente.');
-          break;
-        case 0:
-          this.alertService.error('Este turno no ha sido asignado aún.', '🛑 No asignado');
-          break;
-      }
-    });
+  //     // Mostrar alerta personalizada según el estado
+  //     switch (nuevoEstado) {
+  //       case 2:
+  //         this.alertService.success('El turno ha sido marcado como asignado.', '✅ Turno asignado');
+  //         break;
+  //       case 1:
+  //         this.alertService.info('Este turno se ha marcado como pendiente.');
+  //         break;
+  //       case 0:
+  //         this.alertService.error('Este turno no ha sido asignado aún.', '🛑 No asignado');
+  //         break;
+  //     }
+  //   });
+  // }
+
+  verificarEstadoTurnoAutomatico() {
+    const totalCursos = this.cursosPlan2023.length + this.cursosPlan2025.length;
+    const cursosAsignados = [...this.cursosPlan2023, ...this.cursosPlan2025].filter(
+      (c) => (c.horasRestantes ?? 1) <= 0
+    ).length;
+  
+    if (cursosAsignados === totalCursos && totalCursos > 0) {
+      this.actualizarEstadoTurno(2); // ✅ Asignado
+    } else if (cursosAsignados > 0) {
+      this.actualizarEstadoTurno(1); // 🕒 Pendiente
+    } else {
+      this.actualizarEstadoTurno(0); // 🛑 No asignado (opcional)
+    }
   }
+  
+  actualizarEstadoTurno(nuevoEstado: number) {
+    if (this.turnoData?.estado !== nuevoEstado) {
+      this.turnoService.actualizarEstado(this.turnoData!.id, nuevoEstado).subscribe(() => {
+        this.turnoData!.estado = nuevoEstado;
+        this.turnoService.emitirCambioEstado(this.turnoData!.id);
+        console.log(`📌 Turno actualizado automáticamente a estado: ${nuevoEstado}`);
+      });
+    }
+  }
+  
   
   stringifyCursoAsync(curso: any): string {
     return JSON.stringify({
@@ -1556,6 +1586,7 @@ export class AsignarhorarioComponent implements OnInit {
         }
       });
     });
+    this.verificarEstadoTurnoAutomatico();
   }
   
   get cursosPlan2023Async(): Curso[] {
@@ -1566,4 +1597,32 @@ export class AsignarhorarioComponent implements OnInit {
     return this.cursosAsyncDesdeAPI.filter(c => +c.n_codper === 2025);
   }
   
+  busquedaDocente: string = '';
+  resultadosBusqueda: Docente[] = [];
+
+  filtrarDocentesBusquedaGeneral() {
+    const termino = this.busquedaDocente.trim().toLowerCase();
+    if (termino.length === 0) {
+      this.resultadosBusqueda = [];
+      return;
+    }
+
+    this.resultadosBusqueda = this.docentes.filter(d =>
+      d.c_nomdoc.toLowerCase().includes(termino)
+    );
+  }
+
+  seleccionarDocenteDesdeBusqueda(docente: Docente) {
+    this.selectedDocente = docente;
+    this.docenteSeleccionado = docente.id;
+
+    // Actualizar facultad automáticamente
+    this.selectedFacultad = docente.nom_fac;
+    this.filtrarDocentes();
+
+    // Limpiar búsqueda
+    this.busquedaDocente = '';
+    this.resultadosBusqueda = [];
+  }
+
 }
