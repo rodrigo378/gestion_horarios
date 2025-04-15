@@ -12,7 +12,7 @@ import { AlertService } from '../../../services/alert.service';
 })
 export class PermisosUsuariosComponent implements OnInit {
   modulos: Modulo[] = [];
-  email: string = 'rodrigo@gmail.com';
+  email: string = '';
   userPermisos: any[] = [];
   boolPermisos: boolean = false;
   user!: any;

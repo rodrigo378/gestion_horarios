@@ -1475,18 +1475,25 @@ export class AsignarhorarioComponent implements OnInit {
 
   verificarEstadoTurnoAutomatico() {
     const totalCursos = this.cursosPlan2023.length + this.cursosPlan2025.length;
+  
+    if (totalCursos === 0) {
+      this.actualizarEstadoTurno(0); // 🛑 No asignado (porque no hay cursos en absoluto)
+      return;
+    }
+  
     const cursosAsignados = [...this.cursosPlan2023, ...this.cursosPlan2025].filter(
       (c) => (c.horasRestantes ?? 1) <= 0
     ).length;
   
-    if (cursosAsignados === totalCursos && totalCursos > 0) {
+    if (cursosAsignados === totalCursos) {
       this.actualizarEstadoTurno(2); // ✅ Asignado
     } else if (cursosAsignados > 0) {
       this.actualizarEstadoTurno(1); // 🕒 Pendiente
     } else {
-      this.actualizarEstadoTurno(0); // 🛑 No asignado (opcional)
+      this.actualizarEstadoTurno(0); // 🛑 No asignado
     }
   }
+  
   
   actualizarEstadoTurno(nuevoEstado: number) {
     if (this.turnoData?.estado !== nuevoEstado) {
@@ -1497,7 +1504,6 @@ export class AsignarhorarioComponent implements OnInit {
       });
     }
   }
-  
   
   stringifyCursoAsync(curso: any): string {
     return JSON.stringify({
