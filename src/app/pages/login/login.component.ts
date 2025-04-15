@@ -67,7 +67,7 @@ export class LoginComponent implements OnInit {
       next: (res: any) => {
         console.log(res.token);
         this.authService.setToken(res.token);
-        this.router.navigate(['/registrodocentes']);
+        this.router.navigate(['/welcome']);
       },
       error: (e: HttpErrorResponse) => {
         console.log(e);

@@ -8,513 +8,505 @@
 </div>
 
 <div *ngIf="turnoData" class=" bg-white shadow-lg border p-5 rounded-xl">
-    <p class="text-2xl font-bold">
-      Asignación de horarios |
-      {{turnoData.n_codper}} -
-      {{ turnoData.n_codpla }} -
-      {{ turnoData.n_ciclo }}° Ciclo -
-      {{ turnoData.c_nommod }} -
-      Sección {{ turnoData.c_grpcur }} -
-      {{ turnoData.nomesp }}
-    </p>
-    <p class="text-slate-500 mt-1">Asigne horarios a los docentes:</p>
-  </div>
-  
-  <!-- 🔀 Botones de cambio de página -->
-  <div class="flex justify-end gap-3 mb-4 mt-4">
-    <button *ngIf="paginaActual === 'calendar'"
-            (click)="paginaActual = 'async'"
-            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
-      ➕ Ver cursos asincrónicos
-    </button>
-  
-    <button *ngIf="paginaActual === 'async'"
-            (click)="paginaActual = 'calendar'"
-            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-      ⬅️ Volver al calendario
-    </button>
-  </div>
-  
-  <div *ngIf="paginaActual === 'calendar'">
-    <div id="external-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
-      <h2 class="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">
-        📚 Cursos por Plan
-      </h2>
+  <p class="text-2xl font-bold">
+    Asignación de horarios |
+    {{turnoData.n_codper}} -
+    {{ turnoData.n_codpla }} -
+    {{ turnoData.nomesp }} - 
+    {{ turnoData.n_ciclo }}° Ciclo -
+    {{ turnoData.c_nommod }} -
+    Sección {{ turnoData.c_grpcur }} -
     
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    
-        <!-- 📘 Plan 2023 -->
-        <div>
-          <h3 class="text-lg font-semibold text-blue-600 mb-3">
-            📘 Plan 2023 ({{ cursosPlan2023Visibles.length }} cursos) - Asignados {{ cursosPlan2023Asignados }}
-          </h3>
-          <div class="space-y-3">
-            <div *ngFor="let curso of cursosPlan2023Visibles"
-                class="relative fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3 cursor-move"
-                [ngClass]="{ 'opacity-50 pointer-events-none': curso.disabled }"
-                [attr.data-event]="stringifyEvent(curso)"
-                >
-      
-              <!-- Área -->
-              <span class="absolute right-1 bottom-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-r-lg">
-                {{ curso.c_nom_cur_area }}
-              </span>
-              
-              <!-- BADGE: tipoAgrupado -->
-              <span *ngIf="curso.tipoAgrupado !== null"
-                    class="absolute top-1 right-1 text-[15px] font-semibold px-2 py-1 rounded-md text-white"
-                    [ngClass]="{
-                      'bg-yellow-500': +curso.tipoAgrupado! === 0,
-                      'bg-purple-700': +curso.tipoAgrupado! === 1
-                    }">
-                {{ +curso.tipoAgrupado! === 1 ? 'Agrupado' : 'Transversal' }}
-              </span>
-    
-              <!-- Curso principal -->
-              <p class="text-sm text-slate-800 font-medium">
-                <span class="font-semibold text-indigo-600">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
-              </p>
-      
-              <!-- Tipo y horas -->
-              <p class="text-xs text-gray-600 mt-1">
-                {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
-                <span *ngIf="(curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
-                  (umaPlus + {{ curso.h_umaPlus ?? 0 }})
-                </span>
-              </p>
-      
-              <!-- Modalidad -->
-              <p class="text-xs text-gray-500">
-                {{ curso.c_nommod }}
-              </p>
-            </div>
-          </div>
-        </div>
-      
-        <!-- 📗 Plan 2025 -->
-        <div>
-          <h3 class="text-lg font-semibold text-green-600 mb-3">
-            📗 Plan 2025 ({{ cursosPlan2025Visibles.length }} cursos) - Asignados {{ cursosPlan2025Asignado }}
-          </h3>
-          <div class="space-y-3">
-            <div *ngFor="let curso of cursosPlan2025Visibles"
-                class="relative fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3 cursor-move"
-                [attr.data-event]="stringifyEvent(curso)">
-      
-              <!-- Área -->
-              <span class="absolute right-1 bottom-2 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-r-lg">
-                {{ curso.c_nom_cur_area }}
-              </span>
-    
-              <!-- BADGE: tipoAgrupado -->
-              <span *ngIf="curso.tipoAgrupado !== null"
-                    class="absolute top-1 right-1 text-[15px] font-semibold px-2 py-1 rounded-md text-white"
-                    [ngClass]="{
-                      'bg-yellow-500': +curso.tipoAgrupado! === 0,
-                      'bg-purple-700': +curso.tipoAgrupado! === 1
-                    }">
-                {{ +curso.tipoAgrupado! === 1 ? 'Agrupado' : 'Transversal' }}
-              </span>
-      
-              <!-- Curso principal -->
-              <p class="text-sm text-slate-800 font-medium">
-                <span class="font-semibold text-emerald-600">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
-              </p>
-      
-              <!-- Equivalente si existe y es distinto -->
-              <ng-container *ngIf="curso.c_codcur_equ && curso.c_codcur_equ !== curso.c_codcur">
-                <p class="text-sm text-slate-500 font-medium mt-1">
-                  <span class="font-semibold">Equiv: [{{ curso.c_codcur_equ }}]</span> - {{ curso.c_nomcur_equ }}
-                </p>
-              </ng-container>
-      
-              <!-- Tipo y horas -->
-              <p class="text-xs text-gray-600 mt-1">
-                {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
-                <span *ngIf="(curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
-                  (umaPlus + {{ curso.h_umaPlus ?? 0 }})
-                </span>
-              </p>  
-              <!-- Modalidad -->
-              <p class="text-xs text-gray-500">
-                {{ curso.c_nommod }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    
-    <div class="flex justify-between items-center bg-white shadow-lg border p-5 rounded-xl mt-5">
-    
-      <!-- 🧩 Contenedor izquierdo: select de turno + estado + leyenda -->
-      <div class="flex gap-4 items-start">
-    
-        <!-- Select de turno -->
-        <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-40">
-          <label for="turno" class="block font-medium text-gray-700 mb-1">Selecciona Turno</label>
-          <select id="turno" 
-                  [(ngModel)]="turnoSeleccionado" 
-                  (change)="actualizarRangoPorTurno()"
-                  class="w-full border-gray-300 rounded-lg shadow-sm text-sm">
-            <option value="" selected disabled>Seleccionar</option>
-            <option value="M">Mañana</option>
-            <option value="N">Noche</option>
-          </select>
-        </div>
-    
-        <!-- <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-48">
-          <label for="estado" class="block font-medium text-gray-700 mb-1">Estado del turno</label>
-          <select
-            class="w-full border-gray-300 rounded-lg shadow-sm text-sm"
-            [value]="turnoData?.estado"
-            (change)="cambiarEstadoSelect($event)"
-          >
-            <option [value]="2">Asignado</option>
-            <option [value]="1">Pendiente</option>
-            <option [value]="0">No asignado</option>
-          </select>
-        </div> -->
-    
-        <!-- Leyenda visual -->
-        <div class="bg-white shadow-md rounded-xl p-3 text-sm space-y-2 border border-gray-200">
-          <h3 class="font-semibold text-gray-700">📌 Leyenda</h3>
-          <div class="flex items-center space-x-2">
-            <div class="w-4 h-4 rounded bg-yellow-500 shadow"></div>
-            <span>Curso transversal</span>
-          </div>
-          <div class="flex items-center space-x-2">
-            <div class="w-4 h-4 rounded bg-purple-700 shadow"></div>
-            <span>Curso agrupado</span>
-          </div>
-        </div>
-      </div>
-    
-      <!-- 🧨 Botones a la derecha -->
-      <div class="flex items-center gap-4">
-        <button
-          (click)="eliminarTodosLosHorarios()"
-          class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-2xl shadow-md transition duration-200 flex items-center gap-2">
-          <span>🗑️</span>
-          <span>Eliminar todos los horarios</span>
-        </button>
-    
-        <button
-          (click)="guardarEventos()"
-          class="bg-green-600 text-white px-4 py-2 rounded-2xl hover:bg-green-700 transition">
-          💾 Guardar horarios
-        </button>
-      </div>
-    </div>
-    
-      <!-- 📅 Calendario -->
-      <full-calendar  
-      *ngIf="mostrarCalendario"
-      #fullcalendar
-      [options]="calendarOptions"
-      class="mt-5 shadow-lg bg-white p-5 rounded-lg border border-gray-200">
-    </full-calendar>
-  </div>
-  
-  <div *ngIf="paginaActual === 'async'">
-    <div id="async-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
-      <h2 class="text-xl font-bold text-green-700 mb-4 border-b border-slate-200 pb-2">
-        📤 Cursos asíncronos
-      </h2>
-    
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- 📘 Plan 2023 -->
-        <div>
-          <button (click)="mostrarPlan2023 = !mostrarPlan2023"
-                  class="flex items-center justify-between w-full text-left bg-blue-100 hover:bg-blue-200 px-4 py-2 rounded-md font-semibold text-blue-800 mb-2">
-            📘 Plan 2023 ({{ cursosPlan2023Visibles.length }} cursos)
-            <span>{{ mostrarPlan2023 ? '🔽' : '▶️' }}</span>
-          </button>
-    
-          <div *ngIf="mostrarPlan2023" class="space-y-3">
-            <div *ngFor="let curso of cursosPlan2023Visibles"
-                class="fc-event bg-blue-100 hover:bg-blue-200 transition duration-200 border border-blue-300 rounded-lg px-4 py-3 cursor-move"
-                [attr.data-curso]="stringifyCursoAsync(curso)"
-                [draggable]="true"
-                (dragstart)="onDragStartAsync($event)">
-              
-              <p class="text-sm font-medium text-blue-900 flex items-center gap-2">
-                <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
-                <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
-              </p>
-              <p class="text-xs text-blue-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
-            </div>
-          </div>
-        </div>
-    
-        <!-- 📗 Plan 2025 -->
-        <div>
-          <button (click)="mostrarPlan2025 = !mostrarPlan2025"
-                  class="flex items-center justify-between w-full text-left bg-green-100 hover:bg-green-200 px-4 py-2 rounded-md font-semibold text-green-800 mb-2">
-            📗 Plan 2025 ({{ cursosPlan2025Visibles.length }} cursos)
-            <span>{{ mostrarPlan2025 ? '🔽' : '▶️' }}</span>
-          </button>
-    
-          <div *ngIf="mostrarPlan2025" class="space-y-3">
-            <div *ngFor="let curso of cursosPlan2025Visibles"
-                class="fc-event bg-green-100 hover:bg-green-200 transition duration-200 border border-green-300 rounded-lg px-4 py-3 cursor-move"
-                [attr.data-curso]="stringifyCursoAsync(curso)"
-                [draggable]="true"
-                (dragstart)="onDragStartAsync($event)">
-              
-              <p class="text-sm font-medium text-emerald-800 flex items-center gap-2">
-                <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
-                <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
-              </p>
-              <p class="text-xs text-green-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div id="drop-zone-async"
-          (drop)="handleAsyncDrop($event)"
-          (dragover)="allowDrop($event)"
-          class="mt-5 p-6 border-2 border-dashed border-green-500 bg-green-50 rounded-xl text-center">
-      📥 Suelta aquí el curso asíncronos para registrarlos
-    </div>
-  
-    <div id="async-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
-      <h2 class="text-xl font-bold text-green-700 mb-4 border-b border-slate-200 pb-2">
-        📤 Cursos asíncronos guardados
-      </h2>
-    
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- 📘 Plan 2023 -->
-        <div>
-          <button (click)="mostrarPlan2023 = !mostrarPlan2023"
-                  class="flex items-center justify-between w-full text-left bg-blue-100 hover:bg-blue-200 px-4 py-2 rounded-md font-semibold text-blue-800 mb-2">
-            📘 Plan 2023 ({{ cursosPlan2023Async.length }} cursos)
-            <span>{{ mostrarPlan2023 ? '🔽' : '▶️' }}</span>
-          </button>
-    
-          <div *ngIf="mostrarPlan2023" class="space-y-3">
-            <div *ngFor="let curso of cursosPlan2023Async"
-                class="fc-event bg-blue-100 hover:bg-blue-200 transition duration-200 border border-blue-300 rounded-lg px-4 py-3 cursor-move"
-                [attr.data-curso]="stringifyCursoAsync(curso)"
-                [draggable]="!curso.guardadoAsync"
-                [ngClass]="{ 'opacity-50 pointer-events-none': curso.guardadoAsync }"
-                (dragstart)="!curso.guardadoAsync && onDragStartAsync($event)">
-              
-              <p class="text-sm font-medium text-blue-900 flex items-center gap-2">
-                <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
-                <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
-              </p>
-              <p class="text-xs text-blue-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
-            </div>
-          </div>
-        </div>
-    
-        <!-- 📗 Plan 2025 -->
-        <div>
-          <button (click)="mostrarPlan2025 = !mostrarPlan2025"
-                  class="flex items-center justify-between w-full text-left bg-green-100 hover:bg-green-200 px-4 py-2 rounded-md font-semibold text-green-800 mb-2">
-            📗 Plan 2025 ({{ cursosPlan2025Async.length }} cursos)
-            <span>{{ mostrarPlan2025 ? '🔽' : '▶️' }}</span>
-          </button>
-    
-          <div *ngIf="mostrarPlan2025" class="space-y-3">
-            <div *ngFor="let curso of cursosPlan2025Async"
-                class="fc-event bg-green-100 hover:bg-green-200 transition duration-200 border border-green-300 rounded-lg px-4 py-3 cursor-move"
-                [attr.data-curso]="stringifyCursoAsync(curso)"
-                [draggable]="!curso.guardadoAsync"
-                [ngClass]="{ 'opacity-50 pointer-events-none': curso.guardadoAsync }"
-                (dragstart)="!curso.guardadoAsync && onDragStartAsync($event)">
-              
-              <p class="text-sm font-medium text-emerald-800 flex items-center gap-2">
-                <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
-                <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
-              </p>
-              <p class="text-xs text-green-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- modal guardar/editar -->
-  <div *ngIf="modalHorasActivo" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg relative text-left">
-      
-      <!-- Botón cerrar arriba -->
-      <!-- <button (click)="cancelarAsignacionHoras()" class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-xl">
-        <i class="fa-solid fa-xmark"></i>
-      </button> -->
-  
-      <h2 class="text-xl font-bold text-gray-800 mb-5 border-b pb-2">
-        {{ eventoSeleccionado ? 'Editar horario de:' : 'Asignar horario a:' }}
-      </h2>
-      
-      <!-- Curso (bloqueado) -->
-      <div class="mb-4">
-        <label class="block text-sm font-semibold text-gray-600 mb-1">Curso</label>
-        <select class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100 cursor-not-allowed" disabled>
-          <option>
-            {{ cursoSeleccionado?.extendedProps?.codigo }} - {{ cursoSeleccionado?.title }}
-          </option>
-        </select>
-      </div>
-  
-      <!-- Día editable -->
-      <div class="mb-4">
-        <label class="block text-sm font-semibold text-gray-600 mb-1">Día</label>
-        <select class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="diaSeleccionado">
-          <option *ngFor="let dia of ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado']">{{ dia }}</option>
-        </select>
-      </div>
-  
-      <!-- Hora inicio -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-        <!-- Hora inicio -->
-        <div>
-          <label class="block text-sm font-semibold text-gray-600 mb-1">Hora de inicio</label>
-          <input type="time" class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="horaInicio">
-        </div>
-      
-        <!-- Asignar horas -->
-        <div>
-          <label class="block text-sm font-semibold text-gray-600 mb-1">
-            Asignar horas (máximo {{ cursoSeleccionado?.horasDisponibles }})
-          </label>
-          <input type="number"
-                  [(ngModel)]="horasAsignadas"
-                  [max]="cursoSeleccionado?.horasDisponibles"
-                  min="1"
-                  class="w-full border border-gray-300 rounded px-3 py-2 text-center">
-        </div>
-      </div>
-  <!--<div *ngIf="vacantesAula !== null" class="mb-4 text-sm text-gray-700 text-center">
-        <span class="bg-gray-100 px-3 py-1 rounded-full inline-block text-2xl">
-          🧑‍🎓 Vacantes disponibles: <strong>{{ vacantesAula }}</strong>
-        </span>
-      </div> -->
-  
-      <!-- Aula -->
-      <!-- <div class="mb-4">
-        <label class="block text-sm font-semibold text-gray-600 mb-1">Aula</label>
-        <select class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="aulaSeleccionada">
-          <option [ngValue]="null">-- Selecciona un aula --</option>
-          <option *ngFor="let a of aulas" [ngValue]="a.id">
-            Aula: {{ a.c_codaula }} - Aforo de ({{ a.n_capacidad }} personas) - {{ a.n_piso | pisoLabel }} - Pabellon {{ a.pabellon }}
-          </option>
-        </select>
-      </div> -->
-  
-    <!-- Docente -->
-    <div class="mb-6">
-      <label class="block text-sm font-semibold text-gray-600 mb-1">Asignar Docente</label>
-  
-      <!-- Select para Facultad -->
-      <!-- <label for="nom_fac" class="block text-sm font-medium text-gray-700">Facultad</label>
-      <select id="nom_fac"
-              [(ngModel)]="selectedFacultad"
-              (change)="filtrarDocentes()"
-              class="mt-1 block w-full p-2 border rounded border-gray-300">
-        <option value="">Seleccione una facultad</option>
-        <option *ngFor="let fac of nom_facultad" [value]="fac">{{ fac }}</option>
-      </select> -->
+  </p>
+  <p class="text-slate-500 mt-1">Asigne horarios a los docentes:</p>
+</div>
 
-      <div class="mb-3">
-        <input type="text"
-              class="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Escribe el nombre del docente"
-              [(ngModel)]="busquedaDocente"
-              (input)="filtrarDocentesBusquedaGeneral()" />
-        
-        <ul *ngIf="resultadosBusqueda.length > 0" class="mt-2 border rounded bg-white max-h-40 overflow-y-auto shadow">
-          <li *ngFor="let docente of resultadosBusqueda"
-              (click)="seleccionarDocenteDesdeBusqueda(docente)"
-              class="px-3 py-2 hover:bg-blue-100 cursor-pointer">
-            {{ docente.c_nomdoc }}
-          </li>
-        </ul>
-      </div>
+<!-- 🔀 Botones de cambio de página -->
+<div class="flex justify-end gap-3 mb-4 mt-4">
+  <button *ngIf="paginaActual === 'calendar'"
+          (click)="paginaActual = 'async'"
+          class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
+    ➕ Ver cursos asincrónicos
+  </button>
+
+  <button *ngIf="paginaActual === 'async'"
+          (click)="paginaActual = 'calendar'"
+          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+    ⬅️ Volver al calendario
+  </button>
+</div>
+
+<div *ngIf="paginaActual === 'calendar'">
+  <div id="external-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
+    <h2 class="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">
+      📚 Cursos por Plan
+    </h2>
   
-      <!-- Select de docentes filtrados -->
-      <div *ngIf="docentesFiltrados.length > 0" class="mt-4">
-        <label class="block text-sm font-medium text-gray-700">Docente</label>
-        <select [(ngModel)]="selectedDocente"
-                class="mt-1 block w-full p-2 border rounded border-gray-300">
-          <option [ngValue]="null" disabled>Selecciona un Docente</option>
-          <option *ngFor="let docente of docentesFiltrados" [ngValue]="docente">
-            {{ docente.c_nomdoc }} ({{ docente.tipo === 0 ? 'TC' : 'TP' }})
-          </option>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  
+      <!-- 📘 Plan 2023 -->
+      <div>
+        <h3 class="text-lg font-semibold text-blue-600 mb-3">
+          📘 Plan 2023 ({{ cursosPlan2023Visibles.length }} cursos) - Asignados {{ cursosPlan2023Asignados }}
+        </h3>
+        <div class="space-y-3">
+          <div *ngFor="let curso of cursosPlan2023Visibles"
+              class="relative fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3 cursor-move"
+              [ngClass]="{ 'opacity-50 pointer-events-none': curso.disabled }"
+              [attr.data-event]="stringifyEvent(curso)"
+              >
+    
+            <!-- Área -->
+            <span class="absolute right-1 bottom-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-r-lg">
+              {{ curso.c_nom_cur_area }}
+            </span>
+            
+            <!-- BADGE: tipoAgrupado -->
+            <span *ngIf="curso.tipoAgrupado !== null"
+                  class="absolute top-1 right-1 text-[15px] font-semibold px-2 py-1 rounded-md text-white"
+                  [ngClass]="{
+                    'bg-yellow-500': +curso.tipoAgrupado! === 0,
+                    'bg-purple-700': +curso.tipoAgrupado! === 1
+                  }">
+              {{ +curso.tipoAgrupado! === 1 ? 'Agrupado' : 'Transversal' }}
+            </span>
+  
+            <!-- Curso principal -->
+            <p class="text-sm text-slate-800 font-medium">
+              <span class="font-semibold text-indigo-600">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+            </p>
+    
+            <!-- Tipo y horas -->
+            <p class="text-xs text-gray-600 mt-1">
+              {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
+              <span *ngIf="(curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
+                (umaPlus {{ curso.h_umaPlus ?? 0 }})
+              </span>
+            </p>
+    
+            <!-- Modalidad -->
+            <p class="text-xs text-gray-500">
+              {{ curso.c_nommod }}
+            </p>
+          </div>
+        </div>
+      </div>
+    
+      <!-- 📗 Plan 2025 -->
+      <div>
+        <h3 class="text-lg font-semibold text-green-600 mb-3">
+          📗 Plan 2025 ({{ cursosPlan2025Visibles.length }} cursos) - Asignados {{ cursosPlan2025Asignado }}
+        </h3>
+        <div class="space-y-3">
+          <div *ngFor="let curso of cursosPlan2025Visibles"
+              class="relative fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3 cursor-move"
+              [attr.data-event]="stringifyEvent(curso)">
+    
+            <!-- Área -->
+            <span class="absolute right-1 bottom-2 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-r-lg">
+              {{ curso.c_nom_cur_area }}
+            </span>
+  
+            <!-- BADGE: tipoAgrupado -->
+            <span *ngIf="curso.tipoAgrupado !== null"
+                  class="absolute top-1 right-1 text-[15px] font-semibold px-2 py-1 rounded-md text-white"
+                  [ngClass]="{
+                    'bg-yellow-500': +curso.tipoAgrupado! === 0,
+                    'bg-purple-700': +curso.tipoAgrupado! === 1
+                  }">
+              {{ +curso.tipoAgrupado! === 1 ? 'Agrupado' : 'Transversal' }}
+            </span>
+    
+            <!-- Curso principal -->
+            <p class="text-sm text-slate-800 font-medium">
+              <span class="font-semibold text-emerald-600">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+            </p>
+    
+            <!-- Equivalente si existe y es distinto -->
+            <ng-container *ngIf="curso.c_codcur_equ && curso.c_codcur_equ !== curso.c_codcur">
+              <p class="text-sm text-slate-500 font-medium mt-1">
+                <span class="font-semibold">Equiv: [{{ curso.c_codcur_equ }}]</span> - {{ curso.c_nomcur_equ }}
+              </p>
+            </ng-container>
+    
+            <!-- Tipo y horas -->
+            <p class="text-xs text-gray-600 mt-1">
+              {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
+              <span *ngIf="(curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
+                (umaPlus {{ curso.h_umaPlus ?? 0 }})
+              </span>
+            </p>  
+            <!-- Modalidad -->
+            <p class="text-xs text-gray-500">
+              {{ curso.c_nommod }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="flex justify-between items-center bg-white shadow-lg border p-5 rounded-xl mt-5">
+  
+    <!-- 🧩 Contenedor izquierdo: select de turno + estado + leyenda -->
+    <div class="flex gap-4 items-start">
+  
+      <!-- Select de turno -->
+      <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-40">
+        <label for="turno" class="block font-medium text-gray-700 mb-1">Selecciona Turno</label>
+        <select id="turno" 
+                [(ngModel)]="turnoSeleccionado" 
+                (change)="actualizarRangoPorTurno()"
+                class="w-full border-gray-300 rounded-lg shadow-sm text-sm">
+          <option value="" selected disabled>Seleccionar</option>
+          <option value="M">Mañana</option>
+          <option value="N">Noche</option>
         </select>
       </div>
   
-      <!-- Badge visual del docente seleccionado -->
-      <div *ngIf="selectedDocente" class="mt-2 text-sm text-gray-700">
-        <span class="font-medium">{{ selectedDocente.c_nomdoc }}</span>
-        <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full"
-              [ngClass]="{
-                'bg-blue-100 text-blue-800': selectedDocente.tipo === 0,
-                'bg-green-100 text-green-800': selectedDocente.tipo === 1
-              }">
-          {{ selectedDocente.tipo === 0 ? 'TC' : 'TP' }}
-        </span>
-      </div>
+      <!-- <div class="bg-white shadow-md rounded-xl p-3 border border-gray-200 text-sm w-48">
+        <label for="estado" class="block font-medium text-gray-700 mb-1">Estado del turno</label>
+        <select
+          class="w-full border-gray-300 rounded-lg shadow-sm text-sm"
+          [value]="turnoData?.estado"
+          (change)="cambiarEstadoSelect($event)"
+        >
+          <option [value]="2">Asignado</option>
+          <option [value]="1">Pendiente</option>
+          <option [value]="0">No asignado</option>
+        </select>
+      </div> -->
   
-      <!-- Datos del docente seleccionado -->
-      <div *ngIf="selectedDocente && selectedFacultad" class="mt-4 flex gap-4 border-gray-300">
-        <div class="flex flex-col">
-          <label class="text-sm font-medium text-gray-700">Hora Mínima</label>
-          <input type="number" class="p-2 border rounded w-24 border-gray-300"
-                [(ngModel)]="selectedDocente.h_min" disabled>
+      <!-- Leyenda visual -->
+      <div class="bg-white shadow-md rounded-xl p-3 text-sm space-y-2 border border-gray-200">
+        <h3 class="font-semibold text-gray-700">📌 Leyenda</h3>
+        <div class="flex items-center space-x-2">
+          <div class="w-4 h-4 rounded bg-yellow-500 shadow"></div>
+          <span>Curso transversal</span>
         </div>
-  
-        <div class="flex flex-col">
-          <label class="text-sm font-medium text-gray-700">Hora Máxima</label>
-          <input type="number" class="p-2 border rounded w-24 border-gray-300"
-                [(ngModel)]="selectedDocente.h_max" disabled>
-        </div>
-  
-        <div class="flex flex-col">
-          <label class="text-sm font-medium text-gray-700">Hora Total</label>
-          <input type="number" class="p-2 border rounded w-24 border-gray-300"
-                [(ngModel)]="selectedDocente.h_total" disabled>
+        <div class="flex items-center space-x-2">
+          <div class="w-4 h-4 rounded bg-purple-700 shadow"></div>
+          <span>Curso agrupado</span>
         </div>
       </div>
     </div>
   
-      <!-- Botones -->
-      <div class="flex flex-wrap justify-end gap-3">
-        <!-- Botón ASIGNAR (solo si no hay evento seleccionado) -->
-        <button *ngIf="!eventoSeleccionado"
-                (click)="confirmarAsignacionHoras()"
-                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-          ➕ Asignar
-        </button>
-      
-        <!-- Botón ACTUALIZAR (solo si hay evento seleccionado) -->
-        <button *ngIf="eventoSeleccionado"
-                (click)="actualizarEvento()"
-                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-          🔄 Actualizar
-        </button>
-      
-        <!-- Botón ELIMINAR (solo si hay evento seleccionado) -->
-        <button *ngIf="eventoSeleccionado"
-                (click)="eliminarEvento()"
-                class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
-          🗑️ Eliminar
-        </button>
-      
-        <!-- Botón CANCELAR (solo si es edición real, no evento temporal) -->
-        <button *ngIf="eventoSeleccionado"
-          (click)="cancelarEdicion()"
-          class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
-          ❌ Cancelar
-        </button>
+    <!-- 🧨 Botones a la derecha -->
+    <div class="flex items-center gap-4">
+      <button
+        (click)="eliminarTodosLosHorarios()"
+        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-2xl shadow-md transition duration-200 flex items-center gap-2">
+        <span>🗑️</span>
+        <span>Eliminar todos los horarios</span>
+      </button>
   
-      </div>
-      
+      <button
+        (click)="guardarEventos()"
+        class="bg-green-600 text-white px-4 py-2 rounded-2xl hover:bg-green-700 transition">
+        💾 Guardar horarios
+      </button>
     </div>
   </div>
+  
+    <!-- 📅 Calendario -->
+    <full-calendar  
+    *ngIf="mostrarCalendario"
+    #fullcalendar
+    [options]="calendarOptions"
+    class="mt-5 shadow-lg bg-white p-5 rounded-lg border border-gray-200">
+  </full-calendar>
+</div>
+
+<div *ngIf="paginaActual === 'async'">
+  <div id="async-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
+    <h2 class="text-xl font-bold text-green-700 mb-4 border-b border-slate-200 pb-2">
+      📤 Cursos asíncronos
+    </h2>
+  
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- 📘 Plan 2023 -->
+      <div>
+        <button (click)="mostrarPlan2023 = !mostrarPlan2023"
+                class="flex items-center justify-between w-full text-left bg-blue-100 hover:bg-blue-200 px-4 py-2 rounded-md font-semibold text-blue-800 mb-2">
+          📘 Plan 2023 ({{ cursosPlan2023Visibles.length }} cursos)
+          <span>{{ mostrarPlan2023 ? '🔽' : '▶️' }}</span>
+        </button>
+  
+        <div *ngIf="mostrarPlan2023" class="space-y-3">
+          <div *ngFor="let curso of cursosPlan2023Visibles"
+              class="fc-event bg-blue-100 hover:bg-blue-200 transition duration-200 border border-blue-300 rounded-lg px-4 py-3 cursor-move"
+              [attr.data-curso]="stringifyCursoAsync(curso)"
+              [draggable]="true"
+              (dragstart)="onDragStartAsync($event)">
+            
+            <p class="text-sm font-medium text-blue-900 flex items-center gap-2">
+              <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+              <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
+            </p>
+            <p class="text-xs text-blue-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- 📗 Plan 2025 -->
+      <div>
+        <button (click)="mostrarPlan2025 = !mostrarPlan2025"
+                class="flex items-center justify-between w-full text-left bg-green-100 hover:bg-green-200 px-4 py-2 rounded-md font-semibold text-green-800 mb-2">
+          📗 Plan 2025 ({{ cursosPlan2025Visibles.length }} cursos)
+          <span>{{ mostrarPlan2025 ? '🔽' : '▶️' }}</span>
+        </button>
+  
+        <div *ngIf="mostrarPlan2025" class="space-y-3">
+          <div *ngFor="let curso of cursosPlan2025Visibles"
+              class="fc-event bg-green-100 hover:bg-green-200 transition duration-200 border border-green-300 rounded-lg px-4 py-3 cursor-move"
+              [attr.data-curso]="stringifyCursoAsync(curso)"
+              [draggable]="true"
+              (dragstart)="onDragStartAsync($event)">
+            
+            <p class="text-sm font-medium text-emerald-800 flex items-center gap-2">
+              <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+              <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
+            </p>
+            <p class="text-xs text-green-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="drop-zone-async"
+        (drop)="handleAsyncDrop($event)"
+        (dragover)="allowDrop($event)"
+        class="mt-5 p-6 border-2 border-dashed border-green-500 bg-green-50 rounded-xl text-center">
+    📥 Suelta aquí el curso asíncronos para registrarlos
+  </div>
+
+  <div id="async-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
+    <h2 class="text-xl font-bold text-green-700 mb-4 border-b border-slate-200 pb-2">
+      📤 Cursos asíncronos guardados
+    </h2>
+  
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- 📘 Plan 2023 -->
+      <div>
+        <button (click)="mostrarPlan2023 = !mostrarPlan2023"
+                class="flex items-center justify-between w-full text-left bg-blue-100 hover:bg-blue-200 px-4 py-2 rounded-md font-semibold text-blue-800 mb-2">
+          📘 Plan 2023 ({{ cursosPlan2023Async.length }} cursos)
+          <span>{{ mostrarPlan2023 ? '🔽' : '▶️' }}</span>
+        </button>
+  
+        <div *ngIf="mostrarPlan2023" class="space-y-3">
+          <div *ngFor="let curso of cursosPlan2023Async"
+              class="fc-event bg-blue-100 hover:bg-blue-200 transition duration-200 border border-blue-300 rounded-lg px-4 py-3 cursor-move"
+              [attr.data-curso]="stringifyCursoAsync(curso)"
+              [draggable]="!curso.guardadoAsync"
+              [ngClass]="{ 'opacity-50 pointer-events-none': curso.guardadoAsync }"
+              (dragstart)="!curso.guardadoAsync && onDragStartAsync($event)">
+            
+            <p class="text-sm font-medium text-blue-900 flex items-center gap-2">
+              <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+              <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
+            </p>
+            <p class="text-xs text-blue-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- 📗 Plan 2025 -->
+      <div>
+        <button (click)="mostrarPlan2025 = !mostrarPlan2025"
+                class="flex items-center justify-between w-full text-left bg-green-100 hover:bg-green-200 px-4 py-2 rounded-md font-semibold text-green-800 mb-2">
+          📗 Plan 2025 ({{ cursosPlan2025Async.length }} cursos)
+          <span>{{ mostrarPlan2025 ? '🔽' : '▶️' }}</span>
+        </button>
+  
+        <div *ngIf="mostrarPlan2025" class="space-y-3">
+          <div *ngFor="let curso of cursosPlan2025Async"
+              class="fc-event bg-green-100 hover:bg-green-200 transition duration-200 border border-green-300 rounded-lg px-4 py-3 cursor-move"
+              [attr.data-curso]="stringifyCursoAsync(curso)"
+              [draggable]="!curso.guardadoAsync"
+              [ngClass]="{ 'opacity-50 pointer-events-none': curso.guardadoAsync }"
+              (dragstart)="!curso.guardadoAsync && onDragStartAsync($event)">
+            
+            <p class="text-sm font-medium text-emerald-800 flex items-center gap-2">
+              <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
+              <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
+            </p>
+            <p class="text-xs text-green-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modal guardar/editar -->
+<div *ngIf="modalHorasActivo" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+  <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg relative text-left">
+    
+    <!-- Botón cerrar arriba -->
+    <!-- <button (click)="cancelarAsignacionHoras()" class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-xl">
+      <i class="fa-solid fa-xmark"></i>
+    </button> -->
+
+    <h2 class="text-xl font-bold text-gray-800 mb-5 border-b pb-2">
+      {{ eventoSeleccionado ? 'Editar horario de:' : 'Asignar horario a:' }}
+    </h2>
+    
+    <!-- Curso (bloqueado) -->
+    <div class="mb-4">
+      <label class="block text-sm font-semibold text-gray-600 mb-1">Curso</label>
+      <select class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100 cursor-not-allowed" disabled>
+        <option>
+          {{ cursoSeleccionado?.extendedProps?.codigo }} - {{ cursoSeleccionado?.title }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Día editable -->
+    <div class="mb-4">
+      <label class="block text-sm font-semibold text-gray-600 mb-1">Día</label>
+      <select class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="diaSeleccionado">
+        <option *ngFor="let dia of ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado']">{{ dia }}</option>
+      </select>
+    </div>
+
+    <!-- Hora inicio -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <!-- Hora inicio -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-600 mb-1">Hora de inicio</label>
+        <input type="time" class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="horaInicio">
+      </div>
+    
+      <!-- Asignar horas -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-600 mb-1">
+          Asignar horas (máximo {{ cursoSeleccionado?.horasDisponibles }})
+        </label>
+        <input type="number"
+                [(ngModel)]="horasAsignadas"
+                [max]="cursoSeleccionado?.horasDisponibles"
+                min="1"
+                class="w-full border border-gray-300 rounded px-3 py-2 text-center">
+      </div>
+    </div>
+<!--<div *ngIf="vacantesAula !== null" class="mb-4 text-sm text-gray-700 text-center">
+      <span class="bg-gray-100 px-3 py-1 rounded-full inline-block text-2xl">
+        🧑‍🎓 Vacantes disponibles: <strong>{{ vacantesAula }}</strong>
+      </span>
+    </div> -->
+
+    <!-- Aula -->
+    <!-- <div class="mb-4">
+      <label class="block text-sm font-semibold text-gray-600 mb-1">Aula</label>
+      <select class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="aulaSeleccionada">
+        <option [ngValue]="null">-- Selecciona un aula --</option>
+        <option *ngFor="let a of aulas" [ngValue]="a.id">
+          Aula: {{ a.c_codaula }} - Aforo de ({{ a.n_capacidad }} personas) - {{ a.n_piso | pisoLabel }} - Pabellon {{ a.pabellon }}
+        </option>
+      </select>
+    </div> -->
+
+  <!-- Docente -->
+  <div class="mb-6">
+    <label class="block text-sm font-semibold text-gray-600 mb-1">Asignar Docente</label>
+
+    <!-- Buscador general -->
+    <div class="mb-3">
+      <input type="text"
+            class="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Escribe el nombre del docente"
+            [(ngModel)]="busquedaDocente"
+            (input)="filtrarDocentesBusquedaGeneral()" />
+      
+      <ul *ngIf="resultadosBusqueda.length > 0" class="mt-2 border rounded bg-white max-h-40 overflow-y-auto shadow">
+        <li *ngFor="let docente of resultadosBusqueda"
+            (click)="seleccionarDocenteDesdeBusqueda(docente)"
+            class="px-3 py-2 hover:bg-blue-100 cursor-pointer">
+          {{ docente.c_nomdoc }} ({{ docente.tipo === 0 ? 'TC' : 'TP' }})
+        </li>
+      </ul>
+    </div>
+
+    <!-- Select de docentes filtrados -->
+    <div *ngIf="docentesFiltrados.length > 0" class="mt-4">
+      <label class="block text-sm font-medium text-gray-700">Docente</label>
+      <select [(ngModel)]="selectedDocente"
+              class="mt-1 block w-full p-2 border rounded border-gray-300">
+        <option [ngValue]="null" disabled>Selecciona un Docente</option>
+        <option *ngFor="let docente of docentesFiltrados" [ngValue]="docente">
+          {{ docente.c_nomdoc }} ({{ docente.tipo === 0 ? 'TC' : 'TP' }})
+        </option>
+      </select>
+    </div>
+
+    <!-- Badge visual del docente seleccionado -->
+    <div *ngIf="selectedDocente" class="mt-2 text-sm text-gray-700">
+      <span class="font-medium">{{ selectedDocente.c_nomdoc }}</span>
+      <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full"
+            [ngClass]="{
+              'bg-blue-100 text-blue-800': selectedDocente.tipo === 0,
+              'bg-green-100 text-green-800': selectedDocente.tipo === 1
+            }">
+        {{ selectedDocente.tipo === 0 ? 'TC' : 'TP' }}
+      </span>
+    </div>
+
+    <!-- Datos del docente seleccionado -->
+    <div *ngIf="selectedDocente && selectedFacultad" class="mt-4 flex gap-4 border-gray-300">
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700">Hora Mínima</label>
+        <input type="number" class="p-2 border rounded w-24 border-gray-300"
+              [(ngModel)]="selectedDocente.h_min" disabled>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700">Hora Máxima</label>
+        <input type="number" class="p-2 border rounded w-24 border-gray-300"
+              [(ngModel)]="selectedDocente.h_max" disabled>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-700">Hora Total</label>
+        <input type="number" class="p-2 border rounded w-24 border-gray-300"
+              [(ngModel)]="selectedDocente.h_total" disabled>
+      </div>
+    </div>
+  </div>
+
+    <!-- Botones -->
+    <div class="flex flex-wrap justify-end gap-3">
+      <!-- Botón ASIGNAR (solo si no hay evento seleccionado) -->
+      <button *ngIf="!eventoSeleccionado"
+              (click)="confirmarAsignacionHoras()"
+              class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+        ➕ Asignar
+      </button>
+    
+      <!-- Botón ACTUALIZAR (solo si hay evento seleccionado) -->
+      <button *ngIf="eventoSeleccionado"
+              (click)="actualizarEvento()"
+              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+        🔄 Actualizar
+      </button>
+    
+      <!-- Botón ELIMINAR (solo si hay evento seleccionado) -->
+      <button *ngIf="eventoSeleccionado"
+              (click)="eliminarEvento()"
+              class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+        🗑️ Eliminar
+      </button>
+    
+      <!-- Botón CANCELAR (solo si es edición real, no evento temporal) -->
+      <button *ngIf="eventoSeleccionado"
+        (click)="cancelarEdicion()"
+        class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
+        ❌ Cancelar
+      </button>
+
+    </div>
+    
+  </div>
+</div>

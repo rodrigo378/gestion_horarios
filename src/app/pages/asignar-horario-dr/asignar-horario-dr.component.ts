@@ -28,6 +28,7 @@ import { EstadoTurnoService } from '../../services/estado-turno.service';
   styleUrl: './asignar-horario-dr.component.css'
 })
 export class AsignarHorarioDrComponent implements OnInit{
+  
   @ViewChild('fullcalendar') calendarComponent!: FullCalendarComponent;
   //#region Variables
   // variables para agregar horas
@@ -94,8 +95,8 @@ export class AsignarHorarioDrComponent implements OnInit{
     eventResizableFromStart: false,
     selectable: true,
     events: [],
-    droppable: false,
-    dropAccept: () => false,
+    droppable: true,
+    dropAccept:() => true,
     height: 'auto',
     dayHeaderFormat: { weekday: 'long' },
     slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
@@ -116,7 +117,7 @@ export class AsignarHorarioDrComponent implements OnInit{
     private docenteService: DocentecurService,
     private aulaService: AulaService,
     private router: Router,
-    private estadoTurnoService: EstadoTurnoService
+    private estadoTurnoService: EstadoTurnoService,
   ) {}
 
   ngOnInit(): void {
@@ -161,7 +162,6 @@ export class AsignarHorarioDrComponent implements OnInit{
         this.cargarHorarios()
       }
     });
-    
   }
 
   private calcularHorasRestantesPorCurso(
@@ -740,7 +740,9 @@ export class AsignarHorarioDrComponent implements OnInit{
         n_horas: this.horasAsignadas, // 👈🔥 ESTO ES CLAVE
         aula_id: this.aulaSeleccionada ?? null,
         docente_id: this.selectedDocente?.id ?? null,
-        h_umaPlus: this.cursoSeleccionado.h_umaPlus ?? 0
+        h_umaPlus: this.cursoSeleccionado.h_umaPlus ?? 0,
+
+
       },
     };
 
@@ -919,94 +921,94 @@ export class AsignarHorarioDrComponent implements OnInit{
   }
 
   cargarHorarios(): void {
-    if (!this.turnoId) return;
-  
-    // ✅ Primero cargamos docentes
-    this.docenteService.obtenerDocentes().subscribe((docentes) => {
-      this.docentes = docentes;
-  
-      // Luego ya puedes cargar horarios
-      this.horarioService.getHorarioPorTurno(this.turnoId).subscribe((res: HorarioExtendido[]) => {
-        const eventos = res
-          .filter((h) => h.h_inicio && h.h_fin && h.dia)
-          .map((h: HorarioExtendido) => {
-            const curso = h.curso;
-            const tipoEvento = h.tipo ?? 'Teoría';
-  
-            let color = '#3788d8';
-            let tipoAgrupado = null;
-  
-            const docenteObj = this.docentes.find(d => d.id === h.docente_id);
-            const docenteview = docenteObj ? docenteObj.c_nomdoc : 'Sin docente';
-  
-            if (curso?.cursosPadres?.length) {
-              const padre = curso.cursosPadres[0];
-              tipoAgrupado = padre.tipo;
-              if (padre.tipo === 0) color = '#EAB308';
-              if (padre.tipo === 1) color = '#7E22CE';
-            }
-  
-            return {
-              id: String(h.id),
-              title: `${curso.c_nomcur} (${tipoEvento}) - ${docenteview}`,
-              start: h.h_inicio,
-              end: h.h_fin,
-              backgroundColor: color,
-              borderColor: color,
-              extendedProps: {
-                codCur: curso.c_codcur,
-                turno: h.turno_id,
-                dia: h.dia,
-                tipo: tipoEvento,
-                n_horas: h.n_horas,
-                aula_id: h.aula_id,
-                docente_id: h.docente_id,
-                tipoAgrupado: tipoAgrupado,
-              },
-              durationEditable: false,
-            };
-          });
-  
-        this.mostrarCalendario = false;
-        setTimeout(() => {
-          this.calendarOptions.events = eventos;
-          this.mostrarCalendario = true;
-        }, 10);
-  
-        // Cursos asíncronos
-        this.cursosAsyncDesdeAPI = res
-          .filter((h) => h.h_inicio === null && h.h_fin === null && h.dia === null)
-          .map((h) => {
-            const curso = h.curso;
-            return {
-              n_codper: +curso.n_codper,
-              c_codmod: curso.c_codmod?.toString(),
-              c_nommod: this.turnoData?.c_nommod || '',
-              c_codfac: curso.c_codfac,
-              c_codesp: curso.c_codesp,
-              c_area: curso.c_area,
-              n_ciclo: curso.n_ciclo?.toString(),
-              c_ciclo: curso.n_ciclo?.toString(),
-              c_codcur: curso.c_codcur,
-              c_nomcur: curso.c_nomcur,
-              tipo: h.tipo,
-              horasRestantes: h.n_horas,
-              turno_id: curso.turno_id,
-              h_umaPlus: h.h_umaPlus ?? 0,
-              guardadoAsync: true,
-              n_codper_equ: curso.n_codper_equ ? +curso.n_codper_equ : undefined,
-              c_codmod_equ: curso.c_codmod_equ,
-              c_codfac_equ: curso.c_codfac_equ,
-              c_codesp_equ: curso.c_codesp_equ,
-              c_codcur_equ: curso.c_codcur_equ,
-              c_nomcur_equ: curso.c_nomcur_equ,
-              disabled: false
-            } as Curso;
-          });
-      });
+  if (!this.turnoId) return;
+
+  // ✅ Primero cargamos docentes
+  this.docenteService.obtenerDocentes().subscribe((docentes) => {
+    this.docentes = docentes;
+
+    // Luego ya puedes cargar horarios
+    this.horarioService.getHorarioPorTurno(this.turnoId).subscribe((res: HorarioExtendido[]) => {
+      const eventos = res
+        .filter((h) => h.h_inicio && h.h_fin && h.dia)
+        .map((h: HorarioExtendido) => {
+          const curso = h.curso;
+          const tipoEvento = h.tipo ?? 'Teoría';
+
+          let color = '#3788d8';
+          let tipoAgrupado = null;
+
+          const docenteObj = this.docentes.find(d => d.id === h.docente_id);
+          const docenteview = docenteObj ? docenteObj.c_nomdoc : 'Sin docente';
+
+          if (curso?.cursosPadres?.length) {
+            const padre = curso.cursosPadres[0];
+            tipoAgrupado = padre.tipo;
+            if (padre.tipo === 0) color = '#EAB308';
+            if (padre.tipo === 1) color = '#7E22CE';
+          }
+
+          return {
+            id: String(h.id),
+            title: `${curso.c_nomcur} (${tipoEvento}) - ${docenteview}`,
+            start: h.h_inicio,
+            end: h.h_fin,
+            backgroundColor: color,
+            borderColor: color,
+            extendedProps: {
+              codCur: curso.c_codcur,
+              turno: h.turno_id,
+              dia: h.dia,
+              tipo: tipoEvento,
+              n_horas: h.n_horas,
+              aula_id: h.aula_id,
+              docente_id: h.docente_id,
+              tipoAgrupado: tipoAgrupado,
+            },
+            durationEditable: false,
+          };
+        });
+
+      this.mostrarCalendario = false;
+      setTimeout(() => {
+        this.calendarOptions.events = eventos;
+        this.mostrarCalendario = true;
+      }, 10);
+
+      // Cursos asíncronos
+      this.cursosAsyncDesdeAPI = res
+        .filter((h) => h.h_inicio === null && h.h_fin === null && h.dia === null)
+        .map((h) => {
+          const curso = h.curso;
+          return {
+            n_codper: +curso.n_codper,
+            c_codmod: curso.c_codmod?.toString(),
+            c_nommod: this.turnoData?.c_nommod || '',
+            c_codfac: curso.c_codfac,
+            c_codesp: curso.c_codesp,
+            c_area: curso.c_area,
+            n_ciclo: curso.n_ciclo?.toString(),
+            c_ciclo: curso.n_ciclo?.toString(),
+            c_codcur: curso.c_codcur,
+            c_nomcur: curso.c_nomcur,
+            tipo: h.tipo,
+            horasRestantes: h.n_horas,
+            turno_id: curso.turno_id,
+            h_umaPlus: h.h_umaPlus ?? 0,
+            guardadoAsync: true,
+            n_codper_equ: curso.n_codper_equ ? +curso.n_codper_equ : undefined,
+            c_codmod_equ: curso.c_codmod_equ,
+            c_codfac_equ: curso.c_codfac_equ,
+            c_codesp_equ: curso.c_codesp_equ,
+            c_codcur_equ: curso.c_codcur_equ,
+            c_nomcur_equ: curso.c_nomcur_equ,
+            disabled: false
+          } as Curso;
+        });
     });
-  }
-  
+  });
+}
+
   //#region metodos para en eliminar y actulizar
   private actualizarHorasRestantes(
     codigo: string,
@@ -1497,12 +1499,15 @@ export class AsignarHorarioDrComponent implements OnInit{
     }
   }
   
+  
   stringifyCursoAsync(curso: any): string {
     return JSON.stringify({
       n_codper: String(curso.n_codper),
       c_codmod: String(curso.c_codmod),
       c_codfac: curso.c_codfac,
       c_codesp: curso.c_codesp,
+      nomesp: curso.nomesp,
+      nom_fac: curso.nom_fac,
       c_codcur: curso.c_codcur,
       c_nomcur: curso.c_nomcur,
       n_ciclo: Number(curso.n_ciclo),
@@ -1559,6 +1564,8 @@ export class AsignarHorarioDrComponent implements OnInit{
           c_nomcur: curso.c_nomcur,
           n_ciclo: Number(curso.n_ciclo),
           c_area: curso.c_area,
+          nomesp: curso.nomesp,
+          nom_fac: curso.nom_fac,
           n_codper_equ: String(curso.n_codper_equ),
           c_codmod_equ: Number(curso.c_codmod_equ),
           c_codfac_equ: curso.c_codfac_equ,
@@ -1604,7 +1611,7 @@ export class AsignarHorarioDrComponent implements OnInit{
   get cursosPlan2025Async(): Curso[] {
     return this.cursosAsyncDesdeAPI.filter(c => +c.n_codper === 2025);
   }
-
+  
   busquedaDocente: string = '';
   resultadosBusqueda: Docente[] = [];
 
@@ -1633,4 +1640,7 @@ export class AsignarHorarioDrComponent implements OnInit{
     this.resultadosBusqueda = [];
   }
 
+  volverturno(){
+    this.recargarCursosSegunTurno()
+  }
 }

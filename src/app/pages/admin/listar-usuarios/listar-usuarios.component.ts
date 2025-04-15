@@ -1,8 +1,7 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { User, Usernew } from '../../../interfaces/User';
+import { Usernew } from '../../../interfaces/User';
 import { UserService } from '../../../services/user.service';
-import { generate } from 'rxjs';
 import { AlertService } from '../../../services/alert.service';
 
 @Component({
@@ -23,16 +22,17 @@ export class ListarUsuariosComponent  implements OnInit {
   usuariosFiltrados: Usernew[] = [];
   filtroBusqueda = '';
 
-  usuario = {
+  usuario: any = {
+    id: null,
     nombre: '',
     apellidos: '',
     genero: 'M',
     email: '',
     grado: '',
-    estado: 'A', // 'A' para activo, que es el valor del JSON original
+    estado: 'A',
     password: ''
   };
-
+  
   constructor(
     private location: Location,
     private userService: UserService,
@@ -41,6 +41,7 @@ export class ListarUsuariosComponent  implements OnInit {
 
   ngOnInit(): void {
     this.cargarUsuarios();
+    this.obtenerUsuarioPorId(0)
   }
 
   cargarUsuarios(): void {
@@ -57,6 +58,38 @@ export class ListarUsuariosComponent  implements OnInit {
         this.error = 'Error al cargar la lista de usuarios';
         this.loading = false;
         console.error(err);
+      }
+    });
+  }
+
+  editarUsuario(id: number) {
+    this.userService.getUserById(id).subscribe({
+      next: (data) => {
+        this.usuario = {
+          id: data.id,
+          nombre: data.nombre,
+          apellidos: data.apellido,
+          email: data.email,
+          genero: data.genero,
+          grado: data.grado,
+          estado: data.estado,
+          password: ''
+        };
+        this.abrirModal();
+      },
+      error: (err) => {
+        console.error('❌ Error al obtener usuario:', err);
+      }
+    });
+  }
+  
+  obtenerUsuarioPorId(id: number) {
+    this.userService.getUserById(id).subscribe({
+      next: (usuario) => {
+        console.log('Usuario obtenido:', usuario);
+      },
+      error: (err) => {
+        console.error('Error al obtener usuario por ID:', err);
       }
     });
   }
@@ -83,51 +116,67 @@ export class ListarUsuariosComponent  implements OnInit {
     return this.usuariosFiltrados.slice(inicio, inicio + this.itemsPorPagina);
   }
 
-  // Métodos del modal
   abrirModal(): void {
+    if (!this.usuario.id) {
+      this.usuario = {
+        id: null,
+        nombre: '',
+        apellidos: '',
+        genero: 'M',
+        email: '',
+        grado: '',
+        estado: 'A',
+        password: ''
+      };
+    }
     this.modalAbierto = true;
   }
+    
 
   cerrarModal(): void {
     this.modalAbierto = false;
   }
 
   guardarUsuario(): void {
-    const nuevoUsuario = {
+    const usuarioData = {
       nombre: this.usuario.nombre,
       apellido: this.usuario.apellidos,
       genero: this.usuario.genero,
       grado: this.usuario.grado,
       email: this.usuario.email,
-      estado: this. usuario.estado,
+      estado: this.usuario.estado,
       password: this.usuario.password
     };
   
-    this.userService.createUser(nuevoUsuario).subscribe({
-      next: () => {
-        this.alerService.success('✅ Usuario creado:');
-        this.cerrarModal();
-        this.cargarUsuarios(); // recarga la tabla
-      },
-      error: (err) => {
-        console.error('❌ Error al guardar usuario:', err);
-      
-        let mensajes: string[] = [];
-      
-        // Si es un array de errores
-        if (Array.isArray(err.error.message)) {
-          mensajes = err.error.message.map((msg: string) => this.traducirMensaje(msg));
-        } 
-        // Si es solo un string
-        else if (typeof err.error.message === 'string') {
-          mensajes = [this.traducirMensaje(err.error.message)];
+    if (this.usuario.id) {
+      // EDITAR
+      this.userService.updateUser({ ...usuarioData, id: this.usuario.id }).subscribe({
+        next: () => {
+          this.alerService.success('✅ Usuario actualizado correctamente');
+          this.cerrarModal();
+          this.cargarUsuarios();
+        },
+        error: (err) => {
+          console.error('❌ Error al actualizar:', err);
+          this.alerService.error(err);
         }
-      
-        const mensajeFormateado = mensajes.join('<br>');
-        this.alerService.error(`❌ Errores:${mensajeFormateado}`);
-      }            
-    });
+      });
+    } else {
+      // CREAR
+      this.userService.createUser(usuarioData).subscribe({
+        next: () => {
+          this.alerService.success('✅ Usuario creado correctamente');
+          this.cerrarModal();
+          this.cargarUsuarios();
+        },
+        error: (err) => {
+          console.error('❌ Error al crear usuario:', err);
+          this.alerService.error(err);
+        }
+      });
+    }
   }
+  
 
   traducirMensaje(msg: string): string {
     if (msg.includes('should not be empty')) {
