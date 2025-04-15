@@ -96,6 +96,8 @@ export interface UpdateHorarioItem {
     c_nomcur: string;
     n_ciclo: number;
     c_area: string;
+    nom_fac: string;
+    nomesp: string;
     turno_id: number;
   };
   horarios: UpdateHorarioDetalle[];

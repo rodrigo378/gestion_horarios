@@ -873,6 +873,8 @@ export class AsignarHorarioDrComponent implements OnInit{
           c_nomcur: curso?.c_nomcur || '',
           n_ciclo: Number(curso?.n_ciclo) || 0,
           c_area: curso?.c_area || '',
+          nom_fac: String(curso?.nom_fac || ''),
+          nomesp: String(curso?.nomesp || ''),
           turno_id: this.turnoId,
           n_codper_equ:
             curso?.n_codper_equ != null ? String(curso.n_codper_equ) : null,
@@ -1069,6 +1071,8 @@ export class AsignarHorarioDrComponent implements OnInit{
       n_codper: turno.n_codper,
       n_ciclo: turno.n_ciclo.toString(),
       c_ciclo: turno.n_ciclo.toString(),
+      nom_fac: turno.nom_fac,
+      nomesp: turno.nomesp,
       tipo,
       horasRestantes: horas,
     };
@@ -1251,6 +1255,8 @@ export class AsignarHorarioDrComponent implements OnInit{
             c_nomcur: curso?.c_nomcur || '',
             n_ciclo: Number(curso?.n_ciclo) || 0,
             c_area: curso?.c_area || '',
+            nom_fac: String(curso?.nom_fac || ''),
+            nomesp: String(curso?.nomesp || ''),
             turno_id: this.turnoId,
             tipo: tipo ?? 'Teoría',
             n_codper_equ: curso?.n_codper_equ != null ? String(curso.n_codper_equ) : null,

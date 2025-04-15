@@ -1256,6 +1256,8 @@ export class AsignarhorarioComponent implements OnInit {
             c_nomcur: curso?.c_nomcur || '',
             n_ciclo: Number(curso?.n_ciclo) || 0,
             c_area: curso?.c_area || '',
+            nom_fac: String(curso?.nom_fac || ''),
+            nomesp: String(curso?.nomesp || ''),
             turno_id: this.turnoId,
             tipo: tipo ?? 'Teoría',
             n_codper_equ: curso?.n_codper_equ != null ? String(curso.n_codper_equ) : null,
