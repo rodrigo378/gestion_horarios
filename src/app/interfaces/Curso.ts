@@ -13,6 +13,8 @@ export interface Curso {
   c_ciclo: string;
   c_codcur: string;
   c_nomcur: string;
+  nom_fac: string;
+  nomesp: string;
   n_ht?: number;
   n_hp?: number;
   tipoAgrupado?: string;

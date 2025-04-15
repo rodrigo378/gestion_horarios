@@ -333,4 +333,10 @@ export class VerTurnoDrComponent {
   editarTurno(turno_id: number) {
     this.router.navigate([`/cursos/${turno_id}`]);
   }
+
+  cambiarItemsPorPagina(valor: number) {
+    this.itemsPorPagina = valor;
+    this.paginaActual = 1; // Reinicia a la primera página
+  }
+  
 }

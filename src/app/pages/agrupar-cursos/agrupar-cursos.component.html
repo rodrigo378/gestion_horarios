@@ -446,12 +446,30 @@
       </table>
     </div>
     <div class="flex items-center justify-between px-4 py-3">
-      <p class="text-sm text-slate-600">
-        Página {{ paginaActual }} de
-        {{ totalCursos ? Math.ceil(totalCursos / 20) : 1 }} — Total:
-        {{ totalCursos }} cursos
-      </p>
-
+      <div class="flex items-center gap-3">
+        <p class="text-sm text-slate-600">
+          Página {{ paginaActual }} de
+          {{ totalCursos ? Math.ceil(totalCursos / itemsPorPagina) : 1 }} —
+          Total: {{ totalCursos }} cursos
+        </p>
+    
+        <!-- SELECT de ítems por página -->
+        <select
+          class="border border-slate-300 text-sm rounded px-5 py-1 text-slate-600"
+          [(ngModel)]="itemsPorPagina"
+          (change)="cambiarItemsPorPagina(itemsPorPagina)"
+        >
+          <option [value]="10">10</option>
+          <option [value]="20">20</option>
+          <option [value]="50">50</option>
+          <option [value]="100">100</option>
+          <option [value]="200">200</option>
+          <option [value]="300">300</option>
+          <option [value]="500">500</option>
+          <option [value]="5000">Todos</option>
+        </select>
+      </div>
+    
       <div class="flex gap-2">
         <button
           class="rounded border border-slate-300 py-2 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
@@ -462,7 +480,7 @@
         </button>
         <button
           class="rounded border border-slate-300 py-2 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
-          [disabled]="paginaActual === Math.ceil(totalCursos / 20)"
+          [disabled]="paginaActual === Math.ceil(totalCursos / itemsPorPagina)"
           (click)="avanzarPagina()"
         >
           Siguiente

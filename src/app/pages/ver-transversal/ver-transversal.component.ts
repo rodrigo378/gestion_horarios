@@ -36,6 +36,8 @@ export class VerTransversalComponent implements OnInit {
 
   mostrarModalCrear: boolean = false;
 
+  itemsPorPagina: number = 20;
+
   filtros = {
     c_codmod: '',
     n_codper: '2025',
@@ -53,8 +55,8 @@ export class VerTransversalComponent implements OnInit {
 
   getCursos() {
     const itemsPorPagina = 20;
-    const skip = (this.paginaActual - 1) * itemsPorPagina;
-    const take = itemsPorPagina;
+    const skip = (this.paginaActual - 1) * this.itemsPorPagina;
+    const take = this.itemsPorPagina;    
 
     console.log('itemsPorPagina => ', itemsPorPagina);
     console.log('skip => ', skip);
@@ -260,5 +262,11 @@ export class VerTransversalComponent implements OnInit {
         this.alertService.error(`${err.error.errores}`);
       },
     });
+  }
+
+  cambiarItemsPorPagina(valor: number) {
+    this.itemsPorPagina = valor;
+    this.paginaActual = 1; 
+    this.getCursos(); 
   }
 }

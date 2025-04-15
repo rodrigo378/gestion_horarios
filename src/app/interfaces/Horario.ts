@@ -53,7 +53,8 @@ export interface CreateHorario {
     n_ciclo: number;
     c_area?: string;
     turno_id: number;
-
+    nom_fac: string;
+    nomesp: string;
     n_codper_equ: string | null;
     c_codmod_equ: number | null;
     c_codfac_equ: string | null;
