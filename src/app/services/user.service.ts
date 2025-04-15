@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Modulo } from '../interfaces/Modulo';
 import { CreateUserDTO, User, Usernew } from '../interfaces/User';
 
@@ -48,5 +48,18 @@ export class UserService {
       `${this.apiUrl}/auth/signup`,
       data
     );
-  }  
+  }
+
+  getUserById(id: number): Observable<Usernew> {
+    return this.http.get<Usernew[]>(`${this.apiUrl}/user/${id}`, this.getTokenHeader())
+      .pipe(
+        // Devuelve solo el primer elemento del array
+        map(response => response[0])
+      );
+  }
+  
+  updateUser(usuario: Usernew & { password: string }): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/user`, usuario, this.getTokenHeader());
+  }
+  
 }

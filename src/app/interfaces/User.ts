@@ -7,14 +7,14 @@ export interface User {
 }
 
 export interface Usernew {
-  // id?: string
+  id: number
   nombre: string | null;
   apellido: string | null;
   genero: string | null;
   grado: string | null;
   estado: string;
   email: string;
-  authProvider: string;
+  password: string
 }
 
 export interface CreateUserDTO {
