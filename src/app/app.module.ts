@@ -73,6 +73,7 @@ registerLocaleData(en);
     CalenderAulaComponent,
     CalenderDocenteComponent,
     VerTransversalComponent,
+    AgruparCursosComponent,
   ],
   imports: [
     BrowserModule,

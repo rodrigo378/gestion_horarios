@@ -179,7 +179,7 @@ export class AgruparCursosComponent {
     this.arrayCheckboxCursos = [];
     this.filtros = {
       c_codmod: '',
-      n_codper: '',
+      n_codper: '2025',
       c_codfac: '',
       c_codesp: '',
     };
@@ -225,7 +225,7 @@ export class AgruparCursosComponent {
           this.arrayCheckboxCursos = [];
           this.filtros = {
             c_codmod: '',
-            n_codper: '',
+            n_codper: '2025',
             c_codfac: '',
             c_codesp: '',
           };
