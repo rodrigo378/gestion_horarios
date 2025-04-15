@@ -37,10 +37,9 @@ export class AuthService {
   logout(): Observable<any> {
     // 🔥 Borrar cookie manualmente en el cliente (por si no es HttpOnly)
     document.cookie =
-      'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure; SameSite=Strict';
-  
+      'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure';
+
     // Llamar al backend para eliminar la cookie si es HttpOnly
     return this.http.post(`${this.apiUrl}/auth/logout`, {});
   }
-  
 }
