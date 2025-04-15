@@ -50,7 +50,9 @@ export interface Curso2 {
   n_codper: string;
   c_codmod: number;
   c_codfac: string;
+  nom_fac: string;
   c_codesp: string;
+  nomesp: string;
   c_codcur: string;
   c_nomcur: string;
   n_ciclo: number;

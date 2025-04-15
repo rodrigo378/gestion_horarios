@@ -71,7 +71,9 @@ export class HorarioService {
     c_codfac?: string,
     c_codesp?: string,
     c_codcur?: string,
+    n_ciclo?: number,
     turno_id?: number,
+    filtroBusqueda?: string,
     skip?: number,
     take?: number
   ): Observable<{
@@ -86,8 +88,11 @@ export class HorarioService {
     if (n_codper) params.n_codper = n_codper;
     if (c_codfac) params.c_codfac = c_codfac;
     if (c_codesp) params.c_codesp = c_codesp;
-    if (c_codcur) params.n_codpla = c_codcur;
+    if (c_codcur) params.c_codcur = c_codcur;
+    if (n_ciclo !== undefined) params.n_ciclo = n_ciclo;
+
     if (turno_id !== undefined) params.turno_id = turno_id;
+    if (filtroBusqueda) params.filtroBusqueda = filtroBusqueda;
     if (skip !== undefined) params.skip = skip;
     if (take !== undefined) params.take = take;
 
@@ -123,5 +128,4 @@ export class HorarioService {
   guardarHorarioAsync(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/async`, data);
   }
-  
 }

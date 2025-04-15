@@ -2,11 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { HorarioService } from '../../services/horario.service';
 import { AlertService } from '../../services/alert.service';
 import { Curso2 } from '../../interfaces/Curso';
-import { CursoService } from '../../services/curso.service';
 import { ActivatedRoute } from '@angular/router';
 import { TurnoService } from '../../services/turno.service';
 import { Turno } from '../../interfaces/turno';
-import { CreateHorarioRequest, Horario } from '../../interfaces/Horario';
+import { Horario } from '../../interfaces/Horario';
 import { DocenteService } from '../../services/docente.service';
 import { AulaService } from '../../services/aula.service';
 import { Docente } from '../../interfaces/Docente';
@@ -56,20 +55,27 @@ export class VerCursosComponent implements OnInit {
     this.getCursos();
     this.getTurno();
   }
-  
+
   getCursos() {
     this.horarioService
-      .getCurso(undefined, undefined, undefined, undefined, undefined, this.id)
+      .getCurso(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        this.id
+      )
       .subscribe((data) => {
         this.cursos = data.data.map((curso: Curso2) => ({
           ...curso,
           cursosPadres: curso.cursosPadres ?? [], // ← aquí garantizas que no sea undefined
-          cursosHijos: curso.cursosHijos ?? [],   // ← opcional, por si acaso
+          cursosHijos: curso.cursosHijos ?? [], // ← opcional, por si acaso
         }));
         console.log('cursos => ', this.cursos);
       });
   }
-  
 
   getTurno() {
     this.turnoService.getTurnoById(this.id).subscribe((data) => {

@@ -15,7 +15,7 @@ export class VerTransversalComponent implements OnInit {
   cursos: Curso2[] = [];
   curso!: Curso2;
 
-  Math = Math; // 👈 Esto permite usar Math.ceil() en el HTML
+  Math = Math;
 
   totalCursos!: number;
 
@@ -31,6 +31,7 @@ export class VerTransversalComponent implements OnInit {
   selectModalidad: string = '';
   selectPlan: string = '';
   selectPeriodo: string = '';
+  selectCiclo: string = '';
 
   arrayCheckboxCursos: number[] = [];
 
@@ -45,6 +46,8 @@ export class VerTransversalComponent implements OnInit {
     c_codesp: '',
   };
 
+  filtroBusqueda: string = '';
+
   constructor(
     private horarioService: HorarioService,
     private cursoService: CursoService,
@@ -54,30 +57,36 @@ export class VerTransversalComponent implements OnInit {
   ngOnInit(): void {}
 
   getCursos() {
-    const itemsPorPagina = 20;
     const skip = (this.paginaActual - 1) * this.itemsPorPagina;
-    const take = this.itemsPorPagina;    
+    const take = this.itemsPorPagina;
 
-    console.log('itemsPorPagina => ', itemsPorPagina);
-    console.log('skip => ', skip);
-    console.log('take => ', take);
+    console.log('this.selectCiclo => ', this.selectCiclo);
 
     this.horarioService
       .getCurso(
         Number(this.selectModalidad),
-        this.selectPeriodo,
+        this.selectPlan,
         this.selectFacultadad,
         this.selectEspecialidad,
         undefined,
+        Number(this.selectCiclo),
         undefined,
+        this.filtroBusqueda.trim(),
         skip,
         take
       )
       .subscribe((data) => {
-        console.log('data => ', data);
         this.cursos = data.data;
         this.totalCursos = data.total;
       });
+  }
+
+  buscarDesdeInput() {
+    console.log('buscarDesdeInput');
+    console.log('=> ', this.filtroBusqueda);
+
+    this.paginaActual = 1;
+    this.getCursos();
   }
 
   avanzarPagina() {
@@ -147,10 +156,6 @@ export class VerTransversalComponent implements OnInit {
 
       this.filtros.c_codesp = '';
     });
-  }
-
-  clickDefinirCursoTransversales() {
-    this.getCursos();
   }
 
   clickMas(curso: Curso2) {
@@ -266,7 +271,7 @@ export class VerTransversalComponent implements OnInit {
 
   cambiarItemsPorPagina(valor: number) {
     this.itemsPorPagina = valor;
-    this.paginaActual = 1; 
-    this.getCursos(); 
+    this.paginaActual = 1;
+    this.getCursos();
   }
 }
