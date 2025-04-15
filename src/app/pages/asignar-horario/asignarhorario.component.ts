@@ -1505,6 +1505,8 @@ export class AsignarhorarioComponent implements OnInit {
       c_codmod: String(curso.c_codmod),
       c_codfac: curso.c_codfac,
       c_codesp: curso.c_codesp,
+      nomesp: curso.nomesp,
+      nom_fac: curso.nom_fac,
       c_codcur: curso.c_codcur,
       c_nomcur: curso.c_nomcur,
       n_ciclo: Number(curso.n_ciclo),
@@ -1561,6 +1563,8 @@ export class AsignarhorarioComponent implements OnInit {
           c_nomcur: curso.c_nomcur,
           n_ciclo: Number(curso.n_ciclo),
           c_area: curso.c_area,
+          nomesp: curso.nomesp,
+          nom_fac: curso.nom_fac,
           n_codper_equ: String(curso.n_codper_equ),
           c_codmod_equ: Number(curso.c_codmod_equ),
           c_codfac_equ: curso.c_codfac_equ,
@@ -1635,4 +1639,7 @@ export class AsignarhorarioComponent implements OnInit {
     this.resultadosBusqueda = [];
   }
 
+  volverturno(){
+    this.recargarCursosSegunTurno()
+  }
 }

@@ -413,16 +413,6 @@
   <div class="mb-6">
     <label class="block text-sm font-semibold text-gray-600 mb-1">Asignar Docente</label>
 
-    <!-- Select para Facultad -->
-    <!-- <label for="nom_fac" class="block text-sm font-medium text-gray-700">Facultad</label>
-    <select id="nom_fac"
-            [(ngModel)]="selectedFacultad"
-            (change)="filtrarDocentes()"
-            class="mt-1 block w-full p-2 border rounded border-gray-300">
-      <option value="">Seleccione una facultad</option>
-      <option *ngFor="let fac of nom_facultad" [value]="fac">{{ fac }}</option>
-    </select> -->
-
     <!-- Buscador general -->
     <div class="mb-3">
       <input type="text"
@@ -435,7 +425,7 @@
         <li *ngFor="let docente of resultadosBusqueda"
             (click)="seleccionarDocenteDesdeBusqueda(docente)"
             class="px-3 py-2 hover:bg-blue-100 cursor-pointer">
-          {{ docente.c_nomdoc }}
+          {{ docente.c_nomdoc }} ({{ docente.tipo === 0 ? 'TC' : 'TP' }})
         </li>
       </ul>
     </div>
