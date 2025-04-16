@@ -121,7 +121,9 @@
             <p class="text-sm text-slate-800 font-medium">
               <span class="font-semibold text-emerald-600">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
             </p>
-    
+            <!-- <p class="text-sm text-slate-800 font-medium">
+              <span class="font-semibold text-emerald-600">Equi. [{{ curso.c_codcur_equ }}]</span> - {{ curso.c_nomcur_equ }}
+            </p> -->
             <!-- Equivalente si existe y es distinto -->
             <ng-container *ngIf="curso.c_codcur_equ && curso.c_codcur_equ !== curso.c_codcur">
               <p class="text-sm text-slate-500 font-medium mt-1">

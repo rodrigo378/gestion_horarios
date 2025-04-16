@@ -101,6 +101,11 @@
           <a routerLink="/verturnodr" >Asignar Horario</a>
         </li>
       </ul>
+      <ul>
+        <li nz-menu-item nzMatchRouter *ngIf="hasPermiso('3.2')">
+          <a routerLink="/verturnodr" >Reporte docente</a>
+        </li>
+      </ul>
     </li>
 
       <!-- <li
