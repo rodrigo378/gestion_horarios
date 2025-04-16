@@ -87,26 +87,24 @@
       </li>
 
       <li
-      nz-submenu
-      nzTitle="Director"
-      nzIcon="user"
-      [nzOpen]="selectedMenu === 'dr'"
-      (nzOpenChange)="toggleMenuOp('dr', $event)"
-      *ngIf="
-        hasPermiso('3.1')
-      "
+        nz-submenu
+        nzTitle="Director"
+        nzIcon="user"
+        [nzOpen]="selectedMenu === 'dr'"
+        (nzOpenChange)="toggleMenuOp('dr', $event)"
+        *ngIf="hasPermiso('3.1')"
       >
-      <ul>
-        <li nz-menu-item nzMatchRouter *ngIf="hasPermiso('3.1')">
-          <a routerLink="/verturnodr" >Asignar Horario</a>
-        </li>
-      </ul>
-      <ul>
-        <li nz-menu-item nzMatchRouter *ngIf="hasPermiso('3.2')">
-          <a routerLink="/verturnodr" >Reporte docente</a>
-        </li>
-      </ul>
-    </li>
+        <ul>
+          <li nz-menu-item nzMatchRouter *ngIf="hasPermiso('3.1')">
+            <a routerLink="/verturnodr">Asignar Horario</a>
+          </li>
+        </ul>
+        <ul>
+          <li nz-menu-item nzMatchRouter *ngIf="hasPermiso('3.2')">
+            <a routerLink="/reporteria">Reporte docente</a>
+          </li>
+        </ul>
+      </li>
 
       <!-- <li
         
