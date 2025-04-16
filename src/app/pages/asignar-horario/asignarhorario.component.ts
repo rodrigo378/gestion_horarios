@@ -116,7 +116,6 @@ export class AsignarhorarioComponent implements OnInit {
     private docenteService: DocentecurService,
     private aulaService: AulaService,
     private router: Router,
-    private estadoTurnoService: EstadoTurnoService,
   ) {}
 
   ngOnInit(): void {
@@ -129,9 +128,8 @@ export class AsignarhorarioComponent implements OnInit {
     this.inicializarDragAndDrop();
     this.cargarHorarios();
     this.cargarAulas();
-    this.cargarDocentes();
+    // this.cargarDocentes();
   }
-  //#region metodos
 
   private cargarAulas(): void {
     this.aulaService.obtenerAulas().subscribe({
@@ -226,7 +224,6 @@ export class AsignarhorarioComponent implements OnInit {
       cursosPlan2025: plan2025,
     };
   }
-  
 
   private cargarDatosPorTurno(id: number): void {
     this.turnoService.getTurnoById(id).subscribe((turno) => {
@@ -239,9 +236,6 @@ export class AsignarhorarioComponent implements OnInit {
         c_codmod: Number(turno.c_codmod),
         c_grpcur: turno.c_grpcur,
       };
-
-      console.log('AIZ => ', turno.c_grpcur);
-
       this.cursoService.obtenerCursos(dataCursos).subscribe((resCursos) => {
         this.horarioService
           .getHorarioPorTurno(this.turnoId)
@@ -262,6 +256,9 @@ export class AsignarhorarioComponent implements OnInit {
             this.cursos = resultado.cursos;
             this.cursosPlan2023 = resultado.cursosPlan2023;
             this.cursosPlan2025 = resultado.cursosPlan2025;
+
+            this.bloquearEquivCursosCargar()
+            this.verificarEstadoTurnoAutomatico();
           });
       });
     });
@@ -723,7 +720,6 @@ export class AsignarhorarioComponent implements OnInit {
       return;
     }
 
-    const cursoBase = this.cursoSeleccionado;
 
     const evento = {
       id: eventoId,
@@ -740,7 +736,7 @@ export class AsignarhorarioComponent implements OnInit {
         aula_id: this.aulaSeleccionada ?? null,
         docente_id: this.selectedDocente?.id ?? null,
         h_umaPlus: this.cursoSeleccionado.h_umaPlus ?? 0,
-
+        c_codcur_equ: this.cursoSeleccionado?.c_codcur_equ ?? null
 
       },
     };
@@ -769,21 +765,22 @@ export class AsignarhorarioComponent implements OnInit {
     actualizarLista(this.cursosPlan2025);
 
     // ✅ Deshabilitar curso equivalente del otro plan
-    const codEquivalente = this.cursosPlan2025.find(
-      (c) => c.c_codcur === this.cursoSeleccionado.extendedProps.codigo
-    )?.c_codcur_equ;
+    // const codEquivalente = this.cursosPlan2025.find(
+    //   (c) => c.c_codcur === this.cursoSeleccionado.extendedProps.codigo
+    // )?.c_codcur_equ;
 
-    if (codEquivalente) {
-      const index = this.cursosPlan2023.findIndex(
-        (c) => c.c_codcur === codEquivalente
-      );
-      if (index !== -1) {
-        this.cursosPlan2023[index].disabled = true;
-      }
-    }
+    // if (codEquivalente) {
+    //   const index = this.cursosPlan2023.findIndex(
+    //     (c) => c.c_codcur === codEquivalente
+    //   );
+    //   if (index !== -1) {
+    //     this.cursosPlan2023[index].disabled = true;
+    //   }
+    // }
 
     this.resetCamposModal();
-    this.verificarEstadoTurnoAutomatico();
+    this.bloquearEquiCurso(this.cursoSeleccionado.extendedProps.codigo);
+    // this.verificarEstadoTurnoAutomatico();
 
     // 🧹 Limpieza final
     this.modalHorasActivo = false;
@@ -802,6 +799,82 @@ export class AsignarhorarioComponent implements OnInit {
     this.docentesFiltrados = [];
   }
 
+  eventosCargados: any[] = [];
+
+  private bloquearEquiCurso(codCurAsignado: string): void {
+    // 🔍 Buscamos el curso recién asignado
+    const cursoAsignado = [...this.cursosPlan2023, ...this.cursosPlan2025]
+      .find(c => c.c_codcur === codCurAsignado);
+  
+    if (!cursoAsignado) {
+      console.warn('⚠️ Curso asignado no encontrado:', codCurAsignado);
+      return;
+    }
+  
+    const codEquivalente = cursoAsignado.c_codcur_equ;
+  
+    if (!codEquivalente || codEquivalente === codCurAsignado) {
+      console.log('ℹ️ No tiene equivalente válido:', codEquivalente);
+      return;
+    }
+  
+    // 🔒 Buscar en ambas listas y bloquear el equivalente
+    let encontrado = false;
+  
+    [this.cursosPlan2023, this.cursosPlan2025].forEach(lista => {
+      const i = lista.findIndex(c => c.c_codcur === codEquivalente);
+      if (i !== -1) {
+        lista[i].disabled = true;
+        encontrado = true;
+        console.log(`⛔ BLOQUEADO: [${lista[i].c_codcur}] por equivalente asignado [${codCurAsignado}]`);
+      }
+    });
+  
+    if (!encontrado) {
+      console.log(`⚠️ Equivalente [${codEquivalente}] no encontrado en los planes.`);
+    }
+  
+    // 🔁 Refrescar visual
+    this.cursosPlan2023 = [...this.cursosPlan2023];
+    this.cursosPlan2025 = [...this.cursosPlan2025];
+  }
+  
+  private bloquearEquivCursosCargar(): void {
+    const codigosAsignados = new Set<string>();
+  
+    // 🔍 Recorremos todos los eventos asignados y capturamos tanto el código del curso como su equivalente
+    this.eventosCargados.forEach(ev => {
+      const cod = ev.extendedProps?.codCur?.toString().trim().toUpperCase();
+      const equiv = ev.extendedProps?.c_codcur_equ?.toString().trim().toUpperCase();
+  
+      if (cod) codigosAsignados.add(cod);
+      if (equiv) codigosAsignados.add(equiv); // 🔥 Clave para bloqueo inverso
+    });
+  
+    console.log('🗂️ Cursos asignados encontrados:', [...codigosAsignados]);
+  
+    // 🔁 Recorremos ambos planes para bloquear los cursos que ya están asignados o sus equivalentes
+    const listas = [this.cursosPlan2023, this.cursosPlan2025];
+    listas.forEach(lista => {
+      lista.forEach(curso => {
+        const codCur = curso.c_codcur?.toString().trim().toUpperCase();
+        const codEquivalente = curso.c_codcur_equ?.toString().trim().toUpperCase();
+  
+        if (
+          (codCur && codigosAsignados.has(codCur)) ||
+          (codEquivalente && codigosAsignados.has(codEquivalente))
+        ) {
+          curso.disabled = true;
+          console.log(`⛔ BLOQUEADO al cargar: [${codCur}] porque él o su equivalente [${codEquivalente}] ya están asignados`);
+        }
+      });
+    });
+  
+    // 🔄 Refrescamos visual para aplicar el cambio en la interfaz
+    this.cursosPlan2023 = [...this.cursosPlan2023];
+    this.cursosPlan2025 = [...this.cursosPlan2025];
+  }  
+  
   //#region Listar, Guardar y Editar eventos
   obtenerDiaSemana(fecha: Date): string {
     const dias = [
@@ -908,14 +981,14 @@ export class AsignarhorarioComponent implements OnInit {
         const mensaje = res.mensaje || '✅ Horarios guardados correctamente.';
         this.alertService.success(mensaje);
         this.cargarHorarios();
-        this.cargarDocentes();
+        // this.cargarDocentes();
+        this.verificarEstadoTurnoAutomatico();
       },
       error: (err) => {
         this.alertService.error('❌ Error al guardar horarios.');
         console.error(err);
       },
     });
-    this.verificarEstadoTurnoAutomatico();
     console.log('📝 Data enviada al backend:', payload);
   }
 
@@ -956,6 +1029,7 @@ export class AsignarhorarioComponent implements OnInit {
             borderColor: color,
             extendedProps: {
               codCur: curso.c_codcur,
+              c_codcur_equ: curso.c_codcur_equ,
               turno: h.turno_id,
               dia: h.dia,
               tipo: tipoEvento,
@@ -968,11 +1042,13 @@ export class AsignarhorarioComponent implements OnInit {
           };
         });
 
+      this.eventosCargados = eventos; // 👈 aquí
+
       this.mostrarCalendario = false;
-      setTimeout(() => {
-        this.calendarOptions.events = eventos;
-        this.mostrarCalendario = true;
-      }, 10);
+      this.calendarOptions.events = eventos;
+      this.mostrarCalendario = true;
+      this.eventosCargados = eventos; // 💾 guardar para comparar
+      this.bloquearEquivCursosCargar(); // 🚫 bloquear equivalentes      
 
       // Cursos asíncronos
       this.cursosAsyncDesdeAPI = res
@@ -1311,8 +1387,9 @@ export class AsignarhorarioComponent implements OnInit {
     this.modalHorasActivo = false;
     this.eventoSeleccionado = null;
     this.cargarHorarios();
-    this.cargarDocentes();
+    // this.cargarDocentes();
     this.resetCamposModal();
+    this.verificarEstadoTurnoAutomatico()
   }
 
   eliminarEvento(): void {
@@ -1348,6 +1425,7 @@ export class AsignarhorarioComponent implements OnInit {
                 this.alertService.success('🗑️ Evento eliminado correctamente.');
                 this.recargarCursosSegunTurno();
                 this.cargarDocentes();
+                this.verificarEstadoTurnoAutomatico();
               },
               error: (err) => {
                 this.alertService.error('❌ Error al eliminar el evento.');
@@ -1361,7 +1439,6 @@ export class AsignarhorarioComponent implements OnInit {
         this.modalHorasActivo = false;
         this.eventoSeleccionado = null;
         this.resetCamposModal();
-        this.verificarEstadoTurnoAutomatico();
       });
   }
 
@@ -1392,7 +1469,7 @@ export class AsignarhorarioComponent implements OnInit {
             );
             this.cargarHorarios();
             this.cargarDatosPorTurno(this.turnoId);
-            this.cargarDocentes();
+            // this.cargarDocentes();
           },
           error: (err) => {
             this.alertService.error(
@@ -1417,7 +1494,6 @@ export class AsignarhorarioComponent implements OnInit {
       this.selectedDocente = null;
     }
   }
-  
 
   cancelarEdicion(): void {
     console.log('⛔ CANCELANDO EDICIÓN');
@@ -1450,51 +1526,68 @@ export class AsignarhorarioComponent implements OnInit {
     this.aulaSeleccionada = null;
     this.horasAsignadas = 1;
   }
-  
-  // cambiarEstadoSelect(event: Event) {
-  //   const nuevoEstado = +(event.target as HTMLSelectElement).value;
-  
-  //   this.turnoService.actualizarEstado(this.turnoData!.id, nuevoEstado).subscribe(() => {
-  //     this.turnoData!.estado = nuevoEstado;
-  //     this.turnoService.emitirCambioEstado(this.turnoData!.id);
-  
-  //     // Mostrar alerta personalizada según el estado
-  //     switch (nuevoEstado) {
-  //       case 2:
-  //         this.alertService.success('El turno ha sido marcado como asignado.', '✅ Turno asignado');
-  //         break;
-  //       case 1:
-  //         this.alertService.info('Este turno se ha marcado como pendiente.');
-  //         break;
-  //       case 0:
-  //         this.alertService.error('Este turno no ha sido asignado aún.', '🛑 No asignado');
-  //         break;
-  //     }
-  //   });
-  // }
 
   verificarEstadoTurnoAutomatico() {
     const totalCursos = this.cursosPlan2023.length + this.cursosPlan2025.length;
   
     if (totalCursos === 0) {
-      this.actualizarEstadoTurno(0); // 🛑 No asignado (porque no hay cursos en absoluto)
+      this.actualizarEstadoTurno(0); // 🛑 No asignado
       return;
     }
   
-    const cursosAsignados = [...this.cursosPlan2023, ...this.cursosPlan2025].filter(
-      (c) => (c.horasRestantes ?? 1) <= 0
+    const eventos = this.calendarComponent.getApi().getEvents();
+  
+    const cursosAsignados: {
+      codCur: string;
+      tipo: string;
+      tieneDocente: boolean;
+      tieneAula: boolean;
+    }[] = [];
+  
+    [...this.cursosPlan2023, ...this.cursosPlan2025].forEach((curso) => {
+      if ((curso.horasRestantes ?? 1) <= 0) {
+        // Buscamos si tiene eventos con aula y docente
+        const eventosDelCurso = eventos.filter(
+          (ev) =>
+            ev.extendedProps['codCur'] === curso.c_codcur &&
+            ev.extendedProps['tipo'] === curso.tipo
+        );
+  
+        const tieneDocente = eventosDelCurso.every(
+          (ev) => ev.extendedProps['docente_id']
+        );
+  
+        const tieneAula = eventosDelCurso.every(
+          (ev) => ev.extendedProps['aula_id']
+        );
+  
+        cursosAsignados.push({
+          codCur: curso.c_codcur,
+          tipo: curso.tipo || '',
+          tieneDocente,
+          tieneAula,
+        });
+      }
+    });
+  
+    const totalAsignados = cursosAsignados.length;
+    const conDocenteYAula = cursosAsignados.filter(
+      (c) => c.tieneDocente && c.tieneAula
     ).length;
   
-    if (cursosAsignados === totalCursos) {
+    console.log(`📊 Total cursos: ${totalCursos}`);
+    console.log(`✅ Asignados (horas completas): ${totalAsignados}`);
+    console.log(`🏫 Con docente y aula: ${conDocenteYAula}`);
+  
+    if (totalAsignados >= 4 && conDocenteYAula >= 4) {
       this.actualizarEstadoTurno(2); // ✅ Asignado
-    } else if (cursosAsignados > 0) {
+    } else if (totalAsignados > 0) {
       this.actualizarEstadoTurno(1); // 🕒 Pendiente
     } else {
       this.actualizarEstadoTurno(0); // 🛑 No asignado
     }
   }
-  
-  
+
   actualizarEstadoTurno(nuevoEstado: number) {
     if (this.turnoData?.estado !== nuevoEstado) {
       this.turnoService.actualizarEstado(this.turnoData!.id, nuevoEstado).subscribe(() => {
@@ -1592,6 +1685,7 @@ export class AsignarhorarioComponent implements OnInit {
         next: (res) => {
           this.alertService.success(res.mensaje || '✅ Registrado correctamente');
           this.cargarDatosPorTurno(this.turnoId);
+          this.verificarEstadoTurnoAutomatico();
           
           // 🔄 Buscar y marcar curso como guardado
           const index = this.cursosPlan2025.findIndex(c => c.c_codcur === curso.c_codcur && c.tipo === curso.tipo);
