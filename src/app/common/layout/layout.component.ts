@@ -1,7 +1,8 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
+import { filter, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-layout',
@@ -13,9 +14,12 @@ export class LayoutComponent implements OnInit {
   isCollapsed = false;
   isMenuOpen = false;
   currentYear: number = new Date().getFullYear();
-  selectedMenu: String | null = null;
   docenteId: number = 1;
   permisosMap: { [codigo: string]: boolean } = {};
+
+  private routerSubscription!: Subscription;
+  selectedMenu: String | null = null;
+  item: String | null = null;
 
   constructor(
     private authService: AuthService,
@@ -25,28 +29,31 @@ export class LayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.getPermisos();
-  
-    const storedMenu = localStorage.getItem('selectedMenu');
-    if (storedMenu) {
-      this.selectedMenu = storedMenu;
-    }
+    this.seleccionItem();
+
+    this.routerSubscription = this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        console.log('Ruta cambió:', this.router.url);
+        this.seleccionItem();
+      });
   }
-  
+
+  seleccionItem() {
+    const partes = this.router.url.split('?')[0].split('/').slice(1);
+    this.selectedMenu = partes[0];
+
+    const aliasItemMap: { [key: string]: string } = {
+      asignarhorario: 'turno',
+    };
+
+    const rawItem = partes[1];
+    this.item = aliasItemMap[rawItem] ?? rawItem;
+  }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
   }
-
-  toggleMenuOp(menu: string, isOpen: boolean): void {
-    this.selectedMenu = isOpen ? menu : null;
-  
-    // Guardar el último menú seleccionado en localStorage
-    if (isOpen) {
-      localStorage.setItem('selectedMenu', menu);
-    } else {
-      localStorage.removeItem('selectedMenu');
-    }
-  }  
 
   @HostListener('document:click', ['$event'])
   closeMenu(event: Event) {
@@ -61,9 +68,7 @@ export class LayoutComponent implements OnInit {
 
   getPermisos() {
     this.userService.getPermisoMe().subscribe((data) => {
-      console.log('Permisos desde backend:', data);
-
-      this.permisosMap = {}; // Limpia antes de cargar
+      this.permisosMap = {};
 
       data.forEach((permiso: any) => {
         const codigo = permiso.item?.codigo;
@@ -71,8 +76,6 @@ export class LayoutComponent implements OnInit {
           this.permisosMap[codigo] = true;
         }
       });
-
-      console.log('Permisos cargados en permisosMap:', this.permisosMap);
     });
   }
 
@@ -81,16 +84,14 @@ export class LayoutComponent implements OnInit {
   }
 
   logout() {
-    localStorage.removeItem('selectedMenu'); // ✅ limpiar menú activo
     this.authService.logout().subscribe({
       next: () => {
         window.location.href = '/login';
       },
-      error: err => {
+      error: (err) => {
         console.error('Error al cerrar sesión', err);
         window.location.href = '/login';
-      }
+      },
     });
-  }  
-  
+  }
 }
