@@ -28,6 +28,8 @@ export class LayoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('v2');
+
     this.getPermisos();
     this.seleccionItem();
 
@@ -84,7 +86,8 @@ export class LayoutComponent implements OnInit {
 
   logout() {
     this.authService.logout().subscribe({
-      next: () => {
+      next: (res: any) => {
+        console.log('res => ', res);
         window.location.href = '/login';
       },
       error: (err) => {

@@ -13,7 +13,7 @@ import { Location } from '@angular/common';
   selector: 'app-ver-turno-dr',
   standalone: false,
   templateUrl: './ver-turno-dr.component.html',
-  styleUrl: './ver-turno-dr.component.css'
+  styleUrl: './ver-turno-dr.component.css',
 })
 export class VerTurnoDrComponent {
   mostrarModalCrear: boolean = false;
@@ -75,14 +75,13 @@ export class VerTurnoDrComponent {
   }
 
   actualizarEstadoEnListado(turnoId: number) {
-    this.turnoServices.getTurnoById(turnoId).subscribe(turnoActualizado => {
-      const index = this.turnos.findIndex(t => t.id === turnoId);
+    this.turnoServices.getTurnoById(turnoId).subscribe((turnoActualizado) => {
+      const index = this.turnos.findIndex((t) => t.id === turnoId);
       if (index !== -1) {
         this.turnos[index].estado = turnoActualizado.estado;
       }
     });
   }
-  
 
   inicializarFormulario() {
     this.formularioHorario = this.fb.group({
@@ -194,7 +193,7 @@ export class VerTurnoDrComponent {
   }
 
   verCursos(turno: Turno) {
-    this.router.navigate(['/asignarhorariodr'], {
+    this.router.navigate(['director/asignarhorario'], {
       queryParams: {
         id: turno.id,
       },
@@ -338,5 +337,4 @@ export class VerTurnoDrComponent {
     this.itemsPorPagina = valor;
     this.paginaActual = 1; // Reinicia a la primera página
   }
-  
 }
