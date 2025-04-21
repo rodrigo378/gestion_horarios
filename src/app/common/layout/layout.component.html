@@ -26,7 +26,6 @@
         nzTitle="Dashboard"
         nzIcon="dashboard"
         [nzOpen]="selectedMenu === 'dashboard'"
-        (nzOpenChange)="toggleMenuOp('dashboard', $event)"
       >
         <ul>
           <li nz-menu-item nzMatchRouter>
@@ -39,16 +38,27 @@
         nz-submenu
         nzTitle="Gestion de Usuario"
         nzIcon="usergroup-add"
-        [nzOpen]="selectedMenu === 'docente'"
-        (nzOpenChange)="toggleMenuOp('docente', $event)"
+        [nzOpen]="selectedMenu === 'admin'"
         *ngIf="hasPermiso('1.1') || hasPermiso('1.2')"
       >
         <ul>
-          <li nz-menu-item *ngIf="hasPermiso('1.1')">
-            <a routerLink="/listausuarios">Listar Usuario</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('1.1')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'admin' && item === 'usuario'
+            "
+          >
+            <a routerLink="/admin/usuario">Listar Usuario</a>
           </li>
-          <li nz-menu-item *ngIf="hasPermiso('1.2')">
-            <a routerLink="/permisos">Permisos de usuarios</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('1.2')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'admin' && item === 'permiso'
+            "
+          >
+            <a routerLink="/admin/permiso">Permisos de usuarios</a>
           </li>
         </ul>
       </li>
@@ -58,7 +68,6 @@
         nzTitle="COA"
         nzIcon="usergroup-add"
         [nzOpen]="selectedMenu === 'coa'"
-        (nzOpenChange)="toggleMenuOp('coa', $event)"
         *ngIf="
           hasPermiso('2.1') ||
           hasPermiso('2.2') ||
@@ -68,43 +77,86 @@
         "
       >
         <ul>
-          <li nz-menu-item *ngIf="hasPermiso('2.1')">
-            <a routerLink="/verturnos">Asignar Horarios</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('2.1')"
+            [class.ant-menu-item-selected]="item === 'turno'"
+          >
+            <a routerLink="/coa/turno">Asignar Horarios</a>
           </li>
-          <li nz-menu-item *ngIf="hasPermiso('2.2')">
-            <a routerLink="/reporteria">Reporte docente</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('2.2')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'coa' && item === 'docente'
+            "
+          >
+            <a routerLink="/coa/docente">Reporte docente</a>
           </li>
-          <li nz-menu-item *ngIf="hasPermiso('2.3')">
-            <a routerLink="/reporteriaaula">Reporte Aula</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('2.3')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'coa' && item === 'aula'
+            "
+          >
+            <a routerLink="/coa/aula">Reporte Aula</a>
           </li>
-          <li nz-menu-item *ngIf="hasPermiso('2.4')">
-            <a routerLink="/transversal">Definir cursos transversales</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('2.4')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'coa' && item === 'transversal'
+            "
+          >
+            <a routerLink="/coa/transversal">Definir cursos transversales</a>
           </li>
-          <li nz-menu-item *ngIf="hasPermiso('2.5')">
-            <a routerLink="/agrupar">Definir cursos agrupados</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('2.5')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'coa' && item === 'agrupar'
+            "
+          >
+            <a routerLink="/coa/agrupar">Definir cursos agrupados</a>
           </li>
         </ul>
       </li>
 
       <li
-      nz-submenu
-      nzTitle="Director"
-      nzIcon="user"
-      [nzOpen]="selectedMenu === 'dr'"
-      (nzOpenChange)="toggleMenuOp('dr', $event)"
-      *ngIf="hasPermiso('3.1') || hasPermiso('3.2')"
-    >
-      <ul>
-        <li nz-menu-item nzMatchRouter *ngIf="hasPermiso('3.1')">
-          <a routerLink="/verturnodr">Asignar Horario</a>
-        </li>
-        <li nz-menu-item nzMatchRouter *ngIf="hasPermiso('3.2')">
-          <a routerLink="/reporteria">Reporte docente</a>
-        </li>
-      </ul>
-    </li>
-  </ul>
-}
+        nz-submenu
+        nzTitle="Director"
+        nzIcon="user"
+        [nzOpen]="selectedMenu === 'director'"
+        *ngIf="hasPermiso('3.1')"
+      >
+        <ul>
+          <li
+            nz-menu-item
+            nzMatchRouter
+            *ngIf="hasPermiso('3.1')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'director' && item === 'turno'
+            "
+          >
+            <a routerLink="/director/turno">Asignar Horario</a>
+          </li>
+        </ul>
+        <ul>
+          <li
+            nz-menu-item
+            nzMatchRouter
+            *ngIf="hasPermiso('3.2')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'director' && item === 'docente'
+            "
+          >
+            <a routerLink="/director/docente">Reporte docente</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    }
   </nz-sider>
   <nz-layout>
     <nav class="bg-gray-800">
@@ -139,7 +191,7 @@
                   <!-- Zona de interacción -->
                   <span class="absolute -inset-1.5"></span>
                   <span class="sr-only">Abrir menú de usuario</span>
-              
+
                   <!-- Icono de usuario FontAwesome -->
                   <i class="fa-solid fa-user text-[16px]"></i>
                 </button>
@@ -152,7 +204,8 @@
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="user-menu-button"
-                tabindex="-1">
+                tabindex="-1"
+              >
                 <a
                   href="#"
                   class="block px-4 py-2 text-sm text-gray-700"

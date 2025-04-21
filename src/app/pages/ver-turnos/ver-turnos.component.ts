@@ -74,14 +74,13 @@ export class VerTurnosComponent implements OnInit {
   }
 
   actualizarEstadoEnListado(turnoId: number) {
-    this.turnoServices.getTurnoById(turnoId).subscribe(turnoActualizado => {
-      const index = this.turnos.findIndex(t => t.id === turnoId);
+    this.turnoServices.getTurnoById(turnoId).subscribe((turnoActualizado) => {
+      const index = this.turnos.findIndex((t) => t.id === turnoId);
       if (index !== -1) {
         this.turnos[index].estado = turnoActualizado.estado;
       }
     });
   }
-  
 
   inicializarFormulario() {
     this.formularioHorario = this.fb.group({
@@ -193,7 +192,7 @@ export class VerTurnosComponent implements OnInit {
   }
 
   verCursos(turno: Turno) {
-    this.router.navigate(['/asignarhorario'], {
+    this.router.navigate(['/coa/asignarhorario'], {
       queryParams: {
         id: turno.id,
       },
