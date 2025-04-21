@@ -26,7 +26,6 @@
         nzTitle="Dashboard"
         nzIcon="dashboard"
         [nzOpen]="selectedMenu === 'dashboard'"
-        (nzOpenChange)="toggleMenuOp('dashboard', $event)"
       >
         <ul>
           <li nz-menu-item nzMatchRouter>
@@ -39,16 +38,27 @@
         nz-submenu
         nzTitle="Gestion de Usuario"
         nzIcon="usergroup-add"
-        [nzOpen]="selectedMenu === 'docente'"
-        (nzOpenChange)="toggleMenuOp('docente', $event)"
+        [nzOpen]="selectedMenu === 'admin'"
         *ngIf="hasPermiso('1.1') || hasPermiso('1.2')"
       >
         <ul>
-          <li nz-menu-item *ngIf="hasPermiso('1.1')">
-            <a routerLink="/listausuarios">Listar Usuario</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('1.1')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'admin' && item === 'usuario'
+            "
+          >
+            <a routerLink="/admin/usuario">Listar Usuario</a>
           </li>
-          <li nz-menu-item *ngIf="hasPermiso('1.2')">
-            <a routerLink="/permisos">Permisos de usuarios</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('1.2')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'admin' && item === 'permiso'
+            "
+          >
+            <a routerLink="/admin/permiso">Permisos de usuarios</a>
           </li>
         </ul>
       </li>
@@ -58,7 +68,6 @@
         nzTitle="COA"
         nzIcon="usergroup-add"
         [nzOpen]="selectedMenu === 'coa'"
-        (nzOpenChange)="toggleMenuOp('coa', $event)"
         *ngIf="
           hasPermiso('2.1') ||
           hasPermiso('2.2') ||
@@ -68,20 +77,48 @@
         "
       >
         <ul>
-          <li nz-menu-item *ngIf="hasPermiso('2.1')">
-            <a routerLink="/verturnos">Asignar Horarios</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('2.1')"
+            [class.ant-menu-item-selected]="item === 'turno'"
+          >
+            <a routerLink="/coa/turno">Asignar Horarios</a>
           </li>
-          <li nz-menu-item *ngIf="hasPermiso('2.2')">
-            <a routerLink="/reporteria">Reporte docente</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('2.2')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'coa' && item === 'docente'
+            "
+          >
+            <a routerLink="/coa/docente">Reporte docente</a>
           </li>
-          <li nz-menu-item *ngIf="hasPermiso('2.3')">
-            <a routerLink="/reporteriaaula">Reporte Aula</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('2.3')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'coa' && item === 'aula'
+            "
+          >
+            <a routerLink="/coa/aula">Reporte Aula</a>
           </li>
-          <li nz-menu-item *ngIf="hasPermiso('2.4')">
-            <a routerLink="/transversal">Definir cursos transversales</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('2.4')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'coa' && item === 'transversal'
+            "
+          >
+            <a routerLink="/coa/transversal">Definir cursos transversales</a>
           </li>
-          <li nz-menu-item *ngIf="hasPermiso('2.5')">
-            <a routerLink="/agrupar">Definir cursos agrupados</a>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('2.5')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'coa' && item === 'agrupar'
+            "
+          >
+            <a routerLink="/coa/agrupar">Definir cursos agrupados</a>
           </li>
         </ul>
       </li>
@@ -90,91 +127,34 @@
         nz-submenu
         nzTitle="Director"
         nzIcon="user"
-        [nzOpen]="selectedMenu === 'dr'"
-        (nzOpenChange)="toggleMenuOp('dr', $event)"
+        [nzOpen]="selectedMenu === 'director'"
         *ngIf="hasPermiso('3.1')"
       >
         <ul>
-          <li nz-menu-item nzMatchRouter *ngIf="hasPermiso('3.1')">
-            <a routerLink="/verturnodr">Asignar Horario</a>
+          <li
+            nz-menu-item
+            nzMatchRouter
+            *ngIf="hasPermiso('3.1')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'director' && item === 'turno'
+            "
+          >
+            <a routerLink="/director/turno">Asignar Horario</a>
           </li>
         </ul>
         <ul>
-          <li nz-menu-item nzMatchRouter *ngIf="hasPermiso('3.2')">
-            <a routerLink="/reporteria">Reporte docente</a>
+          <li
+            nz-menu-item
+            nzMatchRouter
+            *ngIf="hasPermiso('3.2')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'director' && item === 'docente'
+            "
+          >
+            <a routerLink="/director/docente">Reporte docente</a>
           </li>
         </ul>
       </li>
-
-      <!-- <li
-        
-
-      <li
-        nz-submenu
-        nzTitle="RR.HH"
-        nzIcon="user"
-        [nzOpen]="selectedMenu === 'rrhh'"
-        (nzOpenChange)="toggleMenuOp('rrhh', $event)"
-      >
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a>Listado Docentes</a>
-          </li>
-        </ul>
-      </li>
-
-      <li
-        nz-submenu
-        nzTitle="Finanzas"
-        nzIcon="dollar"
-        [nzOpen]="selectedMenu === 'finanzas'"
-        (nzOpenChange)="toggleMenuOp('finanzas', $event)"
-      >
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a>Listado Docentes</a>
-          </li>
-        </ul>
-      </li>
-
-      <li
-        nz-submenu
-        nzTitle="COA"
-        nzIcon="project"
-        [nzOpen]="selectedMenu === 'coa'"
-        (nzOpenChange)="toggleMenuOp('coa', $event)"
-      >
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/transversal">Definir Cursos transversales</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/agrupar">Definir Cursos agrupados</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/verturnos">Asignar Horarios</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/reporteria">Reporteria</a>
-          </li>
-        </ul>
-      </li>
-
-      <li
-      nz-submenu
-      nzTitle="Director"
-      nzIcon="user"
-      [nzOpen]="selectedMenu === 'dr'"
-      (nzOpenChange)="toggleMenuOp('dr', $event)"
-    >
-      <ul>
-        <li nz-menu-item nzMatchRouter>
-          <a routerLink="/verturnodr" >Asignar Horario</a>
-        </li>
-      </ul>
-    </li>
-
-      </li> -->
     </ul>
     }
   </nz-sider>
@@ -197,47 +177,23 @@
           <div
             class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0"
           >
-            <!-- <button
-              type="button"
-              class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
-            >
-              <span class="absolute -inset-1.5"></span>
-              <span class="sr-only">Ver notificacións</span>
-              <svg
-                class="size-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                aria-hidden="true"
-                data-slot="icon"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
-                />
-              </svg>
-            </button> -->
             <!-- Profile dropdown -->
             <div class="relative ml-3">
               <div>
                 <button
                   type="button"
-                  class="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
+                  class="relative flex items-center justify-center size-8 rounded-full bg-white text-slate-700 text-sm shadow-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
                   id="user-menu-button"
                   aria-expanded="false"
                   aria-haspopup="true"
                   (click)="toggleMenu()"
                 >
-                  <!-- Llamamos a la función toggleMenu() -->
+                  <!-- Zona de interacción -->
                   <span class="absolute -inset-1.5"></span>
                   <span class="sr-only">Abrir menú de usuario</span>
-                  <img
-                    class="size-8 rounded-full bg-slate-50"
-                    src="../../../assets/img/docente.png"
-                    alt=""
-                  />
+
+                  <!-- Icono de usuario FontAwesome -->
+                  <i class="fa-solid fa-user text-[16px]"></i>
                 </button>
               </div>
 
@@ -250,22 +206,6 @@
                 aria-labelledby="user-menu-button"
                 tabindex="-1"
               >
-                <!-- <a
-                  href="#"
-                  class="block px-4 py-2 text-sm text-gray-700"
-                  role="menuitem"
-                  tabindex="-1"
-                  id="user-menu-item-0"
-                  >Su perfil</a
-                >
-                <a
-                  href="#"
-                  class="block px-4 py-2 text-sm text-gray-700"
-                  role="menuitem"
-                  tabindex="-1"
-                  id="user-menu-item-1"
-                  >Ajustes</a
-                > -->
                 <a
                   href="#"
                   class="block px-4 py-2 text-sm text-gray-700"
@@ -273,8 +213,8 @@
                   tabindex="-1"
                   id="user-menu-item-2"
                   (click)="logout()"
-                  >Cerrar seción</a
-                >
+                  >Cerrar seción
+                </a>
               </div>
             </div>
           </div>

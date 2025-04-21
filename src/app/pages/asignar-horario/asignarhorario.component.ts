@@ -663,8 +663,6 @@ export class AsignarhorarioComponent implements OnInit {
     });    
   }
 
-  //#endregion
-
   confirmarAsignacionHoras() {
     console.log('confirmarAsignacionHoras');
 

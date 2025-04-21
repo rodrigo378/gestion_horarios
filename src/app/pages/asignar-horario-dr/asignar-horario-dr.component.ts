@@ -128,9 +128,8 @@ export class AsignarHorarioDrComponent implements OnInit{
     this.inicializarDragAndDrop();
     this.cargarHorarios();
     this.cargarAulas();
-    this.cargarDocentes();
+    // this.cargarDocentes();
   }
-  //#region metodos
 
   private cargarAulas(): void {
     this.aulaService.obtenerAulas().subscribe({
@@ -663,8 +662,6 @@ export class AsignarHorarioDrComponent implements OnInit{
       delay: [50 , 100],
     });    
   }
-
-  //#endregion
 
   confirmarAsignacionHoras() {
     console.log('confirmarAsignacionHoras');
