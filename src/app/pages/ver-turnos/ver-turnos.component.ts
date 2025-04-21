@@ -97,7 +97,6 @@ export class VerTurnosComponent implements OnInit {
   deleteTurno(id: number) {
     this.turnoServices.deleteTurno(id).subscribe({
       next: (res: any) => {
-        console.log('res => ', res);
         this.turnoServices.getTurnos().subscribe((data) => {
           this.turnos = data;
           this.turnosFiltrados = data;
@@ -112,7 +111,6 @@ export class VerTurnosComponent implements OnInit {
 
   obtenerNombreEspecialidad(codesp: string): string {
     const esp = this.especialidadesCompletas.find((e) => e.codesp === codesp);
-    console.log('obtenerNombreEspecialidad => ', esp?.nomesp || '');
 
     return esp?.nomesp || '';
   }
@@ -123,8 +121,6 @@ export class VerTurnosComponent implements OnInit {
   }
 
   guardarTurno() {
-    console.log('guardarHorario');
-
     if (this.formularioHorario.invalid) {
       this.formularioHorario.markAllAsTouched();
       this.alertService.error('Todos los campos son necesarios');
@@ -147,7 +143,6 @@ export class VerTurnosComponent implements OnInit {
 
     this.turnoServices.createTurno(turno).subscribe({
       next: (res: any) => {
-        console.log('res => ', res);
         this.alertService.success('Se creo el Turno exitosamente');
         this.turnoServices.getTurnos().subscribe((data) => {
           this.turnos = data;
@@ -167,7 +162,6 @@ export class VerTurnosComponent implements OnInit {
         });
       },
       error: (er: HttpErrorResponse) => {
-        console.log('er => ', er);
         this.alertService.error('Este Turno ya existe.');
       },
     });

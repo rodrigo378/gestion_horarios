@@ -5,7 +5,9 @@
 />
 <div
   class="absolute top-0 left-0 bottom-0 leading-5 h-full w-full overflow-hidden bg-gradient-to-b"
-  style="background-image: linear-gradient(to bottom, #ffffff, #d81e65, #ff0a68);"
+  style="
+    background-image: linear-gradient(to bottom, #ffffff, #d81e65, #ff0a68);
+  "
 ></div>
 
 <div>
@@ -13,13 +15,15 @@
     src="assets/img/logo.png"
     alt="Imagen decorativa"
     class="absolute top-10 left-10 w-40 z-10"
-    />
+  />
 </div>
 
 <div
   class="relative min-h-screen sm:flex sm:flex-row justify-center bg-transparent rounded-3xl shadow-xl"
 >
-  <div class="flex-col flex self-center lg:px-14 sm:max-w-4xl xl:max-w-4xl z-10">
+  <div
+    class="flex-col flex self-center lg:px-14 sm:max-w-4xl xl:max-w-4xl z-10"
+  >
     <div class="self-start hidden lg:flex flex-col text-gray-300">
       <h1 class="my-3 font-semibold text-4xl text-white">
         GESTIÓN DE HORARIOS ACADÉMICOS
@@ -76,16 +80,21 @@
               [type]="showPassword ? 'text' : 'password'"
               class="text-sm text-black-200 px-4 py-3 rounded-lg w-full bg-gray-200 focus:bg-gray-100 border border-gray-200 focus:outline-none focus:border-purple-400"
             />
-          
+
             <!-- Validación de errores -->
             <div *ngIf="submitted && form['password'].errors">
-              <span class="text-red-500 text-sm" *ngIf="form['password'].errors?.['required']">
+              <span
+                class="text-red-500 text-sm"
+                *ngIf="form['password'].errors?.['required']"
+              >
                 La contraseña es obligatoria.
               </span>
             </div>
-          
+
             <!-- Botón para alternar visibilidad de contraseña -->
-            <div class="flex items-center absolute inset-y-0 right-3 cursor-pointer">
+            <div
+              class="flex items-center absolute inset-y-0 right-3 cursor-pointer"
+            >
               <!-- Ícono de ojo para mostrar la contraseña -->
               <svg
                 *ngIf="!showPassword"
@@ -100,7 +109,7 @@
                   d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"
                 />
               </svg>
-          
+
               <!-- Ícono de ojo tachado para ocultar la contraseña -->
               <svg
                 *ngIf="showPassword"
@@ -116,7 +125,7 @@
                 />
               </svg>
             </div>
-          </div>          
+          </div>
 
           <!-- <div class="flex items-center justify-between">
             <div class="text-sm ml-auto">
@@ -129,14 +138,17 @@
 
         <div>
           <button
-          (click)="submit()"
-          type="submit"
-          class="w-full flex justify-center text-white p-3 rounded-lg tracking-wide font-semibold cursor-pointer transition ease-in duration-500"
-          style="background-color: #ff0a68; box-shadow: 0 4px 14px rgba(255, 10, 104, 0.4);"
-        >
-          Sign in
-        </button>
-        
+            (click)="submit()"
+            type="submit"
+            class="w-full flex justify-center text-white p-3 rounded-lg tracking-wide font-semibold cursor-pointer transition ease-in duration-500"
+            style="
+              background-color: #ff0a68;
+              box-shadow: 0 4px 14px rgba(255, 10, 104, 0.4);
+            "
+          >
+            Sign in
+          </button>
+
           @if (boolLogin) {
           <div style="text-align: center; margin-top: 5px">
             <span class="text-red-500 text-sm">
@@ -205,8 +217,15 @@
       <div class="mt-5 text-center text-black text-[15px] font-semibold">
         <span>
           © {{ currentYear }} Developed by -
-          <a href="https://github.com/VictorSinche?tab=repositories" rel="" target="_blank" title="" class="text-purple-500 hover:text-purple-600 ">Team TI.</a>
-          </span>
+          <a
+            href="https://github.com/VictorSinche?tab=repositories"
+            rel=""
+            target="_blank"
+            title=""
+            class="text-purple-500 hover:text-purple-600"
+            >Team TI.</a
+          >
+        </span>
       </div>
     </div>
   </div>

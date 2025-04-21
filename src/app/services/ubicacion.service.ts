@@ -16,30 +16,21 @@ export class UbicacionService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  getTokenHeader() {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return { headers };
-  }
-
   getDepartamentos(): Observable<Departamento[]> {
     return this.http.get<Departamento[]>(
-      `${this.apiUrlUbi}/ubicacion/departamento`,
-      this.getTokenHeader()
+      `${this.apiUrlUbi}/ubicacion/departamento`
     );
   }
 
   getProvincias(departamentoId: number): Observable<Provincia[]> {
     return this.http.get<Provincia[]>(
-      `${this.apiUrlUbi}/ubicacion/provincia/${departamentoId}`,
-      this.getTokenHeader()
+      `${this.apiUrlUbi}/ubicacion/provincia/${departamentoId}`
     );
   }
 
   getDistritos(provinciaId: number): Observable<Distrito[]> {
     return this.http.get<Distrito[]>(
-      `${this.apiUrlUbi}/ubicacion/distrito/${provinciaId}`,
-      this.getTokenHeader()
+      `${this.apiUrlUbi}/ubicacion/distrito/${provinciaId}`
     );
   }
 }

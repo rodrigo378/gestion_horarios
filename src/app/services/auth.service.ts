@@ -18,28 +18,13 @@ export class AuthService {
     });
   }
 
-  setToken(token: string): void {
-    document.cookie = `token=${token}; path=/; max-age=${
-      60 * 60 * 24
-    }; SameSite=Lax`; // Usar Lax o eliminar SameSite si no es necesario
-  }
-
-  isAuthenticated(): boolean {
-    return this.getToken() !== null;
-  }
-
-  getToken(): string | null {
-    const cookies = document.cookie.split('; ');
-    const tokenCookie = cookies.find((row) => row.startsWith('token='));
-    return tokenCookie ? tokenCookie.split('=')[1] : null;
-  }
-
   logout(): Observable<any> {
-    // 🔥 Borrar cookie manualmente en el cliente (por si no es HttpOnly)
-    document.cookie =
-      'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure';
-
-    // Llamar al backend para eliminar la cookie si es HttpOnly
     return this.http.post(`${this.apiUrl}/auth/logout`, {});
+  }
+
+  verificar(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/auth/verificar`, {
+      withCredentials: true,
+    });
   }
 }

@@ -14,21 +14,19 @@ export class UserService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  getTokenHeader() {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return { headers };
-  }
-
   getPermisoMe(): Observable<{ itemId: number; estado: string }[]> {
     return this.http.get<{ itemId: number; estado: string }[]>(
       `${this.apiUrl}/admin/permisos/me`,
-      this.getTokenHeader()
+      { withCredentials: true }
     );
   }
 
   getPermisosTo(email: string) {
-    return this.http.post(`${this.apiUrl}/admin/permisos/to`, { email });
+    return this.http.post(
+      `${this.apiUrl}/admin/permisos/to`,
+      { email },
+      { withCredentials: true }
+    );
   }
 
   getModulos(): Observable<Modulo[]> {
@@ -36,11 +34,14 @@ export class UserService {
   }
 
   actualizarPermisos(user_id: number, items_id: number[]) {
-    return this.http.post(`${this.apiUrl}/admin/permisos`, { user_id, items_id });
+    return this.http.post(`${this.apiUrl}/admin/permisos`, {
+      user_id,
+      items_id,
+    });
   }
 
   getUserInfo(): Observable<Usernew[]> {
-    return this.http.get<Usernew[]>(`${this.apiUrl}/user`, this.getTokenHeader());
+    return this.http.get<Usernew[]>(`${this.apiUrl}/user`);
   }
 
   createUser(data: CreateUserDTO): Observable<{ message: string; user: User }> {
@@ -51,15 +52,13 @@ export class UserService {
   }
 
   getUserById(id: number): Observable<Usernew> {
-    return this.http.get<Usernew[]>(`${this.apiUrl}/user/${id}`, this.getTokenHeader())
-      .pipe(
-        // Devuelve solo el primer elemento del array
-        map(response => response[0])
-      );
+    return this.http.get<Usernew[]>(`${this.apiUrl}/user/${id}`).pipe(
+      // Devuelve solo el primer elemento del array
+      map((response) => response[0])
+    );
   }
-  
+
   updateUser(usuario: Usernew & { password: string }): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/user`, usuario, this.getTokenHeader());
+    return this.http.put<User>(`${this.apiUrl}/user`, usuario);
   }
-  
 }

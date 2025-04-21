@@ -6,25 +6,14 @@ import { Observable } from 'rxjs';
 import { Docente } from '../interfaces/Docente';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DocentecurService {
-  
   private apiUrl = `${environment.api}/docente`;
 
-  constructor(
-    private http: HttpClient, 
-    private authService: AuthService
-  ) { }
-  
-  getTokenHeader() {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return { headers };
-  }
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   obtenerDocentes(): Observable<Docente[]> {
     return this.http.get<Docente[]>(this.apiUrl);
   }
-
 }
