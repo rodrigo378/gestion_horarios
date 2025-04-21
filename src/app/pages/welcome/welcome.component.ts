@@ -9,6 +9,7 @@ import {
   ChartComponent,
   ApexPlotOptions
 } from 'ngx-apexcharts';
+import { DashboardService } from '../../services/dashboard.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -40,7 +41,7 @@ export type ChartOptionsDonut = {
   styleUrl: './welcome.component.css'
 })
 
-export class WelcomeComponent {
+export class WelcomeComponent implements OnInit{
   @ViewChild("chart") chart!: ChartComponent;
 
   totalCursos: number = 0;
@@ -56,42 +57,44 @@ export class WelcomeComponent {
   public chartTurnos!: ChartOptionsDonut;
   public chartTiposCurso!: ChartOptions;
 
-  constructor() {
+  constructor(
+    private dashboardService: DashboardService,
+  ) {
     // Gráfico de Horas por Docente
-    this.chartDocentes = {
-      series: [
-        {
-          name: "Horas Asignadas",
-          data: [20, 35, 40, 10, 30]
-        }
-      ],
-      chart: {
-        type: "bar",
-        height: 350
-      },
-      title: {
-        text: "Horas por Docente"
-      },
-      xaxis: {
-        categories: ["Docente A", "Docente B", "Docente C", "Docente D", "Docente E"]
-      },
-      dataLabels: {
-        enabled: false
-      },
-      stroke: {
-        show: true,
-        width: 2,
-        colors: ["transparent"]
-      },
-      plotOptions: {
-        bar: {
-          borderRadius: 8,
-          borderRadiusApplication: 'end',
-          columnWidth: '60%'
-        }
-      },
-      colors: ['#3b82f6']
-    };    
+    // this.chartDocentes = {
+    //   series: [
+    //     {
+    //       name: "Horas Asignadas",
+    //       data: [20, 35, 40, 10, 30]
+    //     }
+    //   ],
+    //   chart: {
+    //     type: "bar",
+    //     height: 350
+    //   },
+    //   title: {
+    //     text: "Horas por Docente"
+    //   },
+    //   xaxis: {
+    //     categories: ["Docente A", "Docente B", "Docente C", "Docente D", "Docente E"]
+    //   },
+    //   dataLabels: {
+    //     enabled: false
+    //   },
+    //   stroke: {
+    //     show: true,
+    //     width: 2,
+    //     colors: ["transparent"]
+    //   },
+    //   plotOptions: {
+    //     bar: {
+    //       borderRadius: 8,
+    //       borderRadiusApplication: 'end',
+    //       columnWidth: '60%'
+    //     }
+    //   },
+    //   colors: ['#3b82f6']
+    // };    
 
     // Gráfico de Uso de Aulas
     this.chartAulas = {
@@ -251,6 +254,46 @@ export class WelcomeComponent {
     this.aulasUtilizadas = 20;
     this.porcentajeAsignacion = Math.round((100 * 90) / 120); // 110 asignados de 120 cursos
 
+  }
+  ngOnInit(): void {
+    this.cargarChartDocentes();
+  }
+  
+  private cargarChartDocentes(): void {
+    this.dashboardService.getHorasPorDocente().subscribe(res => {
+      this.chartDocentes = {
+        series: [{
+          name: 'Horas Asignadas',
+          data: res.data
+        }],
+        chart: {
+          type: 'bar',
+          height: 350
+        },
+        title: {
+          text: 'Horas por Docente'
+        },
+        xaxis: {
+          categories: res.categories
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        plotOptions: {
+          bar: {
+            borderRadius: 8,
+            borderRadiusApplication: 'end',
+            columnWidth: '60%'
+          }
+        },
+        colors: ['#3b82f6']
+      };
+    });
   }
   
 }
