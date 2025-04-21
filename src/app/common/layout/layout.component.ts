@@ -25,7 +25,13 @@ export class LayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.getPermisos();
+  
+    const storedMenu = localStorage.getItem('selectedMenu');
+    if (storedMenu) {
+      this.selectedMenu = storedMenu;
+    }
   }
+  
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
@@ -33,7 +39,14 @@ export class LayoutComponent implements OnInit {
 
   toggleMenuOp(menu: string, isOpen: boolean): void {
     this.selectedMenu = isOpen ? menu : null;
-  }
+  
+    // Guardar el último menú seleccionado en localStorage
+    if (isOpen) {
+      localStorage.setItem('selectedMenu', menu);
+    } else {
+      localStorage.removeItem('selectedMenu');
+    }
+  }  
 
   @HostListener('document:click', ['$event'])
   closeMenu(event: Event) {
@@ -68,15 +81,16 @@ export class LayoutComponent implements OnInit {
   }
 
   logout() {
+    localStorage.removeItem('selectedMenu'); // ✅ limpiar menú activo
     this.authService.logout().subscribe({
       next: () => {
-        window.location.href = '/login'; // 👈 redirección total
+        window.location.href = '/login';
       },
       error: err => {
         console.error('Error al cerrar sesión', err);
         window.location.href = '/login';
       }
     });
-  }
+  }  
   
 }
