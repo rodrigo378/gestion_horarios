@@ -249,7 +249,7 @@ export class WelcomeComponent {
     this.totalCursos = 120;
     this.totalDocentes = 45;
     this.aulasUtilizadas = 20;
-    this.porcentajeAsignacion = Math.round((100 * 110) / 120); // 110 asignados de 120 cursos
+    this.porcentajeAsignacion = Math.round((100 * 90) / 120); // 110 asignados de 120 cursos
 
   }
   
