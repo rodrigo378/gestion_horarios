@@ -80,7 +80,9 @@
           <li
             nz-menu-item
             *ngIf="hasPermiso('2.1')"
-            [class.ant-menu-item-selected]="item === 'turno'"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'coa' && item === 'turno'
+            "
           >
             <a routerLink="/coa/turno">Asignar Horarios</a>
           </li>

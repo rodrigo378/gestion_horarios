@@ -195,7 +195,7 @@ export class VerTurnosComponent implements OnInit {
 
   //#region CRUD turnos
 
-  //#region filtro
+  //#region filtro>
 
   getNombreFacultad(codfac: string): string {
     const facultadesMap: Record<string, string> = {
