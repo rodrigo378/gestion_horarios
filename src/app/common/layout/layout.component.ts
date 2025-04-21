@@ -34,7 +34,6 @@ export class LayoutComponent implements OnInit {
     this.routerSubscription = this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
-        console.log('Ruta cambió:', this.router.url);
         this.seleccionItem();
       });
   }

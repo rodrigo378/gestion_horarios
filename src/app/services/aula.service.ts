@@ -5,22 +5,12 @@ import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Aula, AulaReporte } from '../interfaces/Aula';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AulaService {
-
   private apiUrl = `${environment.api}/aula`;
 
-  constructor(
-    private http: HttpClient, 
-    private authService: AuthService
-  ) { }
-
-  getTokenHeader() {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return { headers };
-  }
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   obtenerAulas(): Observable<Aula[]> {
     return this.http.get<Aula[]>(this.apiUrl);
@@ -28,8 +18,7 @@ export class AulaService {
 
   getAula(): Observable<AulaReporte[]> {
     return this.http.get<AulaReporte[]>(
-      `${this.apiUrl}/?horario=true&curso=true&docente=true`,
-      this.getTokenHeader()
-    )
+      `${this.apiUrl}/?horario=true&curso=true&docente=true`
+    );
   }
 }

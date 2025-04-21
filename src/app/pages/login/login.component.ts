@@ -26,8 +26,8 @@ export class LoginComponent implements OnInit {
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
+      email: ['rodrigo@gmail.com', [Validators.required, Validators.email]],
+      password: ['rodrigo', [Validators.required]],
     });
   }
 
@@ -35,13 +35,10 @@ export class LoginComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       const token = params['token'];
       if (token) {
-        console.log('Token capturado:', token);
-        this.authService.setToken(token); 
         this.router.navigate(['/welcome']);
       }
     });
   }
-  
 
   get form() {
     return this.loginForm.controls;
@@ -65,19 +62,15 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(user).subscribe({
       next: (res: any) => {
-        console.log(res.token);
-        this.authService.setToken(res.token);
         this.router.navigate(['/welcome']);
       },
       error: (e: HttpErrorResponse) => {
-        console.log(e);
         this.boolLogin = true;
       },
     });
   }
 
-  togglePassword()
-  {
-    this,this.showPassword = !this.showPassword
+  togglePassword() {
+    this, (this.showPassword = !this.showPassword);
   }
 }

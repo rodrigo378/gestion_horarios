@@ -15,18 +15,8 @@ export class DocenteService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  getTokenHeader() {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return { headers };
-  }
-
   createDocente(docenteData: any): Observable<any> {
-    return this.http.post(
-      `${this.apiUrl}/docente`,
-      docenteData,
-      this.getTokenHeader()
-    );
+    return this.http.post(`${this.apiUrl}/docente`, docenteData);
   }
 
   // getDocentes(): Observable<Docente[]> {
@@ -38,54 +28,31 @@ export class DocenteService {
 
   getDocentes(): Observable<Docente[]> {
     return this.http.get<Docente[]>(
-      `${this.apiUrl}/docente?horario=true&curso=true`,
-      this.getTokenHeader()
+      `${this.apiUrl}/docente?horario=true&curso=true`
     );
   }
 
   getDocentePorUsuario(): Observable<any> {
-    return this.http.get<any>(
-      `${this.apiUrl}/docente/user`,
-      this.getTokenHeader()
-    );
+    return this.http.get<any>(`${this.apiUrl}/docente/user`);
   }
 
   updateDocenteUsuario(docenteData: any): Observable<any> {
-    return this.http.patch(
-      `${this.apiUrl}/docente/updateuser`,
-      docenteData,
-      this.getTokenHeader()
-    );
+    return this.http.patch(`${this.apiUrl}/docente/updateuser`, docenteData);
   }
 
   getDocentesAprobados(): Observable<listadocentes[]> {
-    return this.http.get<listadocentes[]>(
-      `${this.apiUrl}/aprobados`,
-      this.getTokenHeader()
-    );
+    return this.http.get<listadocentes[]>(`${this.apiUrl}/aprobados`);
   }
 
   getDocentesRechazados(): Observable<listadocentes[]> {
-    return this.http.get<listadocentes[]>(
-      `${this.apiUrl}/rechazados`,
-      this.getTokenHeader()
-    );
+    return this.http.get<listadocentes[]>(`${this.apiUrl}/rechazados`);
   }
 
   aprobarDocente(id: number): Observable<any> {
-    return this.http.post(
-      `${this.apiUrl}/${id}/aprobar`,
-      {},
-      this.getTokenHeader()
-    );
+    return this.http.post(`${this.apiUrl}/${id}/aprobar`, {});
   }
 
   rechazarDocente(id: number): Observable<any> {
-    return this.http.post(
-      `${this.apiUrl}/${id}/rechazar`,
-      {},
-      this.getTokenHeader()
-    );
+    return this.http.post(`${this.apiUrl}/${id}/rechazar`, {});
   }
-
 }
