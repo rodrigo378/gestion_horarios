@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
   }
 
   btnClickGoogle() {
-    window.location.href = 'http://localhost:3000/auth/google';
+    window.location.href = 'http://161.97.115.144:7001/auth/google';
   }
 
   submit() {
