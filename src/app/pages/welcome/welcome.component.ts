@@ -17,6 +17,8 @@ export type ChartOptions = {
   dataLabels: ApexDataLabels;
   stroke: ApexStroke;
   title: ApexTitleSubtitle;
+  plotOptions?: ApexPlotOptions;
+  colors?: string[];
 };
 
 export type ChartOptionsDonut = {
@@ -52,6 +54,7 @@ export class WelcomeComponent {
   public chartFacultades!: ChartOptionsDonut;
   public chartAsignaciones!: ChartOptions;
   public chartTurnos!: ChartOptionsDonut;
+  public chartTiposCurso!: ChartOptions;
 
   constructor() {
     // Gráfico de Horas por Docente
@@ -124,7 +127,7 @@ export class WelcomeComponent {
       },
       labels: ["Ciencias de la Salud", "Ingeniería y Negocios"],
       title: {
-        text: "Distribución de Cursos por Facultad"
+        text: ""
       },
       dataLabels: {
         enabled: true
@@ -214,6 +217,43 @@ export class WelcomeComponent {
       },
       responsive: []
     };
+
+    this.chartTiposCurso = {
+      series: [
+        {
+          name: "Cantidad",
+          data: [48, 32, 15, 10]
+        }
+      ],
+      chart: {
+        type: "bar",
+        height: 350,
+        toolbar: {
+          show: false
+        }
+      },
+      plotOptions: {
+        bar: {
+          horizontal: true,
+          distributed: true
+        }
+      },
+      title: {
+        text: "Discriminación de Tipos de Curso"
+      },
+      xaxis: {
+        categories: ["Teóricos", "Prácticos", "Transversales", "Agrupados"]
+      },
+      dataLabels: {
+        enabled: true
+      },
+      stroke: {
+        show: true,
+        width: 1,
+        colors: ["transparent"]
+      },
+      colors: ['#3b82f6', '#22c55e', '#facc15', '#a855f7'] // 🎨 colores por barra
+    };    
 
     this.totalCursos = 120;
     this.totalDocentes = 45;

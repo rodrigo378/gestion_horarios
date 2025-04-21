@@ -1,18 +1,18 @@
-<div class="flex flex-col items-center justify-center h-screen space-y-4">
+<!-- <div class="flex flex-col items-center justify-center h-screen space-y-4">
     <p class="text-6xl text-[#E72352] text-center font-bold">¡Bienvenidos a la UMA!</p>
     <p class="text-xl text-center text-gray-700 max-w-xl">
         La Universidad María Auxiliadora te da la bienvenida a una experiencia educativa única, donde formarás tu futuro con excelencia.
     </p>
     <img src="assets/img/logo-uma.png" alt="Logo UMA" class="w-32 h-32">
-</div>
+</div> -->
 
 
-<!-- <div class="p-6 space-y-6 bg-gray-50 min-h-screen">
+<div class="p-6 space-y-6 bg-gray-50 min-h-screen">
 
-  <%-- Título --%>
+  <!-- Título -->
   <h1 class="text-3xl font-bold text-gray-800">📊 Dashboard de Asignación de Horarios</h1>
 
-  <%-- Cards resumen --%>
+  <!-- Cards resumen -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
     <div class="bg-white shadow-md rounded-xl p-4 text-center">
       <p class="text-sm text-gray-500">Total de Cursos</p>
@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  <%-- Gráfico: Horas por Docente --%>
+  <!-- Gráfico: Horas por Docente -->
   <div class="bg-white shadow-md rounded-xl p-6 mb-6">
     <h2 class="text-xl font-semibold text-gray-700 mb-4">Horas Asignadas por Docente</h2>
     <apx-chart
@@ -45,9 +45,9 @@
     ></apx-chart>
   </div>
 
-  <%-- Gráficos en paralelo --%>
+  <!-- Gráficos en paralelo -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <%-- Uso de Aulas por Pabellón o Piso --%>
+    <!-- Uso de Aulas por Pabellón o Piso -->
     <div class="bg-white shadow-md rounded-xl p-6">
       <h2 class="text-xl font-semibold text-gray-700 mb-4">Frecuencia de Uso de Aulas</h2>
       <apx-chart
@@ -60,7 +60,7 @@
       ></apx-chart>
     </div>
 
-    <%-- Distribución de Cursos por Facultad --%>
+    <!-- Distribución de Cursos por Facultad -->
     <div class="bg-white shadow-md rounded-xl p-6 mt-6">
       <h2 class="text-xl font-semibold text-gray-700 mb-4">Distribución por Facultad</h2>
       <apx-chart
@@ -75,22 +75,25 @@
     </div>
   </div>
 
-  <%-- Gráficos en paralelo --%>
+  <!-- Gráficos en paralelo -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <%-- Gráfico: Asignaciones por Día --%>
+    <!-- Gráfico: Tipos de Curso (Discriminación) -->
     <div class="bg-white shadow-md rounded-xl p-6 mt-6">
-      <h2 class="text-xl font-semibold text-gray-700 mb-4">Asignaciones por Día</h2>
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">Distribución de Tipos de Curso</h2>
       <apx-chart
-        [series]="chartAsignaciones.series"
-        [chart]="chartAsignaciones.chart"
-        [xaxis]="chartAsignaciones.xaxis"
-        [dataLabels]="chartAsignaciones.dataLabels"
-        [stroke]="chartAsignaciones.stroke"
-        [title]="chartAsignaciones.title"
+        [series]="chartTiposCurso.series"
+        [chart]="chartTiposCurso.chart"
+        [xaxis]="chartTiposCurso.xaxis"
+        [title]="chartTiposCurso.title"
+        [dataLabels]="chartTiposCurso.dataLabels"
+        [stroke]="chartTiposCurso.stroke"
+        [colors]="chartTiposCurso.colors || []"
+        [plotOptions]="chartTiposCurso.plotOptions || {}"
       ></apx-chart>
     </div>
+    
 
-    <%-- Estado de los Turnos --%>
+    <!-- Estado de los Turnos -->
     <div class="bg-white shadow-md rounded-xl p-6 mt-6">
       <h2 class="text-xl font-semibold text-gray-700 mb-4">Estado de los Turnos</h2>
       <apx-chart
@@ -105,4 +108,5 @@
       ></apx-chart>
     </div>
   </div>
-</div> -->
+
+</div>
