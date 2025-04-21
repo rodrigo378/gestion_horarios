@@ -41,6 +41,7 @@ import { PermisosUsuariosComponent } from './pages/admin/permisos-usuarios/permi
 import { ReporteriaAulaComponent } from './pages/reporteria-aula/reporteria-aula.component';
 import { CalenderAulaComponent } from './pages/calender-aula/calender-aula.component';
 import { CalenderDocenteComponent } from './pages/calender-docente/calender-docente.component';
+import { NgxApexchartsModule } from 'ngx-apexcharts'
 
 registerLocaleData(en);
 
@@ -87,6 +88,7 @@ registerLocaleData(en);
     BrowserAnimationsModule,
     FormsModule,
     NgxPaginationModule,
+    NgxApexchartsModule
   ],
   providers: [
     provideNzI18n(es_ES),
