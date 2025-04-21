@@ -28,6 +28,8 @@ export class LayoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('v2');
+
     this.getPermisos();
     this.seleccionItem();
 
