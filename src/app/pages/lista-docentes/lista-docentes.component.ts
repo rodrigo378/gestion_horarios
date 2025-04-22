@@ -28,18 +28,18 @@ export class ListaDocentesComponent implements OnInit {
   }
 
   cargarDocentes() {
-    this.docenteService.getDocentes().subscribe({
-      next: (data: any[]) => {
-        this.docentes = data.map((docente) => ({
-          ...docente,
-          estado: Number(docente.estado),
-        }));
-        this.usuariosFiltrados = [...this.docentes];
-      },
-      error: (error) => {
-        console.error('Error al obtener docentes:', error);
-      },
-    });
+    // this.docenteService.getDocentes().subscribe({
+    //   next: (data: any[]) => {
+    //     this.docentes = data.map((docente) => ({
+    //       ...docente,
+    //       estado: Number(docente.estado),
+    //     }));
+    //     this.usuariosFiltrados = [...this.docentes];
+    //   },
+    //   error: (error) => {
+    //     console.error('Error al obtener docentes:', error);
+    //   },
+    // });
   }
 
   aprobar(id?: number) {

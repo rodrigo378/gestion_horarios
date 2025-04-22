@@ -47,7 +47,7 @@ const routes: Routes = [
     component: LayoutComponent,
     children: [
       { path: 'turno', component: VerTurnoDrComponent },
-      { path: 'asignarhorario', component: AsignarHorarioDrComponent },
+      { path: 'asignarhorariodr', component: AsignarHorarioDrComponent },
       { path: 'docente', component: ReporteriaComponent },
     ],
   },

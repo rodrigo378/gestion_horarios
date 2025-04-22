@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { DocenteService } from '../../services/docente.service';
 import { AlertService } from '../../services/alert.service';
 import { Location } from '@angular/common';
-import { Docente, DocenteExtendido, HorarioAsignado } from '../../interfaces/Docente';
+import { CreateDocente, Docente, DocenteExtendido, HorarioAsignado } from '../../interfaces/Docente';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { format, toZonedTime } from 'date-fns-tz';
+import { DocentecurService } from '../../services/docentecur.service';
 
 @Component({
   selector: 'app-reporteria',
@@ -18,12 +19,22 @@ export class ReporteriaComponent implements OnInit {
   paginaActual = 1;
   usuariosFiltrados: DocenteExtendido[] = []; // Se inicializa correctamente
   docentes: DocenteExtendido[] = [];
+  mostrarModal = false;
+  nuevoDocente: CreateDocente = {
+    c_codfac: 'E',
+    nom_fac: 'INGENIERÍA Y NEGOCIOS',
+    c_nomdoc: '',
+    h_min: 1,
+    h_max: 8,
+    tipo: 0
+  };
+  
   filtroBusqueda: string = '';
 
   constructor(
     private location: Location,
-    private docenteService: DocenteService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private docenteService: DocentecurService
   ) {}
 
   ngOnInit(): void {
@@ -31,7 +42,7 @@ export class ReporteriaComponent implements OnInit {
   }
 
   cargarDocentes() {
-    this.docenteService.getDocentes().subscribe({
+    this.docenteService.obtenerDocentesreporteria().subscribe({
       next: (data: any[]) => {
         this.docentes = data.map((docente) => ({
           ...docente,
@@ -44,6 +55,53 @@ export class ReporteriaComponent implements OnInit {
       },
     });
   }
+
+  crearDocente() {
+    if (!this.nuevoDocente.c_nomdoc.trim()) {
+      this.alertService.error('El nombre del docente es obligatorio');
+      return;
+    }
+  
+    this.nuevoDocente.nom_fac = this.nombreFacultad(this.nuevoDocente.c_codfac); // sincronizar
+  
+    this.docenteService.crearDocente(this.nuevoDocente).subscribe({
+      next: (res) => {
+        this.alertService.success('Docente creado correctamente');
+        this.cargarDocentes(); // recarga lista
+        // reiniciar formulario
+        this.nuevoDocente = {
+          c_codfac: 'E',
+          nom_fac: 'INGENIERÍA Y NEGOCIOS',
+          c_nomdoc: '',
+          h_min: 1,
+          h_max: 8,
+          tipo: 0
+        };
+      },
+      error: (err) => {
+        console.error(err);
+        this.alertService.error('Error al crear docente');
+      }
+    });
+    this.mostrarModal = false;
+  }
+  
+  abrirModalCrearDocente() {
+    this.nuevoDocente = {
+      c_codfac: 'E',
+      nom_fac: 'INGENIERÍA Y NEGOCIOS',
+      c_nomdoc: '',
+      h_min: 1,
+      h_max: 8,
+      tipo: 0
+    };
+    this.mostrarModal = true;
+  }
+  
+  cerrarModal() {
+    this.mostrarModal = false;
+  }
+  
 
   getHorariosPorFacultad(docente: Docente): { [key: string]: HorarioAsignado[] } {
     const agrupado: { [key: string]: HorarioAsignado[] } = {};

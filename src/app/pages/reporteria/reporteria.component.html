@@ -11,13 +11,22 @@
           </div>
       
           <!-- Botón exportar alineado a la derecha -->
-          <div>
+          <div class="flex flex-wrap items-center gap-4 mb-4">
             <button
               (click)="exportarExcel()"
-              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm font-medium">
+              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm font-medium shadow"
+            >
               📥 Exportar a Excel
             </button>
+          
+            <button 
+              (click)="abrirModalCrearDocente()"
+              class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
+            >
+              ➕ Agregar Docente
+            </button>
           </div>
+          
         </div>
       
         <!-- Buscador debajo -->
@@ -302,4 +311,74 @@
           </div>
         </div>
       </div>
+</div>
+
+
+<!-- Modal -->
+<div 
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  *ngIf="mostrarModal"
+>
+  <div class="bg-white rounded-2xl p-8 w-full max-w-lg shadow-xl relative">
+    <h2 class="text-2xl font-bold mb-6 text-center text-blue-800">Nuevo Docente</h2>
+
+    <form (ngSubmit)="crearDocente()" #formDocente="ngForm" class="grid gap-4">
+      <div>
+        <label class="block text-sm font-medium mb-1">Facultad</label>
+        <select [(ngModel)]="nuevoDocente.c_codfac" name="c_codfac" required class="w-full border rounded px-3 py-2">
+          <option value="E">INGENIERÍA Y NEGOCIOS</option>
+          <option value="S">CIENCIAS DE LA SALUD</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Nombre del Docente</label>
+        <input type="text" [(ngModel)]="nuevoDocente.c_nomdoc" name="c_nomdoc" required class="w-full border rounded px-3 py-2" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Horas Mín.</label>
+          <input type="number" [(ngModel)]="nuevoDocente.h_min" name="h_min" required min="1" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Horas Máx.</label>
+          <input type="number" [(ngModel)]="nuevoDocente.h_max" name="h_max" required min="1" class="w-full border rounded px-3 py-2" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Tipo</label>
+        <select [(ngModel)]="nuevoDocente.tipo" name="tipo" required class="w-full border rounded px-3 py-2">
+          <option [value]="0">Tiempo Completo</option>
+          <option [value]="1">Tiempo Parcial</option>
+        </select>
+      </div>
+
+      <div class="flex justify-end mt-4 gap-2">
+        <button 
+          type="button" 
+          class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+          (click)="cerrarModal()"
+        >
+          Cancelar
+        </button>
+        <button 
+          type="submit" 
+          [disabled]="formDocente.invalid"
+          class="px-5 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
+        >
+          Guardar
+        </button>
+      </div>
+    </form>
+
+    <!-- Botón cerrar arriba a la derecha -->
+    <button 
+      (click)="cerrarModal()" 
+      class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl"
+    >
+      &times;
+    </button>
+  </div>
 </div>

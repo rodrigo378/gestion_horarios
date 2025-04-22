@@ -60,42 +60,6 @@ export class WelcomeComponent implements OnInit{
   constructor(
     private dashboardService: DashboardService,
   ) {
-    // Gráfico de Horas por Docente
-    // this.chartDocentes = {
-    //   series: [
-    //     {
-    //       name: "Horas Asignadas",
-    //       data: [20, 35, 40, 10, 30]
-    //     }
-    //   ],
-    //   chart: {
-    //     type: "bar",
-    //     height: 350
-    //   },
-    //   title: {
-    //     text: "Horas por Docente"
-    //   },
-    //   xaxis: {
-    //     categories: ["Docente A", "Docente B", "Docente C", "Docente D", "Docente E"]
-    //   },
-    //   dataLabels: {
-    //     enabled: false
-    //   },
-    //   stroke: {
-    //     show: true,
-    //     width: 2,
-    //     colors: ["transparent"]
-    //   },
-    //   plotOptions: {
-    //     bar: {
-    //       borderRadius: 8,
-    //       borderRadiusApplication: 'end',
-    //       columnWidth: '60%'
-    //     }
-    //   },
-    //   colors: ['#3b82f6']
-    // };    
-
     // Gráfico de Uso de Aulas
     this.chartAulas = {
       series: [
@@ -171,95 +135,16 @@ export class WelcomeComponent implements OnInit{
         }
       },
     };
-    
-    this.chartTurnos = {
-      series: [80, 30, 10],
-      chart: {
-        type: "donut",
-        height: 350,
-        animations: { enabled: true },
-        toolbar: { show: true }
-      },
-      labels: ["Asignado", "Pendiente", "No asignado"],
-      colors: ['#22c55e', '#eab308', '#94a3b8'],
-      title: {
-        text: ""
-      },
-      dataLabels: {
-        enabled: true
-      },
-      stroke: {
-        show: false
-      },
-      plotOptions: {
-        pie: {
-          donut: {
-            size: '60%',
-            labels: {
-              show: true,
-              total: {
-                show: true,
-                label: 'Total',
-                formatter: () => '120'
-              }
-            }
-          }
-        }
-      },
-      responsive: []
-    };
-
-    this.chartTiposCurso = {
-      series: [
-        {
-          name: "Cantidad",
-          data: [48, 32, 15, 10]
-        }
-      ],
-      chart: {
-        type: "bar",
-        height: 350,
-        toolbar: {
-          show: true
-        }
-      },
-      plotOptions: {
-        bar: {
-          horizontal: true,
-          distributed: true, // ✅ NECESARIO para que funcione 'colors'
-          borderRadius: 10,
-          borderRadiusApplication: 'end',
-          columnWidth: '60%'
-        }
-      },
-      title: {
-        text: ""
-      },
-      xaxis: {
-        categories: ["Teóricos", "Prácticos", "Transversales", "Agrupados"]
-      },
-      dataLabels: {
-        enabled: true
-      },
-      stroke: {
-        show: true,
-        width: 1,
-        colors: ["transparent"]
-      },
-      colors: ['#3b82f6', '#22c55e', '#facc15', '#a855f7'] // Azul, Verde, Amarillo, Morado
-    };
-
-    this.totalCursos = 120;
-    this.totalDocentes = 45;
-    this.aulasUtilizadas = 20;
-    this.porcentajeAsignacion = Math.round((100 * 90) / 120); // 110 asignados de 120 cursos
-
   }
+
   ngOnInit(): void {
     this.cargarChartDocentes();
+    this.loadDashboardData();
+    this.cargarTipoCursos();
+    this.cargarEstadoTurno()
   }
   
-  private cargarChartDocentes(): void {
+  cargarChartDocentes(): void {
     this.dashboardService.getHorasPorDocente().subscribe(res => {
       this.chartDocentes = {
         series: [{
@@ -271,10 +156,10 @@ export class WelcomeComponent implements OnInit{
           height: 350
         },
         title: {
-          text: 'Horas por Docente'
+          text: 'Top 10 con mas horas'
         },
         xaxis: {
-          categories: res.categories
+          categories: res.docente
         },
         dataLabels: {
           enabled: false
@@ -296,4 +181,106 @@ export class WelcomeComponent implements OnInit{
     });
   }
   
+  loadDashboardData(): void {
+    this.dashboardService.getdashboard1().subscribe({
+      next: (data) => {
+        this.totalCursos = data.countCursos;
+        this.totalDocentes = data.countDocentes;
+        this.aulasUtilizadas = data.countAulasAsignadas;
+        this.porcentajeAsignacion = parseFloat(data.porAsignacion.toFixed(2));        
+      },
+      error: (err) => {
+        console.error('Error al cargar datos del dashboard:', err);
+        this.totalCursos = 0;
+        this.totalDocentes = 0;
+        this.aulasUtilizadas = 0;
+        this.porcentajeAsignacion = 0;
+      }
+    });
+  }
+  
+  cargarTipoCursos(): void {
+    this.dashboardService.cargarTipoCursos().subscribe(res => {
+      this.chartTiposCurso = {
+        series: [
+          {
+            name: "Cantidad",
+            data: [ res.countCursos, res.countAgrupados, res.countTransversales] // Puedes reemplazar por res.data si deseas dinámico
+          }
+        ],
+        chart: {
+          type: "bar",
+          height: 350,
+          toolbar: {
+            show: true
+          }
+        },
+        plotOptions: {
+          bar: {
+            horizontal: true,
+            distributed: true,
+            borderRadius: 10,
+            borderRadiusApplication: 'end',
+            columnWidth: '60%'
+          }
+        },
+        title: {
+          text: ""
+        },
+        xaxis: {
+          categories: ["Total", "Transversales", "Agrupados"]
+        },
+        dataLabels: {
+          enabled: true
+        },
+        stroke: {
+          show: true,
+          width: 1,
+          colors: ["transparent"]
+        },
+        colors: ['#3b82f6', '#facc15', '#a855f7']
+      };
+    });
+  }
+  
+  cargarEstadoTurno(): void {
+    this.dashboardService.cargarEstadoTurno().subscribe(res => {
+      this.chartTurnos = {
+        series: [res.countTurnoEstado_0, res.countTurnoEstado_1, res.countTurnoEstado_2],
+        chart: {
+          type: "donut",
+          height: 350,
+          animations: { enabled: true },
+          toolbar: { show: true }
+        },
+        labels: ["No asignado", "Pendiente", "Asignado"],
+        colors: ['#94a3b8', '#eab308', '#22c55e'],
+        title: {
+          text: ""
+        },
+        dataLabels: {
+          enabled: true
+        },
+        stroke: {
+          show: false
+        },
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '60%',
+              labels: {
+                show: true,
+                total: {
+                  show: true,
+                  label: 'Total',
+                  formatter: () => '120' // Si es dinámico: () => (80+30+10).toString()
+                }
+              }
+            }
+          }
+        },
+        responsive: []
+      };
+    });
+  }
 }

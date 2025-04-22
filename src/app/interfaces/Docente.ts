@@ -65,3 +65,12 @@ export interface HorarioAsignado {
 export interface DocenteExtendido extends Docente {
     expanded?: boolean;
 }
+
+export interface CreateDocente {
+    c_codfac: string;
+    nom_fac: string;
+    c_nomdoc: string;
+    h_min: number;
+    h_max: number;
+    tipo: number;
+}

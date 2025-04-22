@@ -19,7 +19,6 @@ import { AulaService } from '../../services/aula.service';
 import { Docente } from '../../interfaces/Docente';
 import { Aula } from '../../interfaces/Aula';
 import tippy from 'tippy.js'
-import { EstadoTurnoService } from '../../services/estado-turno.service';
 
 @Component({
   selector: 'app-asignar-horario-dr',
@@ -177,11 +176,13 @@ export class AsignarHorarioDrComponent implements OnInit{
       const codCur = curso.c_codcur;
       const horasAsignadasCurso = horasAsignadas[codCur] || 0;
   
-      // Si HT > 0: aplicar h_umaPlus
+      // 🔒 Bloquear si es FORMACIÓN GENERAL (para cualquier plan)
+      const esFormacionGeneral = curso.c_nom_cur_area?.trim().toUpperCase() === 'FORMACIÓN GENERAL';
+  
+      // Si HT > 0: Teoría
       if (curso.n_ht && curso.n_ht > 0) {
         const h_uma = curso.h_umaPlus ?? 0;
         const htReal = curso.n_ht - h_uma;
-  
         const horasRestantes = htReal - horasAsignadasCurso;
   
         const cursoTeoria: Curso = {
@@ -190,6 +191,7 @@ export class AsignarHorarioDrComponent implements OnInit{
           n_ht: htReal,
           h_umaPlus: h_uma,
           horasRestantes,
+          disabled: esFormacionGeneral, // ⛔ Aquí se bloquea si es FORMACIÓN GENERAL
         };
   
         cursosResult.push(cursoTeoria);
@@ -197,7 +199,7 @@ export class AsignarHorarioDrComponent implements OnInit{
         if (curso.n_codper === 2025) plan2025.push(cursoTeoria);
       }
   
-      // Si HP > 0: se mantiene igual
+      // Si HP > 0: Práctica
       if (curso.n_hp && curso.n_hp > 0) {
         const horasRestantes = curso.n_hp - horasAsignadasCurso;
   
@@ -205,6 +207,7 @@ export class AsignarHorarioDrComponent implements OnInit{
           ...curso,
           tipo: 'Práctica',
           horasRestantes,
+          disabled: esFormacionGeneral, // ⛔ Igual aquí
         };
   
         cursosResult.push(cursoPractica);
@@ -212,7 +215,7 @@ export class AsignarHorarioDrComponent implements OnInit{
         if (curso.n_codper === 2025) plan2025.push(cursoPractica);
       }
   
-      // Si HT = 0 → entonces aseguramos que h_umaPlus también sea 0
+      // h_umaPlus debe ir a 0 si HT = 0
       if (!curso.n_ht || curso.n_ht === 0) {
         curso.h_umaPlus = 0;
       }
@@ -402,19 +405,9 @@ export class AsignarHorarioDrComponent implements OnInit{
   onEventClick(info: any) {
     const evento = info.event;
   
-    // 🛡️ Si es curso padre, mostramos confirmación y redirigimos
-    if (evento.extendedProps?.esPadre) {
-      this.alertService
-        .confirm(
-          'Este curso es un curso padre. ¿Deseas editarlo? Serás redirigido a la página de edición específica.',
-          'Curso Padre'
-        )
-        .then((confirmado) => {
-          if (confirmado) {
-            this.router.navigate(['/cursos/', this.turnoId]);
-          }
-        });
-      return; // 🔒 Detenemos el flujo aquí
+    if (evento.extendedProps?.c_area === 'FG') {
+      this.alertService.info('🔒 No tienes permisos para mover este curso. Las asignaciones de Formación General son gestionadas por COA.');
+      return;
     }
   
     // Si no es padre, sigue el flujo normal
@@ -484,6 +477,7 @@ export class AsignarHorarioDrComponent implements OnInit{
       this.docentesFiltrados = [];
     }
   }
+  
   onEventDrop(info: any): void {
     const evento = info.event;
   
@@ -621,22 +615,21 @@ export class AsignarHorarioDrComponent implements OnInit{
       ${isTemporal ? 'bg-pink-400' : 'bg-sky-400'}
     `;
 
-    // 🔒 Candado para cursos padres
-    if (esPadre) {
+    info.el.classList.add('relative');
+    info.el.appendChild(badge);
+
+    // 🔒 Candado para cursos de Formación General
+    if (info.event.extendedProps?.c_area === 'FG') {
       const candado = document.createElement('i');
       candado.className = `
         fa-solid fa-lock 
-        absolute bottom-1 right-1 
-        text-gray-700 text-[25px] 
+        absolute right-2 bottom-1
+        text-black text-[16px] 
         pointer-events-none
       `;
-      candado.title = 'Curso padre bloqueado';
-      info.el.appendChild(candado);
-
+      candado.title = 'Curso bloqueado por Formación General';
       info.el.appendChild(candado);
     }
-    info.el.classList.add('relative');
-    info.el.appendChild(badge);
 
     const aula = info.event.extendedProps.aula_id;
     const docente = info.event.extendedProps.docente_id;
@@ -840,35 +833,38 @@ export class AsignarHorarioDrComponent implements OnInit{
   private bloquearEquivCursosCargar(): void {
     const codigosAsignados = new Set<string>();
   
-    // 🔍 Recorremos todos los eventos asignados y capturamos tanto el código del curso como su equivalente
+    // 🔍 Recorremos todos los eventos asignados y capturamos codigos y equivalentes
     this.eventosCargados.forEach(ev => {
       const cod = ev.extendedProps?.codCur?.toString().trim().toUpperCase();
       const equiv = ev.extendedProps?.c_codcur_equ?.toString().trim().toUpperCase();
   
       if (cod) codigosAsignados.add(cod);
-      if (equiv) codigosAsignados.add(equiv); // 🔥 Clave para bloqueo inverso
+      if (equiv) codigosAsignados.add(equiv); // 🔥 Clave para evitar doble asignación
     });
   
     console.log('🗂️ Cursos asignados encontrados:', [...codigosAsignados]);
   
-    // 🔁 Recorremos ambos planes para bloquear los cursos que ya están asignados o sus equivalentes
     const listas = [this.cursosPlan2023, this.cursosPlan2025];
     listas.forEach(lista => {
       lista.forEach(curso => {
         const codCur = curso.c_codcur?.toString().trim().toUpperCase();
         const codEquivalente = curso.c_codcur_equ?.toString().trim().toUpperCase();
   
-        if (
+        const estaAsignado =
           (codCur && codigosAsignados.has(codCur)) ||
-          (codEquivalente && codigosAsignados.has(codEquivalente))
-        ) {
+          (codEquivalente && codigosAsignados.has(codEquivalente));
+  
+        // ✅ Solo bloqueamos si es del plan 2023
+        if (estaAsignado && curso.n_codper === 2023) {
           curso.disabled = true;
-          console.log(`⛔ BLOQUEADO al cargar: [${codCur}] porque él o su equivalente [${codEquivalente}] ya están asignados`);
+          console.log(`⛔ BLOQUEADO 2023: [${codCur}] porque él o su equivalente [${codEquivalente}] ya están asignados`);
+        } else if (estaAsignado) {
+          console.log(`✅ NO BLOQUEADO 2025: [${codCur}] es equivalente pero del 2025`);
         }
       });
     });
   
-    // 🔄 Refrescamos visual para aplicar el cambio en la interfaz
+    // 🔄 Refrescamos visual
     this.cursosPlan2023 = [...this.cursosPlan2023];
     this.cursosPlan2025 = [...this.cursosPlan2025];
   }
@@ -1025,6 +1021,7 @@ export class AsignarHorarioDrComponent implements OnInit{
               end: h.h_fin,
               backgroundColor: color,
               borderColor: color,
+              editable: curso.c_area !== 'FG',
               extendedProps: {
                 codCur: curso.c_codcur,
                 c_codcur_equ: curso.c_codcur_equ,
@@ -1035,6 +1032,7 @@ export class AsignarHorarioDrComponent implements OnInit{
                 aula_id: h.aula_id,
                 docente_id: h.docente_id,
                 tipoAgrupado: tipoAgrupado,
+                c_area: curso.c_area,
               },
               durationEditable: false,
             };

@@ -193,7 +193,7 @@ export class VerTurnoDrComponent {
   }
 
   verCursos(turno: Turno) {
-    this.router.navigate(['director/asignarhorario'], {
+    this.router.navigate(['director/asignarhorariodr'], {
       queryParams: {
         id: turno.id,
       },
