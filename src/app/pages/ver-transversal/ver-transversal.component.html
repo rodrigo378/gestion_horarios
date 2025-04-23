@@ -119,9 +119,9 @@
         [(ngModel)]="selectPeriodo"
       >
         <option value="">Periodo</option>
-        <option value="20241">2024-1</option>
-        <option value="20242">2024-4</option>
-        <option value="20251">2025-1</option>
+        @for (periodo of periodos; track periodo.n_codper) {
+        <option value="{{ periodo.n_codper }}">{{ periodo.n_codper }}</option>
+        }
       </select>
     </div>
 
@@ -403,7 +403,8 @@
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ curso.turno_id }} - {{ curso.n_codper }}
+                    {{ curso.turno_id }} - {{ curso.n_codper }} -
+                    {{ curso.turno.n_codper }}
                   </p>
                 </div>
               </div>
@@ -606,9 +607,11 @@
           <br />
           <span class="font-semibold">Nombre:</span> {{ curso.c_nomcur }}
           <br />
-          <span class="font-semibold">Nombre:</span> {{ curso.c_codfac }}
+          <span class="font-semibold">Facultad:</span> {{ curso.c_codfac }}
           <br />
-          <span class="font-semibold">Nombre:</span> {{ curso.c_codesp }}
+          <span class="font-semibold">Especialidad:</span> {{ curso.c_codesp }}
+          <br />
+          <span class="font-semibold">Periodo:</span> {{ curso.turno.n_codper }}
         </p>
       </div>
       <button class="text-gray-500 hover:text-red-500" (click)="cerrarModal()">
@@ -693,9 +696,6 @@
 
     <!-- Tabla -->
     <div>
-      <h3 class="text-md font-semibold text-gray-700 mb-2">
-        Seleccionar curso
-      </h3>
       @if (cursosFiltrados.length !== 0) {
       <div class="flex justify-end mb-2">
         <button
@@ -723,7 +723,8 @@
             <ng-container *ngFor="let curso of cursosFiltrados">
               <tr class="border-t">
                 <td class="px-4 py-2">
-                  {{ curso.turno.id }} {{ curso.nom_fac }}
+                  {{ curso.turno.id }} - {{ curso.turno.n_codper }}
+                  {{ curso.nom_fac }}
                 </td>
 
                 <td class="px-4 py-2">

@@ -66,9 +66,43 @@ export class HorarioService {
     });
   }
 
+  // @Get('curso')
+  // getCurso(
+  //   @Query('c_codmod') c_codmod?: string,
+  //   @Query('n_codper') n_codper?: string,
+  //   @Query('periodo') periodo?: string,
+  //   @Query('c_codfac') c_codfac?: string,
+  //   @Query('c_codesp') c_codesp?: string,
+  //   @Query('c_codcur') c_codcur?: string,
+  //   @Query('n_ciclo') n_ciclo?: string,
+  //   @Query('turno_id') turno_id?: string,
+  //   @Query('filtroBusqueda') filtroBusqueda?: string,
+  //   @Query('skip') skip?: string,
+  //   @Query('take') take?: string,
+  //   @Query('sortField') sortField?: string,
+  //   @Query('sortOrder') sortOrder?: 'asc' | 'desc',
+  // ) {
+  //   return this.horarioService.getCursos(
+  //     Number(c_codmod),
+  //     n_codper,
+  //     Number(periodo),
+  //     c_codfac,
+  //     c_codesp,
+  //     c_codcur,
+  //     n_ciclo ? Number(n_ciclo) : undefined,
+  //     turno_id ? Number(turno_id) : undefined,
+  //     filtroBusqueda,
+  //     skip ? Number(skip) : undefined,
+  //     take ? Number(take) : undefined,
+  //     sortField,
+  //     sortOrder || 'asc',
+  //   );
+  // }
+
   getCurso(
     c_codmod?: number,
     n_codper?: string,
+    periodo?: number,
     c_codfac?: string,
     c_codesp?: string,
     c_codcur?: string,
@@ -87,6 +121,7 @@ export class HorarioService {
     const params: any = {};
     if (c_codmod) params.c_codmod = c_codmod;
     if (n_codper) params.n_codper = n_codper;
+    if (periodo) params.periodo = periodo;
     if (c_codfac) params.c_codfac = c_codfac;
     if (c_codesp) params.c_codesp = c_codesp;
     if (c_codcur) params.c_codcur = c_codcur;

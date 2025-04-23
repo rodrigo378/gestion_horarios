@@ -30,7 +30,7 @@ export class AgruparCursosComponent {
   selectEspecialidad: string = '';
   selectModalidad: string = '';
   selectPlan: string = '';
-  selectPeriodo: string = '';
+  selectPeriodo: number = 20251;
   selectCiclo: string = '';
 
   arrayCheckboxCursos: number[] = [];
@@ -42,6 +42,7 @@ export class AgruparCursosComponent {
   filtros = {
     c_codmod: '',
     n_codper: '2025',
+    periodo: 20251,
     c_codfac: '',
     c_codesp: '',
   };
@@ -63,6 +64,7 @@ export class AgruparCursosComponent {
       .getCurso(
         Number(this.selectModalidad),
         this.selectPlan,
+        this.selectPeriodo,
         this.selectFacultadad,
         this.selectEspecialidad,
         undefined,
@@ -106,6 +108,7 @@ export class AgruparCursosComponent {
       .getCurso(
         Number(this.filtros.c_codmod),
         this.filtros.n_codper,
+        this.filtros.periodo,
         this.filtros.c_codfac,
         this.filtros.c_codesp
       )
@@ -180,6 +183,7 @@ export class AgruparCursosComponent {
     this.filtros = {
       c_codmod: '',
       n_codper: '2025',
+      periodo: 20251,
       c_codfac: '',
       c_codesp: '',
     };
@@ -226,6 +230,7 @@ export class AgruparCursosComponent {
           this.filtros = {
             c_codmod: '',
             n_codper: '2025',
+            periodo: 20251,
             c_codfac: '',
             c_codesp: '',
           };
