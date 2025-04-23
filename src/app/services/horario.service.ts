@@ -20,7 +20,7 @@ export class HorarioService {
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   guardarHorarios(data: CreateHorarioRequest): Observable<any> {
-    return this.http.post(`${this.apiUrl}`, data); // ✅ No lo vuelvas a meter en { dataArray }
+    return this.http.post(`${this.apiUrl}`, data, { withCredentials: true }); // ✅ No lo vuelvas a meter en { dataArray }
   }
 
   getHorarioPorTurno(turno_id: number): Observable<HorarioExtendido[]> {
@@ -30,12 +30,13 @@ export class HorarioService {
   }
 
   updateHorarios(data: UpdateHorarioData): Observable<any> {
-    return this.http.put(`${this.apiUrl}`, data);
+    return this.http.put(`${this.apiUrl}`, data, { withCredentials: true });
   }
 
   deleteHorarios(data: DeleteHorariosRequest): Observable<any> {
     return this.http.request('delete', `${this.apiUrl}`, {
       body: data,
+      withCredentials: true,
     });
   }
 

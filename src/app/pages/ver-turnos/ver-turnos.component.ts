@@ -134,7 +134,6 @@ export class VerTurnosComponent implements OnInit {
       n_codper: Number(form.n_codper),
       n_codpla: Number(form.n_codpla),
       n_ciclo: Number(form.n_ciclo),
-      estado: 1,
       nom_fac: this.getNombreFacultad(form.c_codfac),
       nomesp: this.obtenerNombreEspecialidad(form.c_codesp),
       c_nommod: this.obtenerNombreModalidad(form.c_codmod),

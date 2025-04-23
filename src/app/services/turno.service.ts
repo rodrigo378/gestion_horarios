@@ -27,11 +27,11 @@ export class TurnoService {
   }
 
   createTurno(turno: Turno) {
-    return this.http.post(this.apiUrl, turno);
+    return this.http.post(this.apiUrl, turno, { withCredentials: true });
   }
 
   deleteTurno(id: number) {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 
   actualizarEstado(id: number, estado: number) {
@@ -39,11 +39,11 @@ export class TurnoService {
   }
 
   private estadoActualizado = new BehaviorSubject<number | null>(null);
-  
+
   emitirCambioEstado(turnoId: number) {
     this.estadoActualizado.next(turnoId);
   }
-  
+
   onCambioEstado() {
     return this.estadoActualizado.asObservable();
   }
