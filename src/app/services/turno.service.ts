@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { Turno } from '../interfaces/turno';
+import { Periodo, Turno } from '../interfaces/turno';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -10,6 +10,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class TurnoService {
   private apiUrl = `${environment.api}/turno`;
+  private apiUrlget = `${environment.api}`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -46,5 +47,9 @@ export class TurnoService {
 
   onCambioEstado() {
     return this.estadoActualizado.asObservable();
+  }
+
+  getPeriodos(): Observable<Periodo[]> {
+    return this.http.get<Periodo[]>(`${this.apiUrlget}/periodo`);
   }
 }

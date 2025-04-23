@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Turno } from '../../interfaces/turno';
+import { Periodo, Turno } from '../../interfaces/turno';
 import { TurnoService } from '../../services/turno.service';
 import { Router } from '@angular/router';
 import { Especialidad } from '../../interfaces/Curso';
@@ -39,7 +39,7 @@ export class VerTurnosComponent implements OnInit {
   especialidadesCompletas: Especialidad[] = [];
   especialidadesFiltradas: Especialidad[] = [];
 
-  periodo: number[] = [20251, 20252];
+  periodos: Periodo[] = [];
   facultades: string[] = [];
   ciclos: number[] = [];
   estados: { value: string; label: string }[] = [];
@@ -61,6 +61,10 @@ export class VerTurnosComponent implements OnInit {
       this.turnos = data;
       this.turnosFiltrados = data;
       this.extraerValoresUnicos(data);
+      this.turnoServices.getPeriodos().subscribe((data) => {
+        this.periodos = data;
+      });
+      
     });
 
     this.cursoServices.getEspecialidades().subscribe((data) => {
@@ -143,7 +147,7 @@ export class VerTurnosComponent implements OnInit {
     };
 
     this.turnoServices.createTurno(turno).subscribe({
-      next: (res: any) => {
+      next: (_res: any) => {
         this.alertService.success('Se creo el Turno exitosamente');
         this.turnoServices.getTurnos().subscribe((data) => {
           this.turnos = data;
@@ -162,7 +166,7 @@ export class VerTurnosComponent implements OnInit {
           });
         });
       },
-      error: (er: HttpErrorResponse) => {
+      error: (_er: HttpErrorResponse) => {
         this.alertService.error('Este Turno ya existe.');
       },
     });
@@ -194,9 +198,7 @@ export class VerTurnosComponent implements OnInit {
     });
   }
 
-  //#region CRUD turnos
-
-  //#region filtro>
+  //#region filtro
 
   getNombreFacultad(codfac: string): string {
     const facultadesMap: Record<string, string> = {
@@ -326,6 +328,11 @@ export class VerTurnosComponent implements OnInit {
   editarTurno(turno_id: number) {
     this.router.navigate([`/cursos/${turno_id}`]);
   }
+
+  mostrarAlertaVencido() {
+    this.alertService.error('La fecha de asignación ha caducado. Ya no puedes modificar este turno.');
+  }
+  
 
   cambiarItemsPorPagina(valor: number) {
     this.itemsPorPagina = valor;

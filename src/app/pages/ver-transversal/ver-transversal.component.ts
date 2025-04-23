@@ -277,4 +277,9 @@ export class VerTransversalComponent implements OnInit {
     this.paginaActual = 1;
     this.getCursos();
   }
+
+  mostrarAlertaVencido() {
+    this.alertService.error('La fecha de asignación ha caducado. Ya no puedes modificar este turno.');
+  }
+  
 }

@@ -68,6 +68,7 @@ export interface Curso2 {
   turno: Turno;
   cursosPadres: CursoPadre[];
   cursosHijos: CursoHijo[];
+  vencio: boolean
 }
 
 export interface CursoPadre {

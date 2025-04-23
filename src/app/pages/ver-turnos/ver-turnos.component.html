@@ -54,13 +54,16 @@
 
     <div class="flex justify-end items-center flex-wrap gap-3 mt-4 mb-4 mr-4">
       <select
-        [(ngModel)]="filtros.n_codper"
-        (change)="aplicarFiltros()"
-        class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+      [(ngModel)]="filtros.n_codper"
+      (change)="aplicarFiltros()"
+      class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
       >
-        <option value="">Periodo</option>
-        <option *ngFor="let per of periodo" [ngValue]="per">{{ per }}</option>
-      </select>
+      <option value="">Periodo</option>
+      <option *ngFor="let per of periodos" [value]="per.n_codper">
+        {{ per.n_codper }}
+      </option>
+    </select>
+    
 
             <!-- Select: Facultad -->
       <select
@@ -433,8 +436,8 @@
               <button
                 class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 type="button"
-                (click)="verCursos(turno)"
-              >
+                (click)="turno.vencio ? mostrarAlertaVencido() : verCursos(turno)"
+                >
                 <span
                   class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
                 >
@@ -459,8 +462,8 @@
               <button
                 class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-red-600 transition-all hover:bg-red-600/10 active:bg-red-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
                 type="button"
-                (click)="deleteTurno(turno.id)"
-              >
+                (click)="turno.vencio ? mostrarAlertaVencido() : deleteTurno(turno.id)"
+                >
                 <span
                   class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
                 >
@@ -572,24 +575,20 @@
         </select>
       </div>
 
-      <!-- Periodo -->
+      <!-- Periodo (dinámico) -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Periodo</label
-        >
+        <label class="block text-sm font-medium text-gray-700 mb-1">Periodo</label>
         <select
           formControlName="n_codper"
           class="w-full border border-gray-300 rounded-md px-3 py-2"
         >
           <option value="">Seleccione periodo</option>
-          <option value="20231">2023-1</option>
-          <option value="20232">2023-2</option>
-          <option value="20241">2024-1</option>
-          <option value="20242">2024-2</option>
-          <option value="20251">2025-1</option>
-          <option value="20252">2025-2</option>
+          <option *ngFor="let per of periodos" [value]="per.n_codper">
+            {{ per.n_codper }}
+          </option>
         </select>
       </div>
+
 
       <!-- Plan -->
       <div>
