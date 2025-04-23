@@ -62,7 +62,7 @@ export class WelcomeComponent {
       series: [
         {
           name: "Horas Asignadas",
-          data: [20, 35, 40, 10, 30],
+          data: [20, 35, 40, 10, 30]
         }
       ],
       chart: {
@@ -70,7 +70,7 @@ export class WelcomeComponent {
         height: 350
       },
       title: {
-        text: ""
+        text: "Horas por Docente"
       },
       xaxis: {
         categories: ["Docente A", "Docente B", "Docente C", "Docente D", "Docente E"]
@@ -82,8 +82,16 @@ export class WelcomeComponent {
         show: true,
         width: 2,
         colors: ["transparent"]
-      }
-    };
+      },
+      plotOptions: {
+        bar: {
+          borderRadius: 8,
+          borderRadiusApplication: 'end',
+          columnWidth: '60%'
+        }
+      },
+      colors: ['#3b82f6']
+    };    
 
     // Gráfico de Uso de Aulas
     this.chartAulas = {
@@ -122,8 +130,17 @@ export class WelcomeComponent {
           enabled: true
         },
         toolbar: {
-          show: false
-        }
+          show: true,
+          tools: {
+            download: true,
+            selection: false,
+            zoom: false,
+            zoomin: false,
+            zoomout: false,
+            pan: false,
+            reset: false
+          }
+        }         
       },
       labels: ["Ciencias de la Salud", "Ingeniería y Negocios"],
       title: {
@@ -151,35 +168,6 @@ export class WelcomeComponent {
         }
       },
     };
-
-    this.chartAsignaciones = {
-      series: [
-        {
-          name: "Asignaciones",
-          data: [5, 10, 15, 7, 12, 20, 25] // ← Asignaciones por día (simulado)
-        }
-      ],
-      chart: {
-        type: "line",
-        height: 350,
-        zoom: {
-          enabled: false
-        }
-      },
-      title: {
-        text: ""
-      },
-      xaxis: {
-        categories: ["01 Abr", "02 Abr", "03 Abr", "04 Abr", "05 Abr", "06 Abr", "07 Abr"]
-      },
-      dataLabels: {
-        enabled: true
-      },
-      stroke: {
-        curve: "smooth",
-        width: 3
-      }
-    };
     
     this.chartTurnos = {
       series: [80, 30, 10],
@@ -187,7 +175,7 @@ export class WelcomeComponent {
         type: "donut",
         height: 350,
         animations: { enabled: true },
-        toolbar: { show: false }
+        toolbar: { show: true }
       },
       labels: ["Asignado", "Pendiente", "No asignado"],
       colors: ['#22c55e', '#eab308', '#94a3b8'],
@@ -229,17 +217,20 @@ export class WelcomeComponent {
         type: "bar",
         height: 350,
         toolbar: {
-          show: false
+          show: true
         }
       },
       plotOptions: {
         bar: {
           horizontal: true,
-          distributed: true
+          distributed: true, // ✅ NECESARIO para que funcione 'colors'
+          borderRadius: 10,
+          borderRadiusApplication: 'end',
+          columnWidth: '60%'
         }
       },
       title: {
-        text: "Discriminación de Tipos de Curso"
+        text: ""
       },
       xaxis: {
         categories: ["Teóricos", "Prácticos", "Transversales", "Agrupados"]
@@ -252,13 +243,13 @@ export class WelcomeComponent {
         width: 1,
         colors: ["transparent"]
       },
-      colors: ['#3b82f6', '#22c55e', '#facc15', '#a855f7'] // 🎨 colores por barra
-    };    
+      colors: ['#3b82f6', '#22c55e', '#facc15', '#a855f7'] // Azul, Verde, Amarillo, Morado
+    };
 
     this.totalCursos = 120;
     this.totalDocentes = 45;
     this.aulasUtilizadas = 20;
-    this.porcentajeAsignacion = Math.round((100 * 110) / 120); // 110 asignados de 120 cursos
+    this.porcentajeAsignacion = Math.round((100 * 90) / 120); // 110 asignados de 120 cursos
 
   }
   
