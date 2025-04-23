@@ -26,12 +26,14 @@ export class LoginComponent implements OnInit {
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-      email: ['rodrigo@gmail.com', [Validators.required, Validators.email]],
-      password: ['rodrigo', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]],
     });
   }
 
   ngOnInit(): void {
+    console.log('v2.1');
+
     this.route.queryParams.subscribe((params) => {
       const token = params['token'];
       if (token) {
@@ -45,7 +47,7 @@ export class LoginComponent implements OnInit {
   }
 
   btnClickGoogle() {
-    window.location.href = 'http://localhost:3000/auth/google';
+    window.location.href = 'http://161.97.115.144:7001/auth/google';
   }
 
   submit() {
