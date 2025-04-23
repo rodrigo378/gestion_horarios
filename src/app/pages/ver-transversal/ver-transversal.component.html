@@ -114,7 +114,7 @@
         <option value="10">10</option>
       </select>
 
-      <!-- <select
+      <select
         class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
         [(ngModel)]="selectPeriodo"
       >
@@ -122,7 +122,7 @@
         <option value="20241">2024-1</option>
         <option value="20242">2024-4</option>
         <option value="20251">2025-1</option>
-      </select> -->
+      </select>
     </div>
 
     <div class="flex justify-start items-center flex-wrap gap-3 mt-4 mb-4 mr-4">
@@ -491,7 +491,9 @@
                 <button
                   class="relative h-10 w-10 rounded-lg text-green-600 hover:bg-green-600/10 active:bg-green-600/20 transition-all"
                   type="button"
-                  (click)="curso.vencio ? mostrarAlertaVencido(): clickMas(curso)"
+                  (click)="
+                    curso.vencio ? mostrarAlertaVencido() : clickMas(curso)
+                  "
                 >
                   <span
                     class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
@@ -504,7 +506,11 @@
                 <button
                   class="relative h-10 w-10 rounded-lg text-red-600 hover:bg-red-600/10 active:bg-red-600/20 transition-all"
                   type="button"
-                  (click)="curso.vencio ? mostrarAlertaVencido(): clickDeleteTransversal(curso.id)"
+                  (click)="
+                    curso.vencio
+                      ? mostrarAlertaVencido()
+                      : clickDeleteTransversal(curso.id)
+                  "
                 >
                   <span
                     class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
