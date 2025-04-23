@@ -273,7 +273,7 @@ export class WelcomeComponent implements OnInit{
                 total: {
                   show: true,
                   label: 'Total',
-                  formatter: () => '120' // Si es dinámico: () => (80+30+10).toString()
+                  formatter: () => '' // Si es dinámico: () => (80+30+10).toString()
                 }
               }
             }

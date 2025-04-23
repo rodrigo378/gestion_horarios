@@ -26,6 +26,7 @@ export class VerTurnosComponent implements OnInit {
 
   // Filtros seleccionados
   filtros = {
+    n_codper: '',
     c_codfac: '',
     c_codesp: '',
     c_codmod: '',
@@ -38,6 +39,7 @@ export class VerTurnosComponent implements OnInit {
   especialidadesCompletas: Especialidad[] = [];
   especialidadesFiltradas: Especialidad[] = [];
 
+  periodo: number[] = [20251, 20252];
   facultades: string[] = [];
   ciclos: number[] = [];
   estados: { value: string; label: string }[] = [];
@@ -137,7 +139,7 @@ export class VerTurnosComponent implements OnInit {
       nom_fac: this.getNombreFacultad(form.c_codfac),
       nomesp: this.obtenerNombreEspecialidad(form.c_codesp),
       c_nommod: this.obtenerNombreModalidad(form.c_codmod),
-      c_codmod: Number(form.c_codmod),
+      c_codmod: form.c_codmod,
     };
 
     this.turnoServices.createTurno(turno).subscribe({

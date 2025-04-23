@@ -77,7 +77,7 @@ export class CalenderAulaComponent implements OnInit{
       const aula = aulas.find(a => a.id === aulaId);
       if (!aula) return;
 
-      this.nombreAula = `Aula ${aula.c_codaula} - Pabellón ${aula.pabellon} - ${aula.n_piso}`;
+      this.nombreAula = `Aula ${aula.c_codaula} - Pabellón ${aula.pabellon} - ${this.obtenerNombrePiso(aula.n_piso)}`;
 
       const eventos = aula.Horario.map(h => {
         const backgroundColor = h.tipo === 'Teoría' ? '#3788d8' : '#28a745';

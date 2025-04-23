@@ -7,8 +7,13 @@ export interface Turno {
   c_codesp: string;
   nomesp: string;
   c_grpcur: string;
-  c_codmod: string;
+  c_codmod: string; // Cambiado a number
   c_nommod: string;
   n_ciclo: number;
   estado: number;
+  f_cierre?: string;
+  periodo?: {
+    n_codper: number;
+    f_cierre: string;
+  };
 }
