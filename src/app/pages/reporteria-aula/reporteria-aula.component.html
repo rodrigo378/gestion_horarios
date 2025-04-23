@@ -177,10 +177,20 @@
                     <td class="p-4 border-b border-slate-200">
                         <button (click)="toggleExpand(aula)" class="text-blue-600 font-medium hover:underline">
                         {{ aula.expanded ? '▼ Ocultar' : '▶ Ver más' }}
-                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold ml-2 px-2 py-0.5 rounded">
-                            {{ aula.Horario.length }}
-                        </span>
-                        </button>                        
+                          <span class="bg-blue-100 text-blue-800 text-xs font-semibold ml-2 px-2 py-0.5 rounded">
+                              {{ aula.Horario.length }}
+                          </span>
+                        </button>
+                        <button
+                          [routerLink]="['/coa/calendario-aula']"
+                          [queryParams]="{ id: aula.id }"
+                          class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                          type="button"
+                        >
+                          <span class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+                            <i class="fa-solid fa-eye text-xl"></i>
+                          </span>
+                      </button>  
                     </td>
                     </tr>
                 

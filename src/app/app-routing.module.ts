@@ -15,6 +15,8 @@ import { AgruparCursosComponent } from './pages/agrupar-cursos/agrupar-cursos.co
 import { AsignarHorarioDrComponent } from './pages/asignar-horario-dr/asignar-horario-dr.component';
 import { VerTurnoDrComponent } from './pages/ver-turno-dr/ver-turno-dr.component';
 import { ReporteriaAulaComponent } from './pages/reporteria-aula/reporteria-aula.component';
+import { CalenderDocenteComponent } from './pages/calender-docente/calender-docente.component';
+import { CalenderAulaComponent } from './pages/calender-aula/calender-aula.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -39,6 +41,8 @@ const routes: Routes = [
       { path: 'agrupar', component: AgruparCursosComponent },
       { path: 'asignarhorario', component: AsignarhorarioComponent },
       { path: 'cursos/:id', component: VerCursosComponent },
+      { path: 'calendario-docente', component: CalenderDocenteComponent },
+      { path: 'calendario-aula', component:CalenderAulaComponent }
     ],
   },
   {
