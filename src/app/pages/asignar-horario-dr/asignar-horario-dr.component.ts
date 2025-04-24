@@ -620,7 +620,6 @@ export class AsignarHorarioDrComponent implements OnInit {
     const isTemporal =
       info.event.id.toString().startsWith('temp-') ||
       info.event.extendedProps?.isNew;
-    const esPadre = info.event.extendedProps?.esPadre;
 
     // 🏷️ Badge de estado
     const badge = document.createElement('span');
