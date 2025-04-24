@@ -7,7 +7,7 @@ import esLocale from '@fullcalendar/core/locales/es';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Turno } from '../../interfaces/turno';
 import { HorarioService } from '../../services/horario.service';
-import { Location } from '@angular/common';
+import { TurnoService } from '../../services/turno.service';
 
 @Component({
   selector: 'app-calender-director',
@@ -46,7 +46,7 @@ export class CalenderDirectorComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private horarioService: HorarioService,
-    private location: Location
+    private turnoServices: TurnoService
   ) {}
 
   ngOnInit(): void {
@@ -54,6 +54,7 @@ export class CalenderDirectorComponent implements OnInit {
       this.turnoId = +params['id'];
       if (this.turnoId) {
         this.cargarEventosPorTurno(this.turnoId);
+        this.cargarDatosTurno(this.turnoId);
       }
     });
   }
@@ -79,7 +80,10 @@ export class CalenderDirectorComponent implements OnInit {
       this.calendarOptions.events = eventos;
     });
   }
-  regresar(): void {
-    this.location.back();
+
+  cargarDatosTurno(id: number): void {
+    this.turnoServices.getTurnoById(id).subscribe((turno) => {
+      this.turnoData = turno;
+    });
   }
 }

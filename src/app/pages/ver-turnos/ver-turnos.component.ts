@@ -46,12 +46,12 @@ export class VerTurnosComponent implements OnInit {
   modalidades: { value: string; label: string }[] = [];
 
   constructor(
-    private location: Location,
-    private turnoServices: TurnoService,
     private router: Router,
-    private cursoServices: CursoService,
     private fb: FormBuilder,
-    private alertService: AlertService
+    private location: Location,
+    private alertService: AlertService,
+    private turnoServices: TurnoService,
+    private cursoServices: CursoService
   ) {}
 
   ngOnInit(): void {
@@ -142,13 +142,13 @@ export class VerTurnosComponent implements OnInit {
 
     const turno = {
       ...form,
+      c_codmod: form.c_codmod,
+      n_ciclo: Number(form.n_ciclo),
       n_codper: Number(form.n_codper),
       n_codpla: Number(form.n_codpla),
-      n_ciclo: Number(form.n_ciclo),
       nom_fac: this.getNombreFacultad(form.c_codfac),
-      nomesp: this.obtenerNombreEspecialidad(form.c_codesp),
       c_nommod: this.obtenerNombreModalidad(form.c_codmod),
-      c_codmod: form.c_codmod,
+      nomesp: this.obtenerNombreEspecialidad(form.c_codesp),
     };
 
     this.turnoServices.createTurno(turno).subscribe({
