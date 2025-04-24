@@ -1,21 +1,19 @@
 import { Component } from '@angular/core';
-import { OnInit, ViewChild } from '@angular/core';
+import { OnInit } from '@angular/core';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { Draggable } from '@fullcalendar/interaction';
-import { CalendarOptions, EventApi } from '@fullcalendar/core';
+import { CalendarOptions } from '@fullcalendar/core';
 import esLocale from '@fullcalendar/core/locales/es';
 import { DocentecurService } from '../../services/docentecur.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-calender-docente',
   standalone: false,
   templateUrl: './calender-docente.component.html',
-  styleUrl: './calender-docente.component.css'
+  styleUrl: './calender-docente.component.css',
 })
 export class CalenderDocenteComponent implements OnInit {
-
   nombreDocente: string = '';
 
   calendarOptions: CalendarOptions = {
@@ -45,10 +43,11 @@ export class CalenderDocenteComponent implements OnInit {
   constructor(
     private docenteService: DocentecurService,
     private route: ActivatedRoute,
-  ){}
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       const docenteId = +params['id'];
       if (!docenteId) {
         console.warn('⚠️ No se recibió ID');
@@ -60,7 +59,7 @@ export class CalenderDocenteComponent implements OnInit {
 
   private cargarHorarioDocente(docenteId: number): void {
     this.docenteService.obtenerDocentesreporteria().subscribe((docentes) => {
-      const docente = docentes.find(d => d.id === docenteId);
+      const docente = docentes.find((d) => d.id === docenteId);
 
       if (!docente) {
         console.warn('⚠️ Docente no encontrado');
@@ -100,5 +99,10 @@ export class CalenderDocenteComponent implements OnInit {
 
       this.calendarOptions.events = eventos;
     });
+  }
+
+  regresar() {
+    const currentPrefix = this.router.url.split('/')[1];
+    this.router.navigate([`/${currentPrefix}/docente`]);
   }
 }

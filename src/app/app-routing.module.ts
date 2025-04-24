@@ -41,8 +41,8 @@ const routes: Routes = [
       { path: 'agrupar', component: AgruparCursosComponent },
       { path: 'asignarhorario', component: AsignarhorarioComponent },
       { path: 'cursos/:id', component: VerCursosComponent },
-      { path: 'calendario-docente', component: CalenderDocenteComponent },
-      { path: 'calendario-aula', component:CalenderAulaComponent }
+      { path: 'calendario_docente', component: CalenderDocenteComponent },
+      { path: 'calendario_aula', component: CalenderAulaComponent },
     ],
   },
   {
@@ -53,6 +53,7 @@ const routes: Routes = [
       { path: 'turno', component: VerTurnoDrComponent },
       { path: 'asignarhorariodr', component: AsignarHorarioDrComponent },
       { path: 'docente', component: ReporteriaComponent },
+      { path: 'calendario_docente', component: CalenderDocenteComponent },
     ],
   },
   {
