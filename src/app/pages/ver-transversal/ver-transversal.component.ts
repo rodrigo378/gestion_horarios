@@ -33,7 +33,7 @@ export class VerTransversalComponent implements OnInit {
   selectFacultadad: string = '';
   selectEspecialidad: string = '';
   selectModalidad: string = '';
-  selectPlan: string = '';
+  selectPlan: string = '2025';
   selectPeriodo: number = 20251;
   selectCiclo: string = '';
 
@@ -125,17 +125,30 @@ export class VerTransversalComponent implements OnInit {
       )
 
       .subscribe((data) => {
+        console.log('data => ', data);
         this.cursosFiltrados = data.data.filter((curso) => {
           const codA = this.curso.c_codcur;
           const codAeq = this.curso.c_codcur_equ;
           const codB = curso.c_codcur;
           const codBeq = curso.c_codcur_equ;
-
           const turno_idA = this.curso.turno_id;
           const turno_idB = curso.turno_id;
-
           const esMismoCurso = this.curso.id === curso.id;
           const esMismoTurno = turno_idA === turno_idB;
+
+          // console.log('======================');
+          // console.log('codA => ', codA);
+          // console.log('codAeq => ', codAeq);
+
+          // console.log('codB => ', codB);
+          // console.log('codBeq => ', codBeq);
+
+          // console.log('turno_idA => ', turno_idA);
+          // console.log('turno_idB => ', turno_idB);
+
+          // console.log('esMismoCurso => ', esMismoCurso);
+          // console.log('esMismoTurno => ', esMismoTurno);
+          // console.log('======================');
 
           return (
             !esMismoCurso &&
@@ -145,8 +158,6 @@ export class VerTransversalComponent implements OnInit {
               (codAeq && (codAeq === codB || codAeq === codBeq)))
           );
         });
-
-        console.log('📚 Cursos filtrados modal => ', this.cursosFiltrados);
       });
   }
 
@@ -229,7 +240,7 @@ export class VerTransversalComponent implements OnInit {
     this.todosSeleccionados = !this.todosSeleccionados;
 
     if (this.todosSeleccionados) {
-      this.arrayCheckboxCursos = this.cursosFiltrados.map((c) => c.id);
+      this.arrayCheckboxCursos = this.cursosFiltrados.map((c: any) => c.id);
     } else {
       this.arrayCheckboxCursos = [];
     }

@@ -66,39 +66,6 @@ export class HorarioService {
     });
   }
 
-  // @Get('curso')
-  // getCurso(
-  //   @Query('c_codmod') c_codmod?: string,
-  //   @Query('n_codper') n_codper?: string,
-  //   @Query('periodo') periodo?: string,
-  //   @Query('c_codfac') c_codfac?: string,
-  //   @Query('c_codesp') c_codesp?: string,
-  //   @Query('c_codcur') c_codcur?: string,
-  //   @Query('n_ciclo') n_ciclo?: string,
-  //   @Query('turno_id') turno_id?: string,
-  //   @Query('filtroBusqueda') filtroBusqueda?: string,
-  //   @Query('skip') skip?: string,
-  //   @Query('take') take?: string,
-  //   @Query('sortField') sortField?: string,
-  //   @Query('sortOrder') sortOrder?: 'asc' | 'desc',
-  // ) {
-  //   return this.horarioService.getCursos(
-  //     Number(c_codmod),
-  //     n_codper,
-  //     Number(periodo),
-  //     c_codfac,
-  //     c_codesp,
-  //     c_codcur,
-  //     n_ciclo ? Number(n_ciclo) : undefined,
-  //     turno_id ? Number(turno_id) : undefined,
-  //     filtroBusqueda,
-  //     skip ? Number(skip) : undefined,
-  //     take ? Number(take) : undefined,
-  //     sortField,
-  //     sortOrder || 'asc',
-  //   );
-  // }
-
   getCurso(
     c_codmod?: number,
     n_codper?: string,
@@ -142,23 +109,33 @@ export class HorarioService {
   }
 
   createTransversal(padre_id: number, hijos_id: number[], tipo: number) {
-    return this.http.post(`${this.apiUrl}/curso/transversal`, {
-      padre_id,
-      hijos_id,
-      tipo,
-    });
+    return this.http.post(
+      `${this.apiUrl}/curso/transversal`,
+      {
+        padre_id,
+        hijos_id,
+        tipo,
+      },
+      { withCredentials: true }
+    );
   }
 
   createGrupo(padre_id: number, hijos_id: number[], tipo: number) {
-    return this.http.post(`${this.apiUrl}/curso/grupo`, {
-      padre_id,
-      hijos_id,
-      tipo,
-    });
+    return this.http.post(
+      `${this.apiUrl}/curso/grupo`,
+      {
+        padre_id,
+        hijos_id,
+        tipo,
+      },
+      { withCredentials: true }
+    );
   }
 
   deleteTransversal(padre_id: number) {
-    return this.http.delete(`${this.apiUrl}/curso/transversal/${padre_id}`);
+    return this.http.delete(`${this.apiUrl}/curso/transversal/${padre_id}`, {
+      withCredentials: true,
+    });
   }
 
   guardarHorarioAsync(data: any): Observable<any> {

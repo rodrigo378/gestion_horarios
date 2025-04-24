@@ -4,6 +4,8 @@ import { Curso2, Especialidad } from '../../interfaces/Curso';
 import { HorarioService } from '../../services/horario.service';
 import { CursoService } from '../../services/curso.service';
 import { AlertService } from '../../services/alert.service';
+import { TurnoService } from '../../services/turno.service';
+import { Periodo } from '../../interfaces/turno';
 
 @Component({
   selector: 'app-agrupar-cursos',
@@ -19,6 +21,8 @@ export class AgruparCursosComponent {
 
   totalCursos!: number;
 
+  periodos!: Periodo[];
+
   paginaActual: number = 1;
   todosSeleccionados: boolean = false;
 
@@ -29,7 +33,7 @@ export class AgruparCursosComponent {
   selectFacultadad: string = '';
   selectEspecialidad: string = '';
   selectModalidad: string = '';
-  selectPlan: string = '';
+  selectPlan: string = '2025';
   selectPeriodo: number = 20251;
   selectCiclo: string = '';
 
@@ -52,10 +56,14 @@ export class AgruparCursosComponent {
   constructor(
     private horarioService: HorarioService,
     private cursoService: CursoService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private turnoService: TurnoService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.getPeriodos();
+  }
+
   getCursos() {
     const skip = (this.paginaActual - 1) * this.itemsPorPagina;
     const take = this.itemsPorPagina;
@@ -78,6 +86,12 @@ export class AgruparCursosComponent {
         this.cursos = data.data;
         this.totalCursos = data.total;
       });
+  }
+
+  getPeriodos() {
+    this.turnoService.getPeriodos().subscribe((data) => {
+      this.periodos = data;
+    });
   }
 
   buscarDesdeInput() {

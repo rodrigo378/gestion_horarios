@@ -92,7 +92,6 @@
         class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
         [(ngModel)]="selectPlan"
       >
-        <option value="">Plan</option>
         <option value="2023">2023</option>
         <option value="2025">2025</option>
       </select>
@@ -101,7 +100,7 @@
         class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
         [(ngModel)]="selectCiclo"
       >
-        <option value="">Seleccionar ciclo</option>
+        <option value="">Ciclo</option>
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -118,7 +117,6 @@
         class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
         [(ngModel)]="selectPeriodo"
       >
-        <option value="">Periodo</option>
         @for (periodo of periodos; track periodo.n_codper) {
         <option value="{{ periodo.n_codper }}">{{ periodo.n_codper }}</option>
         }
@@ -214,30 +212,6 @@
               </p>
             </th>
 
-            <th
-              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-            >
-              <p
-                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"
-              >
-                Codigo
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                  class="w-4 h-4"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                  ></path>
-                </svg>
-              </p>
-            </th>
             <th
               class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
             >
@@ -395,7 +369,8 @@
           <tr
             *ngIf="
               curso.cursosPadres.length === 0 ||
-              curso.cursosPadres[0].padre_curso_id === curso.id
+              (curso.cursosPadres[0].padre_curso_id === curso.id &&
+                curso.cursosPadres[0].tipo !== 1)
             "
           >
             <!-- columnas del curso -->
@@ -403,8 +378,7 @@
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ curso.turno_id }} - {{ curso.n_codper }} -
-                    {{ curso.turno.n_codper }}
+                    {{ curso.n_codper }}
                   </p>
                 </div>
               </div>
@@ -429,20 +403,19 @@
                 </div>
               </div>
             </td>
+
             <td class="p-4 border-b border-slate-200">
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ curso.c_codcur }}
-                  </p>
-                </div>
-              </div>
-            </td>
-            <td class="p-4 border-b border-slate-200">
-              <div class="flex items-center gap-3">
-                <div class="flex flex-col">
-                  <p class="text-sm font-semibold text-slate-700">
-                    {{ curso.c_nomcur }}
+                    <a
+                      [href]="'/coa/asignarhorario?id=' + curso.turno_id"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style="text-decoration: underline; cursor: pointer"
+                    >
+                      ({{ curso.c_codcur }}) {{ curso.c_nomcur }}
+                    </a>
                   </p>
                 </div>
               </div>
@@ -529,12 +502,21 @@
                   @for (hijo of curso.cursosHijos; track hijo.id) { @if
                   (curso.id !== hijo.cursosHijo.id) {
                   <p class="text-sm font-semibold text-slate-700">
-                    ({{ hijo.cursosHijo.id }}) ({{ hijo.cursosHijo.n_codper }})
-                    {{ hijo.cursosHijo.c_codcur }} -
-                    {{ hijo.cursosHijo.turno?.c_grpcur }} ({{
-                      hijo.cursosHijo.c_codfac
-                    }}
-                    - {{ hijo.cursosHijo.c_codesp }})
+                    <a
+                      *ngIf="hijo.cursosHijo && hijo.cursosHijo.turno"
+                      [href]="
+                        '/coa/asignarhorario?id=' + hijo.cursosHijo.turno_id
+                      "
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style="text-decoration: underline; cursor: pointer"
+                    >
+                      ({{ hijo.cursosHijo.n_codper }})
+                      {{ hijo.cursosHijo.c_codcur }} -
+                      {{ hijo.cursosHijo.turno.c_grpcur }}
+                      ({{ hijo.cursosHijo.c_codfac }} -
+                      {{ hijo.cursosHijo.c_codesp }})
+                    </a>
                   </p>
                   } }
                 </div>
@@ -723,7 +705,8 @@
             <ng-container *ngFor="let curso of cursosFiltrados">
               <tr class="border-t">
                 <td class="px-4 py-2">
-                  {{ curso.turno.id }} - {{ curso.turno.n_codper }}
+                  <!-- {{ curso.id }} - {{ curso.turno.id }} - -->
+                  <!-- {{ curso.turno.n_codper }} -->
                   {{ curso.nom_fac }}
                 </td>
 
