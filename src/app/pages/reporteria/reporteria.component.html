@@ -1,341 +1,493 @@
 <!-- component -->
 <div class="max-w-[100%] mx-auto">
-    <div class="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
-      <div class="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border">
-        <!-- Fila: Título + botón -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
-          <!-- Título -->
-          <div>
-            <h3 class="text-2xl font-semibold text-slate-800">Reportería Docentes</h3>
-            <p class="text-slate-500">Reporte de todos los docentes:</p>
-          </div>
-      
-          <!-- Botón exportar alineado a la derecha -->
-          <div class="flex flex-wrap items-center gap-4 mb-4">
-            <button
-              (click)="exportarExcel()"
-              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm font-medium shadow"
-            >
-              📥 Exportar a Excel
-            </button>
-          
-            <button 
-              (click)="abrirModalCrearDocente()"
-              class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
-            >
-              ➕ Agregar Docente
-            </button>
-          </div>
-          
+  <div
+    class="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border"
+  >
+    <div
+      class="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border"
+    >
+      <!-- Fila: Título + botón -->
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2"
+      >
+        <!-- Título -->
+        <div>
+          <h3 class="text-2xl font-semibold text-slate-800">
+            Reportería Docentes
+          </h3>
+          <p class="text-slate-500">Reporte de todos los docentes:</p>
         </div>
-      
-        <!-- Buscador debajo -->
-        <div class="flex flex-col sm:flex-row justify-end">
-          <div class="w-full md:w-72">
-            <div class="relative h-10 w-full min-w-[200px]">
-              <div class="absolute grid w-5 h-5 top-2/4 right-3 -translate-y-2/4 place-items-center text-blue-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                  stroke="currentColor" aria-hidden="true" class="w-5 h-5">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z">
-                  </path>
-                </svg>
-              </div>
-              <input
-                [(ngModel)]="filtroBusqueda"
-                (input)="filtrarUsuarios()"
-                class="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 !pr-9 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
-                placeholder=" " />
-              <label
-                class="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none !overflow-visible truncate text-[11px] font-normal leading-tight text-gray-500 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-gray-900 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-gray-900 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
-                Buscar
-              </label>
+
+        <!-- Botón exportar alineado a la derecha -->
+        <div class="flex flex-wrap items-center gap-4 mb-4">
+          <button
+            (click)="exportarExcel()"
+            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm font-medium shadow"
+          >
+            📥 Exportar a Excel
+          </button>
+
+          <button
+            (click)="abrirModalCrearDocente()"
+            class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
+          >
+            ➕ Agregar Docente
+          </button>
+        </div>
+      </div>
+
+      <!-- Buscador debajo -->
+      <div class="flex flex-col sm:flex-row justify-end">
+        <div class="w-full md:w-72">
+          <div class="relative h-10 w-full min-w-[200px]">
+            <div
+              class="absolute grid w-5 h-5 top-2/4 right-3 -translate-y-2/4 place-items-center text-blue-gray-500"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                aria-hidden="true"
+                class="w-5 h-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                ></path>
+              </svg>
             </div>
+            <input
+              [(ngModel)]="filtroBusqueda"
+              (input)="filtrarUsuarios()"
+              class="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 !pr-9 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+              placeholder=" "
+            />
+            <label
+              class="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none !overflow-visible truncate text-[11px] font-normal leading-tight text-gray-500 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-gray-900 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-gray-900 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500"
+            >
+              Buscar
+            </label>
           </div>
         </div>
       </div>
-      
-        <div class="p-0 overflow-scroll">
-            <table class="w-full mt-4 text-left table-auto min-w-max">
-                <thead>
-                    <tr>
-                        <th (click)="sortBy('c_nomdoc')"
-                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                            <p
-                            class="flex items-center justify-between gap-2 font-sans text-sm font-semibold  leading-none text-black">
-                            Docente
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" aria-hidden="true" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
-                            </svg>
-                            </p>
-                        </th>
-                        <th (click)="sortBy('h_min')"
-                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                            <p
-                            class="flex items-center justify-between gap-2 font-sans text-sm  font-semibold leading-none text-black">
-                            H. Mín
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" aria-hidden="true" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
-                            </svg>
-                            </p>
-                        </th>
-                        <th (click)="sortBy('h_max')"
-                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                            <p
-                            class="flex items-center justify-between gap-2 font-sans text-sm  font-semibold leading-none text-black">
-                            H. Max
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" aria-hidden="true" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
-                            </svg>
-                            </p>
-                        </th>
-                        <th (click)="sortBy('h_total')"
-                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                            <p
-                            class="flex items-center justify-between gap-2 font-sans text-sm  font-semibold leading-none text-black">
-                            H. Academicas
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" aria-hidden="true" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
-                            </svg>
-                            </p>
-                        </th>
-                        <th (click)="sortBy('tipo')"
-                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                            <p
-                            class="flex items-center justify-between gap-2 font-sans text-sm  font-semibold leading-none text-black">
-                            Tipo
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" aria-hidden="true" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
-                            </svg>
-                            </p>
-                        </th>
-                        <th (click)="sortBy('Horario')"
-                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                            <p
-                            class="flex items-center justify-between gap-2 font-sans text-sm  font-semibold leading-none text-black">
-                            Cursos Asignados
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" aria-hidden="true" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
-                            </svg>
-                            </p>
-                        </th>
-                        <th
-                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                            <p
-                            class="flex items-center justify-between gap-2 font-sans text-sm  font-semibold leading-none text-black">
-                            <!-- Acciones
+    </div>
+
+    <div class="p-0 overflow-scroll">
+      <table class="w-full mt-4 text-left table-auto min-w-max">
+        <thead>
+          <tr>
+            <th
+              (click)="sortBy('c_nomdoc')"
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
+              >
+                Docente
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+            <th
+              (click)="sortBy('h_min')"
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
+              >
+                H. Mín
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+            <th
+              (click)="sortBy('h_max')"
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
+              >
+                H. Max
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+            <th
+              (click)="sortBy('h_total')"
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
+              >
+                H. Academicas
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+            <th
+              (click)="sortBy('tipo')"
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
+              >
+                Tipo
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+            <th
+              (click)="sortBy('Horario')"
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
+              >
+                Cursos Asignados
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                  ></path>
+                </svg>
+              </p>
+            </th>
+            <th
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+            >
+              <p
+                class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
+              >
+                <!-- Acciones
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor" aria-hidden="true" class="w-4 h-4">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
                             </svg> -->
-                            </p>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                  <ng-container *ngFor="let docente of usuariosPaginados">
-                    <!-- Fila principal del docente -->
-                    <tr class="hover:bg-gray-100 transition duration-200">
-                      <!-- Nombre y foto -->
-                      <td class="p-4 border-b border-slate-200">
-                        <div class="flex items-center gap-3">
-                          <img src="../../../assets/img/docente.png"
-                              alt="Foto docente"
-                              class="h-9 w-9 rounded-full object-cover" />
-                          <div class="flex flex-col">
-                            <p class="text-sm font-semibold text-slate-700">
-                              {{ docente.c_nomdoc }}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                
-                      <!-- Horas mín -->
-                      <td class="p-4 border-b border-slate-200">
-                        {{ docente.h_min }}
-                      </td>
-                
-                      <!-- Horas máx -->
-                      <td class="p-4 border-b border-slate-200">
-                        {{ docente.h_max }}
-                      </td>
-                
-                      <!-- Total de horas -->
-                      <td class="p-4 border-b border-slate-200">
+              </p>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let docente of usuariosPaginados">
+            <!-- Fila principal del docente -->
+            <tr class="hover:bg-gray-100 transition duration-200">
+              <!-- Nombre y foto -->
+              <td class="p-4 border-b border-slate-200">
+                <div class="flex items-center gap-3">
+                  <img
+                    src="../../../assets/img/docente.png"
+                    alt="Foto docente"
+                    class="h-9 w-9 rounded-full object-cover"
+                  />
+                  <div class="flex flex-col">
+                    <p class="text-sm font-semibold text-slate-700">
+                      {{ docente.c_nomdoc }}
+                    </p>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Horas mín -->
+              <td class="p-4 border-b border-slate-200">
+                {{ docente.h_min }}
+              </td>
+
+              <!-- Horas máx -->
+              <td class="p-4 border-b border-slate-200">
+                {{ docente.h_max }}
+              </td>
+
+              <!-- Total de horas -->
+              <td class="p-4 border-b border-slate-200">
+                <span
+                  [ngClass]="{
+                    'text-yellow-600 font-semibold':
+                      docente.h_total < docente.h_min,
+                    'text-green-600 font-semibold':
+                      docente.h_total >= docente.h_min &&
+                      docente.h_total <= docente.h_max,
+                    'text-red-600 font-semibold':
+                      docente.h_total > docente.h_max
+                  }"
+                >
+                  {{ docente.h_total }}
+                  <span class="text-xs ml-1 italic">
+                    {{
+                      docente.h_total < docente.h_min
+                        ? "(insuficiente)"
+                        : docente.h_total > docente.h_max
+                        ? "(exceso)"
+                        : "(bien)"
+                    }}
+                  </span>
+                </span>
+              </td>
+
+              <!-- Horas máx -->
+              <td class="p-4 border-b border-slate-200">
+                <span
+                  [ngClass]="{
+                    'bg-blue-100 text-blue-800': docente.tipo === 0,
+                    'bg-green-100 text-green-800': docente.tipo === 1
+                  }"
+                  class="px-3 py-1 rounded-full text-sm font-semibold"
+                >
+                  {{
+                    docente.tipo === 0 ? "Tiempo Completo" : "Tiempo Parcial"
+                  }}
+                </span>
+              </td>
+
+              <!-- Nro de horarios -->
+              <td class="p-4 border-b border-slate-200">
+                {{ docente.Horario.length }} horarios
+              </td>
+
+              <!-- Botón expandir -->
+              <td class="p-4 border-b border-slate-200">
+                <button
+                  (click)="toggleExpand(docente)"
+                  class="text-blue-600 font-medium hover:underline"
+                >
+                  {{ docente.expanded ? "▼ Ocultar" : "▶ Ver más" }}
+                  <span
+                    class="bg-blue-100 text-blue-800 text-xs font-semibold ml-2 px-2 py-0.5 rounded"
+                  >
+                    {{ docente.Horario.length }}
+                  </span>
+                </button>
+                <!-- [routerLink]="['calendario_docente']" -->
+                <!-- [queryParams]="{ id: docente.id }" -->
+                <button
+                  (click)="clickCalendarioDocente(docente.id)"
+                  class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                  type="button"
+                >
+                  <span
+                    class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                  >
+                    <i class="fa-solid fa-eye text-xl"></i>
+                  </span>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Fila expandida con detalle de horarios -->
+            <tr *ngIf="docente.expanded">
+              <td
+                colspan="7"
+                class="bg-slate-50 p-4 border-t border-b border-slate-200"
+              >
+                <p
+                  class="text-base font-semibold text-slate-800 underline mb-2"
+                >
+                  🗓️ Horarios Asignados:
+                </p>
+                <div
+                  *ngFor="
+                    let grupo of getHorariosPorFacultad(docente) | keyvalue
+                  "
+                >
+                  <!-- <p class="text-sm font-semibold text-indigo-700 mb-1">🏛️ Facultad: {{ nombreFacultad(grupo.key) }}</p> -->
+                  <p class="text-sm font-semibold text-indigo-700 mb-1">
+                    🏛️ Facultad: {{ nombreFacultad(grupo.key) }} - Total:
+                    {{ sumarHoras(grupo.value) }} hora{{
+                      sumarHoras(grupo.value) > 1 ? "s" : ""
+                    }}
+                  </p>
+                  <ul class="space-y-1 mb-4">
+                    <li
+                      *ngFor="let h of grupo.value"
+                      class="text-sm text-slate-700 px-3 py-1 rounded border border-slate-200 bg-white shadow-sm"
+                    >
+                      <span class="font-medium text-slate-900">{{
+                        h.dia
+                      }}</span>
+                      | {{ h.h_inicio | date : "shortTime" }} -
+                      {{ h.h_fin | date : "shortTime" }} ({{ h.n_horas }} hora{{
+                        h.n_horas > 1 ? "s" : ""
+                      }}) |
+                      <span class="font-medium text-slate-900">Curso:</span>
+                      {{ h.curso.c_nomcur }} |
+                      <span class="font-medium text-slate-900">Ciclo:</span>
+                      {{ h.curso.n_ciclo }}
+                      <ng-container *ngIf="h.curso?.cursosPadres?.length">
                         <span
                           [ngClass]="{
-                            'text-yellow-600 font-semibold': docente.h_total < docente.h_min,
-                            'text-green-600 font-semibold': docente.h_total >= docente.h_min && docente.h_total <= docente.h_max,
-                            'text-red-600 font-semibold': docente.h_total > docente.h_max
+                            'bg-[#EAB308] text-black':
+                              h.curso.cursosPadres[0].tipo === 0,
+                            'bg-[#7E22CE] text-white':
+                              h.curso.cursosPadres[0].tipo === 1
                           }"
+                          class="ml-2 inline-block rounded-full text-xs font-semibold px-2 py-0.5"
                         >
-                          {{ docente.h_total }}
-                          <span class="text-xs ml-1 italic">
-                            {{
-                              docente.h_total < docente.h_min ? '(insuficiente)' :
-                              (docente.h_total > docente.h_max ? '(exceso)' : '(bien)')
-                            }}
-                          </span>
+                          {{
+                            h.curso.cursosPadres[0].tipo === 0
+                              ? "Transversal"
+                              : h.curso.cursosPadres[0].tipo === 1
+                              ? "Agrupado"
+                              : "Otro"
+                          }}
                         </span>
-                      </td>
-                      
-                      <!-- Horas máx -->
-                      <td class="p-4 border-b border-slate-200">
-                        <span
-                          [ngClass]="{
-                            'bg-blue-100 text-blue-800': docente.tipo === 0,
-                            'bg-green-100 text-green-800': docente.tipo === 1
-                          }"
-                          class="px-3 py-1 rounded-full text-sm font-semibold"
-                        >
-                          {{ docente.tipo === 0 ? 'Tiempo Completo' : 'Tiempo Parcial' }}
-                        </span>
-                      </td>
-                      
-                      
-                      <!-- Nro de horarios -->
-                      <td class="p-4 border-b border-slate-200">
-                        {{ docente.Horario.length }} horarios
-                      </td>
-                
-                      <!-- Botón expandir -->
-                      <td class="p-4 border-b border-slate-200">
-                        <button (click)="toggleExpand(docente)" class="text-blue-600 font-medium hover:underline">
-                          {{ docente.expanded ? '▼ Ocultar' : '▶ Ver más' }}
-                          <span class="bg-blue-100 text-blue-800 text-xs font-semibold ml-2 px-2 py-0.5 rounded">
-                            {{ docente.Horario.length }}
-                          </span>
-                        </button>
-                        <button
-                        [routerLink]="['/coa/calendario-docente']"
-                        [queryParams]="{ id: docente.id }"
-                        class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                        type="button"
-                      >
-                        <span class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-                          <i class="fa-solid fa-eye text-xl"></i>
-                        </span>
-                      </button>
-                      </td>
-                    </tr>
-                
-                    <!-- Fila expandida con detalle de horarios -->
-                    <tr *ngIf="docente.expanded">
-                      <td colspan="7" class="bg-slate-50 p-4 border-t border-b border-slate-200">
-                        <p class="text-base font-semibold text-slate-800 underline mb-2">🗓️ Horarios Asignados:</p>
-                        <div *ngFor="let grupo of getHorariosPorFacultad(docente) | keyvalue">
-                          <!-- <p class="text-sm font-semibold text-indigo-700 mb-1">🏛️ Facultad: {{ nombreFacultad(grupo.key) }}</p> -->
-                          <p class="text-sm font-semibold text-indigo-700 mb-1">
-                            🏛️ Facultad: {{ nombreFacultad(grupo.key) }} - 
-                            Total: {{ sumarHoras(grupo.value) }} hora{{ sumarHoras(grupo.value) > 1 ? 's' : '' }}
-                          </p>                          
-                          <ul class="space-y-1 mb-4">
-                            <li *ngFor="let h of grupo.value" class="text-sm text-slate-700 px-3 py-1 rounded border border-slate-200 bg-white shadow-sm">
-                              <span class="font-medium text-slate-900">{{ h.dia }}</span> |
-                              {{ h.h_inicio | date:'shortTime' }} - {{ h.h_fin | date:'shortTime' }} ({{ h.n_horas }} hora{{ h.n_horas > 1 ? 's' : '' }}) |
-                              <span class="font-medium text-slate-900">Curso:</span> {{ h.curso.c_nomcur }} |
-                              <span class="font-medium text-slate-900">Ciclo:</span> {{ h.curso.n_ciclo }}
-                              <ng-container *ngIf="h.curso?.cursosPadres?.length">
-                                <span
-                                  [ngClass]="{
-                                    'bg-[#EAB308] text-black': h.curso.cursosPadres[0].tipo === 0,
-                                    'bg-[#7E22CE] text-white': h.curso.cursosPadres[0].tipo === 1
-                                  }"
-                                  class="ml-2 inline-block rounded-full text-xs font-semibold px-2 py-0.5"
-                                >
-                                  {{
-                                    h.curso.cursosPadres[0].tipo === 0
-                                      ? 'Transversal'
-                                      : h.curso.cursosPadres[0].tipo === 1
-                                      ? 'Agrupado'
-                                      : 'Otro'
-                                  }}
-                                </span>
-                              </ng-container> 
-                            </li>
-                          </ul>
-                        </div>
-                      </td>
-                    </tr>
-                    
-                  </ng-container>
-                </tbody>
-                <tr *ngIf="usuariosPaginados.length === 0">
-                  <td colspan="8" class="text-center text-slate-500 p-4 italic">
-                    No se encontraron docentes que coincidan con la búsqueda.
-                  </td>
-                </tr>
-            </table>
-        </div>
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-3 py-3">
-          <!-- Select de cantidad por página -->
-          <div class="flex items-center gap-2">
-            <label for="cantidad" class="text-sm text-slate-500">Mostrar:</label>
-            <select
-              id="cantidad"
-              [ngModel]="itemsPorPagina"
-              (ngModelChange)="cambiarItemsPorPagina($event)"
-              class="rounded border border-slate-300 px-4 py-1 text-sm text-slate-700"
-            >
-              <option [ngValue]="10">10</option>
-              <option [ngValue]="20">20</option>
-              <option [ngValue]="50">50</option>
-              <option [ngValue]="100">100</option>
-              <option [ngValue]="150">150</option>
-              <option [ngValue]="180">180</option>
-            </select>
-          </div>
-        
-          <!-- Navegación de páginas -->
-          <div class="flex items-center gap-3">
-            <p class="text-sm text-slate-500">
-              Página {{ paginaActual }} de {{ totalPaginas }}
-            </p>
-            <div class="flex gap-1">
-              <button
-                (click)="anteriorPagina()"
-                [disabled]="paginaActual === 1"
-                class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50">
-                Anterior
-              </button>
-              <button
-                (click)="siguientePagina()"
-                [disabled]="paginaActual === totalPaginas"
-                class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50">
-                Siguiente
-              </button>
-            </div>
-          </div>
+                      </ng-container>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+        <tr *ngIf="usuariosPaginados.length === 0">
+          <td colspan="8" class="text-center text-slate-500 p-4 italic">
+            No se encontraron docentes que coincidan con la búsqueda.
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-3 py-3"
+    >
+      <!-- Select de cantidad por página -->
+      <div class="flex items-center gap-2">
+        <label for="cantidad" class="text-sm text-slate-500">Mostrar:</label>
+        <select
+          id="cantidad"
+          [ngModel]="itemsPorPagina"
+          (ngModelChange)="cambiarItemsPorPagina($event)"
+          class="rounded border border-slate-300 px-4 py-1 text-sm text-slate-700"
+        >
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="20">20</option>
+          <option [ngValue]="50">50</option>
+          <option [ngValue]="100">100</option>
+          <option [ngValue]="150">150</option>
+          <option [ngValue]="180">180</option>
+        </select>
+      </div>
+
+      <!-- Navegación de páginas -->
+      <div class="flex items-center gap-3">
+        <p class="text-sm text-slate-500">
+          Página {{ paginaActual }} de {{ totalPaginas }}
+        </p>
+        <div class="flex gap-1">
+          <button
+            (click)="anteriorPagina()"
+            [disabled]="paginaActual === 1"
+            class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          <button
+            (click)="siguientePagina()"
+            [disabled]="paginaActual === totalPaginas"
+            class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+          >
+            Siguiente
+          </button>
         </div>
       </div>
+    </div>
+  </div>
 </div>
 
-
 <!-- Modal -->
-<div 
+<div
   class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
   *ngIf="mostrarModal"
 >
   <div class="bg-white rounded-2xl p-8 w-full max-w-lg shadow-xl relative">
-    <h2 class="text-2xl font-bold mb-6 text-center text-blue-800">Nuevo Docente</h2>
+    <h2 class="text-2xl font-bold mb-6 text-center text-blue-800">
+      Nuevo Docente
+    </h2>
 
     <form (ngSubmit)="crearDocente()" #formDocente="ngForm" class="grid gap-4">
       <div>
         <label class="block text-sm font-medium mb-1">Facultad</label>
-        <select [(ngModel)]="nuevoDocente.c_codfac" name="c_codfac" required class="w-full border rounded px-3 py-2">
+        <select
+          [(ngModel)]="nuevoDocente.c_codfac"
+          name="c_codfac"
+          required
+          class="w-full border rounded px-3 py-2"
+        >
           <option value="E">INGENIERÍA Y NEGOCIOS</option>
           <option value="S">CIENCIAS DE LA SALUD</option>
         </select>
@@ -343,38 +495,63 @@
 
       <div>
         <label class="block text-sm font-medium mb-1">Nombre del Docente</label>
-        <input type="text" [(ngModel)]="nuevoDocente.c_nomdoc" name="c_nomdoc" required class="w-full border rounded px-3 py-2" />
+        <input
+          type="text"
+          [(ngModel)]="nuevoDocente.c_nomdoc"
+          name="c_nomdoc"
+          required
+          class="w-full border rounded px-3 py-2"
+        />
       </div>
 
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-medium mb-1">Horas Mín.</label>
-          <input type="number" [(ngModel)]="nuevoDocente.h_min" name="h_min" required min="1" class="w-full border rounded px-3 py-2" />
+          <input
+            type="number"
+            [(ngModel)]="nuevoDocente.h_min"
+            name="h_min"
+            required
+            min="1"
+            class="w-full border rounded px-3 py-2"
+          />
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Horas Máx.</label>
-          <input type="number" [(ngModel)]="nuevoDocente.h_max" name="h_max" required min="1" class="w-full border rounded px-3 py-2" />
+          <input
+            type="number"
+            [(ngModel)]="nuevoDocente.h_max"
+            name="h_max"
+            required
+            min="1"
+            class="w-full border rounded px-3 py-2"
+          />
         </div>
       </div>
 
       <div>
         <label class="block text-sm font-medium mb-1">Tipo</label>
-        <select [(ngModel)]="nuevoDocente.tipo" name="tipo" required class="w-full border rounded px-3 py-2">
+        <select
+          [(ngModel)]="nuevoDocente.tipo"
+          name="tipo"
+          required
+          class="w-full border rounded px-3 py-2"
+        >
           <option [value]="0">Tiempo Completo</option>
           <option [value]="1">Tiempo Parcial</option>
         </select>
       </div>
 
       <div class="flex justify-end mt-4 gap-2">
-        <button 
-          type="button" 
+        <button
+          type="button"
           class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
           (click)="cerrarModal()"
         >
           Cancelar
         </button>
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           [disabled]="formDocente.invalid"
           class="px-5 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
         >
@@ -384,8 +561,8 @@
     </form>
 
     <!-- Botón cerrar arriba a la derecha -->
-    <button 
-      (click)="cerrarModal()" 
+    <button
+      (click)="cerrarModal()"
       class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl"
     >
       &times;

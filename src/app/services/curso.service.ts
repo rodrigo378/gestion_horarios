@@ -14,6 +14,8 @@ export class CursoService {
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   obtenerCursos(data: {
+    n_codper: number;
+    n_codpla: number;
     c_codfac: string;
     c_codesp: string;
     n_ciclo: number;

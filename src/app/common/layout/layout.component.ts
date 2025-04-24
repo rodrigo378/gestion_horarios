@@ -46,6 +46,8 @@ export class LayoutComponent implements OnInit {
 
     const aliasItemMap: { [key: string]: string } = {
       asignarhorario: 'turno',
+      calendario_docente: 'docente',
+      calendario_aula: 'aula',
     };
 
     const rawItem = partes[1];

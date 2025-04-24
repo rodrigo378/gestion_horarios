@@ -230,6 +230,8 @@ export class AsignarhorarioComponent implements OnInit {
       this.turnoData = turno;
 
       const dataCursos = {
+        n_codper: turno.n_codper,
+        n_codpla: turno.n_codpla,
         c_codfac: turno.c_codfac,
         c_codesp: turno.c_codesp,
         n_ciclo: turno.n_ciclo,

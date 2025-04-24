@@ -17,7 +17,6 @@ import { VerTurnoDrComponent } from './pages/ver-turno-dr/ver-turno-dr.component
 import { ReporteriaAulaComponent } from './pages/reporteria-aula/reporteria-aula.component';
 import { CalenderDocenteComponent } from './pages/calender-docente/calender-docente.component';
 import { CalenderAulaComponent } from './pages/calender-aula/calender-aula.component';
-import { CalenderDirectorComponent } from './pages/calender-director/calender-director.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -42,9 +41,8 @@ const routes: Routes = [
       { path: 'agrupar', component: AgruparCursosComponent },
       { path: 'asignarhorario', component: AsignarhorarioComponent },
       { path: 'cursos/:id', component: VerCursosComponent },
-      { path: 'calendario-docente', component: CalenderDocenteComponent },
-      { path: 'calendario-aula', component: CalenderAulaComponent },
-      { path: 'calender-director', component: CalenderDirectorComponent }
+      { path: 'calendario_docente', component: CalenderDocenteComponent },
+      { path: 'calendario_aula', component: CalenderAulaComponent },
     ],
   },
   {
@@ -55,6 +53,7 @@ const routes: Routes = [
       { path: 'turno', component: VerTurnoDrComponent },
       { path: 'asignarhorariodr', component: AsignarHorarioDrComponent },
       { path: 'docente', component: ReporteriaComponent },
+      { path: 'calendario_docente', component: CalenderDocenteComponent },
     ],
   },
   {
