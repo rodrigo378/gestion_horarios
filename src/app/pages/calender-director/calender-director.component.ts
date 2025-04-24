@@ -7,15 +7,15 @@ import esLocale from '@fullcalendar/core/locales/es';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Turno } from '../../interfaces/turno';
 import { HorarioService } from '../../services/horario.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-calender-director',
   standalone: false,
   templateUrl: './calender-director.component.html',
-  styleUrl: './calender-director.component.css'
+  styleUrl: './calender-director.component.css',
 })
 export class CalenderDirectorComponent implements OnInit {
-
   turnoData!: Turno;
   turnoId!: number;
 
@@ -43,8 +43,11 @@ export class CalenderDirectorComponent implements OnInit {
     hiddenDays: [0], // oculta domingo
   };
 
-  constructor(private route: ActivatedRoute, private horarioService: HorarioService) {}
-
+  constructor(
+    private route: ActivatedRoute,
+    private horarioService: HorarioService,
+    private location: Location
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -55,9 +58,8 @@ export class CalenderDirectorComponent implements OnInit {
     });
   }
 
-  
   cargarEventosPorTurno(turnoId: number): void {
-    this.horarioService.getHorarioPorTurno(turnoId).subscribe(data => {
+    this.horarioService.getHorarioPorTurno(turnoId).subscribe((data) => {
       const eventos = data.map((h: any) => {
         let color = h.tipo === 'Práctica' ? '#28a745' : '#3788d8';
 
@@ -76,5 +78,8 @@ export class CalenderDirectorComponent implements OnInit {
 
       this.calendarOptions.events = eventos;
     });
+  }
+  regresar(): void {
+    this.location.back();
   }
 }

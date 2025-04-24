@@ -41,6 +41,7 @@ import { DocentesAprobadosComponent } from './pages/docentes-aprobados/docentes-
 import { PermisosUsuariosComponent } from './pages/admin/permisos-usuarios/permisos-usuarios.component';
 import { DocentesRechazadosComponent } from './pages/docentes-rechazados/docentes-rechazados.component';
 import { EscogerCursoDocenteComponent } from './pages/escoger-curso-docente/escoger-curso-docente.component';
+import { PeriodoComponent } from './pages/periodo/periodo.component';
 
 registerLocaleData(en);
 
@@ -74,6 +75,7 @@ registerLocaleData(en);
     VerTransversalComponent,
     AgruparCursosComponent,
     CalenderDirectorComponent,
+    PeriodoComponent,
   ],
   imports: [
     BrowserModule,
