@@ -12,7 +12,7 @@ export class TurnoService {
   private apiUrl = `${environment.api}/turno`;
   private apiUrlget = `${environment.api}`;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient) {}
 
   getTurnos(): Observable<Turno[]> {
     return this.http.get<Turno[]>(this.apiUrl);
