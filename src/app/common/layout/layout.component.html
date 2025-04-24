@@ -76,7 +76,8 @@
           hasPermiso('2.2') ||
           hasPermiso('2.3') ||
           hasPermiso('2.4') ||
-          hasPermiso('2.5')
+          hasPermiso('2.5') ||
+          hasPermiso('2.6')
         "
       >
         <ul>
@@ -124,6 +125,15 @@
             "
           >
             <a routerLink="/coa/agrupar">Definir cursos agrupados</a>
+          </li>
+          <li
+            nz-menu-item
+            *ngIf="hasPermiso('2.6')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'coa' && item === 'periodo'
+            "
+          >
+            <a routerLink="/coa/periodo">Agregar Periodo</a>
           </li>
         </ul>
       </li>

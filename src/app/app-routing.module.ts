@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { authGuard } from './guards/auth.guard';
 import { LoginComponent } from './pages/login/login.component';
 import { LayoutComponent } from './common/layout/layout.component';
+import { PeriodoComponent } from './pages/periodo/periodo.component';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 import { NotFountComponent } from './pages/not-fount/not-fount.component';
 import { VerTurnosComponent } from './pages/ver-turnos/ver-turnos.component';
@@ -34,16 +35,17 @@ const routes: Routes = [
     canActivate: [authGuard],
     component: LayoutComponent,
     children: [
+      { path: 'periodo', component: PeriodoComponent },
       { path: 'turno', component: VerTurnosComponent },
       { path: 'docente', component: ReporteriaComponent },
       { path: 'aula', component: ReporteriaAulaComponent },
-      { path: 'transversal', component: VerTransversalComponent },
-      { path: 'agrupar', component: AgruparCursosComponent },
-      { path: 'asignarhorario', component: AsignarhorarioComponent },
       { path: 'cursos/:id', component: VerCursosComponent },
-      { path: 'calendario_docente', component: CalenderDocenteComponent },
+      { path: 'agrupar', component: AgruparCursosComponent },
+      { path: 'transversal', component: VerTransversalComponent },
       { path: 'calendario_aula', component: CalenderAulaComponent },
+      { path: 'asignarhorario', component: AsignarhorarioComponent },
       { path: 'calender_turno', component: CalenderDirectorComponent },
+      { path: 'calendario_docente', component: CalenderDocenteComponent },
     ],
   },
   {
@@ -52,10 +54,10 @@ const routes: Routes = [
     component: LayoutComponent,
     children: [
       { path: 'turno', component: VerTurnosComponent },
-      { path: 'asignarhorario', component: AsignarHorarioDrComponent },
       { path: 'docente', component: ReporteriaComponent },
-      { path: 'calendario_docente', component: CalenderDocenteComponent },
       { path: 'calender_turno', component: CalenderDirectorComponent },
+      { path: 'asignarhorario', component: AsignarHorarioDrComponent },
+      { path: 'calendario_docente', component: CalenderDocenteComponent },
     ],
   },
   {

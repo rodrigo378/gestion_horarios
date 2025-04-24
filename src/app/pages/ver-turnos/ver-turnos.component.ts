@@ -46,15 +46,17 @@ export class VerTurnosComponent implements OnInit {
   modalidades: { value: string; label: string }[] = [];
 
   constructor(
-    private location: Location,
-    private turnoServices: TurnoService,
     private router: Router,
-    private cursoServices: CursoService,
     private fb: FormBuilder,
-    private alertService: AlertService
+    private location: Location,
+    private alertService: AlertService,
+    private turnoServices: TurnoService,
+    private cursoServices: CursoService
   ) {}
 
   ngOnInit(): void {
+    this.filtros.n_codper = '20251';
+
     this.inicializarFormulario();
     this.turnoServices.getTurnos().subscribe((data) => {
       this.turnos = data;
@@ -62,6 +64,7 @@ export class VerTurnosComponent implements OnInit {
       this.extraerValoresUnicos(data);
       this.turnoServices.getPeriodos().subscribe((data) => {
         this.periodos = data;
+        this.aplicarFiltros();
       });
     });
 
@@ -90,7 +93,7 @@ export class VerTurnosComponent implements OnInit {
     this.formularioHorario = this.fb.group({
       c_codfac: ['', Validators.required],
       c_codesp: ['', Validators.required],
-      n_codper: ['', Validators.required],
+      n_codper: [20251, Validators.required],
       c_grpcur: ['', Validators.required],
       n_ciclo: ['', Validators.required],
       c_codmod: ['', Validators.required],
@@ -139,13 +142,13 @@ export class VerTurnosComponent implements OnInit {
 
     const turno = {
       ...form,
+      c_codmod: form.c_codmod,
+      n_ciclo: Number(form.n_ciclo),
       n_codper: Number(form.n_codper),
       n_codpla: Number(form.n_codpla),
-      n_ciclo: Number(form.n_ciclo),
       nom_fac: this.getNombreFacultad(form.c_codfac),
-      nomesp: this.obtenerNombreEspecialidad(form.c_codesp),
       c_nommod: this.obtenerNombreModalidad(form.c_codmod),
-      c_codmod: form.c_codmod,
+      nomesp: this.obtenerNombreEspecialidad(form.c_codesp),
     };
 
     this.turnoServices.createTurno(turno).subscribe({
@@ -153,6 +156,8 @@ export class VerTurnosComponent implements OnInit {
         this.alertService.success('Se creo el Turno exitosamente');
         this.turnoServices.getTurnos().subscribe((data) => {
           this.turnos = data;
+          this.formularioHorario.get('n_codper')?.setValue('nuevoValor');
+
           this.turnosFiltrados = data;
           this.extraerValoresUnicos(data);
           this.mostrarModalCrear = false;
@@ -200,11 +205,13 @@ export class VerTurnosComponent implements OnInit {
   }
 
   vercursoblock(turno: Turno) {
-    this.router.navigate(['/coa/calender_turno'], {
-      queryParams: {
-        id: turno.id,
-      },
-    });
+    const url = this.router
+      .createUrlTree(['/coa/calender_turno'], {
+        queryParams: { id: turno.id },
+      })
+      .toString();
+
+    window.open(url, '_blank');
   }
 
   //#region filtro

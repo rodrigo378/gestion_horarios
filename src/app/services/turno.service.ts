@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Periodo, Turno } from '../interfaces/turno';
 import { environment } from '../../environment/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { AuthService } from './auth.service';
-import { Periodo, Turno } from '../interfaces/turno';
-import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -36,13 +35,17 @@ export class TurnoService {
   }
 
   actualizarEstado(id: number, estado: number) {
-    return this.http.put(`${this.apiUrl}/${id}`, { estado }, { withCredentials: true });
+    return this.http.put(
+      `${this.apiUrl}/${id}`,
+      { estado },
+      { withCredentials: true }
+    );
   }
 
   private estadoActualizado = new BehaviorSubject<number | null>(null);
 
   emitirCambioEstado(turnoId: number) {
-    this.estadoActualizado.next(turnoId), { withCredentials: true } ;
+    this.estadoActualizado.next(turnoId), { withCredentials: true };
   }
 
   onCambioEstado() {

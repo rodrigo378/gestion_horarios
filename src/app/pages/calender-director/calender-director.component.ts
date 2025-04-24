@@ -18,10 +18,9 @@ import { Aula } from '../../interfaces/Aula';
   selector: 'app-calender-director',
   standalone: false,
   templateUrl: './calender-director.component.html',
-  styleUrl: './calender-director.component.css'
+  styleUrl: './calender-director.component.css',
 })
 export class CalenderDirectorComponent implements OnInit {
-
   turnoData!: Turno;
   turnoId!: number;
 
@@ -59,14 +58,19 @@ export class CalenderDirectorComponent implements OnInit {
   };
 
   constructor(
-    private route: ActivatedRoute, 
+    private route: ActivatedRoute,
     private horarioService: HorarioService,
+<<<<<<< HEAD
     private turnoServices: TurnoService,
     private docenteService: DocentecurService,
     private aulaService: AulaService,
   ) {}
   
 
+=======
+    private turnoServices: TurnoService
+  ) {}
+>>>>>>> e7f8d2ab23714510bf2950c99f4c9fbf2f7df7c4
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -92,9 +96,8 @@ export class CalenderDirectorComponent implements OnInit {
   
   
 
-  
   cargarEventosPorTurno(turnoId: number): void {
-    this.horarioService.getHorarioPorTurno(turnoId).subscribe(data => {
+    this.horarioService.getHorarioPorTurno(turnoId).subscribe((data) => {
       const eventos = data.map((h: any) => {
         let color = h.tipo === 'Práctica' ? '#28a745' : '#3788d8';
   
