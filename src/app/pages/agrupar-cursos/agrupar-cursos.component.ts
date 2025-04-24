@@ -17,7 +17,7 @@ export class AgruparCursosComponent {
   cursos: Curso2[] = [];
   curso!: Curso2;
 
-  Math = Math; // 👈 Esto permite usar Math.ceil() en el HTML
+  Math = Math;
 
   totalCursos!: number;
 
@@ -95,9 +95,6 @@ export class AgruparCursosComponent {
   }
 
   buscarDesdeInput() {
-    console.log('buscarDesdeInput');
-    console.log('=> ', this.filtroBusqueda);
-
     this.paginaActual = 1;
     this.getCursos();
   }
@@ -118,6 +115,8 @@ export class AgruparCursosComponent {
   }
 
   getCursoTransversal() {
+    this.alertService.iniciarSolicitud();
+
     this.horarioService
       .getCurso(
         Number(this.filtros.c_codmod),
@@ -126,12 +125,21 @@ export class AgruparCursosComponent {
         this.filtros.c_codfac,
         this.filtros.c_codesp
       )
-      .subscribe((data) => {
-        this.cursosFiltrados = data.data.filter((curso) => {
-          return curso.turno_id !== this.curso.turno_id;
-        });
-
-        console.log('📚 Cursos filtrados modal => ', this.cursosFiltrados);
+      .subscribe({
+        next: (data) => {
+          this.cursosFiltrados = data.data.filter((curso) => {
+            return curso.turno_id !== this.curso.turno_id;
+          });
+        },
+        error: (error) => {
+          console.error('Error al obtener cursos transversales', error);
+          this.alertService.error(
+            'No se pudieron obtener los cursos transversales'
+          );
+        },
+        complete: () => {
+          this.alertService.finalizarSolicitud();
+        },
       });
   }
 
@@ -160,7 +168,6 @@ export class AgruparCursosComponent {
   }
 
   clickMas(curso: Curso2) {
-    console.log('curso => ', curso);
     this.curso = curso;
     this.mostrarModalCrear = true;
   }
@@ -170,14 +177,10 @@ export class AgruparCursosComponent {
   }
 
   clickMasCursoTransversal(hijo_id: number) {
-    console.log('padre_id => ', this.curso.id);
-    console.log('hijo_id => ', hijo_id);
-
     this.horarioService
       .asociarHorarioTransversal(Number(this.curso.id), hijo_id)
       .subscribe({
         next: (res: any) => {
-          console.log(res);
           this.getCursoTransversal();
           this.getCursos();
           this.alertService.success('Se crea el curso transversal');
@@ -215,8 +218,6 @@ export class AgruparCursosComponent {
     } else {
       this.arrayCheckboxCursos.push(curso.id);
     }
-
-    console.log('Cursos seleccionados:', this.arrayCheckboxCursos);
   }
 
   toggleSeleccionarTodos() {
@@ -230,14 +231,10 @@ export class AgruparCursosComponent {
   }
 
   clickGuardarModal() {
-    console.log('padre_id => ', this.curso.id);
-    console.log('hijos_id => ', this.arrayCheckboxCursos);
-
     this.horarioService
       .createGrupo(this.curso.id, this.arrayCheckboxCursos, 0)
       .subscribe({
         next: (res: any) => {
-          console.log(res);
           this.getCursos();
           this.cursosFiltrados = [];
           this.arrayCheckboxCursos = [];
@@ -261,7 +258,6 @@ export class AgruparCursosComponent {
   clickDeleteTransversal(padre_id: number) {
     this.horarioService.deleteTransversal(padre_id).subscribe({
       next: (res: any) => {
-        console.log('se elimino => ', res);
         this.getCursos();
         this.alertService.success('Se borro este grupo correctamente');
       },
