@@ -23,7 +23,6 @@ import { VerCursosComponent } from './pages/ver-cursos/ver-cursos.component';
 import { ReporteriaComponent } from './pages/reporteria/reporteria.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { VerHorarioComponent } from './pages/ver-horario/ver-horario.component';
-import { VerTurnoDrComponent } from './pages/ver-turno-dr/ver-turno-dr.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { CalenderAulaComponent } from './pages/calender-aula/calender-aula.component';
 import { PostularCursoComponent } from './pages/postular-curso/postular-curso.component';
@@ -68,7 +67,6 @@ registerLocaleData(en);
     ReporteriaComponent,
     AgruparCursosComponent,
     AsignarHorarioDrComponent,
-    VerTurnoDrComponent,
     PermisosUsuariosComponent,
     ReporteriaAulaComponent,
     CalenderAulaComponent,

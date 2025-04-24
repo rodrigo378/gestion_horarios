@@ -193,10 +193,9 @@ export class VerTurnosComponent implements OnInit {
   }
 
   verCursos(turno: Turno) {
-    this.router.navigate(['/coa/asignarhorario'], {
-      queryParams: {
-        id: turno.id,
-      },
+    const currentPrefix = this.router.url.split('/')[1];
+    this.router.navigate([`/${currentPrefix}/asignarhorario`], {
+      queryParams: { id: turno.id },
     });
   }
 

@@ -7,7 +7,6 @@ import { NotFountComponent } from './pages/not-fount/not-fount.component';
 import { VerTurnosComponent } from './pages/ver-turnos/ver-turnos.component';
 import { VerCursosComponent } from './pages/ver-cursos/ver-cursos.component';
 import { ReporteriaComponent } from './pages/reporteria/reporteria.component';
-import { VerTurnoDrComponent } from './pages/ver-turno-dr/ver-turno-dr.component';
 import { CalenderAulaComponent } from './pages/calender-aula/calender-aula.component';
 import { AgruparCursosComponent } from './pages/agrupar-cursos/agrupar-cursos.component';
 import { AsignarhorarioComponent } from './pages/asignar-horario/asignarhorario.component';
@@ -52,8 +51,8 @@ const routes: Routes = [
     canActivate: [authGuard],
     component: LayoutComponent,
     children: [
-      { path: 'turno', component: VerTurnoDrComponent },
-      { path: 'asignarhorariodr', component: AsignarHorarioDrComponent },
+      { path: 'turno', component: VerTurnosComponent },
+      { path: 'asignarhorario', component: AsignarHorarioDrComponent },
       { path: 'docente', component: ReporteriaComponent },
       { path: 'calendario_docente', component: CalenderDocenteComponent },
       { path: 'calender_turno', component: CalenderDirectorComponent },
