@@ -109,21 +109,6 @@ export class HorarioService {
   }
 
   createTransversal(padre_id: number, hijos_id: number[], tipo: number) {
-<<<<<<< HEAD
-    return this.http.post(`${this.apiUrl}/curso/transversal`, {
-      padre_id,
-      hijos_id,
-      tipo,
-    }, { withCredentials: true });
-  }
-
-  createGrupo(padre_id: number, hijos_id: number[], tipo: number) {
-    return this.http.post(`${this.apiUrl}/curso/grupo`, {
-      padre_id,
-      hijos_id,
-      tipo,
-    }, { withCredentials: true });
-=======
     return this.http.post(
       `${this.apiUrl}/curso/transversal`,
       {
@@ -145,7 +130,6 @@ export class HorarioService {
       },
       { withCredentials: true }
     );
->>>>>>> 954840440a969fe6d2cc222bb8569e9ea17b0da5
   }
 
   deleteTransversal(padre_id: number) {
