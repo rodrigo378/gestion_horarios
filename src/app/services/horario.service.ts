@@ -111,7 +111,7 @@ export class HorarioService {
       padre_id,
       hijos_id,
       tipo,
-    });
+    }, { withCredentials: true });
   }
 
   createGrupo(padre_id: number, hijos_id: number[], tipo: number) {
@@ -119,7 +119,7 @@ export class HorarioService {
       padre_id,
       hijos_id,
       tipo,
-    });
+    }, { withCredentials: true });
   }
 
   deleteTransversal(padre_id: number) {

@@ -833,38 +833,35 @@ export class AsignarHorarioDrComponent implements OnInit{
   private bloquearEquivCursosCargar(): void {
     const codigosAsignados = new Set<string>();
   
-    // 🔍 Recorremos todos los eventos asignados y capturamos codigos y equivalentes
+    // 🔍 Recorremos todos los eventos asignados y capturamos tanto el código del curso como su equivalente
     this.eventosCargados.forEach(ev => {
       const cod = ev.extendedProps?.codCur?.toString().trim().toUpperCase();
       const equiv = ev.extendedProps?.c_codcur_equ?.toString().trim().toUpperCase();
   
       if (cod) codigosAsignados.add(cod);
-      if (equiv) codigosAsignados.add(equiv); // 🔥 Clave para evitar doble asignación
+      if (equiv) codigosAsignados.add(equiv); // 🔥 Clave para bloqueo inverso
     });
   
     console.log('🗂️ Cursos asignados encontrados:', [...codigosAsignados]);
   
+    // 🔁 Recorremos ambos planes para bloquear los cursos que ya están asignados o sus equivalentes
     const listas = [this.cursosPlan2023, this.cursosPlan2025];
     listas.forEach(lista => {
       lista.forEach(curso => {
         const codCur = curso.c_codcur?.toString().trim().toUpperCase();
         const codEquivalente = curso.c_codcur_equ?.toString().trim().toUpperCase();
   
-        const estaAsignado =
+        if (
           (codCur && codigosAsignados.has(codCur)) ||
-          (codEquivalente && codigosAsignados.has(codEquivalente));
-  
-        // ✅ Solo bloqueamos si es del plan 2023
-        if (estaAsignado && curso.n_codper === 2023) {
+          (codEquivalente && codigosAsignados.has(codEquivalente))
+        ) {
           curso.disabled = true;
-          console.log(`⛔ BLOQUEADO 2023: [${codCur}] porque él o su equivalente [${codEquivalente}] ya están asignados`);
-        } else if (estaAsignado) {
-          console.log(`✅ NO BLOQUEADO 2025: [${codCur}] es equivalente pero del 2025`);
+          console.log(`⛔ BLOQUEADO al cargar: [${codCur}] porque él o su equivalente [${codEquivalente}] ya están asignados`);
         }
       });
     });
   
-    // 🔄 Refrescamos visual
+    // 🔄 Refrescamos visual para aplicar el cambio en la interfaz
     this.cursosPlan2023 = [...this.cursosPlan2023];
     this.cursosPlan2025 = [...this.cursosPlan2025];
   }

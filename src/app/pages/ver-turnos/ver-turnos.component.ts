@@ -198,6 +198,14 @@ export class VerTurnosComponent implements OnInit {
     });
   }
 
+  vercursoblock(turno: Turno) {
+    this.router.navigate(['/coa/calender-director'], {
+      queryParams: {
+        id: turno.id,
+      },
+    });
+  }
+
   //#region filtro
 
   getNombreFacultad(codfac: string): string {

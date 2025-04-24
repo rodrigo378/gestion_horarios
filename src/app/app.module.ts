@@ -42,6 +42,7 @@ import { ReporteriaAulaComponent } from './pages/reporteria-aula/reporteria-aula
 import { CalenderAulaComponent } from './pages/calender-aula/calender-aula.component';
 import { CalenderDocenteComponent } from './pages/calender-docente/calender-docente.component';
 import { NgxApexchartsModule } from 'ngx-apexcharts';
+import { CalenderDirectorComponent } from './pages/calender-director/calender-director.component';
 
 registerLocaleData(en);
 
@@ -75,6 +76,7 @@ registerLocaleData(en);
     CalenderDocenteComponent,
     VerTransversalComponent,
     AgruparCursosComponent,
+    CalenderDirectorComponent,
   ],
   imports: [
     BrowserModule,
