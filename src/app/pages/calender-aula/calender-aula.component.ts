@@ -1,12 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ViewChild } from '@angular/core';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { Draggable } from '@fullcalendar/interaction';
-import { CalendarOptions, EventApi } from '@fullcalendar/core';
+import { CalendarOptions } from '@fullcalendar/core';
 import esLocale from '@fullcalendar/core/locales/es';
-import { DocentecurService } from '../../services/docentecur.service';
 import { ActivatedRoute } from '@angular/router';
 import { AulaService } from '../../services/aula.service';
 @Component({

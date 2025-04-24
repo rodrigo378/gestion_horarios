@@ -36,13 +36,13 @@ export class TurnoService {
   }
 
   actualizarEstado(id: number, estado: number) {
-    return this.http.put(`${this.apiUrl}/${id}`, { estado });
+    return this.http.put(`${this.apiUrl}/${id}`, { estado }, { withCredentials: true });
   }
 
   private estadoActualizado = new BehaviorSubject<number | null>(null);
 
   emitirCambioEstado(turnoId: number) {
-    this.estadoActualizado.next(turnoId);
+    this.estadoActualizado.next(turnoId), { withCredentials: true } ;
   }
 
   onCambioEstado() {

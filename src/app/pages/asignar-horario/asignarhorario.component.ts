@@ -853,7 +853,7 @@ export class AsignarhorarioComponent implements OnInit {
         .toUpperCase();
 
       if (cod) codigosAsignados.add(cod);
-      if (equiv) codigosAsignados.add(equiv); // 🔥 Clave para evitar doble asignación
+      if (equiv) codigosAsignados.add(equiv); // 🔥 Clave para bloqueo inverso
     });
 
     console.log('🗂️ Cursos asignados encontrados:', [...codigosAsignados]);
