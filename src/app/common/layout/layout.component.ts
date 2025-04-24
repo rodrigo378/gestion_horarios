@@ -48,6 +48,7 @@ export class LayoutComponent implements OnInit {
       asignarhorario: 'turno',
       calendario_docente: 'docente',
       calendario_aula: 'aula',
+      calender_turno: 'turno',
     };
 
     const rawItem = partes[1];

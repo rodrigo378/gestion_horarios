@@ -64,7 +64,6 @@ export class VerTurnosComponent implements OnInit {
       this.turnoServices.getPeriodos().subscribe((data) => {
         this.periodos = data;
       });
-      
     });
 
     this.cursoServices.getEspecialidades().subscribe((data) => {
@@ -199,7 +198,7 @@ export class VerTurnosComponent implements OnInit {
   }
 
   vercursoblock(turno: Turno) {
-    this.router.navigate(['/coa/calender-director'], {
+    this.router.navigate(['/coa/calender_turno'], {
       queryParams: {
         id: turno.id,
       },
@@ -338,9 +337,10 @@ export class VerTurnosComponent implements OnInit {
   }
 
   mostrarAlertaVencido() {
-    this.alertService.error('La fecha de asignación ha caducado. Ya no puedes modificar este turno.');
+    this.alertService.error(
+      'La fecha de asignación ha caducado. Ya no puedes modificar este turno.'
+    );
   }
-  
 
   cambiarItemsPorPagina(valor: number) {
     this.itemsPorPagina = valor;
