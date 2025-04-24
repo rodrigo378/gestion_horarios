@@ -139,6 +139,8 @@ export class HorarioService {
   }
 
   guardarHorarioAsync(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/async`, data);
+    return this.http.post(`${this.apiUrl}/async`, data, {
+      withCredentials: true,
+    });
   }
 }

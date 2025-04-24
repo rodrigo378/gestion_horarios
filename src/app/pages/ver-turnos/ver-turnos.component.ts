@@ -1,13 +1,13 @@
+import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Periodo, Turno } from '../../interfaces/turno';
-import { TurnoService } from '../../services/turno.service';
-import { Router } from '@angular/router';
 import { Especialidad } from '../../interfaces/Curso';
-import { CursoService } from '../../services/curso.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertService } from '../../services/alert.service';
+import { Periodo, Turno } from '../../interfaces/turno';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TurnoService } from '../../services/turno.service';
+import { CursoService } from '../../services/curso.service';
+import { AlertService } from '../../services/alert.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 @Component({
   selector: 'app-ver-turnos',
   standalone: false,
@@ -24,7 +24,6 @@ export class VerTurnosComponent implements OnInit {
   turnos: Turno[] = [];
   turnoSeleccionado: { [key: number]: string } = {};
 
-  // Filtros seleccionados
   filtros = {
     n_codper: '',
     c_codfac: '',
@@ -100,18 +99,22 @@ export class VerTurnosComponent implements OnInit {
   }
 
   deleteTurno(id: number) {
-    this.turnoServices.deleteTurno(id).subscribe({
-      next: (res: any) => {
-        this.turnoServices.getTurnos().subscribe((data) => {
-          this.turnos = data;
-          this.turnosFiltrados = data;
-          this.extraerValoresUnicos(data);
-        });
-      },
-      error: (er: HttpErrorResponse) => {
-        console.log(er);
-      },
-    });
+    this.alertService
+      .confirm('¿Está seguro que desea eliminar este turno?')
+      .then((confirmado) => {
+        if (confirmado) {
+          this.turnoServices.deleteTurno(id).subscribe({
+            next: () => {
+              this.aplicarFiltros();
+              this.alertService.success('Turno eliminado correctamente');
+            },
+            error: (err: HttpErrorResponse) => {
+              console.error(err);
+              this.alertService.error('Ocurrió un error al eliminar el turno');
+            },
+          });
+        }
+      });
   }
 
   obtenerNombreEspecialidad(codesp: string): string {
