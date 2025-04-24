@@ -768,20 +768,6 @@ export class AsignarHorarioDrComponent implements OnInit {
     actualizarLista(this.cursosPlan2023);
     actualizarLista(this.cursosPlan2025);
 
-    // ✅ Deshabilitar curso equivalente del otro plan
-    // const codEquivalente = this.cursosPlan2025.find(
-    //   (c) => c.c_codcur === this.cursoSeleccionado.extendedProps.codigo
-    // )?.c_codcur_equ;
-
-    // if (codEquivalente) {
-    //   const index = this.cursosPlan2023.findIndex(
-    //     (c) => c.c_codcur === codEquivalente
-    //   );
-    //   if (index !== -1) {
-    //     this.cursosPlan2023[index].disabled = true;
-    //   }
-    // }
-
     this.resetCamposModal();
     this.bloquearEquiCurso(this.cursoSeleccionado.extendedProps.codigo);
     this.verificarEstadoTurnoAutomatico();
@@ -851,43 +837,40 @@ export class AsignarHorarioDrComponent implements OnInit {
   private bloquearEquivCursosCargar(): void {
     const codigosAsignados = new Set<string>();
 
-    // 🔍 Recorremos todos los eventos asignados y capturamos tanto el código del curso como su equivalente
+    // 🔍 Recorremos todos los eventos asignados y capturamos codigos y equivalentes
     this.eventosCargados.forEach((ev) => {
-      const cod = ev.extendedProps?.codCur?.toString().trim().toUpperCase();
       const equiv = ev.extendedProps?.c_codcur_equ
         ?.toString()
         .trim()
         .toUpperCase();
 
-      if (cod) codigosAsignados.add(cod);
+      // if (cod) codigosAsignados.add(cod);
       if (equiv) codigosAsignados.add(equiv); // 🔥 Clave para bloqueo inverso
     });
-
+  
     console.log('🗂️ Cursos asignados encontrados:', [...codigosAsignados]);
-
-    // 🔁 Recorremos ambos planes para bloquear los cursos que ya están asignados o sus equivalentes
+  
     const listas = [this.cursosPlan2023, this.cursosPlan2025];
     listas.forEach((lista) => {
       lista.forEach((curso) => {
         const codCur = curso.c_codcur?.toString().trim().toUpperCase();
-        const codEquivalente = curso.c_codcur_equ
-          ?.toString()
-          .trim()
-          .toUpperCase();
-
-        if (
+        const codEquivalente = curso.c_codcur_equ?.toString().trim().toUpperCase();
+  
+        const estaAsignado =
           (codCur && codigosAsignados.has(codCur)) ||
-          (codEquivalente && codigosAsignados.has(codEquivalente))
-        ) {
+          (codEquivalente && codigosAsignados.has(codEquivalente));
+  
+        // ✅ Solo bloqueamos si es del plan 2023
+        if (estaAsignado && curso.n_codper === 2023) {
           curso.disabled = true;
-          console.log(
-            `⛔ BLOQUEADO al cargar: [${codCur}] porque él o su equivalente [${codEquivalente}] ya están asignados`
-          );
+          console.log(`⛔ BLOQUEADO 2023: [${codCur}] porque él o su equivalente [${codEquivalente}] ya están asignados`);
+        } else if (estaAsignado) {
+          console.log(`✅ NO BLOQUEADO 2025: [${codCur}] es equivalente pero del 2025`);
         }
       });
     });
-
-    // 🔄 Refrescamos visual para aplicar el cambio en la interfaz
+  
+    // 🔄 Refrescamos visual
     this.cursosPlan2023 = [...this.cursosPlan2023];
     this.cursosPlan2025 = [...this.cursosPlan2025];
   }

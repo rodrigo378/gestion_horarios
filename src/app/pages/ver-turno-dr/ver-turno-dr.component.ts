@@ -200,6 +200,15 @@ export class VerTurnoDrComponent {
     });
   }
 
+  vercursoblock(turno: Turno) {
+    this.router.navigate(['/coa/calender_turno'], {
+      queryParams: {
+        id: turno.id,
+      },
+    });
+  }
+
+
   //#region CRUD turnos
 
   //#region filtro
@@ -331,6 +340,12 @@ export class VerTurnoDrComponent {
 
   editarTurno(turno_id: number) {
     this.router.navigate([`/cursos/${turno_id}`]);
+  }
+
+  mostrarAlertaVencido() {
+    this.alertService.error(
+      'La fecha de asignación ha caducado. Ya no puedes modificar este turno.'
+    );
   }
 
   cambiarItemsPorPagina(valor: number) {
