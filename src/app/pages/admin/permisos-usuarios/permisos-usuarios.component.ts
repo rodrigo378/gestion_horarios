@@ -19,7 +19,7 @@ export class PermisosUsuariosComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private alertService: AlertService
+    public alertService: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -33,17 +33,19 @@ export class PermisosUsuariosComponent implements OnInit {
   }
 
   buscarPermisos() {
+    this.alertService.iniciarSolicitud();
+
     this.userService.getPermisosTo(this.email).subscribe({
       next: (res: any) => {
         this.userPermisos = res.permisos;
         this.user = res.user;
-        console.log('userPermisos )> ', this.userPermisos);
-
         this.boolPermisos = true;
+        this.alertService.finalizarSolicitud();
       },
       error: (err: HttpErrorResponse) => {
         console.log('err => ', err);
         this.boolPermisos = false;
+        this.alertService.finalizarSolicitud();
         this.alertService.error('Este Email no existe');
       },
     });

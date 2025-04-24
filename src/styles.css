@@ -1,4 +1,4 @@
-@import 'tippy.js/dist/tippy.css';
+@import "tippy.js/dist/tippy.css";
 
 @tailwind base;
 
@@ -6,3 +6,31 @@
 
 @tailwind utilities;
 /* You can add global styles to this file, and also import other style files */
+
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 5px solid #ccc;
+  border-top: 5px solid #333;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

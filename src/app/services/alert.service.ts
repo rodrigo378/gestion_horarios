@@ -1,12 +1,26 @@
 import { Injectable } from '@angular/core';
-import Swal from 'sweetalert2'
+import { BehaviorSubject } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AlertService {
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+  public loading$ = this.loadingSubject.asObservable();
 
-  constructor() { }
+  constructor() {}
+
+  // Llama cuando comienza una solicitud
+  iniciarSolicitud(): void {
+    console.log('iniciarSolicitud');
+    this.loadingSubject.next(true);
+  }
+
+  // Llama cuando termina una solicitud
+  finalizarSolicitud(): void {
+    this.loadingSubject.next(false);
+  }
 
   // ✅ Alerta de éxito
   success(message: string, title: string = '¡Éxito!') {
@@ -14,7 +28,7 @@ export class AlertService {
       title: title,
       text: message,
       icon: 'success',
-      confirmButtonText: 'OK'
+      confirmButtonText: 'OK',
     });
   }
 
@@ -24,14 +38,17 @@ export class AlertService {
       title: title,
       html: `<div style="text-align: left;">
                 <ul style="padding-left: 20px; text-align: left; font-size: 20px;">
-                  ${message.split('\n').map(item => `<li>${item}</li>`).join('')}
+                  ${message
+                    .split('\n')
+                    .map((item) => `<li>${item}</li>`)
+                    .join('')}
                 </ul>
               </div>`,
       icon: 'warning',
       confirmButtonText: 'OK',
-      width: '450px'
+      width: '450px',
     });
-  } 
+  }
 
   // ⚠️ Alerta de erroralerta
   errorwarning(message: string, title: string = 'Oops...!') {
@@ -39,33 +56,36 @@ export class AlertService {
       title: title,
       text: message,
       icon: 'warning',
-      confirmButtonText: 'OK'
+      confirmButtonText: 'OK',
     });
   }
 
-    // ❌ Alerta de error
-    error(message: string, title: string = 'Oops...!') {
-      Swal.fire({
-        title: title,
-        text: message,
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-    }
+  // ❌ Alerta de error
+  error(message: string, title: string = 'Oops...!') {
+    Swal.fire({
+      title: title,
+      text: message,
+      icon: 'error',
+      confirmButtonText: 'OK',
+    });
+  }
 
   // ❓ Alerta de confirmación con botón de cancelar
-  confirm(message: string, title: string = 'Confirmar acción'): Promise<boolean> {
+  confirm(
+    message: string,
+    title: string = 'Confirmar acción'
+  ): Promise<boolean> {
     return Swal.fire({
       title: title,
       text: message,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, continuar',
-      cancelButtonText: 'Cancelar'
-    }).then(result => result.isConfirmed);
+      cancelButtonText: 'Cancelar',
+    }).then((result) => result.isConfirmed);
   }
 
-    info(message: string): void {
+  info(message: string): void {
     Swal.fire('ℹ️ Información', message, 'info');
   }
 
@@ -83,8 +103,7 @@ export class AlertService {
       cancelButtonText: 'Cancelar',
       confirmButtonColor: '#d33', // rojo
       cancelButtonColor: '#3085d6',
-      width: '600px'
-    }).then(result => result.isConfirmed);
+      width: '600px',
+    }).then((result) => result.isConfirmed);
   }
-  
 }
