@@ -7,50 +7,46 @@
   </button>
 </div>
 
-<div *ngIf="turnoData" class=" bg-white shadow-lg border p-5 rounded-xl">
+<div *ngIf="turnoData" class="bg-white shadow-lg border p-5 rounded-xl">
   <p class="text-2xl font-bold">
-    Asignación de horarios |
-    {{turnoData.n_codper}} -
-    {{ turnoData.n_codpla }} -
-    {{ turnoData.nomesp }} - 
-    {{ turnoData.n_ciclo }}° Ciclo -
-    {{ turnoData.c_nommod }} -
-    Sección {{ turnoData.c_grpcur }} -
-    
+    Asignación de horarios
+    {{ turnoData.n_codper }} - {{ turnoData.n_codpla }} -
+    {{ turnoData.nomesp }} - {{ turnoData.n_ciclo }}° Ciclo -
+    {{ turnoData.c_nommod }} - Sección {{ turnoData.c_grpcur }} -
   </p>
   <p class="text-slate-500 mt-1">Asigne horarios a los docentes:</p>
 </div>
 
-
 <div class="shadow-lg border border-gray-200 rounded-lg p-4">
-    <h2 class="text-xl font-bold text-gray-800 mb-4">
-        Asignación de horarios | :
-      <!-- {{ nombreAula }} -->
-    </h2>
-    <div class="flex flex-wrap gap-4">
-      <div class="flex items-center font-bold ml-8">
-        <span>Leyenda: </span>
-      </div>
-      <div class="flex items-center">
-        <span class="inline-block w-4 h-4 bg-blue-600 rounded mr-2"></span>
-        <span>Teoría</span>
-      </div>
-      <div class="flex items-center">
-        <span class="inline-block w-4 h-4 bg-green-600 rounded mr-2"></span>
-        <span>Práctica</span>
-      </div>
-      <div class="flex items-center">
-        <span class="inline-block w-4 h-4 bg-yellow-500 rounded mr-2"></span>
-        <span>Curso Transversal</span>
-      </div>
-      <div class="flex items-center">
-        <span class="inline-block w-4 h-4 bg-purple-700 rounded mr-2"></span>
-        <span>Curso Agrupado</span>
-      </div>
+  <h2 class="text-xl font-bold text-gray-800 mb-4">
+    Asignación de horarios :
+    <!-- {{ nombreAula }} -->
+  </h2>
+  <div class="flex flex-wrap gap-4">
+    <div class="flex items-center font-bold ml-8">
+      <span>Leyenda: </span>
     </div>
+    <div class="flex items-center">
+      <span class="inline-block w-4 h-4 bg-blue-600 rounded mr-2"></span>
+      <span>Teoría</span>
+    </div>
+    <div class="flex items-center">
+      <span class="inline-block w-4 h-4 bg-green-600 rounded mr-2"></span>
+      <span>Práctica</span>
+    </div>
+    <div class="flex items-center">
+      <span class="inline-block w-4 h-4 bg-yellow-500 rounded mr-2"></span>
+      <span>Curso Transversal</span>
+    </div>
+    <div class="flex items-center">
+      <span class="inline-block w-4 h-4 bg-purple-700 rounded mr-2"></span>
+      <span>Curso Agrupado</span>
+    </div>
+  </div>
 </div>
 
 <full-calendar
-[options]="calendarOptions"
-class="shadow-lg border border-gray-200 rounded-lg p-4 mt-5">
+  [options]="calendarOptions"
+  class="shadow-lg border border-gray-200 rounded-lg p-4 mt-5"
+>
 </full-calendar>
