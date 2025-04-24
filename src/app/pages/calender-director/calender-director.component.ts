@@ -60,17 +60,12 @@ export class CalenderDirectorComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private horarioService: HorarioService,
-<<<<<<< HEAD
     private turnoServices: TurnoService,
     private docenteService: DocentecurService,
     private aulaService: AulaService,
   ) {}
   
 
-=======
-    private turnoServices: TurnoService
-  ) {}
->>>>>>> e7f8d2ab23714510bf2950c99f4c9fbf2f7df7c4
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
