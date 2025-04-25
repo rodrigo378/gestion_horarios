@@ -44,6 +44,9 @@ export type ChartOptionsDonut = {
 export class WelcomeComponent implements OnInit{
   @ViewChild("chart") chart!: ChartComponent;
 
+  cargandoCursos: boolean = true;
+  mostrarCalendario: boolean = false;
+
   totalCursos: number = 0;
   totalDocentes: number = 0;
   aulasUtilizadas: number = 0;

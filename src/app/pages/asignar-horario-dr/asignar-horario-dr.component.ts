@@ -73,6 +73,8 @@ export class AsignarHorarioDrComponent implements OnInit {
   //paginato calender
   paginaActual: 'calendar' | 'async' = 'calendar';
   cursosAsyncDesdeAPI: Curso[] = [];
+  //loader
+  cargandoCursos: boolean = true;
   //#endregion
 
   //#region Libreria del calendario
@@ -265,6 +267,7 @@ export class AsignarHorarioDrComponent implements OnInit {
 
             this.bloquearEquivCursosCargar();
             this.verificarEstadoTurnoAutomatico();
+            this.cargandoCursos = false;
           });
       });
     });
@@ -378,6 +381,7 @@ export class AsignarHorarioDrComponent implements OnInit {
         c.tipo === draggedData.extendedProps.tipo
     );
 
+    this.resetCamposModal();
     this.eventoSeleccionado = null;
     this.fechaDrop = info.date;
     this.diaSeleccionado = diaSemana;
@@ -1394,6 +1398,34 @@ export class AsignarHorarioDrComponent implements OnInit {
     });
   }
 
+  // procesarActualizacionExitosa(
+  //   base: Date,
+  //   fin: Date,
+  //   codigo: string,
+  //   tipo: string,
+  //   diferencia: number
+  // ): void {
+  //   console.log('🟢 Solo aquí debe ir la actualización de horas restantes');
+  //   this.actualizarHorasRestantes(codigo, tipo, diferencia);
+  //   this.eventoSeleccionado?.setStart(base);
+  //   this.eventoSeleccionado?.setEnd(fin);
+  //   this.eventoSeleccionado?.setExtendedProp('n_horas', this.horasAsignadas);
+  //   this.eventoSeleccionado?.setExtendedProp('dia', this.diaSeleccionado);
+  //   this.eventoSeleccionado?.setExtendedProp('aula_id', this.aulaSeleccionada);
+  //   this.eventoSeleccionado?.setExtendedProp(
+  //     'docente_id',
+  //     this.docenteSeleccionado
+  //   );
+
+  //   this.alertService.success('✅ Evento actualizado correctamente.');
+  //   this.modalHorasActivo = false;
+  //   this.eventoSeleccionado = null;
+  //   this.cargarHorarios();
+  //   // this.cargarDocentes();
+  //   this.resetCamposModal();
+  //   this.verificarEstadoTurnoAutomatico();
+  // }
+
   procesarActualizacionExitosa(
     base: Date,
     fin: Date,
@@ -1401,26 +1433,43 @@ export class AsignarHorarioDrComponent implements OnInit {
     tipo: string,
     diferencia: number
   ): void {
-    console.log('🟢 Solo aquí debe ir la actualización de horas restantes');
     this.actualizarHorasRestantes(codigo, tipo, diferencia);
-    this.eventoSeleccionado?.setStart(base);
-    this.eventoSeleccionado?.setEnd(fin);
-    this.eventoSeleccionado?.setExtendedProp('n_horas', this.horasAsignadas);
-    this.eventoSeleccionado?.setExtendedProp('dia', this.diaSeleccionado);
-    this.eventoSeleccionado?.setExtendedProp('aula_id', this.aulaSeleccionada);
-    this.eventoSeleccionado?.setExtendedProp(
-      'docente_id',
-      this.docenteSeleccionado
-    );
-
+  
+    const evento = this.eventoSeleccionado;
+    if (!evento) return;
+  
+    evento.setStart(base);
+    evento.setEnd(fin);
+    evento.setExtendedProp('n_horas', this.horasAsignadas);
+    evento.setExtendedProp('dia', this.diaSeleccionado);
+    evento.setExtendedProp('aula_id', this.aulaSeleccionada);
+    evento.setExtendedProp('docente_id', this.docenteSeleccionado);
+  
+    // 🔁 Forzar re-render para aplicar el tooltip actualizado
+    const calendarApi = this.calendarComponent.getApi();
+    const eventoId = evento.id;
+  
+    // Obtenemos un clon del evento actualizado
+    const nuevoEvento = {
+      ...evento.toPlainObject(),
+      start: base.toISOString(),
+      end: fin.toISOString(),
+    };
+  
+    evento.remove(); // lo removemos visualmente
+    calendarApi.addEvent(nuevoEvento); // lo reinsertamos
+  
     this.alertService.success('✅ Evento actualizado correctamente.');
     this.modalHorasActivo = false;
     this.eventoSeleccionado = null;
-    this.cargarHorarios();
-    // this.cargarDocentes();
+  
     this.resetCamposModal();
     this.verificarEstadoTurnoAutomatico();
+  
+    // ❌ Ya NO LLAMES cargarHorarios() aquí porque hace reload completo y puede sobrescribir los cambios en el frontend antes de que se guarden en backend
+    // this.cargarHorarios(); ❌ lo comentamos
   }
+  
 
   eliminarEvento(): void {
     if (!this.eventoSeleccionado) return;

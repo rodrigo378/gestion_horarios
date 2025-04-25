@@ -43,6 +43,10 @@ export class AgruparCursosComponent {
 
   itemsPorPagina: number = 20;
 
+  cargandoCursos: boolean = true;
+
+  busquedaEjecutada: boolean = false;
+
   filtros = {
     c_codmod: '',
     n_codper: '2025',
@@ -115,6 +119,7 @@ export class AgruparCursosComponent {
   }
 
   getCursoTransversal() {
+    this.cargandoCursos = true
     this.alertService.iniciarSolicitud();
 
     this.horarioService
@@ -138,6 +143,7 @@ export class AgruparCursosComponent {
           );
         },
         complete: () => {
+          this.cargandoCursos = false;
           this.alertService.finalizarSolicitud();
         },
       });
@@ -173,6 +179,7 @@ export class AgruparCursosComponent {
   }
 
   clickBuscarCursosModal() {
+    this.busquedaEjecutada = true
     this.getCursoTransversal();
   }
 

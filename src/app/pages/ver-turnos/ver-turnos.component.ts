@@ -342,7 +342,11 @@ export class VerTurnosComponent implements OnInit {
   }
 
   editarTurno(turno_id: number) {
-    this.router.navigate([`/cursos/${turno_id}`]);
+    const currentPrefix = this.router.url.split('/')[1];
+    this.router.navigate([`/${currentPrefix}/curso/${turno_id}`],{
+      queryParams: { id: turno_id }
+    })
+    // this.router.navigate([`/cursos/${turno_id}`]);
   }
 
   mostrarAlertaVencido() {
