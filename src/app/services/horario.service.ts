@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import {
   CreateHorarioRequest,
@@ -17,7 +16,7 @@ import { Curso2 } from '../interfaces/Curso';
 export class HorarioService {
   private apiUrl = `${environment.api}/horario`;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient) {}
 
   guardarHorarios(data: CreateHorarioRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}`, data, { withCredentials: true }); // ✅ No lo vuelvas a meter en { dataArray }
