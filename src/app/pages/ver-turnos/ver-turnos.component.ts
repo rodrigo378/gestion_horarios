@@ -362,9 +362,9 @@ export class VerTurnosComponent implements OnInit {
 
   editarTurno(turno_id: number) {
     const currentPrefix = this.router.url.split('/')[1];
-    this.router.navigate([`/${currentPrefix}/curso/${turno_id}`],{
-      queryParams: { id: turno_id }
-    })
+    this.router.navigate([`/${currentPrefix}/curso/${turno_id}`], {
+      queryParams: { id: turno_id },
+    });
     // this.router.navigate([`/cursos/${turno_id}`]);
   }
 
@@ -414,16 +414,16 @@ export class VerTurnosComponent implements OnInit {
     this.horarioService.getReporte(filtros).subscribe((data) => {
       // Suponiendo que `data` es un array de objetos con `dia` y `h_inicio`
       const rows = (data || []).map((item: any) => ({
-        n_codper: item.Turno.n_codper,
-        nom_fac: item.Turno.nom_fac,
-        nomesp: item.Turno.nomesp,
-        c_codcur: item.curso.c_codcur,
-        c_nomcur: item.curso.c_nomcur,
-        c_grpcur: item.Turno.c_grpcur,
-        modalidad: item.Turno.c_nommod,
-        n_ciclo: item.Turno.n_ciclo,
-        n_codpla: item.Turno.n_codpla,
-        Docente: item.Docente?.c_nomdoc || '',
+        n_codper: item.n_codper,
+        nom_fac: item.nom_fac,
+        nomesp: item.nomesp,
+        c_codcur: item.c_codcur,
+        c_nomcur: item.c_nomcur,
+        c_grpcur: item.c_grpcur,
+        modalidad: item.c_nommod,
+        n_ciclo: item.n_ciclo,
+        n_codpla: item.n_codpla,
+        Docente: item?.c_nomdoc || '',
         Día: item.dia || '',
         Hini: item.h_inicio
           ? format(toZonedTime(new Date(item.h_inicio), zonaHoraria), 'HH:mm')
@@ -433,9 +433,9 @@ export class VerTurnosComponent implements OnInit {
           : '',
         horas_academicas: item.n_horas,
         c_tipo: item.tipo,
-        aula: item.aula?.c_codaula || '',
-        piso: item.aula?.n_piso || '',
-        pabellon: item.aula?.pabellon || '',
+        aula: item?.c_codaula || '',
+        piso: item?.n_piso || '',
+        pabellon: item?.pabellon || '',
       }));
 
       const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(rows);

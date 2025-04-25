@@ -289,63 +289,55 @@
     📥 Suelta aquí el curso asíncronos para registrarlos
   </div>
 
-  <div id="async-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
+  <!-- 👀 VISUALIZACIÓN DE CURSOS ASÍNCRONOS GUARDADOS -->
+  <div class="bg-white shadow-lg border p-5 rounded-xl mt-5">
     <h2 class="text-xl font-bold text-green-700 mb-4 border-b border-slate-200 pb-2">
-      📤 Cursos asíncronos guardados
+      📚 Cursos asíncronos ya registrados
     </h2>
-  
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- 📘 Plan 2023 -->
+      <!-- Plan 2023 -->
       <div>
-        <button (click)="mostrarPlan2023 = !mostrarPlan2023"
-                class="flex items-center justify-between w-full text-left bg-blue-100 hover:bg-blue-200 px-4 py-2 rounded-md font-semibold text-blue-800 mb-2">
-          📘 Plan 2023 ({{ cursosPlan2023Async.length }} cursos)
-          <span>{{ mostrarPlan2023 ? '🔽' : '▶️' }}</span>
-        </button>
-  
-        <div *ngIf="mostrarPlan2023" class="space-y-3">
-          <div *ngFor="let curso of cursosPlan2023Async"
-              class="fc-event bg-blue-100 hover:bg-blue-200 transition duration-200 border border-blue-300 rounded-lg px-4 py-3 cursor-move"
-              [attr.data-curso]="stringifyCursoAsync(curso)"
-              [draggable]="!curso.guardadoAsync"
-              [ngClass]="{ 'opacity-50 pointer-events-none': curso.guardadoAsync }"
-              (dragstart)="!curso.guardadoAsync && onDragStartAsync($event)">
-            
-            <p class="text-sm font-medium text-blue-900 flex items-center gap-2">
-              <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
-              <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
+        <h3 class="font-semibold text-blue-700 mb-2">📘 Plan 2023</h3>
+        <div *ngIf="cursosPlan2023Guardados.length > 0; else noHayCursos2023" class="space-y-3">
+          <div 
+            *ngFor="let curso of cursosPlan2023Guardados" 
+            class="bg-blue-50 border border-blue-200 px-4 py-2 rounded-md" 
+            (click)="confirmarEliminarCursoAsync(curso)"
+          >
+            <p class="text-sm font-medium text-blue-800">
+              [{{ curso.c_codcur }}] - {{ curso.c_nomcur }} ({{ curso.tipo }})
             </p>
-            <p class="text-xs text-blue-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
+            <p class="text-xs text-blue-600">{{ curso.horasRestantes }} hrs</p>
           </div>
         </div>
+        <ng-template #noHayCursos2023>
+          <p class="text-sm text-gray-500">No hay cursos registrados.</p>
+        </ng-template>
       </div>
-  
-      <!-- 📗 Plan 2025 -->
+
+      <!-- Plan 2025 -->
       <div>
-        <button (click)="mostrarPlan2025 = !mostrarPlan2025"
-                class="flex items-center justify-between w-full text-left bg-green-100 hover:bg-green-200 px-4 py-2 rounded-md font-semibold text-green-800 mb-2">
-          📗 Plan 2025 ({{ cursosPlan2025Async.length }} cursos)
-          <span>{{ mostrarPlan2025 ? '🔽' : '▶️' }}</span>
-        </button>
-  
-        <div *ngIf="mostrarPlan2025" class="space-y-3">
-          <div *ngFor="let curso of cursosPlan2025Async"
-              class="fc-event bg-green-100 hover:bg-green-200 transition duration-200 border border-green-300 rounded-lg px-4 py-3 cursor-move"
-              [attr.data-curso]="stringifyCursoAsync(curso)"
-              [draggable]="!curso.guardadoAsync"
-              [ngClass]="{ 'opacity-50 pointer-events-none': curso.guardadoAsync }"
-              (dragstart)="!curso.guardadoAsync && onDragStartAsync($event)">
-            
-            <p class="text-sm font-medium text-emerald-800 flex items-center gap-2">
-              <span class="font-semibold">[{{ curso.c_codcur }}]</span> - {{ curso.c_nomcur }}
-              <span *ngIf="curso.guardadoAsync" class="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">✅ Guardado</span>
+        <h3 class="font-semibold text-emerald-700 mb-2">📗 Plan 2025</h3>
+        <div *ngIf="cursosPlan2025Guardados.length > 0; else noHayCursos2025" class="space-y-3">
+          <div 
+            *ngFor="let curso of cursosPlan2025Guardados" 
+            class="bg-green-50 border border-green-200 px-4 py-2 rounded-md"
+            (click)="confirmarEliminarCursoAsync(curso)"
+            >
+            <p class="text-sm font-medium text-green-800">
+              [{{ curso.c_codcur }}] - {{ curso.c_nomcur }} ({{ curso.tipo }})
             </p>
-            <p class="text-xs text-green-700">{{ curso.tipo }} · {{ curso.horasRestantes }} hrs</p>
+            <p class="text-xs text-green-600">{{ curso.horasRestantes }} hrs</p>
           </div>
         </div>
+        <ng-template #noHayCursos2025>
+          <p class="text-sm text-gray-500">No hay cursos registrados.</p>
+        </ng-template>
       </div>
     </div>
   </div>
+
 </div>
 
 <!-- modal guardar/editar -->
