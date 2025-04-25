@@ -19,7 +19,7 @@ export class DocentecurService {
 
   obtenerDocentesreporteria(): Observable<Docente[]> {
     return this.http.get<Docente[]>(
-      `${this.apiUrl}?horario=true&curso=true`
+      `${this.apiUrl}?horario=true&curso=true&aula=true`
     );
   }
 

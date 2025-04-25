@@ -63,8 +63,17 @@ export interface AulaReporte {
     c_codcur_equ: string;
     c_nomcur_equ: string;
     turno_id: number;
+
+    cursosPadres?: CursoPadreAula[]; 
   }
   
+  export interface CursoPadreAula {
+    id: number;
+    curso_id: number;
+    padre_curso_id: number;
+    shortname: string;
+    tipo: number; // 0 = transversal, 1 = agrupado
+  }
   export interface AulaExtendido extends AulaReporte {
     expanded?: boolean;
   }

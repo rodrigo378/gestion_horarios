@@ -67,35 +67,36 @@ export class CalenderDocenteComponent implements OnInit {
       }
 
       this.nombreDocente = docente.c_nomdoc;
+      
 
       const eventos = docente.Horario.map((h) => {
         const tipoPadre = h.curso?.cursosPadres?.[0]?.tipo;
-
+      
         let backgroundColor = '';
         let borderColor = '';
-
+      
         if (tipoPadre === 0) {
-          // Curso transversal
-          backgroundColor = '#EAB308'; // Amarillo
+          backgroundColor = '#EAB308'; // Transversal
           borderColor = '#EAB308';
         } else if (tipoPadre === 1) {
-          // Curso agrupado
-          backgroundColor = '#7E22CE'; // Morado
+          backgroundColor = '#7E22CE'; // Agrupado
           borderColor = '#7E22CE';
         } else {
-          // Normal
           backgroundColor = h.tipo === 'Teoría' ? '#3788d8' : '#28a745';
-          borderColor = h.tipo === 'Teoría' ? '#3788d8' : '#28a745';
+          borderColor = backgroundColor;
         }
-
+      
+        const aulaNombre = h.aula?.c_codaula ? ` - Aula ${h.aula.c_codaula}` : '';
+      
         return {
-          title: `${h.curso?.c_nomcur || 'Curso'} - (${h.tipo})`,
+          title: `${h.curso?.c_nomcur || 'Curso'} (${h.tipo})${aulaNombre}`,
           start: h.h_inicio,
           end: h.h_fin,
           backgroundColor,
           borderColor,
         };
       });
+      
 
       this.calendarOptions.events = eventos;
     });
