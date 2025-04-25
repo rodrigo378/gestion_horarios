@@ -1344,6 +1344,7 @@ export class AsignarhorarioComponent implements OnInit {
           ? this.selectedDocente?.id ?? null
           : ev.extendedProps['docente_id'] ?? null,
         turno_id: this.turnoId,
+        tipo: ev.extendedProps['tipo'] ?? 'Teoria',
       };
     });
 
