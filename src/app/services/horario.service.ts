@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import {
@@ -142,5 +142,27 @@ export class HorarioService {
     return this.http.post(`${this.apiUrl}/async`, data, {
       withCredentials: true,
     });
+  }
+
+  getReporte(params?: {
+    n_codper?: string;
+    c_codfac?: string;
+    c_codesp?: string;
+    c_grpcur?: string;
+    c_codmod?: string;
+    n_ciclo?: number;
+    n_codpla?: number;
+  }): Observable<any> {
+    let httpParams = new HttpParams();
+
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          httpParams = httpParams.set(key, value.toString());
+        }
+      });
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/reporte`, { params: httpParams });
   }
 }
