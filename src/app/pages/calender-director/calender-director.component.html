@@ -1,0 +1,76 @@
+<div class="mb-4">
+  <button
+    routerLink="/coa/turno"
+    class="inline-flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded transition duration-200"
+  >
+    <i class="fa-solid fa-arrow-left"></i> Turnos
+  </button>
+</div>
+
+<div *ngIf="turnoData" class="bg-white shadow-lg border p-5 rounded-xl">
+  <p class="text-2xl font-bold">
+    Horario del |
+    {{ turnoData.n_codper }} - {{ turnoData.n_codpla }} -
+    {{ turnoData.nomesp }} - {{ turnoData.n_ciclo }}° Ciclo -
+    {{ turnoData.c_nommod }} - Sección {{ turnoData.c_grpcur }} -
+  </p>
+  <div class="text-[20px] flex flex-wrap gap-4 mt-5">
+    <div class="flex items-center font-bold">
+      <span>Leyenda: </span>
+    </div>
+    <div class="flex items-center">
+      <span class="inline-block w-4 h-4 bg-blue-600 rounded mr-2"></span>
+      <span>Teoría</span>
+    </div>
+    <div class="flex items-center">
+      <span class="inline-block w-4 h-4 bg-green-600 rounded mr-2"></span>
+      <span>Práctica</span>
+    </div>
+    <div class="flex items-center">
+      <span class="inline-block w-4 h-4 bg-yellow-500 rounded mr-2"></span>
+      <span>Curso Transversal</span>
+    </div>
+    <div class="flex items-center">
+      <span class="inline-block w-4 h-4 bg-purple-700 rounded mr-2"></span>
+      <span>Curso Agrupado</span>
+    </div>
+  </div>
+</div>
+
+<full-calendar
+  [options]="calendarOptions"
+  class="shadow-lg border border-gray-200 rounded-lg p-4 mt-5"
+>
+</full-calendar>
+
+<!-- Modal -->
+<div *ngIf="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div class="bg-white p-6 rounded-lg w-96 shadow-xl relative">
+    <button (click)="closeModal()" class="absolute top-3 right-3 bg-gray-200 hover:bg-gray-400 text-gray-700 hover:text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md transition">
+      <i class="fa-solid fa-xmark text-lg"></i>
+    </button>
+
+    <h2 class="text-xl font-bold text-blue-900 text-center mb-4">
+      📅 Horario para el día {{ selectedDay }}
+    </h2>
+
+    <ol class="relative border-l-2 border-blue-900 pl-4">
+      <li *ngFor="let event of selectedClasses" class="mb-4">
+        <div class="absolute w-3 h-3 bg-blue-900 rounded-full -left-1.5 border border-white"></div>
+        <h3 class="text-lg font-semibold text-gray-900">{{ event.subject }}</h3>
+        <p class="text-sm font-medium text-gray-600">⏰ {{ event.time }}</p>
+        <p class="text-sm text-gray-700">🏛 Facultad: <span class="font-semibold">{{ event.faculty }}</span></p>
+        <p class="text-sm text-gray-700">📚 Ciclo: <span class="font-semibold">{{ event.cycle }}</span></p>
+        <p class="text-sm text-gray-700">📍 Aula/Piso: <span class="font-semibold">{{ event.floor }}</span></p>
+        <p class="text-sm text-gray-700">👨‍🏫 Docente: <span class="font-semibold">{{ event.docente }}</span></p>
+        <p class="text-sm text-gray-700">💻 Modalidad: <span class="font-semibold">{{ event.modality }}</span></p>
+      </li>
+    </ol>
+
+    <div class="flex justify-center mt-6">
+      <button (click)="closeModal()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>

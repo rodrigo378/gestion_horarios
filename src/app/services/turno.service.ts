@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Periodo, Turno } from '../interfaces/turno';
 import { environment } from '../../environment/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { AuthService } from './auth.service';
-import { Turno } from '../interfaces/turno';
-import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TurnoService {
   private apiUrl = `${environment.api}/turno`;
+  private apiUrlget = `${environment.api}`;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient) {}
 
   getTurnos(): Observable<Turno[]> {
     return this.http.get<Turno[]>(this.apiUrl);
@@ -35,16 +35,24 @@ export class TurnoService {
   }
 
   actualizarEstado(id: number, estado: number) {
-    return this.http.put(`${this.apiUrl}/${id}`, { estado });
+    return this.http.put(
+      `${this.apiUrl}/${id}`,
+      { estado },
+      { withCredentials: true }
+    );
   }
 
   private estadoActualizado = new BehaviorSubject<number | null>(null);
 
   emitirCambioEstado(turnoId: number) {
-    this.estadoActualizado.next(turnoId);
+    this.estadoActualizado.next(turnoId), { withCredentials: true };
   }
 
   onCambioEstado() {
     return this.estadoActualizado.asObservable();
+  }
+
+  getPeriodos(): Observable<Periodo[]> {
+    return this.http.get<Periodo[]>(`${this.apiUrlget}/periodo`);
   }
 }

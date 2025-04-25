@@ -74,6 +74,8 @@ export class AsignarhorarioComponent implements OnInit {
   //paginato calender
   paginaActual: 'calendar' | 'async' = 'calendar';
   cursosAsyncDesdeAPI: Curso[] = [];
+  //loader
+  cargandoCursos: boolean = true;
   //#endregion
 
   //#region Libreria del calendario
@@ -230,6 +232,8 @@ export class AsignarhorarioComponent implements OnInit {
       this.turnoData = turno;
 
       const dataCursos = {
+        n_codper: turno.n_codper,
+        n_codpla: turno.n_codpla,
         c_codfac: turno.c_codfac,
         c_codesp: turno.c_codesp,
         n_ciclo: turno.n_ciclo,
@@ -259,6 +263,8 @@ export class AsignarhorarioComponent implements OnInit {
 
             this.bloquearEquivCursosCargar();
             this.verificarEstadoTurnoAutomatico();
+            this.cargandoCursos = false;
+
           });
       });
     });
@@ -372,6 +378,7 @@ export class AsignarhorarioComponent implements OnInit {
         c.tipo === draggedData.extendedProps.tipo
     );
 
+    this.resetCamposModal();
     this.eventoSeleccionado = null;
     this.fechaDrop = info.date;
     this.diaSeleccionado = diaSemana;
@@ -842,38 +849,40 @@ export class AsignarhorarioComponent implements OnInit {
   private bloquearEquivCursosCargar(): void {
     const codigosAsignados = new Set<string>();
 
-    // 🔍 Recorremos todos los eventos asignados y capturamos tanto el código del curso como su equivalente
+    // 🔍 Recorremos todos los eventos asignados y capturamos codigos y equivalentes
     this.eventosCargados.forEach((ev) => {
-      const cod = ev.extendedProps?.codCur?.toString().trim().toUpperCase();
       const equiv = ev.extendedProps?.c_codcur_equ
         ?.toString()
         .trim()
         .toUpperCase();
 
-      if (cod) codigosAsignados.add(cod);
+      // if (cod) codigosAsignados.add(cod);
       if (equiv) codigosAsignados.add(equiv); // 🔥 Clave para bloqueo inverso
     });
-
-    // 🔁 Recorremos ambos planes para bloquear los cursos que ya están asignados o sus equivalentes
+  
+    console.log('🗂️ Cursos asignados encontrados:', [...codigosAsignados]);
+  
     const listas = [this.cursosPlan2023, this.cursosPlan2025];
     listas.forEach((lista) => {
       lista.forEach((curso) => {
         const codCur = curso.c_codcur?.toString().trim().toUpperCase();
-        const codEquivalente = curso.c_codcur_equ
-          ?.toString()
-          .trim()
-          .toUpperCase();
-
-        if (
+        const codEquivalente = curso.c_codcur_equ?.toString().trim().toUpperCase();
+  
+        const estaAsignado =
           (codCur && codigosAsignados.has(codCur)) ||
-          (codEquivalente && codigosAsignados.has(codEquivalente))
-        ) {
+          (codEquivalente && codigosAsignados.has(codEquivalente));
+  
+        // ✅ Solo bloqueamos si es del plan 2023
+        if (estaAsignado && curso.n_codper === 2023) {
           curso.disabled = true;
+          console.log(`⛔ BLOQUEADO 2023: [${codCur}] porque él o su equivalente [${codEquivalente}] ya están asignados`);
+        } else if (estaAsignado) {
+          console.log(`✅ NO BLOQUEADO 2025: [${codCur}] es equivalente pero del 2025`);
         }
       });
     });
-
-    // 🔄 Refrescamos visual para aplicar el cambio en la interfaz
+  
+    // 🔄 Refrescamos visual
     this.cursosPlan2023 = [...this.cursosPlan2023];
     this.cursosPlan2025 = [...this.cursosPlan2025];
   }
@@ -1387,6 +1396,33 @@ export class AsignarhorarioComponent implements OnInit {
     });
   }
 
+  // procesarActualizacionExitosa(
+  //   base: Date,
+  //   fin: Date,
+  //   codigo: string,
+  //   tipo: string,
+  //   diferencia: number
+  // ): void {
+  //   this.actualizarHorasRestantes(codigo, tipo, diferencia);
+  //   this.eventoSeleccionado?.setStart(base);
+  //   this.eventoSeleccionado?.setEnd(fin);
+  //   this.eventoSeleccionado?.setExtendedProp('n_horas', this.horasAsignadas);
+  //   this.eventoSeleccionado?.setExtendedProp('dia', this.diaSeleccionado);
+  //   this.eventoSeleccionado?.setExtendedProp('aula_id', this.aulaSeleccionada);
+  //   this.eventoSeleccionado?.setExtendedProp(
+  //     'docente_id',
+  //     this.docenteSeleccionado
+  //   );
+
+  //   this.alertService.success('✅ Evento actualizado correctamente.');
+  //   this.modalHorasActivo = false;
+  //   this.eventoSeleccionado = null;
+  //   this.cargarHorarios();
+  //   // this.cargarDocentes();
+  //   this.resetCamposModal();
+  //   this.verificarEstadoTurnoAutomatico();
+  // }
+
   procesarActualizacionExitosa(
     base: Date,
     fin: Date,
@@ -1395,24 +1431,42 @@ export class AsignarhorarioComponent implements OnInit {
     diferencia: number
   ): void {
     this.actualizarHorasRestantes(codigo, tipo, diferencia);
-    this.eventoSeleccionado?.setStart(base);
-    this.eventoSeleccionado?.setEnd(fin);
-    this.eventoSeleccionado?.setExtendedProp('n_horas', this.horasAsignadas);
-    this.eventoSeleccionado?.setExtendedProp('dia', this.diaSeleccionado);
-    this.eventoSeleccionado?.setExtendedProp('aula_id', this.aulaSeleccionada);
-    this.eventoSeleccionado?.setExtendedProp(
-      'docente_id',
-      this.docenteSeleccionado
-    );
-
+  
+    const evento = this.eventoSeleccionado;
+    if (!evento) return;
+  
+    evento.setStart(base);
+    evento.setEnd(fin);
+    evento.setExtendedProp('n_horas', this.horasAsignadas);
+    evento.setExtendedProp('dia', this.diaSeleccionado);
+    evento.setExtendedProp('aula_id', this.aulaSeleccionada);
+    evento.setExtendedProp('docente_id', this.docenteSeleccionado);
+  
+    // 🔁 Forzar re-render para aplicar el tooltip actualizado
+    const calendarApi = this.calendarComponent.getApi();
+    const eventoId = evento.id;
+  
+    // Obtenemos un clon del evento actualizado
+    const nuevoEvento = {
+      ...evento.toPlainObject(),
+      start: base.toISOString(),
+      end: fin.toISOString(),
+    };
+  
+    evento.remove(); // lo removemos visualmente
+    calendarApi.addEvent(nuevoEvento); // lo reinsertamos
+  
     this.alertService.success('✅ Evento actualizado correctamente.');
     this.modalHorasActivo = false;
     this.eventoSeleccionado = null;
-    this.cargarHorarios();
-    // this.cargarDocentes();
+  
     this.resetCamposModal();
     this.verificarEstadoTurnoAutomatico();
+  
+    // ❌ Ya NO LLAMES cargarHorarios() aquí porque hace reload completo y puede sobrescribir los cambios en el frontend antes de que se guarden en backend
+    // this.cargarHorarios(); ❌ lo comentamos
   }
+  
 
   eliminarEvento(): void {
     if (!this.eventoSeleccionado) return;

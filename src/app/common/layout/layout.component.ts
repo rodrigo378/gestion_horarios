@@ -3,6 +3,7 @@ import { AuthService } from '../../services/auth.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { filter, Subscription } from 'rxjs';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-layout',
@@ -24,7 +25,8 @@ export class LayoutComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    public alertService: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -46,6 +48,9 @@ export class LayoutComponent implements OnInit {
 
     const aliasItemMap: { [key: string]: string } = {
       asignarhorario: 'turno',
+      calendario_docente: 'docente',
+      calendario_aula: 'aula',
+      calender_turno: 'turno',
     };
 
     const rawItem = partes[1];

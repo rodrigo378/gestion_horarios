@@ -59,9 +59,28 @@ export interface HorarioAsignado {
     docente_id: number;
     curso_id: number;
     turno_id: number;
+  
     curso: CursoAsignado;
+  
+    aula?: {
+      id: number;
+      c_codaula: string;
+      pabellon: string;
+      n_piso: number;
+      n_capacidad: string;
+      c_obs?: string;
+    };
 }
 
 export interface DocenteExtendido extends Docente {
     expanded?: boolean;
+}
+
+export interface CreateDocente {
+    c_codfac: string;
+    nom_fac: string;
+    c_nomdoc: string;
+    h_min: number;
+    h_max: number;
+    tipo: number;
 }

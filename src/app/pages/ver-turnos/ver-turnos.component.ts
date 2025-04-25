@@ -1,13 +1,18 @@
+import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Turno } from '../../interfaces/turno';
-import { TurnoService } from '../../services/turno.service';
-import { Router } from '@angular/router';
 import { Especialidad } from '../../interfaces/Curso';
-import { CursoService } from '../../services/curso.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertService } from '../../services/alert.service';
+import { Periodo, Turno } from '../../interfaces/turno';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TurnoService } from '../../services/turno.service';
+import { CursoService } from '../../services/curso.service';
+import { AlertService } from '../../services/alert.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HorarioService } from '../../services/horario.service';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 @Component({
   selector: 'app-ver-turnos',
   standalone: false,
@@ -15,6 +20,8 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './ver-turnos.component.css',
 })
 export class VerTurnosComponent implements OnInit {
+  mostrarModalReporte: boolean = false;
+
   mostrarModalCrear: boolean = false;
   formularioHorario!: FormGroup;
 
@@ -24,8 +31,8 @@ export class VerTurnosComponent implements OnInit {
   turnos: Turno[] = [];
   turnoSeleccionado: { [key: number]: string } = {};
 
-  // Filtros seleccionados
   filtros = {
+    n_codper: '',
     c_codfac: '',
     c_codesp: '',
     c_codmod: '',
@@ -34,10 +41,22 @@ export class VerTurnosComponent implements OnInit {
     c_grpcur: '',
   };
 
+  filtrosReporte = {
+    n_codper: '',
+    c_codfac: '',
+    c_codesp: '',
+    c_codmod: '',
+    n_ciclo: '',
+    n_codpla: '',
+    c_grpcur: '',
+  };
+
   especialidades: Especialidad[] = [];
   especialidadesCompletas: Especialidad[] = [];
   especialidadesFiltradas: Especialidad[] = [];
+  especialidadesFiltradasReporte: Especialidad[] = [];
 
+  periodos: Periodo[] = [];
   facultades: string[] = [];
   ciclos: number[] = [];
   estados: { value: string; label: string }[] = [];
@@ -45,20 +64,27 @@ export class VerTurnosComponent implements OnInit {
   modalidades: { value: string; label: string }[] = [];
 
   constructor(
-    private location: Location,
-    private turnoServices: TurnoService,
     private router: Router,
-    private cursoServices: CursoService,
     private fb: FormBuilder,
-    private alertService: AlertService
+    private location: Location,
+    private alertService: AlertService,
+    private turnoServices: TurnoService,
+    private cursoServices: CursoService,
+    private horarioService: HorarioService
   ) {}
 
   ngOnInit(): void {
+    this.filtros.n_codper = '20251';
+
     this.inicializarFormulario();
     this.turnoServices.getTurnos().subscribe((data) => {
       this.turnos = data;
       this.turnosFiltrados = data;
       this.extraerValoresUnicos(data);
+      this.turnoServices.getPeriodos().subscribe((data) => {
+        this.periodos = data;
+        this.aplicarFiltros();
+      });
     });
 
     this.cursoServices.getEspecialidades().subscribe((data) => {
@@ -86,7 +112,7 @@ export class VerTurnosComponent implements OnInit {
     this.formularioHorario = this.fb.group({
       c_codfac: ['', Validators.required],
       c_codesp: ['', Validators.required],
-      n_codper: ['', Validators.required],
+      n_codper: [20251, Validators.required],
       c_grpcur: ['', Validators.required],
       n_ciclo: ['', Validators.required],
       c_codmod: ['', Validators.required],
@@ -95,18 +121,22 @@ export class VerTurnosComponent implements OnInit {
   }
 
   deleteTurno(id: number) {
-    this.turnoServices.deleteTurno(id).subscribe({
-      next: (res: any) => {
-        this.turnoServices.getTurnos().subscribe((data) => {
-          this.turnos = data;
-          this.turnosFiltrados = data;
-          this.extraerValoresUnicos(data);
-        });
-      },
-      error: (er: HttpErrorResponse) => {
-        console.log(er);
-      },
-    });
+    this.alertService
+      .confirm('¿Está seguro que desea eliminar este turno?')
+      .then((confirmado) => {
+        if (confirmado) {
+          this.turnoServices.deleteTurno(id).subscribe({
+            next: () => {
+              this.aplicarFiltros();
+              this.alertService.success('Turno eliminado correctamente');
+            },
+            error: (err: HttpErrorResponse) => {
+              console.error(err);
+              this.alertService.error('Ocurrió un error al eliminar el turno');
+            },
+          });
+        }
+      });
   }
 
   obtenerNombreEspecialidad(codesp: string): string {
@@ -131,20 +161,22 @@ export class VerTurnosComponent implements OnInit {
 
     const turno = {
       ...form,
+      c_codmod: form.c_codmod,
+      n_ciclo: Number(form.n_ciclo),
       n_codper: Number(form.n_codper),
       n_codpla: Number(form.n_codpla),
-      n_ciclo: Number(form.n_ciclo),
       nom_fac: this.getNombreFacultad(form.c_codfac),
-      nomesp: this.obtenerNombreEspecialidad(form.c_codesp),
       c_nommod: this.obtenerNombreModalidad(form.c_codmod),
-      c_codmod: Number(form.c_codmod),
+      nomesp: this.obtenerNombreEspecialidad(form.c_codesp),
     };
 
     this.turnoServices.createTurno(turno).subscribe({
-      next: (res: any) => {
+      next: (_res: any) => {
         this.alertService.success('Se creo el Turno exitosamente');
         this.turnoServices.getTurnos().subscribe((data) => {
           this.turnos = data;
+          this.formularioHorario.get('n_codper')?.setValue('nuevoValor');
+
           this.turnosFiltrados = data;
           this.extraerValoresUnicos(data);
           this.mostrarModalCrear = false;
@@ -160,7 +192,7 @@ export class VerTurnosComponent implements OnInit {
           });
         });
       },
-      error: (er: HttpErrorResponse) => {
+      error: (_er: HttpErrorResponse) => {
         this.alertService.error('Este Turno ya existe.');
       },
     });
@@ -185,16 +217,23 @@ export class VerTurnosComponent implements OnInit {
   }
 
   verCursos(turno: Turno) {
-    this.router.navigate(['/coa/asignarhorario'], {
-      queryParams: {
-        id: turno.id,
-      },
+    const currentPrefix = this.router.url.split('/')[1];
+    this.router.navigate([`/${currentPrefix}/asignarhorario`], {
+      queryParams: { id: turno.id },
     });
   }
 
-  //#region CRUD turnos
+  vercursoblock(turno: Turno) {
+    const url = this.router
+      .createUrlTree(['/coa/calender_turno'], {
+        queryParams: { id: turno.id },
+      })
+      .toString();
 
-  //#region filtro>
+    window.open(url, '_blank');
+  }
+
+  //#region filtro
 
   getNombreFacultad(codfac: string): string {
     const facultadesMap: Record<string, string> = {
@@ -322,11 +361,109 @@ export class VerTurnosComponent implements OnInit {
   }
 
   editarTurno(turno_id: number) {
-    this.router.navigate([`/cursos/${turno_id}`]);
+    const currentPrefix = this.router.url.split('/')[1];
+    this.router.navigate([`/${currentPrefix}/curso/${turno_id}`],{
+      queryParams: { id: turno_id }
+    })
+    // this.router.navigate([`/cursos/${turno_id}`]);
+  }
+
+  mostrarAlertaVencido() {
+    this.alertService.error(
+      'La fecha de asignación ha caducado. Ya no puedes modificar este turno.'
+    );
   }
 
   cambiarItemsPorPagina(valor: number) {
     this.itemsPorPagina = valor;
     this.paginaActual = 1; // Reinicia a la primera página
+  }
+
+  generarReporteExcel() {
+    this.mostrarModalReporte = false;
+
+    const filtros: any = {};
+
+    if (this.filtrosReporte.n_codper)
+      filtros.n_codper = this.filtrosReporte.n_codper;
+    if (this.filtrosReporte.c_codfac)
+      filtros.c_codfac = this.filtrosReporte.c_codfac;
+    if (this.filtrosReporte.c_codesp)
+      filtros.c_codesp = this.filtrosReporte.c_codesp;
+    if (this.filtrosReporte.c_codmod)
+      filtros.c_codmod = this.filtrosReporte.c_codmod;
+    if (this.filtrosReporte.c_grpcur)
+      filtros.c_grpcur = this.filtrosReporte.c_grpcur;
+
+    if (
+      this.filtrosReporte.n_ciclo !== undefined &&
+      this.filtrosReporte.n_ciclo !== ''
+    ) {
+      filtros.n_ciclo = Number(this.filtrosReporte.n_ciclo);
+    }
+
+    if (
+      this.filtrosReporte.n_codpla !== undefined &&
+      this.filtrosReporte.n_codpla !== ''
+    ) {
+      filtros.n_codpla = Number(this.filtrosReporte.n_codpla);
+    }
+
+    const zonaHoraria = 'America/Lima';
+
+    this.horarioService.getReporte(filtros).subscribe((data) => {
+      // Suponiendo que `data` es un array de objetos con `dia` y `h_inicio`
+      const rows = (data || []).map((item: any) => ({
+        n_codper: item.Turno.n_codper,
+        nom_fac: item.Turno.nom_fac,
+        nomesp: item.Turno.nomesp,
+        c_codcur: item.curso.c_codcur,
+        c_nomcur: item.curso.c_nomcur,
+        c_grpcur: item.Turno.c_grpcur,
+        modalidad: item.Turno.c_nommod,
+        n_ciclo: item.Turno.n_ciclo,
+        n_codpla: item.Turno.n_codpla,
+        Docente: item.Docente?.c_nomdoc || '',
+        Día: item.dia || '',
+        Hini: item.h_inicio
+          ? format(toZonedTime(new Date(item.h_inicio), zonaHoraria), 'HH:mm')
+          : '',
+        Hfin: item.h_fin
+          ? format(toZonedTime(new Date(item.h_fin), zonaHoraria), 'HH:mm')
+          : '',
+        horas_academicas: item.n_horas,
+        c_tipo: item.tipo,
+        aula: item.aula?.c_codaula || '',
+        piso: item.aula?.n_piso || '',
+        pabellon: item.aula?.pabellon || '',
+      }));
+
+      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(rows);
+      const workbook: XLSX.WorkBook = {
+        Sheets: { 'Reporte Horarios': worksheet },
+        SheetNames: ['Reporte Horarios'],
+      };
+
+      const excelBuffer: any = XLSX.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
+
+      const blob: Blob = new Blob([excelBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      FileSaver.saveAs(
+        blob,
+        `reporte-horarios-${format(new Date(), 'yyyy-MM-dd')}.xlsx`
+      );
+    });
+  }
+
+  onFacultadChangeReporte(): void {
+    this.filtrosReporte.c_codesp = '';
+    this.especialidadesFiltradasReporte = this.especialidadesCompletas.filter(
+      (e) => e.codfac === this.filtrosReporte.c_codfac
+    );
   }
 }

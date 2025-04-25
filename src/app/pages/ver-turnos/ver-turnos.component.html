@@ -53,13 +53,16 @@
     </div>
 
     <div class="flex justify-end items-center flex-wrap gap-3 mt-4 mb-4 mr-4">
-      <!-- Select: Sección
-            <select [(ngModel)]="filtros.c_grpcur"
-                    (change)="aplicarFiltros()"
-                    class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28">
-              <option value="">Sección</option>
-              <option *ngFor="let sec of secciones" [value]="sec">{{ sec }}</option>
-            </select> -->
+      <select
+        [(ngModel)]="filtros.n_codper"
+        (change)="aplicarFiltros()"
+        class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
+      >
+        <option value="">Periodo</option>
+        <option *ngFor="let per of periodos" [value]="per.n_codper">
+          {{ per.n_codper }}
+        </option>
+      </select>
 
       <!-- Select: Facultad -->
       <select
@@ -117,14 +120,18 @@
         class="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-28"
       >
         <option value="">Estado</option>
-        <option [value]="1">Asignado</option>
-        <option [value]="2">No asignado</option>
+        <option [value]="0">No asignado</option>
+        <option [value]="1">Pendiente</option>
+        <option [value]="2">Asignado</option>
       </select>
-      <!-- Botón Crear más moderno -->
-      <!-- <button class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300">
-                <i class="fa-solid fa-plus"></i>
-                Crear
-            </button> -->
+
+      <button
+        (click)="mostrarModalReporte = true"
+        class="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
+      >
+        <i class="fa-solid fa-plus"></i>
+        Generar reporte
+      </button>
 
       <button
         (click)="mostrarModalCrear = true"
@@ -425,7 +432,13 @@
                     }"
                     class="relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap"
                   >
-                    {{ turno.estado === 2 ? "asignado" : (turno.estado === 0 ? "no asignado" : "pendiente") }}
+                    {{
+                      turno.estado === 2
+                        ? "asignado"
+                        : turno.estado === 0
+                        ? "no asignado"
+                        : "pendiente"
+                    }}
                   </span>
                 </div>
               </div>
@@ -436,7 +449,9 @@
               <button
                 class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 type="button"
-                (click)="verCursos(turno)"
+                (click)="
+                  turno.vencio ? mostrarAlertaVencido() : verCursos(turno)
+                "
               >
                 <span
                   class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
@@ -462,7 +477,9 @@
               <button
                 class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-red-600 transition-all hover:bg-red-600/10 active:bg-red-600/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
                 type="button"
-                (click)="deleteTurno(turno.id)"
+                (click)="
+                  turno.vencio ? mostrarAlertaVencido() : deleteTurno(turno.id)
+                "
               >
                 <span
                   class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
@@ -470,12 +487,25 @@
                   <i class="fa-solid fa-trash fa-lg"></i>
                 </span>
               </button>
+              <button
+                class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                type="button"
+                (click)="vercursoblock(turno)"
+              >
+                <span
+                  class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                >
+                  <i class="fa-solid fa-eye text-xl"></i>
+                </span>
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-3 py-3">
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-3 py-3"
+    >
       <!-- Select de cantidad por página -->
       <div class="flex items-center gap-2">
         <label for="cantidad" class="text-sm text-slate-500">Mostrar:</label>
@@ -495,7 +525,7 @@
           <option [ngValue]="500">500</option>
         </select>
       </div>
-    
+
       <!-- Navegación de páginas -->
       <div class="flex items-center gap-3">
         <p class="text-sm text-slate-500">
@@ -505,13 +535,15 @@
           <button
             (click)="anteriorPagina()"
             [disabled]="paginaActual === 1"
-            class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50">
+            class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+          >
             Anterior
           </button>
           <button
             (click)="siguientePagina()"
             [disabled]="paginaActual === totalPaginas"
-            class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50">
+            class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+          >
             Siguiente
           </button>
         </div>
@@ -528,7 +560,7 @@
   <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-4xl">
     <!-- Header -->
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold">Crear nuevo horario</h2>
+      <h2 class="text-xl font-semibold">Crear nuevo Turno</h2>
       <button
         class="text-gray-500 hover:text-red-500"
         (click)="mostrarModalCrear = false"
@@ -575,7 +607,7 @@
         </select>
       </div>
 
-      <!-- Periodo -->
+      <!-- Periodo (dinámico) -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1"
           >Periodo</label
@@ -585,12 +617,9 @@
           class="w-full border border-gray-300 rounded-md px-3 py-2"
         >
           <option value="">Seleccione periodo</option>
-          <option value="20231">2023-1</option>
-          <option value="20232">2023-2</option>
-          <option value="20241">2024-1</option>
-          <option value="20242">2024-2</option>
-          <option value="20251">2025-1</option>
-          <option value="20252">2025-2</option>
+          <option *ngFor="let per of periodos" [value]="per.n_codper">
+            {{ per.n_codper }}
+          </option>
         </select>
       </div>
 
@@ -664,6 +693,155 @@
         (click)="guardarTurno()"
       >
         Guardar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Generar Reporte en Excel -->
+<div
+  *ngIf="mostrarModalReporte"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+>
+  <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-3xl">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold text-slate-800">
+        Generar reporte en Excel
+      </h2>
+      <button
+        class="text-gray-500 hover:text-red-500"
+        (click)="mostrarModalReporte = false"
+      >
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Filtros para el reporte -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Periodo -->
+      <div>
+        <label class="text-sm font-medium text-gray-700 mb-1 block"
+          >Periodo</label
+        >
+        <select
+          [(ngModel)]="filtrosReporte.n_codper"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione periodo</option>
+          <option *ngFor="let per of periodos" [value]="per.n_codper">
+            {{ per.n_codper }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Facultad -->
+      <div>
+        <label class="text-sm font-medium text-gray-700 mb-1 block"
+          >Facultad</label
+        >
+        <select
+          [(ngModel)]="filtrosReporte.c_codfac"
+          (change)="onFacultadChangeReporte()"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione facultad</option>
+          <option *ngFor="let fac of facultades" [value]="fac">
+            {{ getNombreFacultad(fac) }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Especialidad -->
+      <div>
+        <label class="text-sm font-medium text-gray-700 mb-1 block"
+          >Especialidad</label
+        >
+        <select
+          [(ngModel)]="filtrosReporte.c_codesp"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione especialidad</option>
+          <option
+            *ngFor="let esp of especialidadesFiltradasReporte"
+            [value]="esp.codesp"
+          >
+            {{ esp.nomesp }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Modalidad -->
+      <div>
+        <label class="text-sm font-medium text-gray-700 mb-1 block"
+          >Modalidad</label
+        >
+        <select
+          [(ngModel)]="filtrosReporte.c_codmod"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione modalidad</option>
+          <option *ngFor="let mod of modalidades" [value]="mod.value">
+            {{ mod.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Ciclo -->
+      <div>
+        <label class="text-sm font-medium text-gray-700 mb-1 block"
+          >Ciclo</label
+        >
+        <select
+          [(ngModel)]="filtrosReporte.n_ciclo"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione ciclo</option>
+          <option *ngFor="let c of ciclos" [value]="c">{{ c }}</option>
+        </select>
+      </div>
+
+      <!-- Plan -->
+      <div>
+        <label class="text-sm font-medium text-gray-700 mb-1 block">Plan</label>
+        <select
+          [(ngModel)]="filtrosReporte.n_codpla"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione plan</option>
+          <option value="2023">2023</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
+
+      <!-- Sección -->
+      <div class="md:col-span-2">
+        <label class="text-sm font-medium text-gray-700 mb-1 block"
+          >Sección</label
+        >
+        <input
+          [(ngModel)]="filtrosReporte.c_grpcur"
+          type="text"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+          placeholder="Ej. A, B, C"
+        />
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="mt-6 flex justify-end gap-3">
+      <button
+        (click)="mostrarModalReporte = false"
+        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+      >
+        Cancelar
+      </button>
+      <button
+        (click)="generarReporteExcel()"
+        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+      >
+        <i class="fa-solid fa-file-excel mr-2"></i>
+        Exportar Excel
       </button>
     </div>
   </div>

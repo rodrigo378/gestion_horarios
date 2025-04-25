@@ -37,7 +37,7 @@ export class UserService {
     return this.http.post(`${this.apiUrl}/admin/permisos`, {
       user_id,
       items_id,
-    });
+    }, { withCredentials: true });
   }
 
   getUserInfo(): Observable<Usernew[]> {

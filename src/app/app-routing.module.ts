@@ -1,20 +1,23 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
 import { LoginComponent } from './pages/login/login.component';
 import { LayoutComponent } from './common/layout/layout.component';
-import { authGuard } from './guards/auth.guard';
+import { PeriodoComponent } from './pages/periodo/periodo.component';
+import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 import { NotFountComponent } from './pages/not-fount/not-fount.component';
-import { ListarUsuariosComponent } from './pages/admin/listar-usuarios/listar-usuarios.component';
-import { PermisosUsuariosComponent } from './pages/admin/permisos-usuarios/permisos-usuarios.component';
-import { AsignarhorarioComponent } from './pages/asignar-horario/asignarhorario.component';
 import { VerTurnosComponent } from './pages/ver-turnos/ver-turnos.component';
 import { VerCursosComponent } from './pages/ver-cursos/ver-cursos.component';
-import { VerTransversalComponent } from './pages/ver-transversal/ver-transversal.component';
 import { ReporteriaComponent } from './pages/reporteria/reporteria.component';
+import { CalenderAulaComponent } from './pages/calender-aula/calender-aula.component';
 import { AgruparCursosComponent } from './pages/agrupar-cursos/agrupar-cursos.component';
-import { AsignarHorarioDrComponent } from './pages/asignar-horario-dr/asignar-horario-dr.component';
-import { VerTurnoDrComponent } from './pages/ver-turno-dr/ver-turno-dr.component';
+import { AsignarhorarioComponent } from './pages/asignar-horario/asignarhorario.component';
 import { ReporteriaAulaComponent } from './pages/reporteria-aula/reporteria-aula.component';
+import { VerTransversalComponent } from './pages/ver-transversal/ver-transversal.component';
+import { CalenderDocenteComponent } from './pages/calender-docente/calender-docente.component';
+import { CalenderDirectorComponent } from './pages/calender-director/calender-director.component';
+import { ListarUsuariosComponent } from './pages/admin/listar-usuarios/listar-usuarios.component';
+import { AsignarHorarioDrComponent } from './pages/asignar-horario-dr/asignar-horario-dr.component';
+import { PermisosUsuariosComponent } from './pages/admin/permisos-usuarios/permisos-usuarios.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -32,13 +35,17 @@ const routes: Routes = [
     canActivate: [authGuard],
     component: LayoutComponent,
     children: [
+      { path: 'periodo', component: PeriodoComponent },
       { path: 'turno', component: VerTurnosComponent },
       { path: 'docente', component: ReporteriaComponent },
       { path: 'aula', component: ReporteriaAulaComponent },
-      { path: 'transversal', component: VerTransversalComponent },
-      { path: 'agrupar', component: AgruparCursosComponent },
-      { path: 'asignarhorario', component: AsignarhorarioComponent },
       { path: 'cursos/:id', component: VerCursosComponent },
+      { path: 'agrupar', component: AgruparCursosComponent },
+      { path: 'transversal', component: VerTransversalComponent },
+      { path: 'calendario_aula', component: CalenderAulaComponent },
+      { path: 'asignarhorario', component: AsignarhorarioComponent },
+      { path: 'calender_turno', component: CalenderDirectorComponent },
+      { path: 'calendario_docente', component: CalenderDocenteComponent },
     ],
   },
   {
@@ -46,9 +53,11 @@ const routes: Routes = [
     canActivate: [authGuard],
     component: LayoutComponent,
     children: [
-      { path: 'turno', component: VerTurnoDrComponent },
-      { path: 'asignarhorario', component: AsignarHorarioDrComponent },
+      { path: 'turno', component: VerTurnosComponent },
       { path: 'docente', component: ReporteriaComponent },
+      { path: 'calender_turno', component: CalenderDirectorComponent },
+      { path: 'asignarhorario', component: AsignarHorarioDrComponent },
+      { path: 'calendario_docente', component: CalenderDocenteComponent },
     ],
   },
   {

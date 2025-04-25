@@ -11,4 +11,14 @@ export interface Turno {
   c_nommod: string;
   n_ciclo: number;
   estado: number;
+  periodo?: {
+    n_codper: number;
+    f_cierre: string;
+  };
+  vencio: boolean;
+}
+
+export interface Periodo {
+  n_codper: number;
+  f_cierre: string;
 }
