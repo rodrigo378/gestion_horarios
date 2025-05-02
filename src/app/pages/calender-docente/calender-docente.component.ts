@@ -58,48 +58,50 @@ export class CalenderDocenteComponent implements OnInit {
   }
 
   private cargarHorarioDocente(docenteId: number): void {
-    this.docenteService.obtenerDocentesreporteria().subscribe((docentes) => {
-      const docente = docentes.find((d) => d.id === docenteId);
+    this.docenteService
+      .obtenerDocentesreporteria(true, true, true)
+      .subscribe((docentes) => {
+        const docente = docentes.find((d) => d.id === docenteId);
 
-      if (!docente) {
-        console.warn('⚠️ Docente no encontrado');
-        return;
-      }
-
-      this.nombreDocente = docente.c_nomdoc;
-      
-
-      const eventos = docente.Horario.map((h) => {
-        const tipoPadre = h.curso?.cursosPadres?.[0]?.tipo;
-      
-        let backgroundColor = '';
-        let borderColor = '';
-      
-        if (tipoPadre === 0) {
-          backgroundColor = '#EAB308'; // Transversal
-          borderColor = '#EAB308';
-        } else if (tipoPadre === 1) {
-          backgroundColor = '#7E22CE'; // Agrupado
-          borderColor = '#7E22CE';
-        } else {
-          backgroundColor = h.tipo === 'Teoría' ? '#3788d8' : '#28a745';
-          borderColor = backgroundColor;
+        if (!docente) {
+          console.warn('⚠️ Docente no encontrado');
+          return;
         }
-      
-        const aulaNombre = h.aula?.c_codaula ? ` - Aula ${h.aula.c_codaula}` : '';
-      
-        return {
-          title: `${h.curso?.c_nomcur || 'Curso'} (${h.tipo})${aulaNombre}`,
-          start: h.h_inicio,
-          end: h.h_fin,
-          backgroundColor,
-          borderColor,
-        };
-      });
-      
 
-      this.calendarOptions.events = eventos;
-    });
+        this.nombreDocente = docente.c_nomdoc;
+
+        const eventos = docente.Horario.map((h) => {
+          const tipoPadre = h.curso?.cursosPadres?.[0]?.tipo;
+
+          let backgroundColor = '';
+          let borderColor = '';
+
+          if (tipoPadre === 0) {
+            backgroundColor = '#EAB308'; // Transversal
+            borderColor = '#EAB308';
+          } else if (tipoPadre === 1) {
+            backgroundColor = '#7E22CE'; // Agrupado
+            borderColor = '#7E22CE';
+          } else {
+            backgroundColor = h.tipo === 'Teoría' ? '#3788d8' : '#28a745';
+            borderColor = backgroundColor;
+          }
+
+          const aulaNombre = h.aula?.c_codaula
+            ? ` - Aula ${h.aula.c_codaula}`
+            : '';
+
+          return {
+            title: `${h.curso?.c_nomcur || 'Curso'} (${h.tipo})${aulaNombre}`,
+            start: h.h_inicio,
+            end: h.h_fin,
+            backgroundColor,
+            borderColor,
+          };
+        });
+
+        this.calendarOptions.events = eventos;
+      });
   }
 
   regresar() {

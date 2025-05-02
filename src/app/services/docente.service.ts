@@ -26,11 +26,11 @@ export class DocenteService {
   //   );
   // }
 
-  getDocentes(): Observable<Docente[]> {
-    return this.http.get<Docente[]>(
-      `${this.apiUrl}/docente?horario=true&curso=true`
-    );
-  }
+  // getDocentes(): Observable<Docente[]> {
+  //   return this.http.get<Docente[]>(
+  //     `${this.apiUrl}/docente?horario=true&curso=true`
+  //   );
+  // }
 
   getDocentePorUsuario(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/docente/user`);

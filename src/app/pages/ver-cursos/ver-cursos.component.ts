@@ -142,10 +142,12 @@ export class VerCursosComponent implements OnInit {
   }
 
   getDocentes() {
-    this.docenteService.obtenerDocentesreporteria().subscribe((data) => {
-      this.docentes = data;
-      console.log('docentes => ', this.docentes);
-    });
+    this.docenteService
+      .obtenerDocentesreporteria(true, true, true)
+      .subscribe((data) => {
+        this.docentes = data;
+        console.log('docentes => ', this.docentes);
+      });
   }
 
   createHorario() {

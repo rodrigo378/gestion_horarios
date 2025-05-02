@@ -18,6 +18,7 @@ import { CalenderDirectorComponent } from './pages/calender-director/calender-di
 import { ListarUsuariosComponent } from './pages/admin/listar-usuarios/listar-usuarios.component';
 import { AsignarHorarioDrComponent } from './pages/asignar-horario-dr/asignar-horario-dr.component';
 import { PermisosUsuariosComponent } from './pages/admin/permisos-usuarios/permisos-usuarios.component';
+import { MarcarAsistenciaComponent } from './pages/docente/marcar-asistencia/marcar-asistencia.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -59,6 +60,12 @@ const routes: Routes = [
       { path: 'asignarhorario', component: AsignarHorarioDrComponent },
       { path: 'calendario_docente', component: CalenderDocenteComponent },
     ],
+  },
+  {
+    path: 'docente',
+    canActivate: [authGuard],
+    component: LayoutComponent,
+    children: [{ path: 'marcar', component: MarcarAsistenciaComponent }],
   },
   {
     path: '',

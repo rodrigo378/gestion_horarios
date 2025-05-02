@@ -42,6 +42,9 @@ import { PermisosUsuariosComponent } from './pages/admin/permisos-usuarios/permi
 import { DocentesRechazadosComponent } from './pages/docentes-rechazados/docentes-rechazados.component';
 import { EscogerCursoDocenteComponent } from './pages/escoger-curso-docente/escoger-curso-docente.component';
 import { PeriodoComponent } from './pages/periodo/periodo.component';
+import { MarcarAsistenciaComponent } from './pages/docente/marcar-asistencia/marcar-asistencia.component';
+import { NzAutocompleteModule } from 'ng-zorro-antd/auto-complete';
+import { NzInputModule } from 'ng-zorro-antd/input';
 
 registerLocaleData(en);
 
@@ -76,6 +79,7 @@ registerLocaleData(en);
     AgruparCursosComponent,
     CalenderDirectorComponent,
     PeriodoComponent,
+    MarcarAsistenciaComponent,
   ],
   imports: [
     BrowserModule,
@@ -90,6 +94,8 @@ registerLocaleData(en);
     FormsModule,
     NgxPaginationModule,
     NgxApexchartsModule,
+    NzAutocompleteModule,
+    NzInputModule,
   ],
   providers: [
     provideNzI18n(es_ES),

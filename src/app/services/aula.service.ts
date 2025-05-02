@@ -21,4 +21,8 @@ export class AulaService {
       `${this.apiUrl}/?horario=true&curso=true&docente=true&aula=true`
     );
   }
+
+  getAulaIp(ip: string): Observable<Aula> {
+    return this.http.get<Aula>(`${this.apiUrl}/${ip}`);
+  }
 }

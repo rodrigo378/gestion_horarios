@@ -1,0 +1,97 @@
+<div
+  class="flex items-center justify-center min-h-screen bg-gradient-to-tr from-blue-600 via-indigo-700 to-purple-800"
+>
+  <div class="bg-white shadow-2xl rounded-2xl p-9 w-full max-w-2xl text-center">
+    <!-- Hora actual -->
+    <div class="mb-6">
+      <h1 class="text-4xl font-bold text-gray-800" id="fechaActual">
+        --/--/----
+      </h1>
+      <h1 class="text-5xl font-bold text-gray-800 pt-4" id="horaActual">
+        --:--:--
+      </h1>
+
+      <h3 class="text-2xl font-bold text-gray-800 pt-4">
+        Aula: @if (aula) {
+        <span class="text-2xl font-bold text-gray-800 pt-4">
+          {{ aula.c_codaula }}
+        </span>
+        } @else {
+        <span class="text-2xl font-bold text-gray-800 pt-4">-- -- --</span>
+        }
+      </h3>
+      <h3 class="text-2xl font-bold text-gray-800">
+        Piso: @if (aula) {
+        <span class="text-2xl font-bold text-gray-800 pt-4">
+          {{ aula.n_piso }}
+        </span>
+        } @else {
+        <span class="text-2xl font-bold text-gray-800 pt-4">-- -- --</span>
+        }
+      </h3>
+    </div>
+
+    <div class="mb-6">
+      <div class="example-input">
+        <input
+          placeholder="Escribir nombre"
+          nz-input
+          [(ngModel)]="inputValue"
+          (ngModelChange)="onChange($event)"
+          [nzAutocomplete]="auto"
+        />
+        <nz-autocomplete
+          [nzDataSource]="filteredOptions"
+          #auto
+        ></nz-autocomplete>
+      </div>
+    </div>
+
+    <!-- Botones Entrada y Salida -->
+    <div class="flex justify-between gap-4 mt-3">
+      <button
+        (click)="marcarEntrada()"
+        class="w-1/2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-md transition-all duration-300"
+      >
+        Marcar Entrada
+      </button>
+      <button
+        (click)="marcarSalida()"
+        class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-md transition-all duration-300"
+      >
+        Marcar Salida
+      </button>
+    </div>
+
+    <!-- Tabla de asistencias -->
+    <div class="mt-8 overflow-x-auto">
+      <table class="w-full text-sm text-left border border-gray-300 rounded-lg">
+        <thead class="bg-gray-100 text-gray-700 uppercase">
+          <tr>
+            <th class="px-4 py-2 border">Día</th>
+            <th class="px-4 py-2 border">Fecha</th>
+            <th class="px-4 py-2 border">Hora</th>
+            <th class="px-4 py-2 border">Marca</th>
+            <th class="px-4 py-2 border">Cod. Aula</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let asistencia of asistencias">
+            <td class="px-4 py-2 border">{{ asistencia.dia }}</td>
+            <td class="px-4 py-2 border">
+              {{ asistencia.fecha | date : "yyyy-MM-dd" : "UTC" }}
+            </td>
+            <td class="px-4 py-2 border">
+              {{ asistencia.hora | date : "HH:mm:ss" }}
+            </td>
+
+            <td class="px-4 py-2 border capitalize">{{ asistencia.tipo }}</td>
+            <td class="px-4 py-2 border capitalize">
+              {{ asistencia.aula.c_codaula }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

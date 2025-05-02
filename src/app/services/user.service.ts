@@ -34,10 +34,14 @@ export class UserService {
   }
 
   actualizarPermisos(user_id: number, items_id: number[]) {
-    return this.http.post(`${this.apiUrl}/admin/permisos`, {
-      user_id,
-      items_id,
-    }, { withCredentials: true });
+    return this.http.post(
+      `${this.apiUrl}/admin/permisos`,
+      {
+        user_id,
+        items_id,
+      },
+      { withCredentials: true }
+    );
   }
 
   getUserInfo(): Observable<Usernew[]> {
@@ -60,5 +64,9 @@ export class UserService {
 
   updateUser(usuario: Usernew & { password: string }): Observable<User> {
     return this.http.put<User>(`${this.apiUrl}/user`, usuario);
+  }
+
+  getIp(): Observable<{ ip: string }> {
+    return this.http.get<{ ip: string }>(`${this.apiUrl}/admin/ip`);
   }
 }

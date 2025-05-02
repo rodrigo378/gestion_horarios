@@ -170,6 +170,27 @@
           </li>
         </ul>
       </li>
+
+      <li
+        nz-submenu
+        nzTitle="Docente"
+        nzIcon="user"
+        [nzOpen]="selectedMenu === 'docente'"
+        *ngIf="hasPermiso('4.1')"
+      >
+        <ul>
+          <li
+            nz-menu-item
+            nzMatchRouter
+            *ngIf="hasPermiso('4.1')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'docente' && item === 'marcar'
+            "
+          >
+            <a routerLink="/docente/marcar">Marcar asistencia</a>
+          </li>
+        </ul>
+      </li>
     </ul>
     }
   </nz-sider>
@@ -242,7 +263,7 @@
     </nz-content>
     <!-- Footer -->
     <nz-footer
-      class="footer bg-{#f0f2f5} text-red-600 text-center p-4 font-bold text-[15px]"
+      class="footer bg-{#f0f2f5} text-red-600 text-center pb-2 pt-0 font-bold text-[15px]"
     >
       © {{ currentYear }} Developed by -
       <a

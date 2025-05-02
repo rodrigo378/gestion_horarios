@@ -17,10 +17,13 @@ export class DocentecurService {
     return this.http.get<Docente[]>(this.apiUrl);
   }
 
-  obtenerDocentesreporteria(): Observable<Docente[]> {
-    return this.http.get<Docente[]>(
-      `${this.apiUrl}?horario=true&curso=true&aula=true`
-    );
+  obtenerDocentesreporteria(
+    horario: boolean,
+    curso: boolean,
+    aula: boolean
+  ): Observable<Docente[]> {
+    const params = `horario=${horario}&curso=${curso}&aula=${aula}`;
+    return this.http.get<Docente[]>(`${this.apiUrl}?${params}`);
   }
 
   crearDocente(docente: CreateDocente): Observable<any> {

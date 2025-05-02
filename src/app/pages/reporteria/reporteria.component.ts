@@ -50,7 +50,7 @@ export class ReporteriaComponent implements OnInit {
   }
 
   cargarDocentes() {
-    this.docenteService.obtenerDocentesreporteria().subscribe({
+    this.docenteService.obtenerDocentesreporteria(true, true, true).subscribe({
       next: (data: any[]) => {
         this.docentes = data.map((docente) => ({
           ...docente,
