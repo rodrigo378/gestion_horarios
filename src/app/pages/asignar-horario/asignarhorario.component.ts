@@ -261,6 +261,36 @@ export class AsignarhorarioComponent implements OnInit {
             this.cursosPlan2023 = resultado.cursosPlan2023;
             this.cursosPlan2025 = resultado.cursosPlan2025;
 
+            this.cursosAsyncDesdeAPI = horarios
+              .filter(h => h.h_inicio === null && h.h_fin === null && h.dia === null)
+              .map((h) => {
+                const curso = h.curso;
+                return {
+                  n_codper: +curso.n_codper,
+                  c_codmod: curso.c_codmod?.toString(),
+                  c_nommod: this.turnoData?.c_nommod || '',
+                  c_codfac: curso.c_codfac,
+                  c_codesp: curso.c_codesp,
+                  c_area: curso.c_area,
+                  n_ciclo: curso.n_ciclo?.toString(),
+                  c_ciclo: curso.n_ciclo?.toString(),
+                  c_codcur: curso.c_codcur,
+                  c_nomcur: curso.c_nomcur,
+                  tipo: h.tipo,
+                  horasRestantes: h.n_horas,
+                  turno_id: curso.turno_id,
+                  h_umaPlus: h.h_umaPlus ?? 0,
+                  guardadoAsync: true,
+                  n_codper_equ: curso.n_codper_equ ? +curso.n_codper_equ : undefined,
+                  c_codmod_equ: curso.c_codmod_equ,
+                  c_codfac_equ: curso.c_codfac_equ,
+                  c_codesp_equ: curso.c_codesp_equ,
+                  c_codcur_equ: curso.c_codcur_equ,
+                  c_nomcur_equ: curso.c_nomcur_equ,
+                  disabled: false,
+                } as Curso;
+              });
+
             this.bloquearEquivCursosCargar();
             this.verificarEstadoTurnoAutomatico();
             this.cargandoCursos = false;
@@ -1777,6 +1807,73 @@ export class AsignarhorarioComponent implements OnInit {
     this.verificarEstadoTurnoAutomatico();
   }
 
+  confirmarEliminarCursoAsync(curso: Curso): void {
+    this.alertService
+      .confirm(
+        `¿Deseas eliminar el curso ${curso.c_nomcur} como asíncrono?`,
+        'Eliminar curso asíncrono'
+      )
+      .then((confirmado) => {
+        if (!confirmado) return;
+  
+        // Buscar el ID del horario correspondiente (ya que es curso async)
+        this.horarioService.getHorarioPorTurno(this.turnoId).subscribe((res) => {
+          const horario = res.find(
+            (h) =>
+              h.curso?.c_codcur === curso.c_codcur &&
+              h.tipo === curso.tipo &&
+              h.h_inicio === null &&
+              h.h_fin === null &&
+              h.dia === null
+          );
+  
+          if (!horario) {
+            this.alertService.error('❌ No se encontró el horario para eliminar.');
+            return;
+          }
+  
+          this.horarioService
+            .deleteHorarios({ horarios_id: [horario.id] })
+            .subscribe({
+              next: () => {
+                this.alertService.success('🗑️ Curso asíncrono eliminado correctamente.');
+  
+                // ❌ Eliminarlo de cursosAsyncDesdeAPI
+                this.cursosAsyncDesdeAPI = this.cursosAsyncDesdeAPI.filter(
+                  (c) => c.c_codcur !== curso.c_codcur || c.tipo !== curso.tipo
+                );
+
+                // ✅ Reiniciar curso en la lista correspondiente
+                const cursoRestaurado: Curso = {
+                  ...curso,
+                  nom_fac: curso.nom_fac || this.turnoData?.nom_fac || '',
+                  nomesp: curso.nomesp || this.turnoData?.nomesp || '',
+                  c_nommod: this.turnoData?.c_nommod || '',
+                  c_codmod: String(this.turnoData?.c_codmod),
+                  guardadoAsync: false,
+                  disabled: false,
+                };
+                
+
+                if (+curso.n_codper === 2023) {
+                  this.cursosPlan2023.push(cursoRestaurado);
+                  this.cursosPlan2023 = [...this.cursosPlan2023];
+                } else if (+curso.n_codper === 2025) {
+                  this.cursosPlan2025.push(cursoRestaurado);
+                  this.cursosPlan2025 = [...this.cursosPlan2025];
+                }
+
+              },
+              error: (err) => {
+                this.alertService.error('❌ Error al eliminar el curso.');
+                console.error(err);
+              },
+            });
+        });
+      });
+  }
+  
+
   get cursosPlan2023Async(): Curso[] {
     return this.cursosAsyncDesdeAPI.filter((c) => +c.n_codper === 2023);
   }
@@ -1784,6 +1881,17 @@ export class AsignarhorarioComponent implements OnInit {
   get cursosPlan2025Async(): Curso[] {
     return this.cursosAsyncDesdeAPI.filter((c) => +c.n_codper === 2025);
   }
+
+  get cursosPlan2023Guardados(): Curso[] {
+    return this.cursosPlan2023Async.filter((c) => c.guardadoAsync);
+  }
+  
+  get cursosPlan2025Guardados(): Curso[] {
+    return this.cursosPlan2025Async.filter((c) => c.guardadoAsync);
+  }
+  
+
+  //------------------------------//
 
   busquedaDocente: string = '';
   resultadosBusqueda: Docente[] = [];
