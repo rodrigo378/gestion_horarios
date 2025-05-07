@@ -19,8 +19,23 @@ import { ListarUsuariosComponent } from './pages/admin/listar-usuarios/listar-us
 import { AsignarHorarioDrComponent } from './pages/asignar-horario-dr/asignar-horario-dr.component';
 import { PermisosUsuariosComponent } from './pages/admin/permisos-usuarios/permisos-usuarios.component';
 import { MarcarAsistenciaComponent } from './pages/docente/marcar-asistencia/marcar-asistencia.component';
+import { VerAsistenciaComponent } from './pages/docente/ver-asistencia/ver-asistencia.component';
+import { WelcomeComponent } from './pages/welcome/welcome.component';
 
 const routes: Routes = [
+  { path: '', component: WelcomeComponent },
+  {
+    path: '',
+    component: LayoutComponent,
+    canActivate: [authGuard],
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'welcome' },
+      {
+        path: 'welcome',
+        component: WelcomeComponent,
+      },
+    ],
+  },
   { path: 'login', component: LoginComponent },
   {
     path: 'admin',
@@ -65,21 +80,12 @@ const routes: Routes = [
     path: 'docente',
     canActivate: [authGuard],
     component: LayoutComponent,
-    children: [{ path: 'marcar', component: MarcarAsistenciaComponent }],
-  },
-  {
-    path: '',
-    component: LayoutComponent,
-    canActivate: [authGuard],
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'welcome' },
-      {
-        path: 'welcome',
-        loadChildren: () =>
-          import('./pages/welcome/welcome.module').then((m) => m.WelcomeModule),
-      },
+      { path: 'marcar', component: MarcarAsistenciaComponent },
+      { path: 'ver-asistencia', component: VerAsistenciaComponent },
     ],
   },
+
   { path: '**', component: NotFountComponent },
 ];
 

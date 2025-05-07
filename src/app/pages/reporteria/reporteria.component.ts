@@ -28,6 +28,7 @@ export class ReporteriaComponent implements OnInit {
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
   nuevoDocente: CreateDocente = {
+    c_dnidoc: '',
     c_codfac: '',
     nom_fac: '',
     c_nomdoc: '',
@@ -78,6 +79,7 @@ export class ReporteriaComponent implements OnInit {
         this.cargarDocentes(); // recarga lista
         // reiniciar formulario
         this.nuevoDocente = {
+          c_dnidoc: '',
           c_codfac: 'E',
           nom_fac: 'INGENIERÍA Y NEGOCIOS',
           c_nomdoc: '',
@@ -96,6 +98,7 @@ export class ReporteriaComponent implements OnInit {
 
   abrirModalCrearDocente() {
     this.nuevoDocente = {
+      c_dnidoc: '',
       c_codfac: 'E',
       nom_fac: 'INGENIERÍA Y NEGOCIOS',
       c_nomdoc: '',
@@ -329,8 +332,8 @@ export class ReporteriaComponent implements OnInit {
 
   clickCalendarioDocente(docente_id: number) {
     const currentPrefix = this.router.url.split('/')[1];
-    this.router.navigate([`/${currentPrefix}/calendario_docente`], {
-      queryParams: { id: docente_id },
-    });
+    const url = `/${currentPrefix}/calendario_docente?id=${docente_id}`;
+
+    window.open(url, '_blank');
   }
 }

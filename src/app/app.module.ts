@@ -7,6 +7,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxApexchartsModule } from 'ngx-apexcharts';
 import { registerLocaleData } from '@angular/common';
+import { NzInputModule } from 'ng-zorro-antd/input';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { AppRoutingModule } from './app-routing.module';
@@ -17,6 +18,8 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import { IconsProviderModule } from './icons-provider.module';
 import { LoginComponent } from './pages/login/login.component';
 import { LayoutComponent } from './common/layout/layout.component';
+import { NzAutocompleteModule } from 'ng-zorro-antd/auto-complete';
+import { PeriodoComponent } from './pages/periodo/periodo.component';
 import { NotFountComponent } from './pages/not-fount/not-fount.component';
 import { VerTurnosComponent } from './pages/ver-turnos/ver-turnos.component';
 import { VerCursosComponent } from './pages/ver-cursos/ver-cursos.component';
@@ -33,6 +36,7 @@ import { VerInformacionComponent } from './pages/ver-informacion/ver-informacion
 import { ReporteriaAulaComponent } from './pages/reporteria-aula/reporteria-aula.component';
 import { VerTransversalComponent } from './pages/ver-transversal/ver-transversal.component';
 import { CalenderDocenteComponent } from './pages/calender-docente/calender-docente.component';
+import { VerAsistenciaComponent } from './pages/docente/ver-asistencia/ver-asistencia.component';
 import { CalenderDirectorComponent } from './pages/calender-director/calender-director.component';
 import { RegistroDocentesComponent } from './pages/registro-docentes/registro-docentes.component';
 import { ListarUsuariosComponent } from './pages/admin/listar-usuarios/listar-usuarios.component';
@@ -40,11 +44,9 @@ import { AsignarHorarioDrComponent } from './pages/asignar-horario-dr/asignar-ho
 import { DocentesAprobadosComponent } from './pages/docentes-aprobados/docentes-aprobados.component';
 import { PermisosUsuariosComponent } from './pages/admin/permisos-usuarios/permisos-usuarios.component';
 import { DocentesRechazadosComponent } from './pages/docentes-rechazados/docentes-rechazados.component';
-import { EscogerCursoDocenteComponent } from './pages/escoger-curso-docente/escoger-curso-docente.component';
-import { PeriodoComponent } from './pages/periodo/periodo.component';
 import { MarcarAsistenciaComponent } from './pages/docente/marcar-asistencia/marcar-asistencia.component';
-import { NzAutocompleteModule } from 'ng-zorro-antd/auto-complete';
-import { NzInputModule } from 'ng-zorro-antd/input';
+import { EscogerCursoDocenteComponent } from './pages/escoger-curso-docente/escoger-curso-docente.component';
+import { WelcomeComponent } from './pages/welcome/welcome.component';
 
 registerLocaleData(en);
 
@@ -80,6 +82,8 @@ registerLocaleData(en);
     CalenderDirectorComponent,
     PeriodoComponent,
     MarcarAsistenciaComponent,
+    VerAsistenciaComponent,
+    WelcomeComponent,
   ],
   imports: [
     BrowserModule,

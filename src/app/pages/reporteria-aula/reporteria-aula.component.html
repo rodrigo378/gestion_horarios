@@ -293,8 +293,7 @@
                   </span>
                 </button>
                 <button
-                  [routerLink]="['/coa/calendario_aula']"
-                  [queryParams]="{ id: aula.id }"
+                  (click)="verCalendarioAula(aula.id)"
                   class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                   type="button"
                 >
@@ -309,34 +308,47 @@
 
             <!-- Fila expandida con detalle de horarios -->
             <tr *ngIf="aula.expanded">
-              <td colspan="7" class="bg-slate-50 p-4 border-t border-b border-slate-200">
-                <p class="text-base font-semibold text-slate-800 underline mb-2">Horarios asignados:</p>
+              <td
+                colspan="7"
+                class="bg-slate-50 p-4 border-t border-b border-slate-200"
+              >
+                <p
+                  class="text-base font-semibold text-slate-800 underline mb-2"
+                >
+                  Horarios asignados:
+                </p>
                 <ul class="space-y-1 mb-4">
-                  <li class="text-sm text-slate-700 px-3 py-1 rounded border border-slate-200 bg-white shadow-sm" 
-                  *ngFor="let h of aula.Horario">
-                    <strong>{{ h.dia }}</strong>:
-                    {{ h.h_inicio | date: 'shortTime' }} -
-                    {{ h.h_fin | date: 'shortTime' }}
+                  <li
+                    class="text-sm text-slate-700 px-3 py-1 rounded border border-slate-200 bg-white shadow-sm"
+                    *ngFor="let h of aula.Horario"
+                  >
+                    <strong>{{ h.dia }}</strong
+                    >: {{ h.h_inicio | date : "shortTime" }} -
+                    {{ h.h_fin | date : "shortTime" }}
                     ({{ h.n_horas }} horas
-                    <span class="italic text-gray-500">· {{ h.tipo }}</span>)
-            
+                    <span class="italic text-gray-500">· {{ h.tipo }}</span
+                    >)
+
                     <!-- Curso -->
                     <span *ngIf="h.curso" class="font-medium text-slate-900">
                       | Curso:
                     </span>
                     {{ h.curso.c_nomcur }}
-            
+
                     <!-- Docente -->
                     <span class="font-medium text-slate-900">
                       | Docente:
-                      <span *ngIf="h.Docente; else sinDocente" class="font-normal text-slate-600">
+                      <span
+                        *ngIf="h.Docente; else sinDocente"
+                        class="font-normal text-slate-600"
+                      >
                         {{ h.Docente.c_nomdoc }}
                       </span>
                       <ng-template #sinDocente>
                         <span class="italic text-gray-400">No asignado</span>
                       </ng-template>
                     </span>
-            
+
                     <!-- Tipo de curso agrupado o transversal -->
                     <ng-container *ngIf="h.curso?.cursosPadres?.[0] as padre">
                       <span
@@ -347,14 +359,13 @@
                         }"
                         class="ml-2 inline-block rounded-full text-xs font-semibold px-2 py-0.5"
                       >
-                        {{ padre.tipo === 0 ? 'Transversal' : 'Agrupado' }}
+                        {{ padre.tipo === 0 ? "Transversal" : "Agrupado" }}
                       </span>
                     </ng-container>
                   </li>
                 </ul>
               </td>
             </tr>
-            
           </ng-container>
         </tbody>
         <tr *ngIf="usuariosPaginados.length === 0">

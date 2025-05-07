@@ -51,7 +51,8 @@ export class UserService {
   createUser(data: CreateUserDTO): Observable<{ message: string; user: User }> {
     return this.http.post<{ message: string; user: User }>(
       `${this.apiUrl}/auth/signup`,
-      data
+      data,
+      { withCredentials: true }
     );
   }
 

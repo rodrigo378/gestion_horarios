@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthService } from './auth.service';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CreateDocente, Docente } from '../interfaces/Docente';
 
@@ -27,6 +26,6 @@ export class DocentecurService {
   }
 
   crearDocente(docente: CreateDocente): Observable<any> {
-    return this.http.post(this.apiUrl, docente);
+    return this.http.post(this.apiUrl, docente, { withCredentials: true });
   }
 }

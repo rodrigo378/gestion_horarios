@@ -16,37 +16,41 @@ import { DocentecurService } from '../../../services/docentecur.service';
 export class MarcarAsistenciaComponent implements OnInit {
   aula!: Aula;
   inputValue?: string;
+  selectDocente?: any;
   asistencias: any = [];
-  selectedDocenteId?: number;
+  verificarDni: string = '';
   filteredOptions: string[] = [];
   nombreDocenteSeleccionado: string = '';
+  mostrarModalVerificacion: boolean = false;
   options: { id: number; nombre: string }[] = [];
 
   constructor(
     private userService: UserService,
     private aulaService: AulaService,
     private alertService: AlertService,
-    private asistenciaService: AsistenciaService,
-    private docentecurService: DocentecurService
+    private asistenciaService: AsistenciaService
   ) {
     this.filteredOptions = this.options.map((o) => o.nombre);
   }
 
   ngOnInit(): void {
     this.getAula();
-    this.getDocente();
     this.getFecha();
     this.getHora();
     setInterval(() => this.getHora(), 1000);
   }
 
   getAsitencias() {
-    if (!this.selectedDocenteId || this.selectedDocenteId === 0) return;
+    if (!this.selectDocente.id || this.selectDocente.id === 0) return;
+
+    const hoy = new Date().toISOString().split('T')[0];
 
     this.asistenciaService
-      .getAsistenciaDocente(this.selectedDocenteId)
+      .getAsistenciaDocente(this.selectDocente.id, {
+        filtro: 'diario',
+        fecha: hoy,
+      })
       .subscribe((data) => {
-        console.log(data);
         this.asistencias = data;
       });
   }
@@ -59,8 +63,12 @@ export class MarcarAsistenciaComponent implements OnInit {
       .map((option) => option.nombre);
 
     const seleccionado = this.options.find((o) => o.nombre === value);
-    this.selectedDocenteId = seleccionado?.id;
-    this.getAsitencias();
+    this.selectDocente = seleccionado;
+    // this.getAsitencias();
+
+    if (this.selectDocente !== undefined) {
+      this.mostrarModalVerificacion = true;
+    }
   }
 
   getHora(): void {
@@ -90,57 +98,69 @@ export class MarcarAsistenciaComponent implements OnInit {
     }
   }
 
-  getDocente() {
-    this.docentecurService
-      .obtenerDocentesreporteria(false, false, false)
-      .subscribe((data) => {
-        this.options = data.map((d) => ({
-          id: d.id,
-          nombre: d.c_nomdoc,
-        }));
-        this.filteredOptions = this.options.map((o) => o.nombre);
-      });
-  }
-
   getAula() {
     this.userService.getIp().subscribe((data) => {
       // 192.168.1.213
       // this.aulaService.getAulaIp('192.168.1.214').subscribe((data) => {
       this.aulaService.getAulaIp(data.ip).subscribe((data) => {
         this.aula = data;
+        this.getDocente();
       });
     });
   }
 
+  getDocente() {
+    const today = new Date();
+    const daysOfWeek = [
+      'Domingo',
+      'Lunes',
+      'Martes',
+      'Miércoles',
+      'Jueves',
+      'Viernes',
+      'Sábado',
+    ];
+    const currentDay = daysOfWeek[today.getDay()];
+
+    this.aulaService
+      .getDocentesAula(this.aula.id, 'Lunes')
+      .subscribe((data) => {
+        this.options = data.map((d) => ({
+          id: d.id,
+          c_dnidoc: d.c_dnidoc,
+          nombre: d.c_nomdoc,
+        }));
+        this.filteredOptions = this.options.map((o) => o.nombre);
+      });
+  }
+
   marcarEntrada() {
-    if (this.selectedDocenteId === undefined) {
+    if (this.selectDocente?.id === undefined) {
       this.alertService.warning('Primero seleccionar docente');
       return;
     }
 
     this.asistenciaService
-      .marcarEntrada(this.selectedDocenteId || 0, this.aula.id)
+      .marcarEntrada(this.selectDocente.id || 0, this.aula.id)
       .subscribe({
         next: (res: any) => {
-          console.log('res => ', res);
           this.alertService.success('Entrada marcada correctamente');
           this.getAsitencias();
         },
         error: (er: HttpErrorResponse) => {
-          console.log('er => ', er);
           this.alertService.error(er.error.message);
         },
       });
   }
 
   marcarSalida() {
-    if (this.selectedDocenteId === undefined) {
+    if (this.selectDocente?.id === undefined) {
       this.alertService.warning('Primero seleccionar docente');
       return;
     }
 
     this.asistenciaService
-      .marcarSalida(this.selectedDocenteId || 0, this.aula.id)
+      .marcarSalida(this.selectDocente.id || 0, this.aula.id)
       .subscribe({
         next: (res: any) => {
           this.alertService.success('Salida marcada correctamente');
@@ -150,5 +170,22 @@ export class MarcarAsistenciaComponent implements OnInit {
           this.alertService.error(er.error.message);
         },
       });
+  }
+
+  clickVerificarDni() {
+    if (this.verificarDni !== this.selectDocente.c_dnidoc) {
+      this.alertService.error('DNI Incorrecto');
+      return;
+    }
+    this.mostrarModalVerificacion = false;
+
+    this.getAsitencias();
+  }
+
+  clickCancelar() {
+    this.mostrarModalVerificacion = false;
+    this.verificarDni = '';
+    this.inputValue = '';
+    this.selectDocente = undefined;
   }
 }

@@ -95,3 +95,34 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Verificar Docente -->
+<div
+  *ngIf="mostrarModalVerificacion"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md text-center">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Verificar Docente</h2>
+    <input
+      [maxLength]="8"
+      type="text"
+      [(ngModel)]="verificarDni"
+      placeholder="Ingrese DNI"
+      class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    />
+    <div class="flex justify-between gap-4">
+      <button
+        (click)="clickVerificarDni()"
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-xl transition"
+      >
+        Verificar
+      </button>
+      <button
+        (click)="clickCancelar()"
+        class="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 rounded-xl transition"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>

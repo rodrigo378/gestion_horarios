@@ -190,6 +190,18 @@
             <a routerLink="/docente/marcar">Marcar asistencia</a>
           </li>
         </ul>
+        <ul>
+          <li
+            nz-menu-item
+            nzMatchRouter
+            *ngIf="hasPermiso('4.2')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'docente' && item === 'ver-asistencia'
+            "
+          >
+            <a routerLink="/docente/ver-asistencia">Ver asistencia</a>
+          </li>
+        </ul>
       </li>
     </ul>
     }
