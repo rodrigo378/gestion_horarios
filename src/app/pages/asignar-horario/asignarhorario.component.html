@@ -346,7 +346,7 @@
   <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg relative text-left">
     
     <!-- Botón cerrar arriba -->
-    <button (click)="cancelarAsignacion()" class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-xl">
+    <button *ngIf="!eventoSeleccionado" (click)="cancelarAsignacion()" class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-xl">
       <i class="fa-solid fa-xmark"></i>
     </button>
 

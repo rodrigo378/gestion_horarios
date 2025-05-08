@@ -1290,6 +1290,7 @@ export class AsignarhorarioComponent implements OnInit {
           ...ev,
           start: base,
           end: fin,
+          title: `${this.cursoSeleccionado.c_nomcur} (${tipo}) - ${this.selectedDocente?.c_nomdoc || 'Sin docente'}`,
           extendedProps: {
             ...ev.extendedProps,
             n_horas: this.horasAsignadas,
@@ -1302,6 +1303,7 @@ export class AsignarhorarioComponent implements OnInit {
       }
       return ev;
     });
+    
     this.calendarOptions.events = eventosActuales;
   }
 
@@ -1398,6 +1400,7 @@ export class AsignarhorarioComponent implements OnInit {
           : ev.extendedProps['docente_id'] ?? null,
         turno_id: this.turnoId,
         tipo: ev.extendedProps['tipo'] ?? 'Teoria',
+        title: `${this.cursoSeleccionado.c_nomcur} (${tipo}) - ${this.selectedDocente?.c_nomdoc || 'Sin docente'}`,
       };
     });
 
@@ -1468,7 +1471,7 @@ export class AsignarhorarioComponent implements OnInit {
     evento.setExtendedProp('dia', this.diaSeleccionado);
     evento.setExtendedProp('aula_id', this.aulaSeleccionada);
     evento.setExtendedProp('docente_id', this.docenteSeleccionado);
-  
+    evento.setProp('title', `${this.cursoSeleccionado?.c_nomcur} (${tipo}) - ${this.selectedDocente?.c_nomdoc || 'Sin docente'}`);
     // 🔁 Forzar re-render para aplicar el tooltip actualizado
     const calendarApi = this.calendarComponent.getApi();
     const eventoId = evento.id;
