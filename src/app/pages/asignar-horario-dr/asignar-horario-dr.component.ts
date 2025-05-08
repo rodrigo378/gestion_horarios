@@ -59,7 +59,7 @@ export class AsignarHorarioDrComponent implements OnInit {
   newEvent = { curso: '', h_inicio: '', h_fin: '', color: '' };
   events: any[] = [];
   //select turno
-  turnoSeleccionado: 'M' | 'N' | '' = '';
+  turnoSeleccionado: 'C' | 'M' | 'N' | '' = 'C'; // 👈 por defecto en "Completo"
   //carga docente
   nom_facultad: string[] = [];
   selectedFacultad: string = '';
@@ -105,6 +105,7 @@ export class AsignarHorarioDrComponent implements OnInit {
     eventDrop: this.onEventDrop.bind(this),
     hiddenDays: [0],
     eventDidMount: this.estilizarEvento.bind(this), // 👈 Importante
+    eventReceive: this.onEventReceive.bind(this),
   };
   //#endregion;
 
@@ -367,6 +368,19 @@ export class AsignarHorarioDrComponent implements OnInit {
   //#endregion
 
   //#region funcion para los eventos y callender
+
+  onEventReceive(info: any) {
+    info.event.remove();
+    if (!info?.date || !info?.draggedEl) {
+      console.warn('⚠️ Drop inválido: datos incompletos');
+      return;
+    }
+    this.handleExternalDrop({
+      draggedEl: info.draggedEl,
+      date: info.date,
+    });
+  }
+
   handleExternalDrop(info: any) {
     const calendarApi = this.calendarComponent.getApi();
 
@@ -642,9 +656,11 @@ export class AsignarHorarioDrComponent implements OnInit {
     } else if (this.turnoSeleccionado === 'N') {
       this.calendarOptions.slotMinTime = '18:00:00';
       this.calendarOptions.slotMaxTime = '23:00:00';
+    } else if (this.turnoSeleccionado === 'C') {
+      this.calendarOptions.slotMinTime = '08:00:00';
+      this.calendarOptions.slotMaxTime = '23:00:00';
     }
-
-    // 🔄 Forzar redibujado del calendario
+  
     const calendarApi = this.calendarComponent.getApi();
     calendarApi.setOption('slotMinTime', this.calendarOptions.slotMinTime);
     calendarApi.setOption('slotMaxTime', this.calendarOptions.slotMaxTime);
@@ -1171,44 +1187,51 @@ export class AsignarHorarioDrComponent implements OnInit {
     horas: number,
     titulo: string
   ) {
-    const existe = this.cursos.find(
-      (c) => c.c_codcur === codigo && c.tipo === tipo
-    );
-
-    if (existe) {
-      existe.horasRestantes = (existe.horasRestantes ?? 0) + horas;
-      this.cursos = [...this.cursos]; // trigger visual
-      return;
-    }
-
     const turno = this.turnoData;
     if (!turno) return;
-
-    const nuevoCurso: Curso = {
-      c_codcur: codigo,
-      c_nomcur: titulo,
-      c_nommod: turno.c_nommod,
-      c_codmod: turno.c_codmod,
-      c_codfac: turno.c_codfac,
-      c_codesp: turno.c_codesp,
-      n_codper: turno.n_codper,
-      n_ciclo: turno.n_ciclo.toString(),
-      c_ciclo: turno.n_ciclo.toString(),
-      nom_fac: turno.nom_fac,
-      nomesp: turno.nomesp,
-      tipo,
-      horasRestantes: horas,
-    };
-
-    this.cursos = [...this.cursos, nuevoCurso];
-
-    if (turno.n_codper === 2023) {
-      this.cursosPlan2023 = [...this.cursosPlan2023, nuevoCurso];
+  
+    // 🔍 Buscar si el curso eliminado con ese TIPO ya está en la lista
+    const existeMismoTipo = this.cursos.find(
+      (c) => c.c_codcur === codigo && c.tipo === tipo
+    );
+  
+    if (existeMismoTipo) {
+      // ✅ Si ya existe ese tipo, solo sumamos las horas
+      existeMismoTipo.horasRestantes = (existeMismoTipo.horasRestantes ?? 0) + horas;
+    } else {
+      // 🚀 Si NO existe ese tipo, reconstruimos el objeto
+      const nuevoCurso: Curso = {
+        c_codcur: codigo,
+        c_nomcur: titulo,
+        c_nommod: turno.c_nommod,
+        c_codmod: turno.c_codmod,
+        c_codfac: turno.c_codfac,
+        c_codesp: turno.c_codesp,
+        n_codper: turno.n_codper,
+        n_ciclo: turno.n_ciclo.toString(),
+        c_ciclo: turno.n_ciclo.toString(),
+        nom_fac: turno.nom_fac,
+        nomesp: turno.nomesp,
+        tipo,
+        horasRestantes: horas,
+        disabled: false
+      };
+  
+      // 👇 Lo agregamos a la lista principal
+      this.cursos.push(nuevoCurso);
+  
+      // 👇 Lo agregamos al plan correspondiente
+      if (turno.n_codper === 2023) {
+        this.cursosPlan2023.push(nuevoCurso);
+      } else if (turno.n_codper === 2025) {
+        this.cursosPlan2025.push(nuevoCurso);
+      }
     }
-
-    if (turno.n_codper === 2025) {
-      this.cursosPlan2025 = [...this.cursosPlan2025, nuevoCurso];
-    }
+  
+    // 🔄 Refrescar listas para forzar redibujado visual
+    this.cursos = [...this.cursos];
+    this.cursosPlan2023 = [...this.cursosPlan2023];
+    this.cursosPlan2025 = [...this.cursosPlan2025];
   }
 
   private validarYCalcularFechas(): { base: Date; fin: Date } | null {
@@ -1503,13 +1526,13 @@ export class AsignarHorarioDrComponent implements OnInit {
 
   eliminarEvento(): void {
     if (!this.eventoSeleccionado) return;
-
+  
     const id = this.eventoSeleccionado.id.toString();
     const codigo = this.eventoSeleccionado.extendedProps.codCur;
     const tipo = this.eventoSeleccionado.extendedProps.tipo;
     const horas = this.eventoSeleccionado.extendedProps.n_horas ?? 1;
     const titulo = this.eventoSeleccionado.title;
-
+  
     this.alertService
       .confirm(
         '¿Estás seguro de que deseas eliminar este horario?',
@@ -1517,22 +1540,28 @@ export class AsignarHorarioDrComponent implements OnInit {
       )
       .then((isConfirmed) => {
         if (!isConfirmed) return;
-
+  
         const calendarApi = this.calendarComponent.getApi();
         const evento = calendarApi.getEventById(id);
         if (evento) evento.remove();
-
+  
+        // 🔥 Limpiamos también del array manual si es necesario
         this.calendarOptions.events = (
           this.calendarOptions.events as any[]
         ).filter((ev) => ev.id !== id);
-
+  
         if (!id.startsWith('temp-')) {
           this.horarioService
             .deleteHorarios({ horarios_id: [Number(id)] })
             .subscribe({
               next: () => {
                 this.alertService.success('🗑️ Evento eliminado correctamente.');
-                this.recargarCursosSegunTurno();
+  
+                // ✅ Sayayin FIX: restaurar visualmente el curso afectado
+                this.devolverCursoEliminado(codigo, tipo, horas, titulo);
+  
+                // 🔁 Refrescamos los cursos y docentes si quieres
+                // this.recargarCursosSegunTurno();
                 this.cargarDocentes();
                 this.verificarEstadoTurnoAutomatico();
               },
@@ -1542,13 +1571,14 @@ export class AsignarHorarioDrComponent implements OnInit {
               },
             });
         } else {
+          // Para eventos temporales ya lo tienes bien implementado
           this.devolverCursoEliminado(codigo, tipo, horas, titulo);
         }
-
+  
+        // 🔚 Limpieza final
         this.modalHorasActivo = false;
         this.eventoSeleccionado = null;
         this.resetCamposModal();
-        this.verificarEstadoTurnoAutomatico();
       });
   }
 
@@ -1934,5 +1964,40 @@ export class AsignarHorarioDrComponent implements OnInit {
 
   volverturno() {
     this.recargarCursosSegunTurno();
+  }
+
+  cancelarAsignacion(): void {
+    const calendarApi = this.calendarComponent.getApi();
+  
+    // 🧠 Si hay un evento temporal creado, lo removemos
+    if (this.ultimoEventoIdTemporal) {
+      const temp = calendarApi.getEventById(this.ultimoEventoIdTemporal);
+      if (temp) {
+        temp.remove();
+      }
+  
+      // 👇 Restauramos las horas al curso
+      const codigo = this.cursoSeleccionado?.extendedProps?.codigo;
+      const tipo = this.cursoSeleccionado?.extendedProps?.tipo;
+  
+      if (codigo && tipo && this.horasAsignadas > 0) {
+        this.devolverCursoEliminado(
+          codigo,
+          tipo,
+          this.horasAsignadas,
+          this.cursoSeleccionado?.title || 'Curso'
+        );
+      }
+    }
+  
+    // 🔚 Limpieza visual y lógica
+    this.modalHorasActivo = false;
+    this.cursoSeleccionado = null;
+    this.fechaDrop = null;
+    this.ultimoEventoIdTemporal = null;
+    this.horaInicio = '';
+    this.diaSeleccionado = '';
+    this.vacantesAula = null;
+    this.resetCamposModal();
   }
 }
