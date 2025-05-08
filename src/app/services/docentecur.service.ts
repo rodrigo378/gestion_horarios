@@ -19,10 +19,18 @@ export class DocentecurService {
   obtenerDocentesreporteria(
     horario: boolean,
     curso: boolean,
-    aula: boolean
+    aula: boolean,
+    c_codfac?: string | null,
+    c_codesp?: string | null
   ): Observable<Docente[]> {
-    const params = `horario=${horario}&curso=${curso}&aula=${aula}`;
-    return this.http.get<Docente[]>(`${this.apiUrl}?${params}`);
+    const params = new URLSearchParams();
+    params.set('horario', String(horario));
+    params.set('curso', String(curso));
+    params.set('aula', String(aula));
+    if (c_codfac) params.set('c_codfac', c_codfac);
+    if (c_codesp) params.set('c_codesp', c_codesp);
+
+    return this.http.get<Docente[]>(`${this.apiUrl}?${params.toString()}`);
   }
 
   crearDocente(docente: CreateDocente): Observable<any> {
