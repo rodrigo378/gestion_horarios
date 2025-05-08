@@ -1059,7 +1059,7 @@ export class AsignarHorarioDrComponent implements OnInit {
               const curso = h.curso;
               const tipoEvento = h.tipo ?? 'Teoría';
 
-              let color = '#3788d8';
+              let color = tipoEvento === 'Práctica' ? '#28a745' : '#3788d8';
               let tipoAgrupado = null;
 
               const docenteObj = this.docentes.find(
@@ -1450,34 +1450,6 @@ export class AsignarHorarioDrComponent implements OnInit {
       },
     });
   }
-
-  // procesarActualizacionExitosa(
-  //   base: Date,
-  //   fin: Date,
-  //   codigo: string,
-  //   tipo: string,
-  //   diferencia: number
-  // ): void {
-  //   console.log('🟢 Solo aquí debe ir la actualización de horas restantes');
-  //   this.actualizarHorasRestantes(codigo, tipo, diferencia);
-  //   this.eventoSeleccionado?.setStart(base);
-  //   this.eventoSeleccionado?.setEnd(fin);
-  //   this.eventoSeleccionado?.setExtendedProp('n_horas', this.horasAsignadas);
-  //   this.eventoSeleccionado?.setExtendedProp('dia', this.diaSeleccionado);
-  //   this.eventoSeleccionado?.setExtendedProp('aula_id', this.aulaSeleccionada);
-  //   this.eventoSeleccionado?.setExtendedProp(
-  //     'docente_id',
-  //     this.docenteSeleccionado
-  //   );
-
-  //   this.alertService.success('✅ Evento actualizado correctamente.');
-  //   this.modalHorasActivo = false;
-  //   this.eventoSeleccionado = null;
-  //   this.cargarHorarios();
-  //   // this.cargarDocentes();
-  //   this.resetCamposModal();
-  //   this.verificarEstadoTurnoAutomatico();
-  // }
 
   procesarActualizacionExitosa(
     base: Date,
