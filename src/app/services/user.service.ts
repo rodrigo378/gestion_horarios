@@ -64,7 +64,9 @@ export class UserService {
   }
 
   updateUser(usuario: Usernew & { password: string }): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/user`, usuario);
+    return this.http.put<User>(`${this.apiUrl}/user`, usuario, {
+      withCredentials: true,
+    });
   }
 
   getIp(): Observable<{ ip: string }> {

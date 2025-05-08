@@ -12,6 +12,8 @@ import * as FileSaver from 'file-saver';
 import { format, toZonedTime } from 'date-fns-tz';
 import { DocentecurService } from '../../services/docentecur.service';
 import { Router } from '@angular/router';
+import { CursoService } from '../../services/curso.service';
+import { Especialidad } from '../../interfaces/Curso';
 
 @Component({
   selector: 'app-reporteria',
@@ -36,33 +38,53 @@ export class ReporteriaComponent implements OnInit {
     h_max: 0,
     tipo: 0,
   };
+  selectFacultad: string = '';
+  selectEspecialidad: string = '';
 
   filtroBusqueda: string = '';
+  especialidades: Especialidad[] = [];
 
   constructor(
     private location: Location,
     private alertService: AlertService,
+    private cursoService: CursoService,
     private docenteService: DocentecurService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.cargarDocentes();
+    this.getEspecialidades();
+  }
+
+  getEspecialidades() {
+    this.cursoService.getEspecialidades().subscribe((data) => {
+      this.especialidades = data;
+      console.log('especialidades', this.especialidades);
+    });
   }
 
   cargarDocentes() {
-    this.docenteService.obtenerDocentesreporteria(true, true, true).subscribe({
-      next: (data: any[]) => {
-        this.docentes = data.map((docente) => ({
-          ...docente,
-          expanded: false,
-        }));
-        this.usuariosFiltrados = [...this.docentes];
-      },
-      error: (error) => {
-        console.error('Error al obtener docentes:', error);
-      },
-    });
+    this.docenteService
+      .obtenerDocentesreporteria(
+        true,
+        true,
+        true,
+        this.selectFacultad,
+        this.selectEspecialidad
+      )
+      .subscribe({
+        next: (data: any[]) => {
+          this.docentes = data.map((docente) => ({
+            ...docente,
+            expanded: false,
+          }));
+          this.usuariosFiltrados = [...this.docentes];
+        },
+        error: (error) => {
+          console.error('Error al obtener docentes:', error);
+        },
+      });
   }
 
   crearDocente() {
@@ -335,5 +357,13 @@ export class ReporteriaComponent implements OnInit {
     const url = `/${currentPrefix}/calendario_docente?id=${docente_id}`;
 
     window.open(url, '_blank');
+  }
+
+  aplicarFiltros() {
+    console.log('selectFacultad => ', this.selectFacultad);
+    console.log('selectEspecialidad => ', this.selectEspecialidad);
+
+    this.especialidades.filter((e) => e.codfac == this.selectFacultad);
+    this.cargarDocentes();
   }
 }

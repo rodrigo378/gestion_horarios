@@ -23,7 +23,6 @@ import { VerAsistenciaComponent } from './pages/docente/ver-asistencia/ver-asist
 import { WelcomeComponent } from './pages/welcome/welcome.component';
 
 const routes: Routes = [
-  { path: '', component: WelcomeComponent },
   {
     path: '',
     component: LayoutComponent,
