@@ -49,7 +49,6 @@ export class VerCursosComponent implements OnInit {
 
   ngOnInit(): void {
     this.id = Number(this.route.snapshot.paramMap.get('id')) || 0;
-    console.log('Id => ', this.id);
 
     this.getAulas();
     this.getDocentes();
@@ -74,14 +73,12 @@ export class VerCursosComponent implements OnInit {
           cursosPadres: curso.cursosPadres ?? [], // ← aquí garantizas que no sea undefined
           cursosHijos: curso.cursosHijos ?? [], // ← opcional, por si acaso
         }));
-        console.log('cursos => ', this.cursos);
       });
   }
 
   getTurno() {
     this.turnoService.getTurnoById(this.id).subscribe((data) => {
       this.turno = data;
-      console.log('turno => ', this.turno);
     });
   }
 
@@ -92,12 +89,9 @@ export class VerCursosComponent implements OnInit {
   clickAbrirModal(curso: Curso2) {
     this.mostrarModalCrear = true;
     this.curso = curso;
-    console.log('cursos1 => ', curso);
   }
 
   clickRow(horario: Horario) {
-    console.log(horario);
-
     const hInicioDate = new Date(horario.h_inicio!);
     const hFinDate = new Date(horario.h_fin!);
 
@@ -131,13 +125,11 @@ export class VerCursosComponent implements OnInit {
       h_inicio: '',
       n_horas: 0,
     };
-    console.log(this.formHorario);
   }
 
   getAulas() {
     this.aulaService.obtenerAulas().subscribe((data) => {
       this.aulas = data;
-      console.log('aulas => ', this.aulas);
     });
   }
 
@@ -146,14 +138,10 @@ export class VerCursosComponent implements OnInit {
       .obtenerDocentesreporteria(true, true, true)
       .subscribe((data) => {
         this.docentes = data;
-        console.log('docentes => ', this.docentes);
       });
   }
 
   createHorario() {
-    console.log(this.formHorario);
-    console.log('curso => ', this.curso);
-
     // Validación de campos vacíos
     if (
       !this.formHorario.tipo ||
@@ -168,11 +156,9 @@ export class VerCursosComponent implements OnInit {
     // Verificación de tipo de curso
     const tipoCurso = this.curso?.cursosPadres?.[0]?.tipo;
     if (tipoCurso === 0) {
-      console.log('transversal');
       return;
     }
     if (tipoCurso === 1) {
-      console.log('agrupado');
       return;
     }
 
@@ -241,9 +227,7 @@ export class VerCursosComponent implements OnInit {
         : this.horarioService.updateHorarios(payload);
 
     serviceCall.subscribe({
-      next: (res: any) => {
-        console.log('Respuesta => ', res);
-      },
+      next: (res: any) => {},
       error: (err: HttpErrorResponse) => {
         console.error('Error => ', err);
       },

@@ -91,12 +91,6 @@ export class VerAsistenciaComponent implements OnInit {
   }
 
   clickBuscar() {
-    console.log('this.filtroSeleccionado => ', this.filtroSeleccionado);
-    console.log('this.fechaDiaria => ', this.fechaDiaria);
-    console.log('this.fechaInicio => ', this.fechaInicio);
-    console.log('this.fechaFin => ', this.fechaFin);
-    console.log('this.mesSeleccionado => ', this.mesSeleccionado);
-
     if (this.selectDocente?.id === undefined) {
       this.alertService.warning('Primero seleccionar docente');
       return;
@@ -130,7 +124,6 @@ export class VerAsistenciaComponent implements OnInit {
       .getAsistenciaDocente(this.selectDocente.id, option)
       .subscribe((data) => {
         if (data.length === 0) this.alertService.warning('No tiene asistencia');
-        console.log('data => ', data);
         this.asistencias = data;
       });
   }

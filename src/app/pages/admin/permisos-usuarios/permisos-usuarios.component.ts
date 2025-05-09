@@ -80,7 +80,6 @@ export class PermisosUsuariosComponent implements OnInit {
 
     this.userService.actualizarPermisos(this.user.id, itemsId).subscribe({
       next: (res: any) => {
-        console.log('Permisos actualizados =>', res);
         this.alertService.success('Permisos actualizados correctamente');
       },
       error: (err: HttpErrorResponse) => {

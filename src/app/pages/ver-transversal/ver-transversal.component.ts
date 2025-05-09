@@ -125,7 +125,6 @@ export class VerTransversalComponent implements OnInit {
       )
 
       .subscribe((data) => {
-        console.log('data => ', data);
         this.cursosFiltrados = data.data.filter((curso) => {
           const codA = this.curso.c_codcur;
           const codAeq = this.curso.c_codcur_equ;
@@ -135,20 +134,6 @@ export class VerTransversalComponent implements OnInit {
           const turno_idB = curso.turno_id;
           const esMismoCurso = this.curso.id === curso.id;
           const esMismoTurno = turno_idA === turno_idB;
-
-          // console.log('======================');
-          // console.log('codA => ', codA);
-          // console.log('codAeq => ', codAeq);
-
-          // console.log('codB => ', codB);
-          // console.log('codBeq => ', codBeq);
-
-          // console.log('turno_idA => ', turno_idA);
-          // console.log('turno_idB => ', turno_idB);
-
-          // console.log('esMismoCurso => ', esMismoCurso);
-          // console.log('esMismoTurno => ', esMismoTurno);
-          // console.log('======================');
 
           return (
             !esMismoCurso &&
@@ -182,7 +167,6 @@ export class VerTransversalComponent implements OnInit {
   }
 
   clickMas(curso: Curso2) {
-    console.log('curso => ', curso);
     this.curso = curso;
     this.filtros.periodo = curso.turno.n_codper;
     this.mostrarModalCrear = true;

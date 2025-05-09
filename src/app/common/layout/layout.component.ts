@@ -92,7 +92,6 @@ export class LayoutComponent implements OnInit {
   logout() {
     this.authService.logout().subscribe({
       next: (res: any) => {
-        console.log('res => ', res);
         window.location.href = '/login';
       },
       error: (err) => {

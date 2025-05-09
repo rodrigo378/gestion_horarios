@@ -52,7 +52,6 @@ export class ListaDocentesComponent implements OnInit {
       next: (response: any) => {
         this.alertService.success(response.message ?? '');
         this.cargarDocentes();
-        console.log(response);
       },
       error: (error: any) => {
         console.error('Error al aprobar docente', error);
@@ -71,7 +70,6 @@ export class ListaDocentesComponent implements OnInit {
       next: (response: any) => {
         this.alertService.success(response.message ?? '');
         this.cargarDocentes();
-        console.log(response);
       },
       error: (error: any) => {
         console.error('Error al rechazar docente', error);
