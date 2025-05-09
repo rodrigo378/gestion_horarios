@@ -165,7 +165,7 @@ export class AsignarHorarioDrComponent implements OnInit {
 
   private calcularHorasRestantesPorCurso(
     cursos: Curso[],
-    horasAsignadas: Record<string, number>
+    horasAsignadas: Record<string, { teoria: number; practica: number }>
   ): {
     cursos: Curso[];
     cursosPlan2023: Curso[];
@@ -177,18 +177,15 @@ export class AsignarHorarioDrComponent implements OnInit {
 
     cursos.forEach((curso) => {
       const codCur = curso.c_codcur;
-      const horasAsignadasCurso = horasAsignadas[codCur] || 0;
-
+      const asignado = horasAsignadas[codCur] || { teoria: 0, practica: 0 };
       // 🔒 Bloquear si es FORMACIÓN GENERAL (para cualquier plan)
       const esFormacionGeneral =
         curso.c_nom_cur_area?.trim().toUpperCase() === 'FORMACIÓN GENERAL';
-
       // Si HT > 0: Teoría
       if (curso.n_ht && curso.n_ht > 0) {
         const h_uma = curso.h_umaPlus ?? 0;
         const htReal = curso.n_ht - h_uma;
-        const horasRestantes = htReal - horasAsignadasCurso;
-
+        const horasRestantes = htReal - asignado.teoria;
         const cursoTeoria: Curso = {
           ...curso,
           tipo: 'Teoría',
@@ -205,7 +202,7 @@ export class AsignarHorarioDrComponent implements OnInit {
 
       // Si HP > 0: Práctica
       if (curso.n_hp && curso.n_hp > 0) {
-        const horasRestantes = curso.n_hp - horasAsignadasCurso;
+        const horasRestantes = curso.n_hp - asignado.practica;
 
         const cursoPractica: Curso = {
           ...curso,
@@ -219,7 +216,7 @@ export class AsignarHorarioDrComponent implements OnInit {
         if (curso.n_codper === 2025) plan2025.push(cursoPractica);
       }
 
-      // h_umaPlus debe ir a 0 si HT = 0
+      // Si HT = 0 → aseguramos que h_umaPlus también sea 0
       if (!curso.n_ht || curso.n_ht === 0) {
         curso.h_umaPlus = 0;
       }
@@ -246,16 +243,25 @@ export class AsignarHorarioDrComponent implements OnInit {
         c_grpcur: turno.c_grpcur,
       };
       this.cursoService.obtenerCursos(dataCursos).subscribe((resCursos) => {
-        this.horarioService
-          .getHorarioPorTurno(this.turnoId)
-          .subscribe((horarios: HorarioExtendido[]) => {
-            const horasAsignadasPorCurso: Record<string, number> = {};
-
-            horarios.forEach((h) => {
-              const codCur = h.curso.c_codcur;
-              horasAsignadasPorCurso[codCur] =
-                (horasAsignadasPorCurso[codCur] || 0) + (h.n_horas || 0);
-            });
+        this.horarioService.getHorarioPorTurno(this.turnoId).subscribe((horarios: HorarioExtendido[]) => {
+          
+          // ✅ Separamos horas por tipo (teoría/práctica)
+          const horasAsignadasPorCurso: Record<string, { teoria: number; practica: number }> = {};
+  
+          horarios.forEach((h) => {
+            const codCur = h.curso.c_codcur;
+            const tipo = (h.tipo ?? 'Teoría').toLowerCase();
+  
+            if (!horasAsignadasPorCurso[codCur]) {
+              horasAsignadasPorCurso[codCur] = { teoria: 0, practica: 0 };
+            }
+  
+            if (tipo === 'teoría' || tipo === 'teoria') {
+              horasAsignadasPorCurso[codCur].teoria += h.n_horas || 0;
+            } else if (tipo === 'práctica' || tipo === 'practica') {
+              horasAsignadasPorCurso[codCur].practica += h.n_horas || 0;
+            }
+          });
 
             const resultado = this.calcularHorasRestantesPorCurso(
               resCursos,
@@ -1291,6 +1297,7 @@ export class AsignarHorarioDrComponent implements OnInit {
           ...ev,
           start: base,
           end: fin,
+          title: `${this.cursoSeleccionado.c_nomcur} (${tipo}) - ${this.selectedDocente?.c_nomdoc || 'Sin docente'}`,
           extendedProps: {
             ...ev.extendedProps,
             n_horas: this.horasAsignadas,
@@ -1399,6 +1406,7 @@ export class AsignarHorarioDrComponent implements OnInit {
           ? this.selectedDocente?.id ?? null
           : ev.extendedProps['docente_id'] ?? null,
         turno_id: this.turnoId,
+        title: `${this.cursoSeleccionado.c_nomcur} (${tipo}) - ${this.selectedDocente?.c_nomdoc || 'Sin docente'}`,
       };
     });
 
@@ -1469,7 +1477,7 @@ export class AsignarHorarioDrComponent implements OnInit {
     evento.setExtendedProp('dia', this.diaSeleccionado);
     evento.setExtendedProp('aula_id', this.aulaSeleccionada);
     evento.setExtendedProp('docente_id', this.docenteSeleccionado);
-  
+    evento.setProp('title', `${this.cursoSeleccionado?.c_nomcur} (${tipo}) - ${this.selectedDocente?.c_nomdoc || 'Sin docente'}`);
     // 🔁 Forzar re-render para aplicar el tooltip actualizado
     const calendarApi = this.calendarComponent.getApi();
     const eventoId = evento.id;
