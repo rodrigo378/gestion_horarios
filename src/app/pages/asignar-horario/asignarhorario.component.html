@@ -87,9 +87,10 @@
             <!-- Tipo y horas -->
             <p class="text-xs text-gray-600 mt-1">
               {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
-              <span *ngIf="(curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
-                (umaPlus {{ curso.h_umaPlus ?? 0 }})
+              <span *ngIf="curso.tipo === 'Teoría' && (curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
+                (umaPlus {{ curso.h_umaPlus }})
               </span>
+              
             </p>
     
             <!-- Modalidad -->
@@ -140,8 +141,8 @@
             <!-- Tipo y horas -->
             <p class="text-xs text-gray-600 mt-1">
               {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
-              <span *ngIf="(curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
-                (umaPlus {{ curso.h_umaPlus ?? 0 }})
+              <span *ngIf="curso.tipo === 'Teoría' && (curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
+                (umaPlus {{ curso.h_umaPlus }})
               </span>
             </p>  
             <!-- Modalidad -->
@@ -153,7 +154,6 @@
       </div>
     </div>
   </div>
-  
   
   <div class="flex justify-between items-center bg-white shadow-lg border p-5 rounded-xl mt-5">
   
