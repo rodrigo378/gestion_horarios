@@ -40,8 +40,6 @@ export class ListarUsuariosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('v1');
-
     this.cargarUsuarios();
     this.obtenerUsuarioPorId(0);
   }
@@ -119,6 +117,9 @@ export class ListarUsuariosComponent implements OnInit {
   }
 
   abrirModal(): void {
+    console.log('abrir modal => ');
+    console.log('this.usuario.id => ', this.usuario.id);
+
     if (!this.usuario.id) {
       this.usuario = {
         id: null,
@@ -132,6 +133,7 @@ export class ListarUsuariosComponent implements OnInit {
       };
     }
     this.modalAbierto = true;
+    this.usuario.id = null;
   }
 
   cerrarModal(): void {
@@ -166,6 +168,30 @@ export class ListarUsuariosComponent implements OnInit {
         });
     } else {
       // CREAR
+      console.log('entro aca 1');
+
+      console.log('usuarioData.nombre => ', usuarioData.nombre);
+      console.log('usuarioData.apellido => ', usuarioData.apellido);
+      console.log('usuarioData.genero => ', usuarioData.genero);
+      console.log('usuarioData.grado => ', usuarioData.grado);
+      console.log('usuarioData.email => ', usuarioData.email);
+      console.log('usuarioData.estado => ', usuarioData.estado);
+      console.log('usuarioData.password => ', usuarioData.password);
+
+      if (
+        !usuarioData.nombre ||
+        !usuarioData.apellido ||
+        !usuarioData.genero ||
+        !usuarioData.grado ||
+        !usuarioData.email ||
+        !usuarioData.estado ||
+        !usuarioData.password
+      ) {
+        console.log('entro aca 2');
+        this.alerService.warning('Todos los campos son obligatorios.');
+        return;
+      }
+
       this.userService.createUser(usuarioData).subscribe({
         next: () => {
           this.alerService.success('✅ Usuario creado correctamente');
@@ -173,32 +199,11 @@ export class ListarUsuariosComponent implements OnInit {
           this.cargarUsuarios();
         },
         error: (err) => {
-          console.error('❌ Error al crear usuario:', err);
-          this.alerService.error(err);
+          console.error('❌ Error al crear usuario:', err.error.message);
+          this.alerService.error(err.error.message);
         },
       });
     }
-  }
-
-  traducirMensaje(msg: string): string {
-    if (msg.includes('should not be empty')) {
-      const campo = msg.split(' ')[0];
-      return `El campo ${campo} es obligatorio.`;
-    }
-
-    if (msg.toLowerCase().includes('correo')) {
-      return msg.replace('correo', 'El correo');
-    }
-
-    // Otros ejemplos específicos
-    if (msg.includes('La contraseña debe tener')) return msg;
-    if (msg.includes('El correo no es válido')) return msg;
-
-    return msg; // Si no se reconoce, se muestra tal cual
-  }
-
-  cancel(): void {
-    this.location.back();
   }
 
   // Método de filtrado
