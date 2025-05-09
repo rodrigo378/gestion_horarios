@@ -340,10 +340,10 @@
 
 <!-- modal guardar/editar -->
 <div *ngIf="modalHorasActivo" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-  <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg relative text-left">
+  <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg relative text-left max-h-[90vh] overflow-y-auto">
     
     <!-- Botón cerrar arriba -->
-    <button (click)="cancelarAsignacion()" class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-xl">
+    <button *ngIf="!eventoSeleccionado" (click)="cancelarAsignacion()" class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-xl">
       <i class="fa-solid fa-xmark"></i>
     </button>
 
