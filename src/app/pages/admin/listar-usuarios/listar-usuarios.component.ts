@@ -85,9 +85,7 @@ export class ListarUsuariosComponent implements OnInit {
 
   obtenerUsuarioPorId(id: number) {
     this.userService.getUserById(id).subscribe({
-      next: (usuario) => {
-        console.log('Usuario obtenido:', usuario);
-      },
+      next: (usuario) => {},
       error: (err) => {
         console.error('Error al obtener usuario por ID:', err);
       },
@@ -117,9 +115,6 @@ export class ListarUsuariosComponent implements OnInit {
   }
 
   abrirModal(): void {
-    console.log('abrir modal => ');
-    console.log('this.usuario.id => ', this.usuario.id);
-
     if (!this.usuario.id) {
       this.usuario = {
         id: null,
@@ -168,15 +163,6 @@ export class ListarUsuariosComponent implements OnInit {
         });
     } else {
       // CREAR
-      console.log('entro aca 1');
-
-      console.log('usuarioData.nombre => ', usuarioData.nombre);
-      console.log('usuarioData.apellido => ', usuarioData.apellido);
-      console.log('usuarioData.genero => ', usuarioData.genero);
-      console.log('usuarioData.grado => ', usuarioData.grado);
-      console.log('usuarioData.email => ', usuarioData.email);
-      console.log('usuarioData.estado => ', usuarioData.estado);
-      console.log('usuarioData.password => ', usuarioData.password);
 
       if (
         !usuarioData.nombre ||
@@ -187,7 +173,6 @@ export class ListarUsuariosComponent implements OnInit {
         !usuarioData.estado ||
         !usuarioData.password
       ) {
-        console.log('entro aca 2');
         this.alerService.warning('Todos los campos son obligatorios.');
         return;
       }

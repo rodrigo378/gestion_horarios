@@ -60,7 +60,6 @@ export class ReporteriaComponent implements OnInit {
   getEspecialidades() {
     this.cursoService.getEspecialidades().subscribe((data) => {
       this.especialidades = data;
-      console.log('especialidades', this.especialidades);
     });
   }
 
@@ -360,9 +359,6 @@ export class ReporteriaComponent implements OnInit {
   }
 
   aplicarFiltros() {
-    console.log('selectFacultad => ', this.selectFacultad);
-    console.log('selectEspecialidad => ', this.selectEspecialidad);
-
     this.especialidades.filter((e) => e.codfac == this.selectFacultad);
     this.cargarDocentes();
   }
