@@ -63,6 +63,10 @@ export class VerTurnosComponent implements OnInit {
   secciones: string[] = [];
   modalidades: { value: string; label: string }[] = [];
 
+
+  sortColumn: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+
   constructor(
     private router: Router,
     private fb: FormBuilder,
@@ -454,6 +458,28 @@ export class VerTurnosComponent implements OnInit {
         blob,
         `reporte-horarios-${format(new Date(), 'yyyy-MM-dd')}.xlsx`
       );
+    });
+  }
+
+  sortBy(column: string) {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+
+    this.sortData();
+  }
+
+  sortData() {
+    this.turnosFiltrados.sort((a, b) => {
+      const valA = (a as any)[this.sortColumn];
+      const valB = (b as any)[this.sortColumn];
+
+      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
+      return 0;
     });
   }
 
