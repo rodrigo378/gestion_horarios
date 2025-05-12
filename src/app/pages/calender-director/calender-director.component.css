@@ -1,6 +1,6 @@
 /* 📌 Aumentar la altura de las franjas horarias normales */
 ::ng-deep .fc-timegrid-slot {
-    height: 100px !important; /* Ajusta la altura de las filas normales */
+    height: 60px !important; /* Ajusta la altura de las filas normales */
     min-height: 100px !important;
   }
   
@@ -57,4 +57,14 @@
     pointer-events: none;
     filter: grayscale(100%);
   }
-  
+    
+  /* ⏳ Espacio extra entre el horario y el contenido *//* ✅ Aplica padding-top a todo el contenido del evento */
+/* ::ng-deep .fc-timegrid-event .fc-event-main {
+  padding-top: 18px !important;
+} */
+
+/* ✅ Ajusta el margen superior del título (opcional) */
+::ng-deep .fc-timegrid-event .fc-event-title {
+  margin-top: 15px !important;
+  font-size: 12px !important;
+}

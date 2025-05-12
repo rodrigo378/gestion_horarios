@@ -3,6 +3,8 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { CalendarOptions } from '@fullcalendar/core';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import esLocale from '@fullcalendar/core/locales/es';
 import { ActivatedRoute } from '@angular/router';
 import { Turno } from '../../interfaces/turno';
@@ -54,7 +56,8 @@ export class CalenderDirectorComponent implements OnInit {
     slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
     events: [], // Acá vas a cargar los eventos del docente
     hiddenDays: [0], // oculta domingo
-    eventClick: this.onEventClick.bind(this)
+    eventClick: this.onEventClick.bind(this),
+    eventDidMount: this.estilizarEvento.bind(this),
   };
 
   constructor(
@@ -89,7 +92,9 @@ export class CalenderDirectorComponent implements OnInit {
     });
   }
   
-  
+  estilizarEvento(info: any): void {
+    info.el.classList.add('evento-separado');
+  }
 
   cargarEventosPorTurno(turnoId: number): void {
     this.horarioService.getHorarioPorTurno(turnoId).subscribe((data) => {
@@ -196,5 +201,38 @@ export class CalenderDirectorComponent implements OnInit {
   this.selectedDay = '';
   this.selectedClasses = [];
 }
+
+  exportarCalendarioAPDF(): void {
+    const calendarioEl = document.querySelector('.fc'); // Asegúrate que este selector sea correcto
+    if (!calendarioEl) {
+      console.warn('❌ No se encontró el calendario en el DOM.');
+      return;
+    }
+
+    html2canvas(calendarioEl as HTMLElement, {
+      scale: 3, // Mejor resolución
+      useCORS: true, // Por si tienes imágenes cargadas
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('landscape', 'pt', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save('calendario.pdf');
+    });
+  }
+
+  capturarCalendario() {
+    const calendarioEl = document.querySelector('.fc'); // o '#calendar'
+    if (!calendarioEl) return;
+
+    html2canvas(calendarioEl as HTMLElement).then((canvas) => {
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = 'calendario.png';
+      link.click();
+    });
+  }
 
 }

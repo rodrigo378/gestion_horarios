@@ -28,6 +28,8 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "file-saver": "^2.0.5",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.1",
     "ng-zorro-antd": "^19.0.2",
     "ngx-apexcharts": "^0.7.1",
     "ngx-pagination": "^6.0.3",

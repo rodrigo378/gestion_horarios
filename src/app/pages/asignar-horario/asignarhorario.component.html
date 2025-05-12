@@ -108,6 +108,7 @@
             <!-- Tipo y horas -->
             <p class="text-xs text-gray-600 mt-1">
               {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
+<<<<<<< HEAD
               <span
                 *ngIf="(curso.h_umaPlus ?? 0) > 0"
                 class="ml-1 italic text-blue-600 text-[11px]"
@@ -115,6 +116,11 @@
                 (umaPlus {{ curso.h_umaPlus ?? 0 }})
               </span>
               
+=======
+              <span *ngIf="curso.tipo === 'Teoría' && (curso.h_umaPlus ?? 0) > 0" class="ml-1 italic text-blue-600 text-[11px]">
+                (umaPlus {{ curso.h_umaPlus }})
+              </span>              
+>>>>>>> 5b34729366a6e8cf095c41c50f40a0a7168b45b1
             </p>
 
             <!-- Modalidad -->
