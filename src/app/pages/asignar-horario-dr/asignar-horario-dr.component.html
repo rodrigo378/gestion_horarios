@@ -107,17 +107,9 @@
             <!-- Tipo y horas -->
             <p class="text-xs text-gray-600 mt-1">
               {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
-<<<<<<< HEAD
-              <span
-                *ngIf="(curso.h_umaPlus ?? 0) > 0"
-                class="ml-1 italic text-blue-600 text-[11px]"
-              >
-                (umaPlus {{ curso.h_umaPlus ?? 0 }})
-=======
               <span *ngIf="curso.tipo === 'Teoría' && (curso.h_umaPlus ?? 0) > 0 " class="ml-1 italic text-blue-600 text-[11px]"> 
                 <!-- POR QUE NO JAAAAAAAAAAAAAAAAAAAAAAAAAAALAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA -->
                 (umaPlus {{ curso.h_umaPlus }})
->>>>>>> 6d43d3dea01e93cfa121abff230836b635e3d7d1
               </span>
             </p>
 
@@ -186,17 +178,9 @@
             <!-- Tipo y horas -->
             <p class="text-xs text-gray-600 mt-1">
               {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
-<<<<<<< HEAD
-              <span
-                *ngIf="(curso.h_umaPlus ?? 0) > 0"
-                class="ml-1 italic text-blue-600 text-[11px]"
-              >
-                (umaPlus {{ curso.h_umaPlus ?? 0 }})
-=======
               <span *ngIf="curso.tipo === 'Teoría' && (curso.h_umaPlus ?? 0) > 0 " class="ml-1 italic text-blue-600 text-[11px]"> 
                 <!-- POR QUE NO JAAAAAAAAAAAAAAAAAAAAAAAAAAALAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA -->
                 (umaPlus {{ curso.h_umaPlus }})
->>>>>>> 6d43d3dea01e93cfa121abff230836b635e3d7d1
               </span>
             </p>
             <!-- Modalidad -->
