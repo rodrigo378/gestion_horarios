@@ -37,6 +37,15 @@
   </div>
 </div>
 
+<button (click)="exportarCalendarioAPDF()" class="bg-green-500 text-white px-4 py-2 rounded mt-4">
+  📄 Exportar a PDF
+</button>
+
+<button (click)="capturarCalendario()" class="bg-purple-700 text-white px-4 py-2 rounded mt-4">
+  📄 Exportar a IMG
+</button>
+
+
 <full-calendar
   [options]="calendarOptions"
   class="shadow-lg border border-gray-200 rounded-lg p-4 mt-5"
