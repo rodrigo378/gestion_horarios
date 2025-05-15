@@ -813,7 +813,13 @@ private calcularHorasRestantesPorCurso(
       },
     };
 
-    this.calendarComponent.getApi().addEvent(evento);
+    // 🔁 También lo agregamos manualmente al array si calendarOptions.events es un array
+    if (Array.isArray(this.calendarOptions.events)) {
+      this.calendarOptions.events = [
+        ...(this.calendarOptions.events as any[]),
+        evento,
+      ];
+    }
 
     const codigo = this.cursoSeleccionado.extendedProps.codigo;
     const tipo = this.cursoSeleccionado.extendedProps.tipo;
@@ -1468,49 +1474,68 @@ private calcularHorasRestantesPorCurso(
     });
   }
 
-  procesarActualizacionExitosa(
-    base: Date,
-    fin: Date,
-    codigo: string,
-    tipo: string,
-    diferencia: number
-  ): void {
-    this.actualizarHorasRestantes(codigo, tipo, diferencia);
-  
-    const evento = this.eventoSeleccionado;
-    if (!evento) return;
-  
-    evento.setStart(base);
-    evento.setEnd(fin);
-    evento.setExtendedProp('n_horas', this.horasAsignadas);
-    evento.setExtendedProp('dia', this.diaSeleccionado);
-    evento.setExtendedProp('aula_id', this.aulaSeleccionada);
-    evento.setExtendedProp('docente_id', this.docenteSeleccionado);
-    evento.setProp('title', `${this.cursoSeleccionado?.c_nomcur} (${tipo}) - ${this.selectedDocente?.c_nomdoc || 'Sin docente'}`);
-    // 🔁 Forzar re-render para aplicar el tooltip actualizado
-    const calendarApi = this.calendarComponent.getApi();
-    const eventoId = evento.id;
-  
-    // Obtenemos un clon del evento actualizado
-    const nuevoEvento = {
-      ...evento.toPlainObject(),
-      start: base.toISOString(),
-      end: fin.toISOString(),
-    };
-  
-    evento.remove(); // lo removemos visualmente
-    calendarApi.addEvent(nuevoEvento); // lo reinsertamos
-  
-    this.alertService.success('✅ Evento actualizado correctamente.');
-    this.modalHorasActivo = false;
-    this.eventoSeleccionado = null;
-  
-    this.resetCamposModal();
-    this.verificarEstadoTurnoAutomatico();
-  
-    // ❌ Ya NO LLAMES cargarHorarios() aquí porque hace reload completo y puede sobrescribir los cambios en el frontend antes de que se guarden en backend
-    // this.cargarHorarios(); ❌ lo comentamos
+procesarActualizacionExitosa(
+  base: Date,
+  fin: Date,
+  codigo: string,
+  tipo: string,
+  diferencia: number
+): void {
+  this.actualizarHorasRestantes(codigo, tipo, diferencia);
+
+  const evento = this.eventoSeleccionado;
+  if (!evento) return;
+
+  evento.setStart(base);
+  evento.setEnd(fin);
+  evento.setExtendedProp('n_horas', this.horasAsignadas);
+  evento.setExtendedProp('dia', this.diaSeleccionado);
+  evento.setExtendedProp('aula_id', this.aulaSeleccionada);
+  evento.setExtendedProp('docente_id', this.docenteSeleccionado);
+  evento.setProp(
+    'title',
+    `${this.cursoSeleccionado?.c_nomcur} (${tipo}) - ${this.selectedDocente?.c_nomdoc || 'Sin docente'}`
+  );
+
+  // 🔁 Forzar re-render visual (tooltip, etc.)
+  const calendarApi = this.calendarComponent.getApi();
+  const eventoId = evento.id;
+
+  const nuevoEvento = {
+    ...evento.toPlainObject(),
+    start: base.toISOString(),
+    end: fin.toISOString(),
+  };
+
+  evento.remove(); // lo removemos visualmente
+  calendarApi.addEvent(nuevoEvento); // lo reinsertamos
+
+  // ✅ También actualizar el objeto correspondiente en calendarOptions.events
+  if (Array.isArray(this.calendarOptions.events)) {
+    const eventosActuales = this.calendarOptions.events as any[];
+    const index = eventosActuales.findIndex((e) => e.id === eventoId);
+    if (index !== -1) {
+      eventosActuales[index].start = base;
+      eventosActuales[index].end = fin;
+      eventosActuales[index].title = nuevoEvento.title;
+      eventosActuales[index].extendedProps = {
+        ...eventosActuales[index].extendedProps,
+        n_horas: this.horasAsignadas,
+        dia: this.diaSeleccionado,
+        aula_id: this.aulaSeleccionada,
+        docente_id: this.docenteSeleccionado,
+      };
+    }
   }
+
+  this.alertService.success('✅ Evento actualizado correctamente.');
+  this.modalHorasActivo = false;
+  this.eventoSeleccionado = null;
+
+  this.resetCamposModal();
+  this.verificarEstadoTurnoAutomatico();
+}
+
   
 
   eliminarEvento(): void {
