@@ -807,8 +807,12 @@ export class AsignarHorarioDrComponent implements OnInit {
       },
     };
 
-    this.calendarComponent.getApi().addEvent(evento);
-
+    if (Array.isArray(this.calendarOptions.events)) {
+      this.calendarOptions.events = [
+        ...(this.calendarOptions.events as any[]),
+        evento,
+      ];
+    }
     const codigo = this.cursoSeleccionado.extendedProps.codigo;
     const tipo = this.cursoSeleccionado.extendedProps.tipo;
 
@@ -1494,6 +1498,24 @@ export class AsignarHorarioDrComponent implements OnInit {
   
     evento.remove(); // lo removemos visualmente
     calendarApi.addEvent(nuevoEvento); // lo reinsertamos
+
+      // ✅ También actualizar el objeto correspondiente en calendarOptions.events
+  if (Array.isArray(this.calendarOptions.events)) {
+    const eventosActuales = this.calendarOptions.events as any[];
+    const index = eventosActuales.findIndex((e) => e.id === eventoId);
+    if (index !== -1) {
+      eventosActuales[index].start = base;
+      eventosActuales[index].end = fin;
+      eventosActuales[index].title = nuevoEvento.title;
+      eventosActuales[index].extendedProps = {
+        ...eventosActuales[index].extendedProps,
+        n_horas: this.horasAsignadas,
+        dia: this.diaSeleccionado,
+        aula_id: this.aulaSeleccionada,
+        docente_id: this.docenteSeleccionado,
+      };
+    }
+  }
   
     this.alertService.success('✅ Evento actualizado correctamente.');
     this.modalHorasActivo = false;
