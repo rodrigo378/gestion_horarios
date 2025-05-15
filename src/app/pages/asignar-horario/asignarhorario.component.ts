@@ -164,69 +164,78 @@ export class AsignarhorarioComponent implements OnInit {
     });
   }
 
-  private calcularHorasRestantesPorCurso(
-    cursos: Curso[],
-    horasAsignadas: Record<string, { teoria: number; practica: number }>
-  ): {
-    cursos: Curso[];
-    cursosPlan2023: Curso[];
-    cursosPlan2025: Curso[];
-  } {
-    const cursosResult: Curso[] = [];
-    const plan2023: Curso[] = [];
-    const plan2025: Curso[] = [];
-  
-    cursos.forEach((curso) => {
-      const codCur = curso.c_codcur;
-      const asignado = horasAsignadas[codCur] || { teoria: 0, practica: 0 };
-  
-      // Si HT > 0: aplicar h_umaPlus
-      if (curso.n_ht && curso.n_ht > 0) {
-        const h_uma = curso.h_umaPlus ?? 0;
-        const htReal = curso.n_ht - h_uma;
-  
-        const horasRestantes = htReal - asignado.teoria;
-  
-        const cursoTeoria: Curso = {
-          ...curso,
-          tipo: 'Teoría',
-          n_ht: htReal,
-          h_umaPlus: h_uma,
-          horasRestantes,
-        };
-  
-        cursosResult.push(cursoTeoria);
-        if (curso.n_codper === 2023) plan2023.push(cursoTeoria);
-        if (curso.n_codper === 2025) plan2025.push(cursoTeoria);
-      }
-  
-      // Si HP > 0: se mantiene igual
-      if (curso.n_hp && curso.n_hp > 0) {
-        const horasRestantes = curso.n_hp - asignado.practica;
-  
-        const cursoPractica: Curso = {
-          ...curso,
-          tipo: 'Práctica',
-          horasRestantes,
-        };
-  
-        cursosResult.push(cursoPractica);
-        if (curso.n_codper === 2023) plan2023.push(cursoPractica);
-        if (curso.n_codper === 2025) plan2025.push(cursoPractica);
-      }
-  
-      // Si HT = 0 → aseguramos que h_umaPlus también sea 0
-      if (!curso.n_ht || curso.n_ht === 0) {
-        curso.h_umaPlus = 0;
-      }
-    });
-  
-    return {
-      cursos: cursosResult,
-      cursosPlan2023: plan2023,
-      cursosPlan2025: plan2025,
-    };
-  }
+private calcularHorasRestantesPorCurso(
+  cursos: Curso[],
+  horasAsignadas: Record<string, { teoria: number; practica: number }>
+): {
+  cursos: Curso[];
+  cursosPlan2023: Curso[];
+  cursosPlan2025: Curso[];
+} {
+  const cursosResult: Curso[] = [];
+  const plan2023: Curso[] = [];
+  const plan2025: Curso[] = [];
+
+  cursos.forEach((curso) => {
+    const codCur = curso.c_codcur;
+    const asignado = horasAsignadas[codCur] || { teoria: 0, practica: 0 };
+
+    // Si HT > 0: aplicar h_umaPlus
+    if (curso.n_ht && curso.n_ht > 0) {
+      const h_uma = curso.h_umaPlus ?? 0;
+      const htReal = curso.n_ht - h_uma;
+
+      const horasRestantes = htReal - asignado.teoria;
+
+      const cursoTeoria: Curso = {
+        ...curso,
+        tipo: 'Teoría',
+        n_ht: htReal,
+        h_umaPlus: h_uma,
+        horasRestantes,
+        disabled: !(
+          (curso.n_codper === 2025 && +curso.n_ciclo >= 1 && +curso.n_ciclo <= 7) ||
+          (curso.n_codper === 2023 && +curso.n_ciclo >= 8 && +curso.n_ciclo <= 10)
+        ),
+      };
+
+      cursosResult.push(cursoTeoria);
+      if (curso.n_codper === 2023) plan2023.push(cursoTeoria);
+      if (curso.n_codper === 2025) plan2025.push(cursoTeoria);
+    }
+
+    // Si HP > 0: se mantiene igual
+    if (curso.n_hp && curso.n_hp > 0) {
+      const horasRestantes = curso.n_hp - asignado.practica;
+
+      const cursoPractica: Curso = {
+        ...curso,
+        tipo: 'Práctica',
+        horasRestantes,
+        disabled: !(
+          (curso.n_codper === 2025 && +curso.n_ciclo >= 1 && +curso.n_ciclo <= 7) ||
+          (curso.n_codper === 2023 && +curso.n_ciclo >= 8 && +curso.n_ciclo <= 10)
+        ),
+      };
+
+      cursosResult.push(cursoPractica);
+      if (curso.n_codper === 2023) plan2023.push(cursoPractica);
+      if (curso.n_codper === 2025) plan2025.push(cursoPractica);
+    }
+
+    // Si HT = 0 → aseguramos que h_umaPlus también sea 0
+    if (!curso.n_ht || curso.n_ht === 0) {
+      curso.h_umaPlus = 0;
+    }
+  });
+
+  return {
+    cursos: cursosResult,
+    cursosPlan2023: plan2023,
+    cursosPlan2025: plan2025,
+  };
+}
+
 
   private cargarDatosPorTurno(id: number): void {
     this.turnoService.getTurnoById(id).subscribe((turno) => {
@@ -804,10 +813,7 @@ export class AsignarhorarioComponent implements OnInit {
       },
     };
 
-    this.calendarOptions.events = [
-      ...(this.calendarOptions.events as any[]),
-      evento,
-    ];
+    this.calendarComponent.getApi().addEvent(evento);
 
     const codigo = this.cursoSeleccionado.extendedProps.codigo;
     const tipo = this.cursoSeleccionado.extendedProps.tipo;
