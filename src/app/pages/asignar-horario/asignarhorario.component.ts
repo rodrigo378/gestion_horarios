@@ -828,7 +828,13 @@ export class AsignarhorarioComponent implements OnInit {
       },
     };
 
-    this.calendarComponent.getApi().addEvent(evento);
+    // 🔁 También lo agregamos manualmente al array si calendarOptions.events es un array
+    if (Array.isArray(this.calendarOptions.events)) {
+      this.calendarOptions.events = [
+        ...(this.calendarOptions.events as any[]),
+        evento,
+      ];
+    }
 
     const codigo = this.cursoSeleccionado.extendedProps.codigo;
     const tipo = this.cursoSeleccionado.extendedProps.tipo;
@@ -1518,11 +1524,11 @@ export class AsignarhorarioComponent implements OnInit {
         this.selectedDocente?.c_nomdoc || 'Sin docente'
       }`
     );
-    // 🔁 Forzar re-render para aplicar el tooltip actualizado
+
+    // 🔁 Forzar re-render visual (tooltip, etc.)
     const calendarApi = this.calendarComponent.getApi();
     const eventoId = evento.id;
 
-    // Obtenemos un clon del evento actualizado
     const nuevoEvento = {
       ...evento.toPlainObject(),
       start: base.toISOString(),
@@ -1532,15 +1538,30 @@ export class AsignarhorarioComponent implements OnInit {
     evento.remove(); // lo removemos visualmente
     calendarApi.addEvent(nuevoEvento); // lo reinsertamos
 
+    // ✅ También actualizar el objeto correspondiente en calendarOptions.events
+    if (Array.isArray(this.calendarOptions.events)) {
+      const eventosActuales = this.calendarOptions.events as any[];
+      const index = eventosActuales.findIndex((e) => e.id === eventoId);
+      if (index !== -1) {
+        eventosActuales[index].start = base;
+        eventosActuales[index].end = fin;
+        eventosActuales[index].title = nuevoEvento.title;
+        eventosActuales[index].extendedProps = {
+          ...eventosActuales[index].extendedProps,
+          n_horas: this.horasAsignadas,
+          dia: this.diaSeleccionado,
+          aula_id: this.aulaSeleccionada,
+          docente_id: this.docenteSeleccionado,
+        };
+      }
+    }
+
     this.alertService.success('✅ Evento actualizado correctamente.');
     this.modalHorasActivo = false;
     this.eventoSeleccionado = null;
 
     this.resetCamposModal();
     this.verificarEstadoTurnoAutomatico();
-
-    // ❌ Ya NO LLAMES cargarHorarios() aquí porque hace reload completo y puede sobrescribir los cambios en el frontend antes de que se guarden en backend
-    // this.cargarHorarios(); ❌ lo comentamos
   }
 
   eliminarEvento(): void {
