@@ -1568,7 +1568,7 @@ export class AsignarhorarioComponent implements OnInit {
 
                 // 🔁 Refrescamos los cursos y docentes si quieres
                 // this.recargarCursosSegunTurno();
-                this.cargarDocentes();
+                // this.cargarDocentes();
                 this.verificarEstadoTurnoAutomatico();
               },
               error: (err) => {
