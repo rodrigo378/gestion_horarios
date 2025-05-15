@@ -193,6 +193,14 @@ export class AsignarhorarioComponent implements OnInit {
           n_ht: htReal,
           h_umaPlus: h_uma,
           horasRestantes,
+          disabled: !(
+            (curso.n_codper === 2025 &&
+              +curso.n_ciclo >= 1 &&
+              +curso.n_ciclo <= 7) ||
+            (curso.n_codper === 2023 &&
+              +curso.n_ciclo >= 8 &&
+              +curso.n_ciclo <= 10)
+          ),
         };
 
         cursosResult.push(cursoTeoria);
@@ -208,6 +216,14 @@ export class AsignarhorarioComponent implements OnInit {
           ...curso,
           tipo: 'Práctica',
           horasRestantes,
+          disabled: !(
+            (curso.n_codper === 2025 &&
+              +curso.n_ciclo >= 1 &&
+              +curso.n_ciclo <= 7) ||
+            (curso.n_codper === 2023 &&
+              +curso.n_ciclo >= 8 &&
+              +curso.n_ciclo <= 10)
+          ),
         };
 
         cursosResult.push(cursoPractica);
@@ -812,10 +828,7 @@ export class AsignarhorarioComponent implements OnInit {
       },
     };
 
-    this.calendarOptions.events = [
-      ...(this.calendarOptions.events as any[]),
-      evento,
-    ];
+    this.calendarComponent.getApi().addEvent(evento);
 
     const codigo = this.cursoSeleccionado.extendedProps.codigo;
     const tipo = this.cursoSeleccionado.extendedProps.tipo;

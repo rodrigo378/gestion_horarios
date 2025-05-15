@@ -108,10 +108,13 @@
             <!-- Tipo y horas -->
             <p class="text-xs text-gray-600 mt-1">
               {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
-              <span *ngIf="curso.tipo === 'Teoría' && (curso.h_umaPlus ?? 0) > 0 " class="ml-1 italic text-blue-600 text-[11px]"> 
+              <span
+                *ngIf="curso.tipo === 'Teoría' && (curso.h_umaPlus ?? 0) > 0"
+                class="ml-1 italic text-blue-600 text-[11px]"
+              >
                 <!-- POR QUE NO JAAAAAAAAAAAAAAAAAAAAAAAAAAALAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA -->
                 (umaPlus {{ curso.h_umaPlus }})
-              </span>             
+              </span>
             </p>
 
             <!-- Modalidad -->
@@ -132,6 +135,7 @@
           <div
             *ngFor="let curso of cursosPlan2025Visibles"
             class="relative fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3 cursor-move"
+            [ngClass]="{ 'curso-disabled': curso.disabled }"
             [attr.data-event]="stringifyEvent(curso)"
           >
             <!-- Área -->
@@ -178,11 +182,14 @@
             <!-- Tipo y horas -->
             <p class="text-xs text-gray-600 mt-1">
               {{ curso.tipo }} · {{ curso.horasRestantes }} hrs
-              <span *ngIf="curso.tipo === 'Teoría' && (curso.h_umaPlus ?? 0) > 0 " class="ml-1 italic text-blue-600 text-[11px]"> 
+              <span
+                *ngIf="curso.tipo === 'Teoría' && (curso.h_umaPlus ?? 0) > 0"
+                class="ml-1 italic text-blue-600 text-[11px]"
+              >
                 <!-- POR QUE NO JAAAAAAAAAAAAAAAAAAAAAAAAAAALAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA -->
                 (umaPlus {{ curso.h_umaPlus }})
               </span>
-            </p>  
+            </p>
             <!-- Modalidad -->
             <p class="text-xs text-gray-500">
               {{ curso.c_nommod }}
