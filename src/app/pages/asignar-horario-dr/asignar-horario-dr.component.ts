@@ -988,6 +988,7 @@ export class AsignarHorarioDrComponent implements OnInit {
           turno_id: this.turnoId,
           tipo: ev.extendedProps['tipo'] ?? 'Teoria',
           h_umaPlus: ev.extendedProps['h_umaPlus'] ?? 0, // 👈 este es el nuevo campo
+          modalidad: this.cursoSeleccionado.modalidad ?? '', // 👈 aquí
         },
       };
     });

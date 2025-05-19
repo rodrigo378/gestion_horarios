@@ -76,6 +76,8 @@ export class AsignarhorarioComponent implements OnInit {
   cursosAsyncDesdeAPI: Curso[] = [];
   //loader
   cargandoCursos: boolean = true;
+
+  modalidadSeleccionada: 'vir' | 'pre' | null = null;
   //#endregion
 
   //#region Libreria del calendario
@@ -489,6 +491,7 @@ private calcularHorasRestantesPorCurso(
 
     // Si no es padre, sigue el flujo normal
     this.eventoSeleccionado = evento;
+    this.modalidadSeleccionada = evento.extendedProps.modalidad ?? null;
     this.modalHorasActivo = true;
 
     const codigo = evento.extendedProps.codCur;
@@ -597,6 +600,7 @@ private calcularHorasRestantesPorCurso(
 
     // ✅ No se cruza: seguimos con el flujo
     this.eventoSeleccionado = evento;
+    this.modalidadSeleccionada = evento.extendedProps.modalidad ?? null;
     this.modalHorasActivo = true;
 
     const fecha = new Date(evento.start);
@@ -796,7 +800,7 @@ private calcularHorasRestantesPorCurso(
 
     const evento = {
       id: eventoId,
-      title: `${this.cursoSeleccionado.title} (${this.cursoSeleccionado.tipo}) - ${this.selectedDocente?.c_nomdoc}`,
+      title: `${this.cursoSeleccionado.title} (${this.cursoSeleccionado.tipo}) - ${this.selectedDocente?.c_nomdoc} [${this.modalidadSeleccionada}]`,
       start: start,
       end: end,
       backgroundColor:
@@ -810,6 +814,7 @@ private calcularHorasRestantesPorCurso(
         docente_id: this.selectedDocente?.id ?? null,
         h_umaPlus: this.cursoSeleccionado.h_umaPlus ?? 0,
         c_codcur_equ: this.cursoSeleccionado?.c_codcur_equ ?? null,
+        modalidad: this.modalidadSeleccionada,
       },
     };
 
@@ -1003,6 +1008,7 @@ private calcularHorasRestantesPorCurso(
           turno_id: this.turnoId,
           tipo: ev.extendedProps['tipo'] ?? 'Teoria',
           h_umaPlus: ev.extendedProps['h_umaPlus'] ?? 0, // 👈 este es el nuevo campo
+          modalidad: ev.extendedProps['modalidad'] ?? null,
         },
       };
     });
@@ -1120,6 +1126,7 @@ private calcularHorasRestantesPorCurso(
                   aula_id: h.aula_id,
                   docente_id: h.docente_id,
                   tipoAgrupado: tipoAgrupado,
+                  modalidad: h.modalidad ?? null, // ✅ clave para que llegue
                 },
                 durationEditable: false,
               };
@@ -1422,6 +1429,9 @@ private calcularHorasRestantesPorCurso(
         turno_id: this.turnoId,
         tipo: ev.extendedProps['tipo'] ?? 'Teoria',
         title: `${this.cursoSeleccionado.c_nomcur} (${tipo}) - ${this.selectedDocente?.c_nomdoc || 'Sin docente'}`,
+        modalidad: isEdited
+          ? (this.modalidadSeleccionada?.toLowerCase() ?? null)
+          : (ev.extendedProps['modalidad']?.toLowerCase() ?? null),
       };
     });
 
@@ -1677,6 +1687,7 @@ procesarActualizacionExitosa(
     this.docentesFiltrados = [];
     this.aulaSeleccionada = null;
     this.horasAsignadas = 1;
+    this.modalidadSeleccionada = null;
   }
 
   verificarEstadoTurnoAutomatico() {
