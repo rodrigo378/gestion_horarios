@@ -214,9 +214,16 @@
       </button>
     </div>
   </div>
-  
-    <!-- 📅 Calendario -->
-    <full-calendar  
+
+  <div *ngIf="guardandoHorarios" class="flex justify-center items-center mt-4">
+    <div class="flex flex-col items-center gap-2">
+      <img src="assets/img/logo-uma.png" alt="Guardando UMA" class="w-16 h-16 animate-spin" />
+      <span class="text-sm text-gray-600 mt-2">Guardando horarios, por favor espera...</span>
+    </div>
+  </div>
+
+  <!-- 📅 Calendario -->
+  <full-calendar
     *ngIf="mostrarCalendario"
     #fullcalendar
     [options]="calendarOptions"

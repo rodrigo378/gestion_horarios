@@ -75,6 +75,8 @@ export class AsignarHorarioDrComponent implements OnInit {
   cursosAsyncDesdeAPI: Curso[] = [];
   //loader
   cargandoCursos: boolean = true;
+  guardandoHorarios: boolean = false;
+  //para el modal
   modalidadSeleccionada: 'vir' | 'pre' | null = null;
   //#endregion
 
@@ -964,6 +966,8 @@ export class AsignarHorarioDrComponent implements OnInit {
   guardarEventos(): void {
     if (!this.turnoId) return;
 
+    this.guardandoHorarios = true;
+
     const eventos = this.calendarComponent
       .getApi()
       .getEvents()
@@ -1043,6 +1047,7 @@ export class AsignarHorarioDrComponent implements OnInit {
 
     this.horarioService.guardarHorarios(payload).subscribe({
       next: (res) => {
+        this.guardandoHorarios = false;
         if (res.success === false && res.errores?.length > 0) {
           const errores = res.errores as string[];
           const erroresHtml = errores.map((err) => `<li>${err}</li>`).join('');
@@ -1057,6 +1062,7 @@ export class AsignarHorarioDrComponent implements OnInit {
         this.cargarDocentes();
       },
       error: (err) => {
+        this.guardandoHorarios = false;
         this.alertService.error('❌ Error al guardar horarios.');
         console.error(err);
       },
