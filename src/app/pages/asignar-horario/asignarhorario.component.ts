@@ -457,6 +457,7 @@ private calcularHorasRestantesPorCurso(
     };
 
     this.modalHorasActivo = true;
+    this.modalidadSeleccionada = 'pre';
   }
 
   stringifyEvent(curso: any): string {
@@ -491,7 +492,10 @@ private calcularHorasRestantesPorCurso(
 
     // Si no es padre, sigue el flujo normal
     this.eventoSeleccionado = evento;
-    this.modalidadSeleccionada = evento.extendedProps.modalidad ?? null;
+    const modalidadActual = evento.extendedProps.modalidad;
+    this.modalidadSeleccionada = modalidadActual === 'pre' || modalidadActual === 'vir'
+      ? modalidadActual
+      : null;
     this.modalHorasActivo = true;
 
     const codigo = evento.extendedProps.codCur;
@@ -600,7 +604,7 @@ private calcularHorasRestantesPorCurso(
 
     // ✅ No se cruza: seguimos con el flujo
     this.eventoSeleccionado = evento;
-    this.modalidadSeleccionada = evento.extendedProps.modalidad ?? null;
+this.modalidadSeleccionada = (evento.extendedProps.modalidad || '').toLowerCase() as 'pre' | 'vir';
     this.modalHorasActivo = true;
 
     const fecha = new Date(evento.start);
@@ -1515,6 +1519,10 @@ procesarActualizacionExitosa(
     ...evento.toPlainObject(),
     start: base.toISOString(),
     end: fin.toISOString(),
+    extendedProps: {
+      ...evento.extendedProps,
+      modalidad: this.modalidadSeleccionada
+    }
   };
 
   evento.remove(); // lo removemos visualmente
