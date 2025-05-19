@@ -466,6 +466,16 @@
       </select>
     </div>
 
+    <!-- Modalidad (select vir o pre) -->
+    <div class="mb-4">
+      <label class="block text-sm font-semibold text-gray-600 mb-1">Modalidad</label>
+      <select class="w-full border border-gray-300 rounded px-3 py-2" [(ngModel)]="modalidadSeleccionada">
+        <option [ngValue]="null" disabled>-- Selecciona una modalidad --</option>
+        <option value="vir">Virtual (VIR)</option>
+        <option value="pre">Presencial (PRE)</option>
+      </select>
+    </div>
+
     <!-- Día editable -->
     <div class="mb-4">
       <label class="block text-sm font-semibold text-gray-600 mb-1">Día</label>

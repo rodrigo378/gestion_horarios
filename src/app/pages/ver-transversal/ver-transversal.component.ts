@@ -145,6 +145,10 @@ export class VerTransversalComponent implements OnInit {
               (codAeq && (codAeq === codB || codAeq === codBeq)))
           );
         });
+
+        if (this.cursosFiltrados.length === 0) {
+          this.alertService.info('Sin equivalencias');
+        }
       });
   }
 

@@ -76,6 +76,8 @@ export class AsignarhorarioComponent implements OnInit {
   cursosAsyncDesdeAPI: Curso[] = [];
   //loader
   cargandoCursos: boolean = true;
+
+  modalidadSeleccionada: 'vir' | 'pre' | null = null;
   //#endregion
 
   //#region Libreria del calendario
@@ -504,6 +506,7 @@ export class AsignarhorarioComponent implements OnInit {
 
     // Si no es padre, sigue el flujo normal
     this.eventoSeleccionado = evento;
+    this.modalidadSeleccionada = evento.extendedProps.modalidad ?? null;
     this.modalHorasActivo = true;
 
     const codigo = evento.extendedProps.codCur;
@@ -612,6 +615,7 @@ export class AsignarhorarioComponent implements OnInit {
 
     // ✅ No se cruza: seguimos con el flujo
     this.eventoSeleccionado = evento;
+    this.modalidadSeleccionada = evento.extendedProps.modalidad ?? null;
     this.modalHorasActivo = true;
 
     const fecha = new Date(evento.start);
@@ -811,7 +815,7 @@ export class AsignarhorarioComponent implements OnInit {
 
     const evento = {
       id: eventoId,
-      title: `${this.cursoSeleccionado.title} (${this.cursoSeleccionado.tipo}) - ${this.selectedDocente?.c_nomdoc}`,
+      title: `${this.cursoSeleccionado.title} (${this.cursoSeleccionado.tipo}) - ${this.selectedDocente?.c_nomdoc} [${this.modalidadSeleccionada}]`,
       start: start,
       end: end,
       backgroundColor:
@@ -825,6 +829,7 @@ export class AsignarhorarioComponent implements OnInit {
         docente_id: this.selectedDocente?.id ?? null,
         h_umaPlus: this.cursoSeleccionado.h_umaPlus ?? 0,
         c_codcur_equ: this.cursoSeleccionado?.c_codcur_equ ?? null,
+        modalidad: this.modalidadSeleccionada,
       },
     };
 
@@ -1025,6 +1030,7 @@ export class AsignarhorarioComponent implements OnInit {
           turno_id: this.turnoId,
           tipo: ev.extendedProps['tipo'] ?? 'Teoria',
           h_umaPlus: ev.extendedProps['h_umaPlus'] ?? 0, // 👈 este es el nuevo campo
+          modalidad: ev.extendedProps['modalidad'] ?? null,
         },
       };
     });
@@ -1142,6 +1148,7 @@ export class AsignarhorarioComponent implements OnInit {
                   aula_id: h.aula_id,
                   docente_id: h.docente_id,
                   tipoAgrupado: tipoAgrupado,
+                  modalidad: h.modalidad ?? null, // ✅ clave para que llegue
                 },
                 durationEditable: false,
               };
@@ -1448,6 +1455,9 @@ export class AsignarhorarioComponent implements OnInit {
         title: `${this.cursoSeleccionado.c_nomcur} (${tipo}) - ${
           this.selectedDocente?.c_nomdoc || 'Sin docente'
         }`,
+        modalidad: isEdited
+          ? this.modalidadSeleccionada?.toLowerCase() ?? null
+          : ev.extendedProps['modalidad']?.toLowerCase() ?? null,
       };
     });
 
@@ -1702,6 +1712,7 @@ export class AsignarhorarioComponent implements OnInit {
     this.docentesFiltrados = [];
     this.aulaSeleccionada = null;
     this.horasAsignadas = 1;
+    this.modalidadSeleccionada = null;
   }
 
   verificarEstadoTurnoAutomatico() {

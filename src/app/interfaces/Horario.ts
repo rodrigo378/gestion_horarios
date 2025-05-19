@@ -14,6 +14,7 @@ export interface HorarioExtendido {
   docente_id: number | null;
   curso_id: number;
   turno_id: number;
+  modalidad: string;
   curso: {
     id: number;
     n_codper: string;
@@ -73,6 +74,7 @@ export interface CreateHorario {
     docente_id: number;
     turno_id: number;
     tipo: string;
+    modalidad: string;
   }[];
 }
 

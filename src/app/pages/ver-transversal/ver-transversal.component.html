@@ -739,15 +739,15 @@
             <ng-container *ngFor="let curso of cursosFiltrados">
               <tr class="border-t">
                 <td class="px-4 py-2">
-                  <!-- {{ curso.id }} - {{ curso.turno.id }} - -->
-                  <!-- {{ curso.turno.n_codper }} -->
+                  {{ curso.id }} - {{ curso.turno.id }} -
+                  {{ curso.turno.n_codper }}
                   {{ curso.nom_fac }}
                 </td>
 
                 <td class="px-4 py-2">
                   {{ curso.nomesp }}
                 </td>
-                <td class="px-4 py-2">{{ curso.turno.n_codper }}</td>
+                <td class="px-4 py-2">{{ curso.turno.n_codpla }}</td>
                 <td class="px-4 py-2">
                   ({{ curso.c_codcur }}) {{ curso.c_nomcur }}
                 </td>
