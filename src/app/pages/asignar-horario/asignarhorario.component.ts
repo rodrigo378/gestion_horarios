@@ -76,7 +76,8 @@ export class AsignarhorarioComponent implements OnInit {
   cursosAsyncDesdeAPI: Curso[] = [];
   //loader
   cargandoCursos: boolean = true;
-
+  guardandoHorarios: boolean = false;
+  //para el modal
   modalidadSeleccionada: 'vir' | 'pre' | null = null;
   //#endregion
 
@@ -979,6 +980,8 @@ this.modalidadSeleccionada = (evento.extendedProps.modalidad || '').toLowerCase(
   guardarEventos(): void {
     if (!this.turnoId) return;
 
+    this.guardandoHorarios = true;
+
     const eventos = this.calendarComponent
       .getApi()
       .getEvents()
@@ -1058,6 +1061,7 @@ this.modalidadSeleccionada = (evento.extendedProps.modalidad || '').toLowerCase(
 
     this.horarioService.guardarHorarios(payload).subscribe({
       next: (res) => {
+        this.guardandoHorarios = false;
         if (res.success === false && res.errores?.length > 0) {
           const errores = res.errores as string[];
           const erroresHtml = errores.map((err) => `<li>${err}</li>`).join('');
@@ -1073,6 +1077,7 @@ this.modalidadSeleccionada = (evento.extendedProps.modalidad || '').toLowerCase(
         this.verificarEstadoTurnoAutomatico();
       },
       error: (err) => {
+        this.guardandoHorarios = false;
         this.alertService.error('❌ Error al guardar horarios.');
         console.error(err);
       },
