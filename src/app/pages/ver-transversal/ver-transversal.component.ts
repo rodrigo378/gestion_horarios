@@ -84,6 +84,8 @@ export class VerTransversalComponent implements OnInit {
       )
       .subscribe((data) => {
         this.cursos = data.data;
+        console.log('cursos => ', this.cursos);
+
         this.totalCursos = data.total;
       });
   }
