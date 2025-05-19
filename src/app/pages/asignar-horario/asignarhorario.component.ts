@@ -472,6 +472,7 @@ export class AsignarhorarioComponent implements OnInit {
     };
 
     this.modalHorasActivo = true;
+    this.modalidadSeleccionada = 'pre';
   }
 
   stringifyEvent(curso: any): string {
@@ -506,7 +507,11 @@ export class AsignarhorarioComponent implements OnInit {
 
     // Si no es padre, sigue el flujo normal
     this.eventoSeleccionado = evento;
-    this.modalidadSeleccionada = evento.extendedProps.modalidad ?? null;
+    const modalidadActual = evento.extendedProps.modalidad;
+    this.modalidadSeleccionada =
+      modalidadActual === 'pre' || modalidadActual === 'vir'
+        ? modalidadActual
+        : null;
     this.modalHorasActivo = true;
 
     const codigo = evento.extendedProps.codCur;
@@ -615,7 +620,9 @@ export class AsignarhorarioComponent implements OnInit {
 
     // ✅ No se cruza: seguimos con el flujo
     this.eventoSeleccionado = evento;
-    this.modalidadSeleccionada = evento.extendedProps.modalidad ?? null;
+    this.modalidadSeleccionada = (
+      evento.extendedProps.modalidad || ''
+    ).toLowerCase() as 'pre' | 'vir';
     this.modalHorasActivo = true;
 
     const fecha = new Date(evento.start);
@@ -1543,6 +1550,10 @@ export class AsignarhorarioComponent implements OnInit {
       ...evento.toPlainObject(),
       start: base.toISOString(),
       end: fin.toISOString(),
+      extendedProps: {
+        ...evento.extendedProps,
+        modalidad: this.modalidadSeleccionada,
+      },
     };
 
     evento.remove(); // lo removemos visualmente
