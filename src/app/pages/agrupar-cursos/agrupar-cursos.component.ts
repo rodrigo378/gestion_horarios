@@ -34,7 +34,7 @@ export class AgruparCursosComponent {
   selectEspecialidad: string = '';
   selectModalidad: string = '';
   selectPlan: string = '2025';
-  selectPeriodo: number = 20251;
+  selectPeriodo: number = 20252;
   selectCiclo: string = '';
 
   arrayCheckboxCursos: number[] = [];
@@ -50,9 +50,11 @@ export class AgruparCursosComponent {
   filtros = {
     c_codmod: '',
     n_codper: '2025',
-    periodo: 20251,
+    periodo: 20252,
     c_codfac: '',
     c_codesp: '',
+    n_ciclo: 0,
+    busqueda: '',
   };
 
   filtroBusqueda: string = '';
@@ -118,8 +120,8 @@ export class AgruparCursosComponent {
     }
   }
 
-  getCursoTransversal() {
-    this.cargandoCursos = true
+  getCursosAgrupados() {
+    this.cargandoCursos = true;
     this.alertService.iniciarSolicitud();
 
     this.horarioService
@@ -128,7 +130,11 @@ export class AgruparCursosComponent {
         this.filtros.n_codper,
         this.filtros.periodo,
         this.filtros.c_codfac,
-        this.filtros.c_codesp
+        this.filtros.c_codesp,
+        undefined,
+        this.filtros.n_ciclo,
+        undefined,
+        this.filtros.busqueda.trim()
       )
       .subscribe({
         next: (data) => {
@@ -145,6 +151,9 @@ export class AgruparCursosComponent {
         complete: () => {
           this.cargandoCursos = false;
           this.alertService.finalizarSolicitud();
+          if (this.cursosFiltrados.length === 0) {
+            this.alertService.warning('No hay cursos');
+          }
         },
       });
   }
@@ -179,8 +188,8 @@ export class AgruparCursosComponent {
   }
 
   clickBuscarCursosModal() {
-    this.busquedaEjecutada = true
-    this.getCursoTransversal();
+    this.busquedaEjecutada = true;
+    this.getCursosAgrupados();
   }
 
   clickMasCursoTransversal(hijo_id: number) {
@@ -188,7 +197,7 @@ export class AgruparCursosComponent {
       .asociarHorarioTransversal(Number(this.curso.id), hijo_id)
       .subscribe({
         next: (res: any) => {
-          this.getCursoTransversal();
+          this.getCursosAgrupados();
           this.getCursos();
           this.alertService.success('Se crea el curso transversal');
         },
@@ -207,9 +216,11 @@ export class AgruparCursosComponent {
     this.filtros = {
       c_codmod: '',
       n_codper: '2025',
-      periodo: 20251,
+      periodo: 20252,
       c_codfac: '',
       c_codesp: '',
+      n_ciclo: 0,
+      busqueda: '',
     };
   }
 
@@ -248,9 +259,11 @@ export class AgruparCursosComponent {
           this.filtros = {
             c_codmod: '',
             n_codper: '2025',
-            periodo: 20251,
+            periodo: 20252,
             c_codfac: '',
             c_codesp: '',
+            n_ciclo: 0,
+            busqueda: '',
           };
           this.mostrarModalCrear = false;
           this.alertService.success('Se creo grupo correctamente');

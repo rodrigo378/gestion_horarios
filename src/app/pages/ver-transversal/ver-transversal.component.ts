@@ -34,7 +34,7 @@ export class VerTransversalComponent implements OnInit {
   selectEspecialidad: string = '';
   selectModalidad: string = '';
   selectPlan: string = '2025';
-  selectPeriodo: number = 20251;
+  selectPeriodo: number = 20252;
   selectCiclo: string = '';
 
   arrayCheckboxCursos: number[] = [];
@@ -206,7 +206,7 @@ export class VerTransversalComponent implements OnInit {
     this.filtros = {
       c_codmod: '',
       n_codper: '2025',
-      periodo: 20251,
+      periodo: 20252,
       c_codfac: '',
       c_codesp: '',
     };
@@ -247,7 +247,7 @@ export class VerTransversalComponent implements OnInit {
           this.filtros = {
             c_codmod: '',
             n_codper: '2025',
-            periodo: 20251,
+            periodo: 20252,
             c_codfac: '',
             c_codesp: '',
           };

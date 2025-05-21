@@ -225,9 +225,9 @@ export class AsignarHorarioDrComponent implements OnInit {
             !(
               (curso.n_codper === 2025 &&
                 +curso.n_ciclo >= 1 &&
-                +curso.n_ciclo <= 7) ||
+                +curso.n_ciclo <= 6) ||
               (curso.n_codper === 2023 &&
-                +curso.n_ciclo >= 8 &&
+                +curso.n_ciclo >= 7 &&
                 +curso.n_ciclo <= 10)
             ),
         };

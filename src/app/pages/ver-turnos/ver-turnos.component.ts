@@ -63,7 +63,6 @@ export class VerTurnosComponent implements OnInit {
   secciones: string[] = [];
   modalidades: { value: string; label: string }[] = [];
 
-
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
 
@@ -78,7 +77,7 @@ export class VerTurnosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.filtros.n_codper = '20251';
+    this.filtros.n_codper = '20252';
 
     this.inicializarFormulario();
     this.turnoServices.getTurnos().subscribe((data) => {

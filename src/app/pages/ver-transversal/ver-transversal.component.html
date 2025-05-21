@@ -401,7 +401,11 @@
               <div class="flex items-center gap-3">
                 <div class="flex flex-col">
                   <p class="text-sm font-semibold text-slate-700">
-                    {{ curso.turno.n_codper }}
+                    <!-- turno.id => {{ curso.turno.id }} <br /> -->
+                    <!-- turno.n_codper => {{ curso.turno.n_codper }} <br /> -->
+                    <!-- turno.n_codpla =>  -->
+                    {{ curso.turno.n_codpla }}<br />
+                    <!-- curso.n_codper => {{ curso.n_codper }} -->
                   </p>
                 </div>
               </div>
@@ -611,7 +615,9 @@
   *ngIf="mostrarModalCrear"
   class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
 >
-  <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-5xl">
+  <div
+    class="bg-white p-6 rounded-xl shadow-xl w-full max-w-5xl h-[37rem] overflow-y-auto"
+  >
     <!-- Cabecera -->
     <div class="flex justify-between items-center mb-4">
       <div>
@@ -628,6 +634,8 @@
           <span class="font-semibold">Especialidad:</span> {{ curso.c_codesp }}
           <br />
           <span class="font-semibold">Periodo:</span> {{ curso.turno.n_codper }}
+          <br />
+          <span class="font-semibold">Grupo:</span> {{ curso.turno.c_grpcur }}
         </p>
       </div>
       <button class="text-gray-500 hover:text-red-500" (click)="cerrarModal()">
@@ -739,9 +747,10 @@
             <ng-container *ngFor="let curso of cursosFiltrados">
               <tr class="border-t">
                 <td class="px-4 py-2">
-                  {{ curso.id }} - {{ curso.turno.id }} -
-                  {{ curso.turno.n_codper }}
-                  {{ curso.nom_fac }}
+                  <!-- {{ curso.id }} - {{ curso.turno.id }} - -->
+                  {{ curso.turno.n_codpla }}
+                  <!-- {{ curso.turno.n_codper }} -->
+                  <!-- {{ curso.nom_fac }} -->
                 </td>
 
                 <td class="px-4 py-2">
