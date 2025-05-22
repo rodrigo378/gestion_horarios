@@ -48,7 +48,7 @@ export class VerTransversalComponent implements OnInit {
 
   filtros = {
     c_codmod: '',
-    n_codper: '2025',
+    n_codper: '0',
     periodo: 0,
     c_codfac: '',
     c_codesp: '',
@@ -238,7 +238,7 @@ export class VerTransversalComponent implements OnInit {
     this.arrayCheckboxCursos = [];
     this.filtros = {
       c_codmod: '',
-      n_codper: '2025',
+      n_codper: '0',
       periodo: 20252,
       c_codfac: '',
       c_codesp: '',
@@ -281,7 +281,7 @@ export class VerTransversalComponent implements OnInit {
           this.arrayCheckboxCursos = [];
           this.filtros = {
             c_codmod: '',
-            n_codper: '2025',
+            n_codper: '0',
             periodo: 20252,
             c_codfac: '',
             c_codesp: '',
