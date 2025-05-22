@@ -610,7 +610,6 @@
   </div>
 </div>
 
-<!-- Modal -->
 <div
   *ngIf="mostrarModalCrear"
   class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
@@ -625,6 +624,8 @@
           Definir curso transversal
         </h2>
         <p class="text-sm text-gray-600">
+          <span class="font-semibold">id:</span> {{ curso.turno.id }}
+          <br />
           <span class="font-semibold">Código:</span> {{ curso.c_codcur }}
           <br />
           <span class="font-semibold">Nombre:</span> {{ curso.c_nomcur }}
@@ -633,7 +634,16 @@
           <br />
           <span class="font-semibold">Especialidad:</span> {{ curso.c_codesp }}
           <br />
-          <span class="font-semibold">Periodo:</span> {{ curso.turno.n_codper }}
+          <span class="font-semibold">Ciclo:</span> {{ curso.n_ciclo }}
+          <br />
+          <span class="font-semibold">Modadlidad:</span>
+          {{
+            curso.c_codmod === 1
+              ? "Presencial"
+              : curso.c_codmod === 2
+              ? "Semipresencial"
+              : "virtual"
+          }}
           <br />
           <span class="font-semibold">Grupo:</span> {{ curso.turno.c_grpcur }}
         </p>
@@ -644,7 +654,7 @@
     </div>
 
     <!-- Filtros -->
-    <form class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <form class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
       <!-- Modalidad -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1"
@@ -653,7 +663,7 @@
         <select
           [(ngModel)]="filtros.c_codmod"
           name="modalidad"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
+          class="w-full border-gray-300 rounded-md px-3 py-2"
         >
           <option value="">Seleccione modalidad</option>
           <option value="1">Presencial</option>
@@ -696,7 +706,7 @@
         </select>
       </div>
 
-      <!-- plan -->
+      <!-- Plan -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Plan</label>
         <select
@@ -710,16 +720,73 @@
         </select>
       </div>
 
-      <button
-        class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
-        (click)="clickBuscarCursosModal()"
-      >
-        Buscar
-      </button>
+      <!-- Ciclo -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Ciclo</label
+        >
+        <select
+          [(ngModel)]="filtros.n_ciclo"
+          name="n_ciclo"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="0">Seleccione Ciclo</option>
+          <option
+            *ngFor="let ciclo of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+            [value]="ciclo"
+          >
+            {{ ciclo }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Filtro de búsqueda -->
+      <div class="col-span-full md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Buscar</label
+        >
+        <input
+          type="text"
+          [(ngModel)]="filtros.busqueda"
+          name="filtroBusqueda"
+          placeholder="Buscar por nombre o código de curso"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        />
+      </div>
+
+      <!-- Botón de búsqueda -->
+      <div class="flex items-end">
+        <button
+          class="w-full px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
+          (click)="clickBuscarCursosModal()"
+        >
+          Buscar
+        </button>
+      </div>
     </form>
 
     <!-- Tabla -->
-    <div>
+
+    <div
+      *ngIf="busquedaEjecutada && cargandoCursos"
+      class="flex justify-center items-center h-[300px] w-full"
+    >
+      <div class="flex flex-col items-center gap-2">
+        <img
+          src="assets/img/logo-uma.png"
+          alt="Cargando UMA"
+          class="w-20 h-20 animate-spin"
+        />
+        <span class="text-sm text-gray-600 mt-2"
+          >Cargando cursos disponibles...</span
+        >
+      </div>
+    </div>
+
+    <div *ngIf="busquedaEjecutada && !cargandoCursos">
+      <h3 class="text-md font-semibold text-gray-700 mb-2">
+        Seleccionar curso
+      </h3>
       @if (cursosFiltrados.length !== 0) {
       <div class="flex justify-end mb-2">
         <button
@@ -747,22 +814,32 @@
             <ng-container *ngFor="let curso of cursosFiltrados">
               <tr class="border-t">
                 <td class="px-4 py-2">
-                  <!-- {{ curso.id }} - {{ curso.turno.id }} - -->
-                  {{ curso.turno.n_codpla }}
-                  <!-- {{ curso.turno.n_codper }} -->
-                  <!-- {{ curso.nom_fac }} -->
+                  <!-- turno.id => {{ curso.turno.id }} <br /> -->
+                  <!-- turno.n_codper => {{ curso.turno.n_codper }} <br /> -->
+                  <!-- turno.n_codpla =>  -->
+                  {{ curso.turno.n_codpla }}<br />
+                  <!-- curso.n_codper => {{ curso.n_codper }} -->
                 </td>
 
                 <td class="px-4 py-2">
                   {{ curso.nomesp }}
                 </td>
-                <td class="px-4 py-2">{{ curso.turno.n_codpla }}</td>
+                <td class="px-4 py-2">{{ curso.n_codper }}</td>
                 <td class="px-4 py-2">
-                  ({{ curso.c_codcur }}) {{ curso.c_nomcur }}
+                  ({{ curso.c_codcur }}) {{ curso.c_nomcur }} <br />
+                  (
+                  {{
+                    curso.c_codmod === 1
+                      ? "Presencial"
+                      : curso.c_codmod === 2
+                      ? "Semipresencial"
+                      : "virtual"
+                  }}
+                  )
                 </td>
                 <td class="px-4 py-2">{{ curso.turno.c_grpcur }}</td>
                 <td class="px-4 py-2">{{ curso.n_ciclo }}</td>
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-center align-middle">
                   <input
                     type="checkbox"
                     [checked]="estaSeleccionado(curso.id)"
