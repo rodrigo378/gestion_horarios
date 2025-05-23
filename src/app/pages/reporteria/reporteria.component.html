@@ -410,8 +410,12 @@
                       }}) |
                       <span class="font-medium text-slate-900">Curso:</span>
                       {{ h.curso.c_nomcur }} |
+                      <span class="font-medium text-slate-900">Tipo:</span>
+                      {{ h.modalidad == 'pre' ? 'Presencial' : (h.modalidad == 'vir' ? 'Virtual' : 'Desconocido') }}
+                      |
                       <span class="font-medium text-slate-900">Ciclo:</span>
                       {{ h.curso.n_ciclo }}
+                      
                       <ng-container *ngIf="h.curso?.cursosPadres?.length">
                         <span
                           [ngClass]="{

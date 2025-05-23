@@ -60,7 +60,7 @@ export interface HorarioAsignado {
   docente_id: number;
   curso_id: number;
   turno_id: number;
-
+  modalidad: string;
   curso: CursoAsignado;
 
   aula?: {

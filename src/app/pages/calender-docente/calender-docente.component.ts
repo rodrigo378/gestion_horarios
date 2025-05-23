@@ -71,20 +71,18 @@ export class CalenderDocenteComponent implements OnInit {
         this.nombreDocente = docente.c_nomdoc;
 
         const eventos = docente.Horario.map((h) => {
-          const tipoPadre = h.curso?.cursosPadres?.[0]?.tipo;
-
           let backgroundColor = '';
           let borderColor = '';
 
-          if (tipoPadre === 0) {
-            backgroundColor = '#EAB308'; // Transversal
+          if (h.modalidad === 'pre') {
+            backgroundColor = '#EAB308'; // Azul brillante
             borderColor = '#EAB308';
-          } else if (tipoPadre === 1) {
-            backgroundColor = '#7E22CE'; // Agrupado
+          } else if (h.modalidad === 'vir') {
+            backgroundColor = '#7E22CE'; // Verde esmeralda
             borderColor = '#7E22CE';
           } else {
-            backgroundColor = h.tipo === 'Teoría' ? '#3788d8' : '#28a745';
-            borderColor = backgroundColor;
+            backgroundColor = '#9CA3AF'; // Gris por defecto si no hay modalidad
+            borderColor = '#9CA3AF';
           }
 
           const aulaNombre = h.aula?.c_codaula
@@ -92,13 +90,14 @@ export class CalenderDocenteComponent implements OnInit {
             : '';
 
           return {
-            title: `${h.curso?.c_nomcur || 'Curso'} (${h.tipo})${aulaNombre}`,
+            title: `${h.curso?.c_nomcur || 'Curso'}${aulaNombre}`,
             start: h.h_inicio,
             end: h.h_fin,
             backgroundColor,
             borderColor,
           };
         });
+
 
         this.calendarOptions.events = eventos;
       });
