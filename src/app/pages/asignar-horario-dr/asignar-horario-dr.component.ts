@@ -1503,8 +1503,10 @@ export class AsignarHorarioDrComponent implements OnInit {
       ],
     };
 
+    this.guardandoHorarios = true;
     this.horarioService.updateHorarios(payload).subscribe({
       next: (res) => {
+        this.guardandoHorarios = false;
         if (res.success === false && res.errores?.length > 0) {
           const erroresHtml = res.errores
             .map((err: any) => `<li>${err}</li>`)
@@ -1515,6 +1517,7 @@ export class AsignarHorarioDrComponent implements OnInit {
         this.procesarActualizacionExitosa(base, fin, codigo, tipo, diferencia);
       },
       error: (err) => {
+        this.guardandoHorarios = false;
         this.alertService.error('❌ Error al actualizar el evento.');
         console.error(err);
       },

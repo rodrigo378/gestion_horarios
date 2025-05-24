@@ -76,6 +76,8 @@ export class AsignarhorarioComponent implements OnInit {
   cursosAsyncDesdeAPI: Curso[] = [];
   //loader
   cargandoCursos: boolean = true;
+  guardandoHorarios: boolean = false;
+
 
   modalidadSeleccionada: 'vir' | 'pre' | null = null;
   //#endregion
@@ -1004,6 +1006,8 @@ export class AsignarhorarioComponent implements OnInit {
   guardarEventos(): void {
     if (!this.turnoId) return;
 
+    this.guardandoHorarios = true;
+
     const eventos = this.calendarComponent
       .getApi()
       .getEvents()
@@ -1083,6 +1087,7 @@ export class AsignarhorarioComponent implements OnInit {
 
     this.horarioService.guardarHorarios(payload).subscribe({
       next: (res) => {
+        this.guardandoHorarios = false;
         if (res.success === false && res.errores?.length > 0) {
           const errores = res.errores as string[];
           const erroresHtml = errores.map((err) => `<li>${err}</li>`).join('');
@@ -1098,6 +1103,7 @@ export class AsignarhorarioComponent implements OnInit {
         this.verificarEstadoTurnoAutomatico();
       },
       error: (err) => {
+        this.guardandoHorarios = false;
         this.alertService.error('❌ Error al guardar horarios.');
         console.error(err);
       },
@@ -1499,8 +1505,10 @@ export class AsignarhorarioComponent implements OnInit {
       ],
     };
 
+    this.guardandoHorarios = true;
     this.horarioService.updateHorarios(payload).subscribe({
       next: (res) => {
+        this.guardandoHorarios = false;
         if (res.success === false && res.errores?.length > 0) {
           const erroresHtml = res.errores
             .map((err: any) => `<li>${err}</li>`)
@@ -1511,6 +1519,7 @@ export class AsignarhorarioComponent implements OnInit {
         this.procesarActualizacionExitosa(base, fin, codigo, tipo, diferencia);
       },
       error: (err) => {
+        this.guardandoHorarios = false;
         this.alertService.error('❌ Error al actualizar el evento.');
         console.error(err);
       },
@@ -1539,7 +1548,7 @@ export class AsignarhorarioComponent implements OnInit {
       'title',
       `${this.cursoSeleccionado?.c_nomcur} (${tipo}) - ${
         this.selectedDocente?.c_nomdoc || 'Sin docente'
-      }`
+      } [${this.modalidadSeleccionada}]`
     );
 
     // 🔁 Forzar re-render visual (tooltip, etc.)
