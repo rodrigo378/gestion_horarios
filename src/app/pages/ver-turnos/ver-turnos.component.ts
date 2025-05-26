@@ -412,6 +412,8 @@ export class VerTurnosComponent implements OnInit {
     const zonaHoraria = 'America/Lima';
 
     this.horarioService.getReporte(filtros).subscribe((data) => {
+      console.log('data => ', data);
+
       // Suponiendo que `data` es un array de objetos con `dia` y `h_inicio`
       const rows = (data || []).map((item: any) => ({
         n_codper: item.n_codper,
@@ -420,21 +422,26 @@ export class VerTurnosComponent implements OnInit {
         c_codcur: item.c_codcur,
         c_nomcur: item.c_nomcur,
         c_grpcur: item.c_grpcur,
-        modalidad: item.c_nommod,
+        modalidad: item.modalidad,
         n_ciclo: item.n_ciclo,
         n_codpla: item.n_codpla,
-        Docente: item?.c_nomdoc || '',
-        Día: item.dia || '',
-        Hini: item.h_inicio
-          ? format(toZonedTime(new Date(item.h_inicio), zonaHoraria), 'HH:mm')
-          : '',
-        Hfin: item.h_fin
-          ? format(toZonedTime(new Date(item.h_fin), zonaHoraria), 'HH:mm')
-          : '',
+        Docente: item?.docentes || '',
+        Día: item.dias || '',
+        // Hini: item.horas_inicio
+        //   ? format(
+        //       toZonedTime(new Date(item.horas_inicio), zonaHoraria),
+        //       'HH:mm'
+        //     )
+        //   : '',
+        // Hfin: item.horas_fin
+        //   ? format(toZonedTime(new Date(item.horas_fin), zonaHoraria), 'HH:mm')
+        //   : '',
+        Hini: item.horas_inicio,
+        Hfin: item.horas_fin,
         horas_academicas: item.n_horas,
-        c_tipo: item.tipo,
-        aula: item?.c_codaula || '',
-        piso: item?.n_piso || '',
+        c_tipo: item.c_tipo,
+        aula: item?.aula || '',
+        piso: item?.piso || '',
         pabellon: item?.pabellon || '',
       }));
 
