@@ -78,9 +78,6 @@ export class AsignarhorarioComponent implements OnInit {
   cargandoCursos: boolean = true;
   guardandoHorarios: boolean = false;
   //para el modal
-  guardandoHorarios: boolean = false;
-
-
   modalidadSeleccionada: 'vir' | 'pre' | null = null;
   //#endregion
 
