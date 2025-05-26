@@ -99,22 +99,30 @@ export class CalenderDirectorComponent implements OnInit {
   cargarEventosPorTurno(turnoId: number): void {
     this.horarioService.getHorarioPorTurno(turnoId).subscribe((data) => {
       const eventos = data.map((h: any) => {
-        let color = h.tipo === 'Práctica' ? '#28a745' : '#3788d8';
-  
-        const tipoPadre = h.curso?.cursosPadres?.[0]?.tipo;
-        if (tipoPadre === 0) color = '#EAB308'; // Amarillo (Transversal)
-        if (tipoPadre === 1) color = '#9333ea'; // Morado (Agrupado)
-  
-        // 🏛️ Buscar nombre de docente
+        // 🎨 Asignar color y texto por modalidad
+        let color = '';
+        let modalidadTexto = '';
+        if (h.modalidad === 'pre') {
+          color = '#e9b109'; // Amarillo para semipresencial
+          modalidadTexto = 'Presencial';
+        } else if (h.modalidad === 'vir') {
+          color = '#7E22CE'; // Morado para virtual
+          modalidadTexto = 'Virtual';
+        } else {
+          color = '#9CA3AF'; // Gris si no se especifica
+          modalidadTexto = 'Sin modalidad';
+        }
+
+        // 🧑‍🏫 Buscar nombre de docente
         const docenteObj = this.docentes.find(d => d.id === h.docente_id);
         const nombreDocente = docenteObj ? docenteObj.c_nomdoc : 'Sin docente';
-  
+
         // 🏫 Buscar nombre de aula
         const aulaObj = this.aulas.find(a => a.id === h.aula_id);
         const nombreAula = aulaObj ? aulaObj.c_codaula : 'Sin aula';
-  
+
         return {
-          title: `${h.curso?.c_nomcur} (${h.tipo}) - ${nombreDocente} - Aula ${nombreAula}`,
+          title: `[${modalidadTexto}] ${h.curso?.c_nomcur} - ${nombreDocente} - Aula ${nombreAula}`,
           start: h.h_inicio,
           end: h.h_fin,
           backgroundColor: color,
@@ -124,6 +132,7 @@ export class CalenderDirectorComponent implements OnInit {
             curso: h.curso,
             docente: nombreDocente,
             aula: nombreAula,
+            modalidad: h.modalidad,
           }
         };
       });

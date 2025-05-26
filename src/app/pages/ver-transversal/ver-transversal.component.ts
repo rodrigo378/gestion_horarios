@@ -34,8 +34,11 @@ export class VerTransversalComponent implements OnInit {
   selectEspecialidad: string = '';
   selectModalidad: string = '';
   selectPlan: string = '2025';
-  selectPeriodo: number = 20251;
+  selectPeriodo: number = 20252;
   selectCiclo: string = '';
+
+  cargandoCursos: boolean = true;
+  busquedaEjecutada: boolean = false;
 
   arrayCheckboxCursos: number[] = [];
 
@@ -45,10 +48,12 @@ export class VerTransversalComponent implements OnInit {
 
   filtros = {
     c_codmod: '',
-    n_codper: '2025',
+    n_codper: '0',
     periodo: 0,
     c_codfac: '',
     c_codesp: '',
+    n_ciclo: 0,
+    busqueda: '',
   };
 
   filtroBusqueda: string = '';
@@ -84,6 +89,8 @@ export class VerTransversalComponent implements OnInit {
       )
       .subscribe((data) => {
         this.cursos = data.data;
+        console.log('cursos => ', this.cursos);
+
         this.totalCursos = data.total;
       });
   }
@@ -115,50 +122,66 @@ export class VerTransversalComponent implements OnInit {
   }
 
   getCursoTransversal() {
+    this.cargandoCursos = true;
+    this.alertService.iniciarSolicitud();
+
     this.horarioService
       .getCurso(
         Number(this.filtros.c_codmod),
         this.filtros.n_codper,
         this.filtros.periodo,
         this.filtros.c_codfac,
-        this.filtros.c_codesp
+        this.filtros.c_codesp,
+        undefined,
+        this.filtros.n_ciclo,
+        undefined,
+        this.filtros.busqueda.trim()
       )
-
-      .subscribe((data) => {
-        console.log('data => ', data);
-        this.cursosFiltrados = data.data.filter((curso) => {
-          const codA = this.curso.c_codcur;
-          const codAeq = this.curso.c_codcur_equ;
-          const codB = curso.c_codcur;
-          const codBeq = curso.c_codcur_equ;
-          const turno_idA = this.curso.turno_id;
-          const turno_idB = curso.turno_id;
-          const esMismoCurso = this.curso.id === curso.id;
-          const esMismoTurno = turno_idA === turno_idB;
-
-          // console.log('======================');
-          // console.log('codA => ', codA);
-          // console.log('codAeq => ', codAeq);
-
-          // console.log('codB => ', codB);
-          // console.log('codBeq => ', codBeq);
-
-          // console.log('turno_idA => ', turno_idA);
-          // console.log('turno_idB => ', turno_idB);
-
-          // console.log('esMismoCurso => ', esMismoCurso);
-          // console.log('esMismoTurno => ', esMismoTurno);
-          // console.log('======================');
-
-          return (
-            !esMismoCurso &&
-            !esMismoTurno &&
-            (codA === codB ||
-              codA === codBeq ||
-              (codAeq && (codAeq === codB || codAeq === codBeq)))
+      .subscribe({
+        next: (data) => {
+          this.cursosFiltrados = data.data.filter((curso) => {
+            return curso.turno_id !== this.curso.turno_id;
+          });
+        },
+        error: (error) => {
+          console.error('Error al obtener cursos transversales', error);
+          this.alertService.error(
+            'No se pudieron obtener los cursos transversales'
           );
-        });
+        },
+        complete: () => {
+          this.cargandoCursos = false;
+          this.alertService.finalizarSolicitud();
+          if (this.cursosFiltrados.length === 0) {
+            this.alertService.warning('No hay cursos');
+          }
+        },
       });
+
+    // .subscribe((data) => {
+    //   this.cursosFiltrados = data.data.filter((curso) => {
+    //     const codA = this.curso.c_codcur;
+    //     const codAeq = this.curso.c_codcur_equ;
+    //     const codB = curso.c_codcur;
+    //     const codBeq = curso.c_codcur_equ;
+    //     const turno_idA = this.curso.turno_id;
+    //     const turno_idB = curso.turno_id;
+    //     const esMismoCurso = this.curso.id === curso.id;
+    //     const esMismoTurno = turno_idA === turno_idB;
+
+    //     return (
+    //       !esMismoCurso &&
+    //       !esMismoTurno &&
+    //       (codA === codB ||
+    //         codA === codBeq ||
+    //         (codAeq && (codAeq === codB || codAeq === codBeq)))
+    //     );
+    //   });
+
+    //   if (this.cursosFiltrados.length === 0) {
+    //     this.alertService.info('Sin equivalencias');
+    //   }
+    // });
   }
 
   changeSelectFacultad() {
@@ -182,13 +205,13 @@ export class VerTransversalComponent implements OnInit {
   }
 
   clickMas(curso: Curso2) {
-    console.log('curso => ', curso);
     this.curso = curso;
     this.filtros.periodo = curso.turno.n_codper;
     this.mostrarModalCrear = true;
   }
 
   clickBuscarCursosModal() {
+    this.busquedaEjecutada = true;
     this.getCursoTransversal();
   }
 
@@ -215,10 +238,12 @@ export class VerTransversalComponent implements OnInit {
     this.arrayCheckboxCursos = [];
     this.filtros = {
       c_codmod: '',
-      n_codper: '2025',
-      periodo: 20251,
+      n_codper: '0',
+      periodo: 20252,
       c_codfac: '',
       c_codesp: '',
+      n_ciclo: 0,
+      busqueda: '',
     };
   }
 
@@ -256,10 +281,12 @@ export class VerTransversalComponent implements OnInit {
           this.arrayCheckboxCursos = [];
           this.filtros = {
             c_codmod: '',
-            n_codper: '2025',
-            periodo: 20251,
+            n_codper: '0',
+            periodo: 20252,
             c_codfac: '',
             c_codesp: '',
+            n_ciclo: 0,
+            busqueda: '',
           };
           this.mostrarModalCrear = false;
           this.alertService.success('Se creo grupo correctamente');

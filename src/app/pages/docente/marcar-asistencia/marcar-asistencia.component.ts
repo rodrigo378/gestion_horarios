@@ -100,8 +100,8 @@ export class MarcarAsistenciaComponent implements OnInit {
 
   getAula() {
     this.userService.getIp().subscribe((data) => {
-      // 192.168.1.213
-      // this.aulaService.getAulaIp('192.168.1.214').subscribe((data) => {
+      // 192.168.1.93
+      // this.aulaService.getAulaIp('192.168.1.93').subscribe((data) => {
       this.aulaService.getAulaIp(data.ip).subscribe((data) => {
         this.aula = data;
         this.getDocente();
@@ -123,7 +123,7 @@ export class MarcarAsistenciaComponent implements OnInit {
     const currentDay = daysOfWeek[today.getDay()];
 
     this.aulaService
-      .getDocentesAula(this.aula.id, 'Lunes')
+      .getDocentesAula(this.aula.id, currentDay)
       .subscribe((data) => {
         this.options = data.map((d) => ({
           id: d.id,

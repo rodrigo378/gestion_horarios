@@ -43,7 +43,7 @@ export type ChartOptionsDonut = {
 export class WelcomeComponent implements OnInit {
   @ViewChild('chart') chart!: ChartComponent;
 
-  n_codper: string = '20251';
+  n_codper: string = '20252';
 
   cargandoCursos: boolean = true;
   mostrarCalendario: boolean = false;

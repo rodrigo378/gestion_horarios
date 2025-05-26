@@ -13,7 +13,6 @@ export class AlertService {
 
   // Llama cuando comienza una solicitud
   iniciarSolicitud(): void {
-    console.log('iniciarSolicitud');
     this.loadingSubject.next(true);
   }
 

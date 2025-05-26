@@ -84,7 +84,7 @@ export class VerInformacionComponent implements OnInit {
 
   @ViewChild('nombreCompleto') nombreCompleto!: ElementRef;
   //#endregion
-  
+
   constructor(
     private docenteService: DocenteService,
     private alertServices: AlertService
@@ -96,7 +96,6 @@ export class VerInformacionComponent implements OnInit {
 
   cargarDocenteUsuario(): void {
     this.docenteService.getDocentePorUsuario().subscribe((response) => {
-      console.log('datos cargados desde el back:  => ', response);
       this.docente = response;
     });
   }
@@ -246,11 +245,6 @@ export class VerInformacionComponent implements OnInit {
       asesoriaJurado: this.obtenersAsesoriasJurados(),
       otros: this.obtenerOtros(),
     };
-
-    console.log(
-      '📌 Enviando datos a Laravel:',
-      JSON.stringify(datosActualizados, null, 2)
-    );
 
     this.docenteService.updateDocenteUsuario(datosActualizados).subscribe(
       (response) => {

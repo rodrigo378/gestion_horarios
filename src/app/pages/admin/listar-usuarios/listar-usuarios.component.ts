@@ -40,8 +40,6 @@ export class ListarUsuariosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('v1');
-
     this.cargarUsuarios();
     this.obtenerUsuarioPorId(0);
   }
@@ -87,9 +85,7 @@ export class ListarUsuariosComponent implements OnInit {
 
   obtenerUsuarioPorId(id: number) {
     this.userService.getUserById(id).subscribe({
-      next: (usuario) => {
-        console.log('Usuario obtenido:', usuario);
-      },
+      next: (usuario) => {},
       error: (err) => {
         console.error('Error al obtener usuario por ID:', err);
       },
@@ -132,6 +128,7 @@ export class ListarUsuariosComponent implements OnInit {
       };
     }
     this.modalAbierto = true;
+    this.usuario.id = null;
   }
 
   cerrarModal(): void {
@@ -166,6 +163,20 @@ export class ListarUsuariosComponent implements OnInit {
         });
     } else {
       // CREAR
+
+      if (
+        !usuarioData.nombre ||
+        !usuarioData.apellido ||
+        !usuarioData.genero ||
+        !usuarioData.grado ||
+        !usuarioData.email ||
+        !usuarioData.estado ||
+        !usuarioData.password
+      ) {
+        this.alerService.warning('Todos los campos son obligatorios.');
+        return;
+      }
+
       this.userService.createUser(usuarioData).subscribe({
         next: () => {
           this.alerService.success('✅ Usuario creado correctamente');
@@ -173,32 +184,11 @@ export class ListarUsuariosComponent implements OnInit {
           this.cargarUsuarios();
         },
         error: (err) => {
-          console.error('❌ Error al crear usuario:', err);
-          this.alerService.error(err);
+          console.error('❌ Error al crear usuario:', err.error.message);
+          this.alerService.error(err.error.message);
         },
       });
     }
-  }
-
-  traducirMensaje(msg: string): string {
-    if (msg.includes('should not be empty')) {
-      const campo = msg.split(' ')[0];
-      return `El campo ${campo} es obligatorio.`;
-    }
-
-    if (msg.toLowerCase().includes('correo')) {
-      return msg.replace('correo', 'El correo');
-    }
-
-    // Otros ejemplos específicos
-    if (msg.includes('La contraseña debe tener')) return msg;
-    if (msg.includes('El correo no es válido')) return msg;
-
-    return msg; // Si no se reconoce, se muestra tal cual
-  }
-
-  cancel(): void {
-    this.location.back();
   }
 
   // Método de filtrado
