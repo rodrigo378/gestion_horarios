@@ -417,7 +417,9 @@ export class VerTurnosComponent implements OnInit {
       // Suponiendo que `data` es un array de objetos con `dia` y `h_inicio`
       const rows = (data || []).map((item: any) => ({
         n_codper: item.n_codper,
+        c_codfac: item.c_codfac,
         nom_fac: item.nom_fac,
+        c_codesp: item.c_codesp,
         nomesp: item.nomesp,
         c_codcur: item.c_codcur,
         c_nomcur: item.c_nomcur,

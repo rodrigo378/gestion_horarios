@@ -533,7 +533,7 @@ export class AsignarHorarioDrComponent implements OnInit {
       tipo === 'Teoría' ? curso?.n_ht ?? 0 : curso?.n_hp ?? 0;
     const horasDisponibles = horasTotalesCurso - horasAsignadasTotales;
 
-    this.vacantesAula = curso?.vacante ?? null;
+    this.vacantesAula = curso?.c_alu ?? null;
 
     this.cursoSeleccionado = {
       ...curso,
