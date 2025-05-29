@@ -20,7 +20,8 @@ export interface Curso {
   tipoAgrupado?: string;
   tipo?: string;
   horasRestantes?: number;
-  vacante?: number;
+  // vacante?: number;
+  c_alu?: number;
   turno_id?: number;
   h_umaPlus?: number;
 
@@ -68,7 +69,7 @@ export interface Curso2 {
   turno: Turno;
   cursosPadres: CursoPadre[];
   cursosHijos: CursoHijo[];
-  vencio: boolean
+  vencio: boolean;
 }
 
 export interface CursoPadre {
