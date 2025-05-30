@@ -724,6 +724,20 @@ export class AsignarHorarioDrComponent implements OnInit {
       ${isTemporal ? 'bg-pink-400' : 'bg-sky-400'}
     `;
 
+        // 📛 Badge de modalidad (presencial o virtual) en la parte inferior derecha
+    const modalidad = info.event.extendedProps.modalidad;
+    if (modalidad) {
+      const badgeModalidad = document.createElement('span');
+      badgeModalidad.textContent =
+        modalidad.toLowerCase() === 'pre' ? 'Pre' : 'Vir';
+      badgeModalidad.className = `
+        absolute bottom-[2px] right-1 
+        text-[10px] text-white px-2 py-[2px] rounded 
+        ${modalidad.toLowerCase() === 'pre' ? 'bg-blue-600' : 'bg-purple-600'}
+      `;
+      info.el.appendChild(badgeModalidad);
+    }
+
     info.el.classList.add('relative');
     info.el.appendChild(badge);
 
@@ -769,6 +783,19 @@ export class AsignarHorarioDrComponent implements OnInit {
     console.log('confirmarAsignacionHoras');
 
     if (!this.fechaDrop || !this.horaInicio) return;
+
+        if (this.selectedDocente) {
+      const horasActuales = this.selectedDocente.h_total ?? 0;
+      const horasMaximas = this.selectedDocente.h_max ?? Infinity;
+      const sumaHoras = horasActuales + this.horasAsignadas;
+
+      if (sumaHoras > horasMaximas) {
+        this.alertService.error(
+          `⛔ El docente ${this.selectedDocente.c_nomdoc} ya alcanzó su límite de horas (${horasMaximas}). No puedes asignarle más.`
+        );
+        return;
+      }
+    }
 
     // ✅ VALIDACIÓN DE HORAS
     const maxHoras = this.cursoSeleccionado?.horasDisponibles || 0;
@@ -1415,6 +1442,20 @@ export class AsignarHorarioDrComponent implements OnInit {
 
     const { base, fin } = result;
     const diferencia = this.horasAsignadas - horasAntes;
+
+        if (this.selectedDocente) {
+      const horasMax = this.selectedDocente.h_max ?? Infinity;
+      const horasActuales = this.selectedDocente.h_total ?? 0;
+      const nuevaCarga = horasActuales + diferencia;
+
+      if (nuevaCarga > horasMax) {
+        this.alertService.error(
+          `⛔ No puedes asignar más horas. El docente ${this.selectedDocente.c_nomdoc} ya ha alcanzado el máximo permitido (${horasMax}h).`
+        );
+        return;
+      }
+    }
+    
     const esTemporal = idEvento.toString().startsWith('temp-');
 
     if (esTemporal) {
