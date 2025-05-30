@@ -785,6 +785,20 @@ export class AsignarhorarioComponent implements OnInit {
   confirmarAsignacionHoras() {
     if (!this.fechaDrop || !this.horaInicio) return;
 
+    // Validar si la hora está dentro del rango visible del calendario
+    const [h, m] = this.horaInicio.split(':').map(Number);
+    const horaTotal = h + m / 60;
+
+    const minVisible = 8;   // 08:00 AM
+    const maxVisible = 23;  // 11:00 PM
+
+    if (horaTotal < minVisible || horaTotal >= maxVisible) {
+      this.alertService.error(
+        `⛔ La hora de inicio seleccionada (${this.horaInicio}) está fuera del rango visible del calendario (08:00 am - 23:00 pm). Por favor selecciona una hora válida.`
+      );
+      return;
+    }
+
     if (this.selectedDocente) {
       const horasActuales = this.selectedDocente.h_total ?? 0;
       const horasMaximas = this.selectedDocente.h_max ?? Infinity;
@@ -797,7 +811,6 @@ export class AsignarhorarioComponent implements OnInit {
         return;
       }
     }
-
 
     // ✅ VALIDACIÓN DE HORAS
     const maxHoras = this.cursoSeleccionado?.horasDisponibles || 0;
@@ -1462,6 +1475,21 @@ export class AsignarhorarioComponent implements OnInit {
     }
 
     const esTemporal = idEvento.toString().startsWith('temp-');
+
+    // ✅ Validación de hora dentro del rango visible del calendario
+    if (this.horaInicio) {
+      const [h, m] = this.horaInicio.split(':').map(Number);
+      const horaTotal = h + m / 60;
+      const minVisible = 8;
+      const maxVisible = 23;
+
+      if (horaTotal < minVisible || horaTotal >= maxVisible) {
+        this.alertService.error(
+          `⛔ La hora de inicio (${this.horaInicio}) está fuera del rango visible del calendario (08:00 - 23:00).`
+        );
+        return;
+      }
+    }
 
     if (esTemporal) {
       this.actualizarEventoTemporal(
