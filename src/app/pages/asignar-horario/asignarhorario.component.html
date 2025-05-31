@@ -553,7 +553,7 @@
         [(ngModel)]="aulaSeleccionada"
       >
         <option [ngValue]="null">-- Selecciona un aula --</option>
-        <option *ngFor="let a of aulasFiltradasPorVacantes" [ngValue]="a.id">
+        <option *ngFor="let a of aulas" [ngValue]="a.id">
           Aula: {{ a.c_codaula }} - Aforo de ({{ a.n_capacidad }} personas) -
           {{ a.n_piso | pisoLabel }} - Pabellon {{ a.pabellon }}
         </option>

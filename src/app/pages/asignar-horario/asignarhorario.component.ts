@@ -782,19 +782,19 @@ export class AsignarhorarioComponent implements OnInit {
     });
   }
 
-  get aulasFiltradasPorVacantes(): Aula[] {
-    if (this.vacantesAula == null || this.vacantesAula <= 0) {
-      return this.aulas;
-    }
+  // get aulasFiltradasPorVacantes(): Aula[] {
+  //   if (this.vacantesAula == null || this.vacantesAula <= 0) {
+  //     return this.aulas;
+  //   }
 
-    const vacantes = Number(this.vacantesAula);
-    const margen = 5; // o usa Math.round(vacantes * 0.1)
+  //   const vacantes = Number(this.vacantesAula);
+  //   const margen = 5; // o usa Math.round(vacantes * 0.1)
 
-    return this.aulas.filter((aula) => {
-      const capacidad = Number(aula.n_capacidad);
-      return capacidad >= vacantes && capacidad <= (vacantes + margen);
-    });
-  }
+  //   return this.aulas.filter((aula) => {
+  //     const capacidad = Number(aula.n_capacidad);
+  //     return capacidad >= vacantes && capacidad <= (vacantes + margen);
+  //   });
+  // }
 
 
   confirmarAsignacionHoras() {
