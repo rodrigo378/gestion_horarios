@@ -89,7 +89,7 @@ export class AsignarhorarioComponent implements OnInit {
     locale: esLocale,
     headerToolbar: { left: '', center: '', right: '' },
     buttonText: { today: 'Hoy', week: 'Semana' },
-    slotMinTime: '08:00:00',
+    slotMinTime: '07:00:00',
     slotMaxTime: '23:00:00',
     slotDuration: '01:00:00',
     slotLabelInterval: '01:00:00',
@@ -696,13 +696,13 @@ export class AsignarhorarioComponent implements OnInit {
 
   actualizarRangoPorTurno() {
     if (this.turnoSeleccionado === 'M') {
-      this.calendarOptions.slotMinTime = '08:00:00';
+      this.calendarOptions.slotMinTime = '07:00:00';
       this.calendarOptions.slotMaxTime = '18:00:00';
     } else if (this.turnoSeleccionado === 'N') {
       this.calendarOptions.slotMinTime = '18:00:00';
       this.calendarOptions.slotMaxTime = '23:00:00';
     } else if (this.turnoSeleccionado === 'C') {
-      this.calendarOptions.slotMinTime = '08:00:00';
+      this.calendarOptions.slotMinTime = '07:00:00';
       this.calendarOptions.slotMaxTime = '23:00:00';
     }
 
@@ -804,12 +804,12 @@ export class AsignarhorarioComponent implements OnInit {
     const [h, m] = this.horaInicio.split(':').map(Number);
     const horaTotal = h + m / 60;
 
-    const minVisible = 8;   // 08:00 AM
+    const minVisible = 7;   // 08:00 AM
     const maxVisible = 23;  // 11:00 PM
 
     if (horaTotal < minVisible || horaTotal >= maxVisible) {
       this.alertService.error(
-        `⛔ La hora de inicio seleccionada (${this.horaInicio}) está fuera del rango visible del calendario (08:00 am - 23:00 pm). Por favor selecciona una hora válida.`
+        `⛔ La hora de inicio seleccionada (${this.horaInicio}) está fuera del rango visible del calendario (07:00 am - 23:00 pm). Por favor selecciona una hora válida.`
       );
       return;
     }
