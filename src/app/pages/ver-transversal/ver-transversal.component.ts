@@ -298,6 +298,16 @@ export class VerTransversalComponent implements OnInit {
       });
   }
 
+  async confirmarEliminacionTransversal(padre_id: number) {
+    const confirmado = this.alertService.confirm(
+      '¿Estás seguro de eliminar este grupo transversal?\n\n⚠️ Esto eliminará todos los horarios asignados actualmente.'
+    );
+
+    if (await confirmado) {
+      this.clickDeleteTransversal(padre_id);
+    }
+  }
+
   clickDeleteTransversal(padre_id: number) {
     this.horarioService.deleteTransversal(padre_id).subscribe({
       next: (res: any) => {
