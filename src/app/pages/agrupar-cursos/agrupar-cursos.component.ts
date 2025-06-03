@@ -139,7 +139,10 @@ export class AgruparCursosComponent {
       .subscribe({
         next: (data) => {
           this.cursosFiltrados = data.data.filter((curso) => {
-            return curso.turno_id !== this.curso.turno_id;
+            return (
+              curso.turno_id !== this.curso.turno_id &&
+              curso.cursosPadres.length === 0
+            );
           });
         },
         error: (error) => {
@@ -304,7 +307,7 @@ export class AgruparCursosComponent {
     this.getCursos();
   }
 
-    mostrarAlertaVencido() {
+  mostrarAlertaVencido() {
     this.alertService.error(
       'La fecha de asignación ha caducado. Ya no puedes modificar este turno.'
     );
