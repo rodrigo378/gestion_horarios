@@ -17,7 +17,7 @@
   
   /* 📌 Ajustar el tamaño del texto de los eventos */
   ::ng-deep .fc-event {
-    font-size: 20px !important;
+    font-size: 23px !important;
     padding: 10px !important;
     line-height: 20px !important;
   }
@@ -42,7 +42,7 @@
   }
   
   ::ng-deep .fc-event-title {
-    font-size: 11px !important; /* o prueba con 12px */
+    font-size: 13px !important; /* o prueba con 12px */
     font-weight: 500;
   }
   
