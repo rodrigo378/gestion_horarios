@@ -75,8 +75,8 @@ export class CalenderDocenteComponent implements OnInit {
           let borderColor = '';
 
           if (h.modalidad === 'pre') {
-            backgroundColor = '#EAB308'; // Azul brillante
-            borderColor = '#EAB308';
+            backgroundColor = '#0c7734'; // Azul brillante
+            borderColor = '#15d200';
           } else if (h.modalidad === 'vir') {
             backgroundColor = '#7E22CE'; // Verde esmeralda
             borderColor = '#7E22CE';
@@ -89,8 +89,10 @@ export class CalenderDocenteComponent implements OnInit {
             ? ` - Aula ${h.aula.c_codaula}`
             : '';
 
+          const docenteNombre = docente.c_nomdoc ? ` - ${docente.c_nomdoc}` : '';
+
           return {
-            title: `${h.curso?.c_nomcur || 'Curso'}${aulaNombre}`,
+            title: `${h.curso?.c_nomcur || 'Curso'}${aulaNombre}${docenteNombre}`,
             start: h.h_inicio,
             end: h.h_fin,
             backgroundColor,
