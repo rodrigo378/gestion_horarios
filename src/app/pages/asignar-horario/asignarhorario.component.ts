@@ -1063,8 +1063,6 @@ export class AsignarhorarioComponent implements OnInit {
 
     this.guardandoHorarios = true;
 
-    this.guardandoHorarios = true;
-
     const eventos = this.calendarComponent
       .getApi()
       .getEvents()
@@ -1145,7 +1143,6 @@ export class AsignarhorarioComponent implements OnInit {
     this.horarioService.guardarHorarios(payload).subscribe({
       next: (res) => {
         this.guardandoHorarios = false;
-        this.guardandoHorarios = false;
         if (res.success === false && res.errores?.length > 0) {
           const errores = res.errores as string[];
           const erroresHtml = errores.map((err) => `<li>${err}</li>`).join('');
@@ -1161,7 +1158,6 @@ export class AsignarhorarioComponent implements OnInit {
         this.verificarEstadoTurnoAutomatico();
       },
       error: (err) => {
-        this.guardandoHorarios = false;
         this.guardandoHorarios = false;
         this.alertService.error('❌ Error al guardar horarios.');
         console.error(err);
@@ -1709,10 +1705,12 @@ export class AsignarhorarioComponent implements OnInit {
         ).filter((ev) => ev.id !== id);
 
         if (!id.startsWith('temp-')) {
+          this.guardandoHorarios = true
           this.horarioService
             .deleteHorarios({ horarios_id: [Number(id)] })
             .subscribe({
               next: () => {
+                this.guardandoHorarios = false
                 this.alertService.success('🗑️ Evento eliminado correctamente.');
 
                 // ✅ Sayayin FIX: restaurar visualmente el curso afectado
@@ -1720,10 +1718,11 @@ export class AsignarhorarioComponent implements OnInit {
 
                 // 🔁 Refrescamos los cursos y docentes si quieres
                 // this.recargarCursosSegunTurno();
-                // this.cargarDocentes();
+                this.cargarDocentes();
                 this.verificarEstadoTurnoAutomatico();
               },
               error: (err) => {
+                this.guardandoHorarios = false
                 this.alertService.error('❌ Error al eliminar el evento.');
                 console.error(err);
               },

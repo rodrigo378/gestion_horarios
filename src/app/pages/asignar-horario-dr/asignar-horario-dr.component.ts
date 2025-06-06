@@ -1706,21 +1706,22 @@ export class AsignarHorarioDrComponent implements OnInit {
         ).filter((ev) => ev.id !== id);
 
         if (!id.startsWith('temp-')) {
+          this.guardandoHorarios = true;
           this.horarioService
             .deleteHorarios({ horarios_id: [Number(id)] })
             .subscribe({
               next: () => {
+                this.guardandoHorarios = false;
                 this.alertService.success('🗑️ Evento eliminado correctamente.');
-
                 // ✅ Sayayin FIX: restaurar visualmente el curso afectado
                 this.devolverCursoEliminado(codigo, tipo, horas, titulo);
-
                 // 🔁 Refrescamos los cursos y docentes si quieres
                 // this.recargarCursosSegunTurno();
                 this.cargarDocentes();
                 this.verificarEstadoTurnoAutomatico();
               },
               error: (err) => {
+                this.guardandoHorarios = false;
                 this.alertService.error('❌ Error al eliminar el evento.');
                 console.error(err);
               },
