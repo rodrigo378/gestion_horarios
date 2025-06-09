@@ -498,75 +498,75 @@ export class VerTurnosComponent implements OnInit {
     );
   }
 
-  debeBloquearTurno(turno: Turno): boolean {
-    const seccionesValidas = ['m1', 'm2', 'n1', 'n2'];
+  // debeBloquearTurno(turno: Turno): boolean {
+  //   const seccionesValidas = ['m1', 'm2', 'n1', 'n2'];
 
-    const modalidad = turno.c_codmod?.toString();        // '1' (Presencial), '2' (Semi)
-    const facultad = turno.c_codesp?.toUpperCase();      // 'S1', 'S2'
-    // const especialidad = turno.c_codesp?.toUpperCase();  // 'ENF'
-    const ciclo = turno.n_ciclo;
-    const seccion = turno.c_grpcur?.toLowerCase();       // 'm1', etc.
+  //   const modalidad = turno.c_codmod?.toString();        // '1' (Presencial), '2' (Semi)
+  //   const facultad = turno.c_codesp?.toUpperCase();      // 'S1', 'S2'
+  //   // const especialidad = turno.c_codesp?.toUpperCase();  // 'ENF'
+  //   const ciclo = turno.n_ciclo;
+  //   const seccion = turno.c_grpcur?.toLowerCase();       // 'm1', etc.
 
-    // (Opcional) Restringir solo a Enfermería
-    // if (especialidad !== 'ENF') return false;
+  //   // (Opcional) Restringir solo a Enfermería
+  //   // if (especialidad !== 'ENF') return false;
 
-    // Condición 1: Presencial, ciclo 3, secciones válidas
-    if (
-      ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'].includes(facultad) &&
-      modalidad === '1' &&
-      ciclo >= 3 &&
-      ciclo <= 10 &&
-      seccionesValidas.includes(seccion)
-    ) {
-      return true;
-    }
+  //   // Condición 1: Presencial, ciclo 3, secciones válidas
+  //   if (
+  //     ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'].includes(facultad) &&
+  //     modalidad === '1' &&
+  //     ciclo >= 3 &&
+  //     ciclo <= 10 &&
+  //     seccionesValidas.includes(seccion)
+  //   ) {
+  //     return true;
+  //   }
 
-    // Condición 2: Semipresencial, ciclo 4–10, secciones válidas
-    if (
-      ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'].includes(facultad) &&
-      modalidad === '2' &&
-      ciclo >= 3 &&
-      ciclo <= 10 &&
-      seccionesValidas.includes(seccion)
-    ) {
-      return true;
-    }
+  //   // Condición 2: Semipresencial, ciclo 4–10, secciones válidas
+  //   if (
+  //     ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'].includes(facultad) &&
+  //     modalidad === '2' &&
+  //     ciclo >= 3 &&
+  //     ciclo <= 10 &&
+  //     seccionesValidas.includes(seccion)
+  //   ) {
+  //     return true;
+  //   }
 
-    if (
-      ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E6', 'E7'].includes(facultad) &&
-      modalidad === '1' &&
-      ciclo >= 3 &&
-      ciclo <= 10 &&
-      seccionesValidas.includes(seccion)
-    ) {
-      return true;
-    }
+  //   if (
+  //     ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E6', 'E7'].includes(facultad) &&
+  //     modalidad === '1' &&
+  //     ciclo >= 3 &&
+  //     ciclo <= 10 &&
+  //     seccionesValidas.includes(seccion)
+  //   ) {
+  //     return true;
+  //   }
 
-    // Condición 2: Semipresencial, ciclo 4–10, secciones válidas
-    if (
-      ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E6', 'E7'].includes(facultad) &&
-      modalidad === '2' &&
-      ciclo >= 3 &&
-      ciclo <= 10 &&
-      seccionesValidas.includes(seccion)
-    ) {
-      return true;
-    }
+  //   // Condición 2: Semipresencial, ciclo 4–10, secciones válidas
+  //   if (
+  //     ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E6', 'E7'].includes(facultad) &&
+  //     modalidad === '2' &&
+  //     ciclo >= 3 &&
+  //     ciclo <= 10 &&
+  //     seccionesValidas.includes(seccion)
+  //   ) {
+  //     return true;
+  //   }
 
-    return false;
-  }
+  //   return false;
+  // }
 
 
-  handleClick(turno: Turno): void {
-  if (this.debeBloquearTurno(turno)) {
-    this.alertService.errorwarning(
-      'Este turno ya está asignado no se permite modificación.'
-    );
-    return;
-  }
+  // handleClick(turno: Turno): void {
+  // if (this.debeBloquearTurno(turno)) {
+  //   this.alertService.errorwarning(
+  //     'Este turno ya está asignado no se permite modificación.'
+  //   );
+  //   return;
+  // }
 
-  this.verCursos(turno); // si no está bloqueado, continúa el flujo normal
-}
+//   this.verCursos(turno); // si no está bloqueado, continúa el flujo normal
+// }
 
 
 }

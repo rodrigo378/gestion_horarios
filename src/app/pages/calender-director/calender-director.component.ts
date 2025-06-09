@@ -164,6 +164,7 @@ export class CalenderDirectorComponent implements OnInit {
     this.selectedClasses = [
       {
         subject: evento.curso?.c_nomcur ?? 'Curso',
+        codcurso: evento.curso?.c_codcur?? '',
         time: `${this.formatHora(evento.h_inicio)} - ${this.formatHora(evento.h_fin)}`,
         faculty: this.turnoData?.nom_fac ?? '---',
         cycle: evento.curso?.n_ciclo ? `${evento.curso.n_ciclo}°` : (this.turnoData?.n_ciclo ? `${this.turnoData.n_ciclo}°` : '---'),
