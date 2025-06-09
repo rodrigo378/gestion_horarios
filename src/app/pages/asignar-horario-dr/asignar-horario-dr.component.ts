@@ -1490,12 +1490,12 @@ export class AsignarHorarioDrComponent implements OnInit {
     if (this.horaInicio) {
       const [h, m] = this.horaInicio.split(':').map(Number);
       const horaTotal = h + m / 60;
-      const minVisible = 8;
-      const maxVisible = 23;
+      const minVisible = 7;   // 07:00 AM
+      const maxVisible = 23;  // 11:00 PM
 
       if (horaTotal < minVisible || horaTotal >= maxVisible) {
         this.alertService.error(
-          `⛔ La hora de inicio (${this.horaInicio}) está fuera del rango visible del calendario (08:00 - 23:00).`
+          `⛔ La hora de inicio seleccionada (${this.horaInicio}) está fuera del rango visible del calendario (07:00 am - 23:00 pm). Por favor selecciona una hora válida.`
         );
         return;
       }
@@ -1706,21 +1706,22 @@ export class AsignarHorarioDrComponent implements OnInit {
         ).filter((ev) => ev.id !== id);
 
         if (!id.startsWith('temp-')) {
+          this.guardandoHorarios = true;
           this.horarioService
             .deleteHorarios({ horarios_id: [Number(id)] })
             .subscribe({
               next: () => {
+                this.guardandoHorarios = false;
                 this.alertService.success('🗑️ Evento eliminado correctamente.');
-
                 // ✅ Sayayin FIX: restaurar visualmente el curso afectado
                 this.devolverCursoEliminado(codigo, tipo, horas, titulo);
-
                 // 🔁 Refrescamos los cursos y docentes si quieres
                 // this.recargarCursosSegunTurno();
                 this.cargarDocentes();
                 this.verificarEstadoTurnoAutomatico();
               },
               error: (err) => {
+                this.guardandoHorarios = false;
                 this.alertService.error('❌ Error al eliminar el evento.');
                 console.error(err);
               },

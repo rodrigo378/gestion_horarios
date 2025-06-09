@@ -251,6 +251,7 @@ export class ReporteriaComponent implements OnInit {
           ? format(toZonedTime(new Date(h.h_fin), zonaHoraria), 'HH:mm')
           : '';
 
+        const cursosUnicos = new Set(horarios.map(h => h.curso?.c_codcur)).size;
         rows.push({
           Docente: index === 0 ? docente.c_nomdoc : '',
           'H. Min': index === 0 ? docente.h_min : '',
@@ -262,7 +263,8 @@ export class ReporteriaComponent implements OnInit {
                 ? 'Tiempo Completo'
                 : 'Tiempo Parcial'
               : '',
-          Asignado: index === 0 ? asignado : '',
+          'Horarios Asignaciones': index === 0 ? asignado : '',
+          'Cursos Asignados': index === 0 ? cursosUnicos : '',
           Día: h.dia,
           'Hora Inicio': horaInicio,
           'Hora Fin': horaFin,

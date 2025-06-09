@@ -140,7 +140,12 @@ export class VerTransversalComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.cursosFiltrados = data.data.filter((curso) => {
-            return curso.turno_id !== this.curso.turno_id;
+            console.log('curso => ', curso);
+
+            return (
+              curso.turno_id !== this.curso.turno_id &&
+              curso.cursosPadres.length === 0
+            );
           });
         },
         error: (error) => {

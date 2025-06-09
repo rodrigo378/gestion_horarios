@@ -91,9 +91,45 @@ export class CalenderDirectorComponent implements OnInit {
       });
     });
   }
-  
+    
   estilizarEvento(info: any): void {
     info.el.classList.add('evento-separado');
+
+    const modalidad = info.event.extendedProps.modalidadTexto ?? '';
+    const modalidadTipo = info.event.extendedProps.modalidad ?? '';
+    const tipcur = info.event.extendedProps.tipcur === 'P' ? 'Práctica' : 'Teoría';
+
+    // 🔵 Badge superior derecho: Modalidad (Virtual/Presencial)
+    const badgeTopRight = document.createElement('div');
+    badgeTopRight.textContent = modalidad;
+    badgeTopRight.style.position = 'absolute';
+    badgeTopRight.style.top = '2px';
+    badgeTopRight.style.right = '4px';
+    badgeTopRight.style.backgroundColor = modalidadTipo === 'vir' ? '#9333EA' : '#FACC15';
+    badgeTopRight.style.color = '#fff';
+    badgeTopRight.style.padding = '2px 6px';
+    badgeTopRight.style.borderRadius = '8px';
+    badgeTopRight.style.fontSize = '10px';
+    badgeTopRight.style.fontWeight = 'Extra Bold';
+    badgeTopRight.style.zIndex = '10';
+    badgeTopRight.style.color = '#ffffff';
+
+    // 🟢 Badge inferior derecho: Teoría o Práctica
+    const badgeBottomRight = document.createElement('div');
+    badgeBottomRight.textContent = tipcur;
+    badgeBottomRight.style.position = 'absolute';
+    badgeBottomRight.style.bottom = '2px';
+    badgeBottomRight.style.right = '4px';
+    badgeBottomRight.style.backgroundColor = '#006aff';
+    badgeBottomRight.style.color = '#fff';
+    badgeBottomRight.style.padding = '2px 6px';
+    badgeBottomRight.style.borderRadius = '8px';
+    badgeBottomRight.style.fontSize = '10px';
+    badgeBottomRight.style.fontWeight = 'bold';
+    badgeBottomRight.style.zIndex = '10';
+
+    info.el.appendChild(badgeTopRight);
+    info.el.appendChild(badgeBottomRight);
   }
 
   cargarEventosPorTurno(turnoId: number): void {
@@ -122,21 +158,22 @@ export class CalenderDirectorComponent implements OnInit {
         const nombreAula = aulaObj ? aulaObj.c_codaula : 'Sin aula';
 
         return {
-          title: `[${modalidadTexto}] ${h.curso?.c_nomcur} - ${nombreDocente} - Aula ${nombreAula}`,
+          title: `${h.curso?.c_codcur} - ${h.curso?.c_nomcur} - ${nombreDocente} - Aula ${nombreAula}`,
           start: h.h_inicio,
           end: h.h_fin,
           backgroundColor: color,
           borderColor: color,
-          extendedProps: {
-            ...h,
-            curso: h.curso,
-            docente: nombreDocente,
-            aula: nombreAula,
-            modalidad: h.modalidad,
-          }
+            extendedProps: {
+              ...h,
+              curso: h.curso,
+              docente: nombreDocente,
+              aula: nombreAula,
+              modalidad: h.modalidad,
+              modalidadTexto,
+              tipcur: h.tipcur, // <-- Añade esto
+            }
         };
       });
-  
       this.calendarOptions.events = eventos;
     });
   }
@@ -164,6 +201,7 @@ export class CalenderDirectorComponent implements OnInit {
     this.selectedClasses = [
       {
         subject: evento.curso?.c_nomcur ?? 'Curso',
+        codcurso: evento.curso?.c_codcur?? '',
         time: `${this.formatHora(evento.h_inicio)} - ${this.formatHora(evento.h_fin)}`,
         faculty: this.turnoData?.nom_fac ?? '---',
         cycle: evento.curso?.n_ciclo ? `${evento.curso.n_ciclo}°` : (this.turnoData?.n_ciclo ? `${this.turnoData.n_ciclo}°` : '---'),
