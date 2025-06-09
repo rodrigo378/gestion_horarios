@@ -423,7 +423,7 @@
 
             <td class="p-4 border-b border-slate-200">
               <!-- Botón ver cursos -->
-              <button
+              <!-- <button
                 class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 type="button"
                 (click)="
@@ -435,7 +435,24 @@
                 >
                   <i class="fa-solid fa-calendar-days fa-2x"></i>
                 </span>
+              </button> -->
+
+              <button
+                class="btn btn-sm"
+                [ngClass]="{
+                  'btn-success': !debeBloquearTurno(turno),
+                  'btn-secondary': debeBloquearTurno(turno)
+                }"
+                (click)="handleClick(turno)"
+                [title]="
+                  debeBloquearTurno(turno)
+                    ? 'Turno bloqueado: ya asignado según modalidad/ciclo/sección'
+                    : 'Asignar horario'
+                "
+              >
+                <i class="fa-solid fa-calendar-days fa-2x"></i>
               </button>
+
 
               <!-- Botón editar -->
               <!-- <button
