@@ -51,7 +51,7 @@
   <!-- Filtro de turno a la izquierda -->
 <div class="flex flex-wrap items-center gap-3">
   <!-- Filtro de turno -->
-  <label class="font-semibold text-gray-700">Turno:</label>
+  <!-- <label class="font-semibold text-gray-700">Turno:</label> -->
   <!-- <select [(ngModel)]="turnoFiltro" class="border px-8 py-2 rounded-lg">
     <option value="todos">Todos</option>
     <option value="mañana">Mañana</option>
@@ -59,7 +59,7 @@
   </select> -->
 
   <!-- Filtro de rango de horas -->
-  <label class="ml-4 font-semibold text-gray-700">Desde:</label>
+  <label class="ml-4 font-semibold text-gray-700">Imprimir desde las:</label>
   <select [(ngModel)]="horaInicioFiltro" class="border px-8 py-1 rounded-lg">
     <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
   </select>

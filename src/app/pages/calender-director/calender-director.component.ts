@@ -29,7 +29,7 @@ export class CalenderDirectorComponent implements OnInit {
   dias: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   horas: string[] = [];
   turnoFiltro: string = 'todos'; // 'todos' | 'mañana' | 'tarde' | 'noche'
-  horaInicioFiltro: string = '08:00';
+  horaInicioFiltro: string = '07:00';
   horaFinFiltro: string = '23:00';
 
 
@@ -44,7 +44,7 @@ export class CalenderDirectorComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.generarHoras('08:00', '23:00'); // puedes ajustar el rango
+    this.generarHoras('07:00', '23:00'); // puedes ajustar el rango
     this.route.queryParams.subscribe((params) => {
       this.turnoId = +params['id'];
       if (this.turnoId) {
@@ -212,7 +212,7 @@ mostrarHora(hora: string): boolean {
       useCORS: true, // Por si tienes imágenes cargadas
     }).then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('portrait', 'pt', 'a4');
+      const pdf = new jsPDF('landscape', 'pt', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
