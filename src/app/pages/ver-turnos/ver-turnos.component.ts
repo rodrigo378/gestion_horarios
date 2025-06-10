@@ -533,7 +533,7 @@ export class VerTurnosComponent implements OnInit {
     }
 
     if (
-      ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E6', 'E7'].includes(facultad) &&
+      ['E1', 'E2', 'E3', 'E4', 'E5', 'E7', 'E8', 'E9'].includes(facultad) &&
       modalidad === '1' &&
       ciclo >= 3 &&
       ciclo <= 10 &&
@@ -544,7 +544,7 @@ export class VerTurnosComponent implements OnInit {
 
     // Condición 2: Semipresencial, ciclo 4–10, secciones válidas
     if (
-      ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E6', 'E7'].includes(facultad) &&
+      ['E1', 'E2', 'E3', 'E4', 'E5', 'E7', 'E8', 'E9'].includes(facultad) &&
       modalidad === '2' &&
       ciclo >= 3 &&
       ciclo <= 10 &&
