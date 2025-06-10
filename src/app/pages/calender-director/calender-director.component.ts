@@ -1,11 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import { CalendarOptions } from '@fullcalendar/core';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import esLocale from '@fullcalendar/core/locales/es';
 import { ActivatedRoute } from '@angular/router';
 import { Turno } from '../../interfaces/turno';
 import { HorarioService } from '../../services/horario.service';
@@ -25,40 +20,18 @@ import { Aula } from '../../interfaces/Aula';
 export class CalenderDirectorComponent implements OnInit {
   turnoData!: Turno;
   turnoId!: number;
-
   showModal: boolean = false;
   selectedDay: string = '';
   selectedClasses: any[] = [];
-
   docentes: Docente[] = [];
   aulas: Aula[] = [];
+  eventos: any[] = [];
+  dias: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  horas: string[] = [];
+  turnoFiltro: string = 'todos'; // 'todos' | 'mañana' | 'tarde' | 'noche'
+  horaInicioFiltro: string = '08:00';
+  horaFinFiltro: string = '23:00';
 
-
-  calendarOptions: CalendarOptions = {
-    plugins: [timeGridPlugin, dayGridPlugin, interactionPlugin],
-    initialDate: '2024-01-01',
-    initialView: 'timeGridWeek',
-    headerToolbar: { left: '', center: '', right: '' },
-    buttonText: { today: 'Hoy', week: 'Semana' },
-    locale: esLocale,
-    slotMinTime: '08:00:00',
-    slotMaxTime: '23:00:00',
-    slotDuration: '01:00:00',
-    slotLabelInterval: '01:00:00',
-    allDaySlot: false,
-    editable: false,
-    selectable: false,
-    droppable: false,
-    eventStartEditable: false,
-    eventDurationEditable: false,
-    height: 'auto',
-    dayHeaderFormat: { weekday: 'long' },
-    slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
-    events: [], // Acá vas a cargar los eventos del docente
-    hiddenDays: [0], // oculta domingo
-    eventClick: this.onEventClick.bind(this),
-    eventDidMount: this.estilizarEvento.bind(this),
-  };
 
   constructor(
     private route: ActivatedRoute,
@@ -71,15 +44,51 @@ export class CalenderDirectorComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.generarHoras('08:00', '23:00'); // puedes ajustar el rango
     this.route.queryParams.subscribe((params) => {
       this.turnoId = +params['id'];
       if (this.turnoId) {
         this.cargarDatosTurno(this.turnoId);
-        this.cargarDocentesYAulasYEventos(this.turnoId); // 👈 aquí corregimos
+        this.cargarDocentesYAulasYEventos(this.turnoId);
       }
     });
   }
-  
+
+  generarHoras(inicio: string, fin: string): void {
+    const [hInicio] = inicio.split(':').map(Number);
+    const [hFin] = fin.split(':').map(Number);
+
+    for (let h = hInicio; h <= hFin; h++) {
+      const hora = `${h.toString().padStart(2, '0')}:00`;
+      this.horas.push(hora);
+    }
+  }
+
+  diaANombre(diaNum: number): string {
+    const nombres = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    return nombres[diaNum] || '---';
+  }
+
+  obtenerEvento(dia: string, hora: string): any | null {
+    const horaNum = parseInt(hora.split(':')[0], 10);
+    return this.eventos.find(e =>
+      e.dia === dia && new Date(e.h_inicio).getHours() === horaNum
+    );
+  }
+
+mostrarHora(hora: string): boolean {
+  const horaNum = parseInt(hora.split(':')[0], 10);
+  const inicio = parseInt(this.horaInicioFiltro.split(':')[0], 10);
+  const fin = parseInt(this.horaFinFiltro.split(':')[0], 10);
+
+  return horaNum >= inicio && horaNum <= fin;
+}
+
+
+  get horasFiltradas(): string[] {
+    return this.horas.filter(h => this.mostrarHora(h));
+  }
+
   // 💡 Nuevo método combinado
   private cargarDocentesYAulasYEventos(turnoId: number): void {
     this.docenteService.obtenerDocentes().subscribe((docentes) => {
@@ -91,63 +100,39 @@ export class CalenderDirectorComponent implements OnInit {
       });
     });
   }
-    
-  estilizarEvento(info: any): void {
-    info.el.classList.add('evento-separado');
-
-    const modalidad = info.event.extendedProps.modalidadTexto ?? '';
-    const modalidadTipo = info.event.extendedProps.modalidad ?? '';
-    const tipcur = info.event.extendedProps.tipcur === 'P' ? 'Práctica' : 'Teoría';
-
-    // 🔵 Badge superior derecho: Modalidad (Virtual/Presencial)
-    const badgeTopRight = document.createElement('div');
-    badgeTopRight.textContent = modalidad;
-    badgeTopRight.style.position = 'absolute';
-    badgeTopRight.style.top = '2px';
-    badgeTopRight.style.right = '4px';
-    badgeTopRight.style.backgroundColor = modalidadTipo === 'vir' ? '#9333EA' : '#FACC15';
-    badgeTopRight.style.color = '#fff';
-    badgeTopRight.style.padding = '2px 6px';
-    badgeTopRight.style.borderRadius = '8px';
-    badgeTopRight.style.fontSize = '10px';
-    badgeTopRight.style.fontWeight = 'Extra Bold';
-    badgeTopRight.style.zIndex = '10';
-    badgeTopRight.style.color = '#ffffff';
-
-    // 🟢 Badge inferior derecho: Teoría o Práctica
-    const badgeBottomRight = document.createElement('div');
-    badgeBottomRight.textContent = tipcur;
-    badgeBottomRight.style.position = 'absolute';
-    badgeBottomRight.style.bottom = '2px';
-    badgeBottomRight.style.right = '4px';
-    badgeBottomRight.style.backgroundColor = '#006aff';
-    badgeBottomRight.style.color = '#fff';
-    badgeBottomRight.style.padding = '2px 6px';
-    badgeBottomRight.style.borderRadius = '8px';
-    badgeBottomRight.style.fontSize = '10px';
-    badgeBottomRight.style.fontWeight = 'bold';
-    badgeBottomRight.style.zIndex = '10';
-
-    info.el.appendChild(badgeTopRight);
-    info.el.appendChild(badgeBottomRight);
-  }
 
   cargarEventosPorTurno(turnoId: number): void {
     this.horarioService.getHorarioPorTurno(turnoId).subscribe((data) => {
       const eventos = data.map((h: any) => {
-        // 🎨 Asignar color y texto por modalidad
+        // 🎨 Color y nombre de modalidad
         let color = '';
         let modalidadTexto = '';
-        if (h.modalidad === 'pre') {
-          color = '#e9b109'; // Amarillo para semipresencial
+      
+        switch (h.modalidad) {
+        case 'pre':
+          color = '#F59E0B'; // Presencial
           modalidadTexto = 'Presencial';
-        } else if (h.modalidad === 'vir') {
-          color = '#7E22CE'; // Morado para virtual
+          break;
+        case 'vir':
+          color = '#7E22CE'; // Virtual
           modalidadTexto = 'Virtual';
-        } else {
-          color = '#9CA3AF'; // Gris si no se especifica
+          break;
+        case 'lab':
+          color = '#0EA5E9'; // Laboratorio
+          modalidadTexto = 'Laboratorio';
+          break;
+        case 'tev':
+          color = '#10B981'; // Teoría Virtual
+          modalidadTexto = 'Teoría Virtual';
+          break;
+        case 'lbp':
+          color = '#EF4444'; // Laboratorio Presencial
+          modalidadTexto = 'Laboratorio Presencial';
+          break;
+        default:
+          color = '#9CA3AF'; // Gris
           modalidadTexto = 'Sin modalidad';
-        }
+      }
 
         // 🧑‍🏫 Buscar nombre de docente
         const docenteObj = this.docentes.find(d => d.id === h.docente_id);
@@ -158,60 +143,26 @@ export class CalenderDirectorComponent implements OnInit {
         const nombreAula = aulaObj ? aulaObj.c_codaula : 'Sin aula';
 
         return {
-          title: `${h.curso?.c_codcur} - ${h.curso?.c_nomcur} - ${nombreDocente} - Aula ${nombreAula}`,
-          start: h.h_inicio,
-          end: h.h_fin,
-          backgroundColor: color,
-          borderColor: color,
-            extendedProps: {
-              ...h,
-              curso: h.curso,
-              docente: nombreDocente,
-              aula: nombreAula,
-              modalidad: h.modalidad,
-              modalidadTexto,
-              tipcur: h.tipcur, // <-- Añade esto
-            }
+          curso: `${h.curso?.c_codcur} - ${h.curso?.c_nomcur}`,
+          docente: nombreDocente,
+          aula: nombreAula,
+          dia: h.dia, // 👈 ahora es string ("Sábado", "Jueves", etc.)
+          h_inicio: h.h_inicio,
+          h_fin: h.h_fin,
+          color: color,
+          modalidad: h.modalidad,
+          tipo: h.tipo
         };
       });
-      this.calendarOptions.events = eventos;
+      this.eventos = eventos;
+      console.log(this.eventos); // ✅
     });
   }
-  
 
   cargarDatosTurno(id: number): void {
     this.turnoServices.getTurnoById(id).subscribe((turno) => {
       this.turnoData = turno;
     });
-  }
-
-  onEventClick(info: any): void {
-    const evento = info.event.extendedProps as HorarioExtendido;
-  
-    this.selectedDay = evento.dia;
-  
-    // Buscar docente
-    const docente = this.docentes.find(d => d.id === evento.docente_id);
-    const nombreDocente = docente ? docente.c_nomdoc : 'Sin docente';
-  
-    // Buscar aula
-    const aula = this.aulas.find(a => a.id === evento.aula_id);
-    const nombreAula = aula ? `Aula ${aula.c_codaula} - ${this.obtenerNombrePiso(aula.n_piso)}` : 'Sin aula';
-  
-    this.selectedClasses = [
-      {
-        subject: evento.curso?.c_nomcur ?? 'Curso',
-        codcurso: evento.curso?.c_codcur?? '',
-        time: `${this.formatHora(evento.h_inicio)} - ${this.formatHora(evento.h_fin)}`,
-        faculty: this.turnoData?.nom_fac ?? '---',
-        cycle: evento.curso?.n_ciclo ? `${evento.curso.n_ciclo}°` : (this.turnoData?.n_ciclo ? `${this.turnoData.n_ciclo}°` : '---'),
-        floor: nombreAula, // Aquí sale Aula + Piso bonito
-        modality: this.obtenerNombreModalidad(Number(this.turnoData?.c_codmod) ?? null),
-        docente: nombreDocente, // Aquí traemos el docente
-      },
-    ];
-  
-    this.showModal = true;
   }
   
   formatHora(horaISO: string): string {
@@ -250,7 +201,7 @@ export class CalenderDirectorComponent implements OnInit {
 }
 
   exportarCalendarioAPDF(): void {
-    const calendarioEl = document.querySelector('.fc'); // Asegúrate que este selector sea correcto
+    const calendarioEl = document.querySelector('.horario-table'); // Asegúrate que este selector sea correcto
     if (!calendarioEl) {
       console.warn('❌ No se encontró el calendario en el DOM.');
       return;
@@ -261,7 +212,7 @@ export class CalenderDirectorComponent implements OnInit {
       useCORS: true, // Por si tienes imágenes cargadas
     }).then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('landscape', 'pt', 'a4');
+      const pdf = new jsPDF('portrait', 'pt', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
@@ -271,7 +222,7 @@ export class CalenderDirectorComponent implements OnInit {
   }
 
   capturarCalendario() {
-    const calendarioEl = document.querySelector('.fc'); // o '#calendar'
+    const calendarioEl = document.querySelector('.horario-table'); // o '#calendar'
     if (!calendarioEl) return;
 
     html2canvas(calendarioEl as HTMLElement).then((canvas) => {

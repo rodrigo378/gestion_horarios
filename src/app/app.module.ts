@@ -100,6 +100,7 @@ registerLocaleData(en);
     NgxApexchartsModule,
     NzAutocompleteModule,
     NzInputModule,
+    FormsModule,
   ],
   providers: [
     provideNzI18n(es_ES),

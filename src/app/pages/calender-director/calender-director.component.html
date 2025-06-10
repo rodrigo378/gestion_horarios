@@ -7,49 +7,13 @@
   </button>
 </div>
 
-<div *ngIf="turnoData" class="bg-white shadow-lg border p-5 rounded-xl">
-  <p class="text-2xl font-bold">
-    Horario del |
-    {{ turnoData.n_codper }} - {{ turnoData.n_codpla }} -
-    {{ turnoData.nomesp }} - {{ turnoData.n_ciclo }}° Ciclo -
-    {{ turnoData.c_nommod }} - Sección {{ turnoData.c_grpcur }} -
-  </p>
-  <div class="text-[20px] flex flex-wrap gap-4 mt-5">
-    <div class="flex items-center font-bold">
-      <span>Leyenda: </span>
-    </div>
-    <!-- <div class="flex items-center">
-      <span class="inline-block w-4 h-4 bg-blue-600 rounded mr-2"></span>
-      <span>Teoría</span>
-    </div>
-    <div class="flex items-center">
-      <span class="inline-block w-4 h-4 bg-green-600 rounded mr-2"></span>
-      <span>Práctica</span>
-    </div> -->
-    <div class="flex items-center">
-      <span class="inline-block w-4 h-4 bg-yellow-500 rounded mr-2"></span>
-      <span>Curso mod: Presencial</span>
-    </div>
-    <div class="flex items-center">
-      <span class="inline-block w-4 h-4 bg-purple-700 rounded mr-2"></span>
-      <span>Curso mod: Virtual</span>
-    </div>
-  </div>
-</div>
 
-<button (click)="exportarCalendarioAPDF()" class="bg-green-500 text-white px-4 py-2 rounded mt-4">
-  📄 Exportar a PDF
-</button>
 
-<button (click)="capturarCalendario()" class="bg-purple-700 text-white px-4 py-2 rounded mt-4">
-  📄 Exportar a IMG
-</button>
-
-<full-calendar
+<!-- <full-calendar
   [options]="calendarOptions"
   class="shadow-lg border border-gray-200 rounded-lg p-4 mt-5"
 >
-</full-calendar>
+</full-calendar> -->
 
 <!-- Modal -->
 <div *ngIf="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -81,4 +45,118 @@
       </button>
     </div>
   </div>
+</div>
+
+<div class="flex justify-between items-center my-4 flex-wrap gap-4">
+  <!-- Filtro de turno a la izquierda -->
+<div class="flex flex-wrap items-center gap-3">
+  <!-- Filtro de turno -->
+  <label class="font-semibold text-gray-700">Turno:</label>
+  <select [(ngModel)]="turnoFiltro" class="border px-8 py-2 rounded-lg">
+    <option value="todos">Todos</option>
+    <option value="mañana">Mañana</option>
+    <option value="noche">Noche</option>
+  </select>
+
+  <!-- Filtro de rango de horas -->
+  <label class="ml-4 font-semibold text-gray-700">Desde:</label>
+  <select [(ngModel)]="horaInicioFiltro" class="border px-8 py-1 rounded-lg">
+    <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
+  </select>
+
+  <label class="font-semibold text-gray-700">Hasta:</label>
+  <select [(ngModel)]="horaFinFiltro" class="border px-8 py-1 rounded-lg">
+    <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
+  </select>
+</div>
+
+
+  <!-- Botones a la derecha -->
+  <div class="flex gap-3">
+    <button (click)="exportarCalendarioAPDF()" class="bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition">
+      📄 Exportar a PDF
+    </button>
+    <!-- <button (click)="capturarCalendario()" class="bg-purple-700 text-white px-4 py-2 rounded shadow hover:bg-purple-800 transition">
+      📄 Exportar a IMG
+    </button> -->
+  </div>
+</div>
+
+
+
+<div class="horario-table">
+  <div *ngIf="turnoData" class="bg-white shadow-lg border p-5 rounded-xl">
+    <p class="text-2xl font-bold">
+      Horario del |
+      {{ turnoData.n_codper }} - {{ turnoData.n_codpla }} -
+      {{ turnoData.nomesp }} - {{ turnoData.n_ciclo }}° Ciclo -
+      {{ turnoData.c_nommod }} - Sección {{ turnoData.c_grpcur }}
+    </p>
+    <div class="text-[20px] flex flex-wrap gap-4 mt-5">
+      <div class="flex items-center font-bold">
+        <span>Leyenda: </span>
+      </div>
+      <div class="flex items-center">
+        <span class="inline-block w-4 h-4 bg-yellow-500 rounded mr-2"></span>
+        <span>Curso mod: Presencial</span>
+      </div>
+      <div class="flex items-center">
+        <span class="inline-block w-4 h-4 bg-purple-700 rounded mr-2"></span>
+        <span>Curso mod: Virtual</span>
+      </div>
+      <div class="flex items-center">
+        <span class="inline-block w-4 h-4 bg-[#0EA5E9] rounded mr-2"></span>
+        <span>Curso mod: Laboratorio</span>
+      </div>
+      <div class="flex items-center">
+        <span class="inline-block w-4 h-4 bg-[#10B981] rounded mr-2"></span>
+        <span>Curso mod: Teoría Virtual</span>
+      </div>
+      <div class="flex items-center">
+        <span class="inline-block w-4 h-4 bg-[#EF4444] rounded mr-2"></span>
+        <span>Curso mod: Laboratorio Presencial</span>
+      </div>
+    </div>
+  </div>
+
+  <table class="min-w-full border border-gray-300 mt-6">
+    <thead>
+      <tr>
+        <th class="border px-2 py-1 bg-gray-200 text-center">Hora</th>
+        <th *ngFor="let dia of dias" class="border px-2 py-1 bg-gray-200 text-center">{{ dia }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let hora of horasFiltradas">
+        <td class="border px-2 py-1 font-bold bg-gray-50 text-center">{{ hora }}</td>
+        <td *ngFor="let dia of dias" class="border px-2 py-1 h-[12rem] align-top">
+          <ng-container *ngIf="obtenerEvento(dia, hora) as evento">
+            <div class="text-sm rounded px-5 py-1 text-white shadow"
+                [ngStyle]="{ 'background-color': evento.color }">
+                  <div class="flex gap-1 mb-1">
+                    <span class="bg-yellow-400 text-black px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase">
+                      {{ evento.modalidad === 'pre' ? 'Presencial' : 
+                      evento.modalidad === 'vir' ? 'Virtual' : 
+                      evento.modalidad === 'lab' ? 'LABORATORIO' : 
+                      evento.modalidad === 'tep' ? 'TEORIA PRESENCIAL' : 
+                      evento.modalidad === 'tev' ? 'TEORIA VIRTUAL' : 
+                      evento.modalidad === 'lbp' ? 'LABORATORIO PRESENCIAL' :  
+                      '---' }}
+                    </span>
+                    <span class="bg-blue-600 text-white px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase">
+                      {{ evento.tipo === 'Práctica' ? 'Práctica' : 'Teoría' }}
+                    </span>
+                  </div>
+                  <p class="text-sm font-bold">
+                    {{ formatHora(evento.h_inicio) }} - {{ formatHora(evento.h_fin) }}
+                  </p>
+                  <p class="text-sm font-bold">{{ evento.curso }}</p>
+                  <p class="text-xs">{{ evento.docente }}</p>
+                  <p class="text-xs mb-5">Aula: {{ evento.aula }}</p>
+            </div>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
