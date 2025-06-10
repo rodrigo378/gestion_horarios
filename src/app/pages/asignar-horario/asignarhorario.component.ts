@@ -78,7 +78,7 @@ export class AsignarhorarioComponent implements OnInit {
   cargandoCursos: boolean = true;
   guardandoHorarios: boolean = false;
 
-  modalidadSeleccionada: 'vir' | 'pre' | null = null;
+  modalidadSeleccionada: 'vir' | 'pre' | 'tep' | 'lbp' | 'tev' | null = null;
   //#endregion
 
   //#region Libreria del calendario
@@ -510,7 +510,7 @@ export class AsignarhorarioComponent implements OnInit {
     this.eventoSeleccionado = evento;
     const modalidadActual = evento.extendedProps.modalidad;
     this.modalidadSeleccionada =
-      modalidadActual === 'pre' || modalidadActual === 'vir'
+      modalidadActual === 'pre' || modalidadActual === 'vir' || modalidadActual === 'tep' || modalidadActual === 'lbp' || modalidadActual === 'tev'
         ? modalidadActual
         : null;
     this.modalHorasActivo = true;
@@ -623,7 +623,7 @@ export class AsignarhorarioComponent implements OnInit {
     this.eventoSeleccionado = evento;
     this.modalidadSeleccionada = (
       evento.extendedProps.modalidad || ''
-    ).toLowerCase() as 'pre' | 'vir';
+    ).toLowerCase() as 'pre' | 'vir' | 'tep' | 'lbp' | 'tev';
     this.modalHorasActivo = true;
 
     const fecha = new Date(evento.start);
