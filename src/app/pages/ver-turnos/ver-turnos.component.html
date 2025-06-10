@@ -443,7 +443,6 @@
                   'btn-success': !debeBloquearTurno(turno),
                   'btn-secondary': debeBloquearTurno(turno)
                 }"
-                [disabled]="debeBloquearTurno(turno)"
                 (click)="handleClick(turno)"
                 [title]="
                   debeBloquearTurno(turno)
