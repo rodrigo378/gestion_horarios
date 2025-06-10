@@ -499,65 +499,7 @@ export class VerTurnosComponent implements OnInit {
   }
 
   debeBloquearTurno(turno: Turno): boolean {
-    const seccionesValidas = ['m1', 'm2', 'n1', 'n2'];
-
-    const modalidad = turno.c_codmod?.toString(); // '1' (Presencial), '2' (Semi)
-    const facultad = turno.c_codesp?.toUpperCase(); // 'S1', 'S2'
-    // const especialidad = turno.c_codesp?.toUpperCase();  // 'ENF'
-    const ciclo = turno.n_ciclo;
-    const seccion = turno.c_grpcur?.toLowerCase(); // 'm1', etc.
-
-    // (Opcional) Restringir solo a Enfermería
-    // if (especialidad !== 'ENF') return false;
-
-    // Condición 1: Presencial, ciclo 3, secciones válidas
-    if (
-      ['S1', 'S2', 'S3', 'S4'].includes(facultad) &&
-      modalidad === '1' &&
-      ciclo >= 3 &&
-      ciclo <= 10 &&
-      seccionesValidas.includes(seccion)
-    ) {
-      return true;
-    }
-
-    // Condición 2: Semipresencial, ciclo 4–10, secciones válidas
-    if (
-      ['S1', 'S2', 'S3', 'S4'].includes(facultad) &&
-      modalidad === '2' &&
-      ciclo >= 3 &&
-      ciclo <= 10 &&
-      seccionesValidas.includes(seccion)
-    ) {
-      return true;
-    }
-
-    // if (
-    //   ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E6', 'E7'].includes(
-    //     facultad
-    //   ) &&
-    //   modalidad === '1' &&
-    //   ciclo >= 3 &&
-    //   ciclo <= 10 &&
-    //   seccionesValidas.includes(seccion)
-    // ) {
-    //   return true;
-    // }
-
-    // Condición 2: Semipresencial, ciclo 4–10, secciones válidas
-    // if (
-    //   ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E6', 'E7'].includes(
-    //     facultad
-    //   ) &&
-    //   modalidad === '2' &&
-    //   ciclo >= 3 &&
-    //   ciclo <= 10 &&
-    //   seccionesValidas.includes(seccion)
-    // ) {
-    //   return true;
-    // }
-
-    return false;
+    return turno.subido_sigu === true;
   }
 
   handleClick(turno: Turno): void {

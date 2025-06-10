@@ -443,16 +443,16 @@
                   'btn-success': !debeBloquearTurno(turno),
                   'btn-secondary': debeBloquearTurno(turno)
                 }"
+                [disabled]="debeBloquearTurno(turno)"
                 (click)="handleClick(turno)"
                 [title]="
                   debeBloquearTurno(turno)
-                    ? 'Turno bloqueado: ya asignado según modalidad/ciclo/sección'
+                    ? 'Turno bloqueado: ya subido al SIGU'
                     : 'Asignar horario'
                 "
               >
                 <i class="fa-solid fa-calendar-days fa-2x"></i>
               </button>
-
 
               <!-- Botón editar -->
               <!-- <button

@@ -11,6 +11,7 @@ export interface Turno {
   c_nommod: string;
   n_ciclo: number;
   estado: number;
+  subido_sigu: boolean
   periodo?: {
     n_codper: number;
     f_cierre: string;

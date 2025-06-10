@@ -97,7 +97,7 @@ export class CalenderDirectorComponent implements OnInit {
 
     const modalidad = info.event.extendedProps.modalidadTexto ?? '';
     const modalidadTipo = info.event.extendedProps.modalidad ?? '';
-    const tipcur = info.event.extendedProps.tipcur === 'P' ? 'Práctica' : 'Teoría';
+    const tipcur = info.event.extendedProps.tipo === 'Práctica' ? 'Práctica' : 'Teoría';
 
     // 🔵 Badge superior derecho: Modalidad (Virtual/Presencial)
     const badgeTopRight = document.createElement('div');
@@ -105,14 +105,34 @@ export class CalenderDirectorComponent implements OnInit {
     badgeTopRight.style.position = 'absolute';
     badgeTopRight.style.top = '2px';
     badgeTopRight.style.right = '4px';
-    badgeTopRight.style.backgroundColor = modalidadTipo === 'vir' ? '#9333EA' : '#FACC15';
-    badgeTopRight.style.color = '#fff';
     badgeTopRight.style.padding = '2px 6px';
     badgeTopRight.style.borderRadius = '8px';
     badgeTopRight.style.fontSize = '10px';
-    badgeTopRight.style.fontWeight = 'Extra Bold';
+    badgeTopRight.style.fontWeight = 'bold';
     badgeTopRight.style.zIndex = '10';
     badgeTopRight.style.color = '#ffffff';
+
+    // Asignación de color según modalidadTipo
+    switch (modalidadTipo) {
+      case 'vir': // Teoría Virtual
+        badgeTopRight.style.backgroundColor = '#7E22CE'; // Morado oscuro
+        break;
+      case 'pre': // Presencial
+        badgeTopRight.style.backgroundColor = '#F59E0B'; // Amarillo dorado
+        break;
+      case 'lab': // Laboratorio general
+        badgeTopRight.style.backgroundColor = '#0EA5E9'; // Celeste técnico
+        break;
+      case 'vir-teo': // Teoría Virtual
+        badgeTopRight.style.backgroundColor = '#10B981'; // Verde esmeralda
+        break;
+      case 'lab-pre': // Laboratorio Presencial
+        badgeTopRight.style.backgroundColor = '#EF4444'; // Rojo coral
+        break;
+      default:
+        badgeTopRight.style.backgroundColor = '#9CA3AF'; // Gris neutro
+    }
+
 
     // 🟢 Badge inferior derecho: Teoría o Práctica
     const badgeBottomRight = document.createElement('div');
@@ -136,18 +156,34 @@ export class CalenderDirectorComponent implements OnInit {
     this.horarioService.getHorarioPorTurno(turnoId).subscribe((data) => {
       const eventos = data.map((h: any) => {
         // 🎨 Asignar color y texto por modalidad
-        let color = '';
-        let modalidadTexto = '';
-        if (h.modalidad === 'pre') {
-          color = '#e9b109'; // Amarillo para semipresencial
+      let color = '';
+      let modalidadTexto = '';
+
+      switch (h.modalidad) {
+        case 'pre':
+          color = '#F59E0B'; // Presencial
           modalidadTexto = 'Presencial';
-        } else if (h.modalidad === 'vir') {
-          color = '#7E22CE'; // Morado para virtual
+          break;
+        case 'vir':
+          color = '#7E22CE'; // Virtual
           modalidadTexto = 'Virtual';
-        } else {
-          color = '#9CA3AF'; // Gris si no se especifica
+          break;
+        case 'lab':
+          color = '#0EA5E9'; // Laboratorio
+          modalidadTexto = 'Laboratorio';
+          break;
+        case 'vir-teo':
+          color = '#10B981'; // Teoría Virtual
+          modalidadTexto = 'Teoría Virtual';
+          break;
+        case 'lab-pre':
+          color = '#EF4444'; // Laboratorio Presencial
+          modalidadTexto = 'Laboratorio Presencial';
+          break;
+        default:
+          color = '#9CA3AF'; // Gris
           modalidadTexto = 'Sin modalidad';
-        }
+      }
 
         // 🧑‍🏫 Buscar nombre de docente
         const docenteObj = this.docentes.find(d => d.id === h.docente_id);
