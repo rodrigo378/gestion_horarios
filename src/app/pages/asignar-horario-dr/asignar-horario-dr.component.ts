@@ -77,7 +77,7 @@ export class AsignarHorarioDrComponent implements OnInit {
   cargandoCursos: boolean = true;
   guardandoHorarios: boolean = false;
   //para el modal
-  modalidadSeleccionada: 'vir' | 'pre' | null = null;
+  modalidadSeleccionada: 'vir' | 'pre' | 'tep' | 'lbp' | 'tev' | 'lab' | null = null;
   //#endregion
 
   //#region Libreria del calendario
@@ -505,7 +505,7 @@ export class AsignarHorarioDrComponent implements OnInit {
     this.eventoSeleccionado = evento;
     const modalidadActual = evento.extendedProps.modalidad;
     this.modalidadSeleccionada =
-      modalidadActual === 'pre' || modalidadActual === 'vir'
+      modalidadActual === 'pre' || modalidadActual === 'vir' || modalidadActual === 'tep' || modalidadActual === 'lbp' || modalidadActual === 'tev' || modalidadActual === 'lab'
         ? modalidadActual
         : null;
     this.modalHorasActivo = true;
@@ -620,7 +620,7 @@ export class AsignarHorarioDrComponent implements OnInit {
     this.eventoSeleccionado = evento;
     this.modalidadSeleccionada = (
       evento.extendedProps.modalidad || ''
-    ).toLowerCase() as 'pre' | 'vir';
+    ).toLowerCase() as 'pre' | 'vir' | 'tep' | 'lbp' | 'tev' | 'lab'; 
     this.modalHorasActivo = true;
 
     const fecha = new Date(evento.start);
@@ -877,7 +877,7 @@ export class AsignarHorarioDrComponent implements OnInit {
 
     const evento = {
       id: eventoId,
-      title: `${this.cursoSeleccionado.title} (${this.cursoSeleccionado.tipo}) - ${this.selectedDocente?.c_nomdoc}`,
+      title: `${this.cursoSeleccionado.title} (${this.cursoSeleccionado.tipo}) - ${this.selectedDocente?.c_nomdoc} [${this.modalidadSeleccionada}]`,
       start: start,
       end: end,
       backgroundColor:
