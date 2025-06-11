@@ -730,15 +730,29 @@ export class AsignarhorarioComponent implements OnInit {
     const modalidad = info.event.extendedProps.modalidad;
     if (modalidad) {
       const badgeModalidad = document.createElement('span');
-      badgeModalidad.textContent =
-        modalidad.toLowerCase() === 'pre' ? 'Pre' : 'Vir';
+      badgeModalidad.textContent = 
+        modalidad === 'pre' ? 'Presencial' :
+        modalidad === 'vir' ? 'Virtual' :
+        modalidad === 'lab' ? 'Laboratorio' :
+        modalidad === 'tep' ? 'Teoría Presencial' :
+        modalidad === 'tev' ? 'Teoría Virtual' :
+        modalidad === 'lbp' ? 'Lab Presencial' : '---';
+
       badgeModalidad.className = `
-        absolute bottom-[2px] right-1 
-        text-[10px] text-white px-2 py-[2px] rounded 
-        ${modalidad.toLowerCase() === 'pre' ? 'bg-blue-600' : 'bg-purple-600'}
+        absolute bottom-[2px] right-1 text-[10px] text-white px-2 py-[2px] rounded
+        ${
+          modalidad === 'pre' ? 'bg-yellow-600 text-black' :
+          modalidad === 'vir' ? 'bg-purple-900' :
+          modalidad === 'lab' ? 'bg-[#020202]' :
+          modalidad === 'tev' ? 'bg-[#10B981]' :
+          modalidad === 'lbp' ? 'bg-[#EF4444]' :
+          'bg-gray-400'
+        }
       `;
+
       info.el.appendChild(badgeModalidad);
     }
+
 
     // 🔒 Candado para cursos padres
     if (esPadre) {
