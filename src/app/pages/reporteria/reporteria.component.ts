@@ -10,7 +10,7 @@ import {
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { format, toZonedTime } from 'date-fns-tz';
-import { DocentecurService } from '../../services/docentecur.service';
+import { DocenteService } from '../../services/docente.service';
 import { Router } from '@angular/router';
 import { CursoService } from '../../services/curso.service';
 import { Especialidad } from '../../interfaces/Curso';
@@ -48,7 +48,7 @@ export class ReporteriaComponent implements OnInit {
     private location: Location,
     private alertService: AlertService,
     private cursoService: CursoService,
-    private docenteService: DocentecurService,
+    private docenteService: DocenteService,
     private router: Router
   ) {}
 
@@ -251,7 +251,8 @@ export class ReporteriaComponent implements OnInit {
           ? format(toZonedTime(new Date(h.h_fin), zonaHoraria), 'HH:mm')
           : '';
 
-        const cursosUnicos = new Set(horarios.map(h => h.curso?.c_codcur)).size;
+        const cursosUnicos = new Set(horarios.map((h) => h.curso?.c_codcur))
+          .size;
         rows.push({
           Docente: index === 0 ? docente.c_nomdoc : '',
           'H. Min': index === 0 ? docente.h_min : '',

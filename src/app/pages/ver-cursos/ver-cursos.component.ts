@@ -11,7 +11,6 @@ import { AulaService } from '../../services/aula.service';
 import { Docente } from '../../interfaces/Docente';
 import { Aula } from '../../interfaces/Aula';
 import { HttpErrorResponse } from '@angular/common/http';
-import { DocentecurService } from '../../services/docentecur.service';
 
 @Component({
   selector: 'app-ver-cursos',
@@ -40,7 +39,7 @@ export class VerCursosComponent implements OnInit {
 
   constructor(
     private horarioService: HorarioService,
-    private docenteService: DocentecurService,
+    private docenteService: DocenteService,
     private aulaService: AulaService,
     private turnoService: TurnoService,
     private alertService: AlertService,

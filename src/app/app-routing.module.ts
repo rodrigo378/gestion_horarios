@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { authGuard } from './guards/auth.guard';
 import { LoginComponent } from './pages/login/login.component';
 import { LayoutComponent } from './common/layout/layout.component';
-import { PeriodoComponent } from './pages/periodo/periodo.component';
+import { PeriodoComponent } from './pages/ti/periodo/periodo.component';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 import { NotFountComponent } from './pages/not-fount/not-fount.component';
 import { VerTurnosComponent } from './pages/ver-turnos/ver-turnos.component';
@@ -20,7 +20,8 @@ import { AsignarHorarioDrComponent } from './pages/asignar-horario-dr/asignar-ho
 import { PermisosUsuariosComponent } from './pages/admin/permisos-usuarios/permisos-usuarios.component';
 import { MarcarAsistenciaComponent } from './pages/docente/marcar-asistencia/marcar-asistencia.component';
 import { VerAsistenciaComponent } from './pages/docente/ver-asistencia/ver-asistencia.component';
-import { WelcomeComponent } from './pages/welcome/welcome.component';
+
+import { DocenteComponent } from './pages/ti/docente/docente.component';
 
 const routes: Routes = [
   {
@@ -31,7 +32,7 @@ const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'welcome' },
       {
         path: 'welcome',
-        component: WelcomeComponent,
+        // component: WelcomeComponent,
       },
     ],
   },
@@ -84,7 +85,11 @@ const routes: Routes = [
       { path: 'ver-asistencia', component: VerAsistenciaComponent },
     ],
   },
-
+  {
+    path: 'ti',
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/ti/ti.module').then((m) => m.TiModule),
+  },
   { path: '**', component: NotFountComponent },
 ];
 

@@ -14,12 +14,12 @@ import { HorarioExtendido } from '../../interfaces/Horario';
 import { Turno } from '../../interfaces/turno';
 import { TurnoService } from '../../services/turno.service';
 import { FullCalendarComponent } from '@fullcalendar/angular';
-import { DocentecurService } from '../../services/docentecur.service';
 import { AulaService } from '../../services/aula.service';
 import { Docente } from '../../interfaces/Docente';
 import { Aula } from '../../interfaces/Aula';
 import tippy from 'tippy.js';
 import { EstadoTurnoService } from '../../services/estado-turno.service';
+import { DocenteService } from '../../services/docente.service';
 
 @Component({
   selector: 'app-asignarhorario',
@@ -78,7 +78,8 @@ export class AsignarhorarioComponent implements OnInit {
   cargandoCursos: boolean = true;
   guardandoHorarios: boolean = false;
 
-  modalidadSeleccionada: 'vir' | 'pre' | 'tep' | 'lbp' | 'tev' | 'lab' | null = null;
+  modalidadSeleccionada: 'vir' | 'pre' | 'tep' | 'lbp' | 'tev' | 'lab' | null =
+    null;
   //#endregion
 
   //#region Libreria del calendario
@@ -119,7 +120,7 @@ export class AsignarhorarioComponent implements OnInit {
     private cursoService: CursoService,
     private turnoService: TurnoService,
     private route: ActivatedRoute,
-    private docenteService: DocentecurService,
+    private docenteService: DocenteService,
     private aulaService: AulaService,
     private router: Router
   ) {}
@@ -510,7 +511,12 @@ export class AsignarhorarioComponent implements OnInit {
     this.eventoSeleccionado = evento;
     const modalidadActual = evento.extendedProps.modalidad;
     this.modalidadSeleccionada =
-      modalidadActual === 'pre' || modalidadActual === 'vir' || modalidadActual === 'tep' || modalidadActual === 'lbp' || modalidadActual === 'tev' || modalidadActual === 'lab'
+      modalidadActual === 'pre' ||
+      modalidadActual === 'vir' ||
+      modalidadActual === 'tep' ||
+      modalidadActual === 'lbp' ||
+      modalidadActual === 'tev' ||
+      modalidadActual === 'lab'
         ? modalidadActual
         : null;
     this.modalHorasActivo = true;
@@ -623,7 +629,7 @@ export class AsignarhorarioComponent implements OnInit {
     this.eventoSeleccionado = evento;
     this.modalidadSeleccionada = (
       evento.extendedProps.modalidad || ''
-    ).toLowerCase() as 'pre' | 'vir' | 'tep' | 'lbp' | 'tev' | 'lab'; 
+    ).toLowerCase() as 'pre' | 'vir' | 'tep' | 'lbp' | 'tev' | 'lab';
     this.modalHorasActivo = true;
 
     const fecha = new Date(evento.start);
@@ -730,29 +736,40 @@ export class AsignarhorarioComponent implements OnInit {
     const modalidad = info.event.extendedProps.modalidad;
     if (modalidad) {
       const badgeModalidad = document.createElement('span');
-      badgeModalidad.textContent = 
-        modalidad === 'pre' ? 'Presencial' :
-        modalidad === 'vir' ? 'Virtual' :
-        modalidad === 'lab' ? 'Laboratorio' :
-        modalidad === 'tep' ? 'Teoría Presencial' :
-        modalidad === 'tev' ? 'Teoría Virtual' :
-        modalidad === 'lbp' ? 'Lab Presencial' : '---';
+      badgeModalidad.textContent =
+        modalidad === 'pre'
+          ? 'Presencial'
+          : modalidad === 'vir'
+          ? 'Virtual'
+          : modalidad === 'lab'
+          ? 'Laboratorio'
+          : modalidad === 'tep'
+          ? 'Teoría Presencial'
+          : modalidad === 'tev'
+          ? 'Teoría Virtual'
+          : modalidad === 'lbp'
+          ? 'Lab Presencial'
+          : '---';
 
       badgeModalidad.className = `
         absolute bottom-[2px] right-1 text-[10px] text-white px-2 py-[2px] rounded
         ${
-          modalidad === 'pre' ? 'bg-yellow-600 text-black' :
-          modalidad === 'vir' ? 'bg-purple-900' :
-          modalidad === 'lab' ? 'bg-[#020202]' :
-          modalidad === 'tev' ? 'bg-[#10B981]' :
-          modalidad === 'lbp' ? 'bg-[#EF4444]' :
-          'bg-gray-400'
+          modalidad === 'pre'
+            ? 'bg-yellow-600 text-black'
+            : modalidad === 'vir'
+            ? 'bg-purple-900'
+            : modalidad === 'lab'
+            ? 'bg-[#020202]'
+            : modalidad === 'tev'
+            ? 'bg-[#10B981]'
+            : modalidad === 'lbp'
+            ? 'bg-[#EF4444]'
+            : 'bg-gray-400'
         }
       `;
 
       info.el.appendChild(badgeModalidad);
     }
-
 
     // 🔒 Candado para cursos padres
     if (esPadre) {
@@ -810,7 +827,6 @@ export class AsignarhorarioComponent implements OnInit {
   //   });
   // }
 
-
   confirmarAsignacionHoras() {
     if (!this.fechaDrop || !this.horaInicio) return;
 
@@ -818,8 +834,8 @@ export class AsignarhorarioComponent implements OnInit {
     const [h, m] = this.horaInicio.split(':').map(Number);
     const horaTotal = h + m / 60;
 
-    const minVisible = 7;   // 08:00 AM
-    const maxVisible = 23;  // 11:00 PM
+    const minVisible = 7; // 08:00 AM
+    const maxVisible = 23; // 11:00 PM
 
     if (horaTotal < minVisible || horaTotal >= maxVisible) {
       this.alertService.error(
@@ -1485,7 +1501,7 @@ export class AsignarhorarioComponent implements OnInit {
 
     const { base, fin } = result;
     const diferencia = this.horasAsignadas - horasAntes;
-    
+
     if (this.selectedDocente) {
       const horasMax = this.selectedDocente.h_max ?? Infinity;
       const horasActuales = this.selectedDocente.h_total ?? 0;
@@ -1505,8 +1521,8 @@ export class AsignarhorarioComponent implements OnInit {
     if (this.horaInicio) {
       const [h, m] = this.horaInicio.split(':').map(Number);
       const horaTotal = h + m / 60;
-      const minVisible = 7;   // 07:00 AM
-      const maxVisible = 23;  // 11:00 PM
+      const minVisible = 7; // 07:00 AM
+      const maxVisible = 23; // 11:00 PM
 
       if (horaTotal < minVisible || horaTotal >= maxVisible) {
         this.alertService.error(
@@ -1719,12 +1735,12 @@ export class AsignarhorarioComponent implements OnInit {
         ).filter((ev) => ev.id !== id);
 
         if (!id.startsWith('temp-')) {
-          this.guardandoHorarios = true
+          this.guardandoHorarios = true;
           this.horarioService
             .deleteHorarios({ horarios_id: [Number(id)] })
             .subscribe({
               next: () => {
-                this.guardandoHorarios = false
+                this.guardandoHorarios = false;
                 this.alertService.success('🗑️ Evento eliminado correctamente.');
 
                 // ✅ Sayayin FIX: restaurar visualmente el curso afectado
@@ -1736,7 +1752,7 @@ export class AsignarhorarioComponent implements OnInit {
                 this.verificarEstadoTurnoAutomatico();
               },
               error: (err) => {
-                this.guardandoHorarios = false
+                this.guardandoHorarios = false;
                 this.alertService.error('❌ Error al eliminar el evento.');
                 console.error(err);
               },

@@ -1,0 +1,223 @@
+<!-- component -->
+<div class="max-w-[100%] mx-auto">
+  <div
+    class="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border"
+  >
+    <div
+      class="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border"
+    >
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2"
+      >
+        <div>
+          <h3 class="text-2xl font-semibold text-slate-800">Lista Turno</h3>
+          <p class="text-slate-500">Lista de todos los turnos:</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-4 mb-4">
+          <!-- <button
+            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm font-medium shadow"
+          >
+            📥 Exportar a Excel
+          </button>
+
+          <button
+            class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
+          >
+            ➕ Agregar Docente
+          </button> -->
+        </div>
+      </div>
+
+      <!-- Buscador debajo -->
+      <div
+        class="flex flex-col sm:flex-row justify-between items-center gap-4 p-2"
+      >
+        <!-- Filtros a la izquierda -->
+        <div class="flex flex-wrap gap-2 items-center">
+          <nz-select
+            [(ngModel)]="filtros.n_codper"
+            (ngModelChange)="onChangeFacultad('n_codper', $event)"
+            class="w-auto h-[30px]"
+          >
+            <nz-option nzValue="" nzLabel="Periodo"></nz-option>
+            <nz-option nzValue="20251" nzLabel="20251"></nz-option>
+            <nz-option nzValue="20242" nzLabel="20242"></nz-option>
+          </nz-select>
+
+          <nz-select
+            [(ngModel)]="filtros.c_codfac"
+            (ngModelChange)="onChangeFacultad('facultad', $event)"
+            class="w-auto h-[30px]"
+          >
+            <nz-option nzValue="" nzLabel="Facultad"></nz-option>
+            <nz-option nzValue="S" nzLabel="CIENCIAS Y SALUD"></nz-option>
+            <nz-option nzValue="E" nzLabel="INGENIERIA Y NEGOCIOS"></nz-option>
+          </nz-select>
+
+          <nz-select
+            [(ngModel)]="filtros.c_codesp"
+            (ngModelChange)="onChangeFacultad('especialidad', $event)"
+            class="w-[300px] h-[30px]"
+          >
+            <nz-option nzValue="" nzLabel="Especialidad"></nz-option>
+            @for (especialidad of especialidadesFiltradas; track
+            especialidad.codesp) {
+            <nz-option
+              nzValue="{{ especialidad.codesp }}"
+              nzLabel="{{ especialidad.codesp }} - {{ especialidad.nomesp }}"
+            ></nz-option>
+            }
+          </nz-select>
+
+          <nz-select
+            [(ngModel)]="filtros.c_codmod"
+            (ngModelChange)="onChangeFacultad('modalidad', $event)"
+            class="w-auto h-[30px]"
+          >
+            <nz-option nzValue="" nzLabel="Modalidad"></nz-option>
+            <nz-option nzValue="1" nzLabel="Presencial"></nz-option>
+            <nz-option nzValue="2" nzLabel="Semipresencial"></nz-option>
+            <nz-option nzValue="3" nzLabel="Virtual"></nz-option>
+          </nz-select>
+
+          <nz-select
+            [(ngModel)]="filtros.n_ciclo"
+            (ngModelChange)="onChangeFacultad('ciclo', $event)"
+            class="w-auto h-[30px]"
+          >
+            <nz-option nzValue="" nzLabel="Ciclo"></nz-option>
+            <nz-option
+              *ngFor="let i of [3, 4, 5, 6, 7, 8, 9, 10]"
+              [nzValue]="i"
+              [nzLabel]="i"
+            ></nz-option>
+          </nz-select>
+
+          <nz-select
+            [(ngModel)]="filtros.estado"
+            (ngModelChange)="onChangeFacultad('estado', $event)"
+            class="w-auto h-[30px]"
+          >
+            <nz-option nzValue="" nzLabel="Estado"></nz-option>
+            <nz-option nzValue="0" nzLabel="No asignado"></nz-option>
+            <nz-option nzValue="1" nzLabel="Pendiente"></nz-option>
+            <nz-option nzValue="2" nzLabel="Asignado"></nz-option>
+          </nz-select>
+        </div>
+
+        <!-- Botones a la derecha -->
+        <div class="flex gap-2">
+          <button
+            (click)="clickBloquearTodo()"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition text-sm font-medium shadow"
+          >
+            Blockear Turnos
+          </button>
+          <button
+            (click)="clickDesbloquearTodo()"
+            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm font-medium shadow"
+          >
+            Deslockear Turnos
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- tabla -->
+    <div class="p-0 overflow-scrolls pt-4">
+      <nz-table
+        #editRowTable
+        #sortTable
+        [nzData]="datosFiltrados"
+        [nzPageSize]="pageSize"
+        [nzPageIndex]="pageIndex"
+        [nzTotal]="datosFiltrados.length"
+        (nzPageSizeChange)="onPageSizeChange($event)"
+        [nzShowSizeChanger]="true"
+        nzTableLayout="fixed"
+        (nzCurrentPageDataChange)="listOfCurrentPageData = $event"
+        [nzPageSizeOptions]="[5, 10, 20, 50, total]"
+        [nzShowSizeChanger]="true"
+      >
+        <thead>
+          <tr>
+            <!-- <th nzWidth="8%">Id</th>
+            <th nzWidth="25%">Nombre</th>
+            <th nzWidth="10%">H. Min</th>
+            <th nzWidth="10%">H. Max</th>
+            <th nzWidth="12%">H. asignadas</th>
+            <th nzWidth="15%">Tipo</th>
+            <th>Action</th> -->
+            <th
+              nzWidth="6%"
+              [(nzChecked)]="checked"
+              [nzIndeterminate]="indeterminate"
+              (nzCheckedChange)="onAllChecked($event)"
+            ></th>
+            @for (column of listOfColumn; track column) {
+            <th
+              [nzWidth]="column.nzWidth"
+              [nzSortFn]="column.compare"
+              [nzSortPriority]="column.priority"
+            >
+              {{ column.title }}
+            </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of editRowTable.data; track data) {
+          <tr>
+            @if (!editCache[data.id].edit) {
+            <td
+              [nzChecked]="setOfCheckedId.has(data.id)"
+              (nzCheckedChange)="onItemChecked(data.id, $event)"
+            ></td>
+
+            <td>{{ data.n_codper }}</td>
+            <td>{{ data.n_codpla }}</td>
+            <td>{{ data.c_codfac }}</td>
+            <td>{{ data.c_codesp }}</td>
+            <td>{{ data.c_grpcur }}</td>
+            <td>{{ data.n_ciclo }}</td>
+            <td>{{ data.c_nommod }}</td>
+            <td>
+              <span
+                [ngClass]="{
+                  'text-green-900 bg-green-500/20': data.estado === 2,
+                  'text-yellow-700 bg-yellow-500/20': data.estado === 1,
+                  'text-slate-500 bg-slate-100': data.estado === 0
+                }"
+                class="px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-sm"
+              >
+                {{
+                  data.estado === 2
+                    ? "asignado"
+                    : data.estado === 0
+                    ? "no asignado"
+                    : "pendiente"
+                }}
+              </span>
+            </td>
+            <td>
+              <span
+                [ngClass]="{
+                  'text-green-900 bg-green-500/20': data.subido_sigu === true,
+                  'text-slate-500 bg-slate-100': data.subido_sigu === false
+                }"
+                class="px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-sm"
+              >
+                {{ data.subido_sigu === true ? "true" : "false" }}
+              </span>
+            </td>
+
+            <td>asignado</td>
+            }
+          </tr>
+          }
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+</div>

@@ -1,58 +1,45 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { environment } from '../../environment/environment';
-import { AuthService } from './auth.service';
-import { listadocentes } from '../interfaces/Docentes';
-import { Docente } from '../interfaces/Docente';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { CreateDocente, Docente, UpdateDocente } from '../interfaces/Docente';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DocenteService {
-  private apiUrl = `${environment.api}`; // backticks
-  // private apiUrlUbi = `${environment.api}`;
+  private apiUrl = `${environment.api}/docente`;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient) {}
 
-  createDocente(docenteData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/docente`, docenteData);
+  obtenerDocentes(): Observable<Docente[]> {
+    return this.http.get<Docente[]>(this.apiUrl);
   }
 
-  // getDocentes(): Observable<Docente[]> {
-  //   return this.http.get<Docente[]>(
-  //     `${this.apiUrl}/docente`,
-  //     this.getTokenHeader()
-  //   );
-  // }
+  obtenerDocentesreporteria(
+    horario: boolean,
+    curso: boolean,
+    aula: boolean,
+    c_codfac?: string | null,
+    c_codesp?: string | null
+  ): Observable<Docente[]> {
+    const params = new URLSearchParams();
+    params.set('horario', String(horario));
+    params.set('curso', String(curso));
+    params.set('aula', String(aula));
+    if (c_codfac) params.set('c_codfac', c_codfac);
+    if (c_codesp) params.set('c_codesp', c_codesp);
 
-  // getDocentes(): Observable<Docente[]> {
-  //   return this.http.get<Docente[]>(
-  //     `${this.apiUrl}/docente?horario=true&curso=true`
-  //   );
-  // }
-
-  getDocentePorUsuario(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/docente/user`);
+    return this.http.get<Docente[]>(`${this.apiUrl}?${params.toString()}`);
   }
 
-  updateDocenteUsuario(docenteData: any): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/docente/updateuser`, docenteData);
+  crearDocente(docente: CreateDocente): Observable<any> {
+    return this.http.post(this.apiUrl, docente, { withCredentials: true });
   }
 
-  getDocentesAprobados(): Observable<listadocentes[]> {
-    return this.http.get<listadocentes[]>(`${this.apiUrl}/aprobados`);
-  }
-
-  getDocentesRechazados(): Observable<listadocentes[]> {
-    return this.http.get<listadocentes[]>(`${this.apiUrl}/rechazados`);
-  }
-
-  aprobarDocente(id: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/aprobar`, {});
-  }
-
-  rechazarDocente(id: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/rechazar`, {});
+  updateDocente(docente: UpdateDocente) {
+    return this.http.put(`${this.apiUrl}/${docente.id}`, docente, {
+      withCredentials: true,
+    });
   }
 }

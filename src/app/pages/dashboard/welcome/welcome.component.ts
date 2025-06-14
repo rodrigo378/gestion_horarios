@@ -9,7 +9,7 @@ import {
   ChartComponent,
   ApexPlotOptions,
 } from 'ngx-apexcharts';
-import { DashboardService } from '../../services/dashboard.service';
+import { DashboardService } from '../../../services/dashboard.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;

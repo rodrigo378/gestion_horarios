@@ -14,11 +14,11 @@ import { HorarioExtendido } from '../../interfaces/Horario';
 import { Turno } from '../../interfaces/turno';
 import { TurnoService } from '../../services/turno.service';
 import { FullCalendarComponent } from '@fullcalendar/angular';
-import { DocentecurService } from '../../services/docentecur.service';
 import { AulaService } from '../../services/aula.service';
 import { Docente } from '../../interfaces/Docente';
 import { Aula } from '../../interfaces/Aula';
 import tippy from 'tippy.js';
+import { DocenteService } from '../../services/docente.service';
 
 @Component({
   selector: 'app-asignar-horario-dr',
@@ -77,7 +77,8 @@ export class AsignarHorarioDrComponent implements OnInit {
   cargandoCursos: boolean = true;
   guardandoHorarios: boolean = false;
   //para el modal
-  modalidadSeleccionada: 'vir' | 'pre' | 'tep' | 'lbp' | 'tev' | 'lab' | null = null;
+  modalidadSeleccionada: 'vir' | 'pre' | 'tep' | 'lbp' | 'tev' | 'lab' | null =
+    null;
   //#endregion
 
   //#region Libreria del calendario
@@ -118,7 +119,7 @@ export class AsignarHorarioDrComponent implements OnInit {
     private cursoService: CursoService,
     private turnoService: TurnoService,
     private route: ActivatedRoute,
-    private docenteService: DocentecurService,
+    private docenteService: DocenteService,
     private aulaService: AulaService,
     private router: Router
   ) {}
@@ -505,7 +506,12 @@ export class AsignarHorarioDrComponent implements OnInit {
     this.eventoSeleccionado = evento;
     const modalidadActual = evento.extendedProps.modalidad;
     this.modalidadSeleccionada =
-      modalidadActual === 'pre' || modalidadActual === 'vir' || modalidadActual === 'tep' || modalidadActual === 'lbp' || modalidadActual === 'tev' || modalidadActual === 'lab'
+      modalidadActual === 'pre' ||
+      modalidadActual === 'vir' ||
+      modalidadActual === 'tep' ||
+      modalidadActual === 'lbp' ||
+      modalidadActual === 'tev' ||
+      modalidadActual === 'lab'
         ? modalidadActual
         : null;
     this.modalHorasActivo = true;
@@ -620,7 +626,7 @@ export class AsignarHorarioDrComponent implements OnInit {
     this.eventoSeleccionado = evento;
     this.modalidadSeleccionada = (
       evento.extendedProps.modalidad || ''
-    ).toLowerCase() as 'pre' | 'vir' | 'tep' | 'lbp' | 'tev' | 'lab'; 
+    ).toLowerCase() as 'pre' | 'vir' | 'tep' | 'lbp' | 'tev' | 'lab';
     this.modalHorasActivo = true;
 
     const fecha = new Date(evento.start);
@@ -724,7 +730,7 @@ export class AsignarHorarioDrComponent implements OnInit {
       ${isTemporal ? 'bg-pink-400' : 'bg-sky-400'}
     `;
 
-        // 📛 Badge de modalidad (presencial o virtual) en la parte inferior derecha
+    // 📛 Badge de modalidad (presencial o virtual) en la parte inferior derecha
     const modalidad = info.event.extendedProps.modalidad;
     if (modalidad) {
       const badgeModalidad = document.createElement('span');
@@ -789,7 +795,7 @@ export class AsignarHorarioDrComponent implements OnInit {
 
     return this.aulas.filter((aula) => {
       const capacidad = Number(aula.n_capacidad);
-      return capacidad >= vacantes && capacidad <= (vacantes + margen);
+      return capacidad >= vacantes && capacidad <= vacantes + margen;
     });
   }
 
@@ -802,8 +808,8 @@ export class AsignarHorarioDrComponent implements OnInit {
     const [h, m] = this.horaInicio.split(':').map(Number);
     const horaTotal = h + m / 60;
 
-    const minVisible = 7;   // 08:00 AM
-    const maxVisible = 23;  // 11:00 PM
+    const minVisible = 7; // 08:00 AM
+    const maxVisible = 23; // 11:00 PM
 
     if (horaTotal < minVisible || horaTotal >= maxVisible) {
       this.alertService.error(
@@ -1471,7 +1477,7 @@ export class AsignarHorarioDrComponent implements OnInit {
     const { base, fin } = result;
     const diferencia = this.horasAsignadas - horasAntes;
 
-        if (this.selectedDocente) {
+    if (this.selectedDocente) {
       const horasMax = this.selectedDocente.h_max ?? Infinity;
       const horasActuales = this.selectedDocente.h_total ?? 0;
       const nuevaCarga = horasActuales + diferencia;
@@ -1483,15 +1489,15 @@ export class AsignarHorarioDrComponent implements OnInit {
         return;
       }
     }
-    
+
     const esTemporal = idEvento.toString().startsWith('temp-');
 
     // ✅ Validación de hora dentro del rango visible del calendario
     if (this.horaInicio) {
       const [h, m] = this.horaInicio.split(':').map(Number);
       const horaTotal = h + m / 60;
-      const minVisible = 7;   // 07:00 AM
-      const maxVisible = 23;  // 11:00 PM
+      const minVisible = 7; // 07:00 AM
+      const maxVisible = 23; // 11:00 PM
 
       if (horaTotal < minVisible || horaTotal >= maxVisible) {
         this.alertService.error(

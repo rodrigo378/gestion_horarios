@@ -12,7 +12,7 @@ import { HorarioService } from '../../services/horario.service';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { format } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
+
 @Component({
   selector: 'app-ver-turnos',
   standalone: false,

@@ -5,7 +5,6 @@ import { UserService } from '../../../services/user.service';
 import { AulaService } from '../../../services/aula.service';
 import { AlertService } from '../../../services/alert.service';
 import { AsistenciaService } from '../../../services/asistencia.service';
-import { DocentecurService } from '../../../services/docentecur.service';
 
 @Component({
   standalone: false,

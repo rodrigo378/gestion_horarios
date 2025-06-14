@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { DocentecurService } from '../../../services/docentecur.service';
 import { AlertService } from '../../../services/alert.service';
 import { AsistenciaService } from '../../../services/asistencia.service';
+import { DocenteService } from '../../../services/docente.service';
 
 @Component({
   selector: 'app-ver-asistencia',
@@ -33,7 +33,7 @@ export class VerAsistenciaComponent implements OnInit {
 
   constructor(
     private alertService: AlertService,
-    private docentecurService: DocentecurService,
+    private docentecurService: DocenteService,
     private asistenciaService: AsistenciaService
   ) {}
 

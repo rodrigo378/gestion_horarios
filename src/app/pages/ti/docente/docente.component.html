@@ -1,0 +1,211 @@
+<!-- component -->
+<div class="max-w-[100%] mx-auto">
+  <div
+    class="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border"
+  >
+    <div
+      class="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border"
+    >
+      <!-- Fila: Título + botón -->
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2"
+      >
+        <!-- Título -->
+        <div>
+          <h3 class="text-2xl font-semibold text-slate-800">Lista Docentes</h3>
+          <p class="text-slate-500">Lista de todos los docentes:</p>
+        </div>
+
+        <!-- Botón exportar alineado a la derecha -->
+        <div class="flex flex-wrap items-center gap-4 mb-4">
+          <button
+            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm font-medium shadow"
+          >
+            📥 Exportar a Excel
+          </button>
+
+          <button
+            class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
+          >
+            ➕ Agregar Docente
+          </button>
+        </div>
+      </div>
+
+      <!-- Buscador debajo -->
+      <div class="flex flex-col sm:flex-row justify-end">
+        <!-- Filtros + buscador -->
+        <div class="w-full md:w-72">
+          <label class="text-sm font-medium text-slate-600 mb-1 block"
+            >Buscar:</label
+          >
+          <div class="relative h-10 w-full">
+            <div
+              class="absolute inset-y-0 right-3 flex items-center pointer-events-none"
+            >
+              <i class="fa fa-search text-gray-400"></i>
+            </div>
+            <input
+              nz-input
+              placeholder="Buscar docente"
+              [(ngModel)]="searchValue"
+              (ngModelChange)="buscar()"
+              class="mb-4"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- tabla -->
+    <div class="p-0 overflow-scrolls">
+      <nz-table
+        #editRowTable
+        #sortTable
+        [nzData]="datosFiltrados"
+        nzTableLayout="fixed"
+      >
+        <thead>
+          <tr>
+            <!-- <th nzWidth="8%">Id</th>
+            <th nzWidth="25%">Nombre</th>
+            <th nzWidth="10%">H. Min</th>
+            <th nzWidth="10%">H. Max</th>
+            <th nzWidth="12%">H. asignadas</th>
+            <th nzWidth="15%">Tipo</th>
+            <th>Action</th> -->
+            @for (column of listOfColumn; track column) {
+            <th [nzSortFn]="column.compare" [nzSortPriority]="column.priority">
+              {{ column.title }}
+            </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of editRowTable.data; track data) {
+          <tr>
+            @if (!editCache[data.id].edit) {
+            <td>{{ data.id }}</td>
+            <td>{{ data.c_dnidoc }}</td>
+            <td>{{ data.c_nomdoc }}</td>
+            <td>{{ data.h_min }}</td>
+            <td>{{ data.h_max }}</td>
+            <td
+              [ngClass]="{
+                'text-yellow-600 font-semibold': data.h_total < data.h_min,
+                'text-green-600 font-semibold':
+                  data.h_total >= data.h_min && data.h_total <= data.h_max,
+                'text-red-600 font-semibold': data.h_total > data.h_max
+              }"
+            >
+              {{ data.h_total }}
+              {{
+                data.h_total < data.h_min
+                  ? "(insuficiente)"
+                  : data.h_total > data.h_max
+                  ? "(exceso)"
+                  : "(bien)"
+              }}
+            </td>
+            <td>
+              <span
+                [ngClass]="{
+                  'bg-blue-100 text-blue-800': data.tipo === 0,
+                  'bg-green-100 text-green-800': data.tipo === 1
+                }"
+                class="px-3 py-1 rounded-full text-sm font-semibold"
+              >
+                {{ data.tipo === 0 ? "Tiempo Completo" : "Tiempo Parcial" }}
+              </span>
+            </td>
+            <td><a (click)="startEdit(data.id)">Editar</a></td>
+            } @else {
+            <!-- <td>
+              <input
+                type="text"
+                nz-input
+                disabled
+                readonly
+                [(ngModel)]="editCache[data.id].data.id"
+              />
+            </td> -->
+            <td>{{ data.id }}</td>
+            <td>
+              <input
+                type="text"
+                nz-input
+                [(ngModel)]="editCache[data.id].data.c_dnidoc"
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                nz-input
+                [(ngModel)]="editCache[data.id].data.c_nomdoc"
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                nz-input
+                [(ngModel)]="editCache[data.id].data.h_min"
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                nz-input
+                [(ngModel)]="editCache[data.id].data.h_max"
+              />
+            </td>
+            <!-- <td>
+              <input
+                type="text"
+                nz-input
+                [(ngModel)]="editCache[data.id].data.h_total"
+              />
+            </td> -->
+            <td
+              [ngClass]="{
+                'text-yellow-600 font-semibold': data.h_total < data.h_min,
+                'text-green-600 font-semibold':
+                  data.h_total >= data.h_min && data.h_total <= data.h_max,
+                'text-red-600 font-semibold': data.h_total > data.h_max
+              }"
+            >
+              {{ data.h_total }}
+              {{
+                data.h_total < data.h_min
+                  ? "(insuficiente)"
+                  : data.h_total > data.h_max
+                  ? "(exceso)"
+                  : "(bien)"
+              }}
+            </td>
+            <td>
+              <nz-select
+                class="w-full"
+                [(ngModel)]="editCache[data.id].data.tipo"
+                nzPlaceHolder="Seleccione tipo"
+              >
+                <nz-option [nzValue]="0" nzLabel="Tiempo Completo"></nz-option>
+                <nz-option [nzValue]="1" nzLabel="Tiempo Parcial"></nz-option>
+              </nz-select>
+            </td>
+            <td>
+              <a (click)="saveEdit(data.id)" class="save me-2">Save</a>
+              <a
+                nz-popconfirm
+                nzPopconfirmTitle="Seguro que quiere cancelar?"
+                (nzOnConfirm)="cancelEdit(data.id)"
+                >Cancel</a
+              >
+            </td>
+            }
+          </tr>
+          }
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+</div>

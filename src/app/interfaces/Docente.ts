@@ -86,3 +86,12 @@ export interface CreateDocente {
   h_max: number;
   tipo: number;
 }
+
+export interface UpdateDocente {
+  id: number;
+  c_dnidoc: string;
+  c_nomdoc: string;
+  h_min: number;
+  h_max: number;
+  tipo: number;
+}

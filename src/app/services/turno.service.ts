@@ -55,4 +55,12 @@ export class TurnoService {
   getPeriodos(): Observable<Periodo[]> {
     return this.http.get<Periodo[]>(`${this.apiUrlget}/periodo`);
   }
+
+  bloquearTurnos(turnos_id: number[]) {
+    return this.http.post(`${this.apiUrl}/bloquear`, turnos_id);
+  }
+
+  desbloquearTurnos(turnos_id: number[]) {
+    return this.http.post(`${this.apiUrl}/desbloquear`, turnos_id);
+  }
 }

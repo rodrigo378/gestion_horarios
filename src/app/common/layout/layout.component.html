@@ -1,6 +1,7 @@
-<!-- <div *ngIf="alertService.loading$ | async" class="loader-overlay">
+<div *ngIf="alertService.loading$ | async" class="loader-overlay">
   <div class="spinner"></div>
-</div> -->
+</div>
+
 <nz-layout class="app-layout">
   <nz-sider
     class="menu-sidebar"
@@ -203,7 +204,49 @@
           </li>
         </ul>
       </li>
+
+      <li
+        nz-submenu
+        nzTitle="Ti"
+        nzIcon="user"
+        [nzOpen]="selectedMenu === 'ti'"
+        *ngIf="hasPermiso('4.1')"
+      >
+        <ul>
+          <li
+            nz-menu-item
+            nzMatchRouter
+            *ngIf="hasPermiso('4.1')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'docente' && item === 'marcar'
+            "
+          >
+            <a routerLink="/ti/docente">Reporte docente</a>
+          </li>
+          <li
+            nz-menu-item
+            nzMatchRouter
+            *ngIf="hasPermiso('4.1')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'docente' && item === 'marcar'
+            "
+          >
+            <a routerLink="/ti/plan/curso">Curso Plan</a>
+          </li>
+          <li
+            nz-menu-item
+            nzMatchRouter
+            *ngIf="hasPermiso('4.1')"
+            [class.ant-menu-item-selected]="
+              selectedMenu === 'docente' && item === 'marcar'
+            "
+          >
+            <a routerLink="/ti/turno">Ver turno</a>
+          </li>
+        </ul>
+      </li>
     </ul>
+
     }
   </nz-sider>
   <nz-layout>
@@ -274,7 +317,7 @@
       </div>
     </nz-content>
     <!-- Footer -->
-    <nz-footer
+    <!-- <nz-footer
       class="footer bg-{#f0f2f5} text-red-600 text-center pb-2 pt-0 font-bold text-[15px]"
     >
       © {{ currentYear }} Developed by -
@@ -286,6 +329,6 @@
         class="text-blue-900 hover:text-blue-900"
         >Team TI.</a
       >
-    </nz-footer>
+    </nz-footer> -->
   </nz-layout>
 </nz-layout>

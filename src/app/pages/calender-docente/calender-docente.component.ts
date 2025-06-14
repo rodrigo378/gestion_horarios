@@ -5,8 +5,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { CalendarOptions } from '@fullcalendar/core';
 import esLocale from '@fullcalendar/core/locales/es';
-import { DocentecurService } from '../../services/docentecur.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DocenteService } from '../../services/docente.service';
 @Component({
   selector: 'app-calender-docente',
   standalone: false,
@@ -41,7 +41,7 @@ export class CalenderDocenteComponent implements OnInit {
   };
 
   constructor(
-    private docenteService: DocentecurService,
+    private docenteService: DocenteService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -89,17 +89,20 @@ export class CalenderDocenteComponent implements OnInit {
             ? ` - Aula ${h.aula.c_codaula}`
             : '';
 
-          const docenteNombre = docente.c_nomdoc ? ` - ${docente.c_nomdoc}` : '';
+          const docenteNombre = docente.c_nomdoc
+            ? ` - ${docente.c_nomdoc}`
+            : '';
 
           return {
-            title: `${h.curso?.c_nomcur || 'Curso'}${aulaNombre}${docenteNombre}`,
+            title: `${
+              h.curso?.c_nomcur || 'Curso'
+            }${aulaNombre}${docenteNombre}`,
             start: h.h_inicio,
             end: h.h_fin,
             backgroundColor,
             borderColor,
           };
         });
-
 
         this.calendarOptions.events = eventos;
       });
