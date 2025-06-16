@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Curso2, Especialidad } from '../../interfaces/Curso';
-import { HorarioService } from '../../services/horario.service';
-import { CursoService } from '../../services/curso.service';
-import { AlertService } from '../../services/alert.service';
-import { TurnoService } from '../../services/turno.service';
-import { Periodo } from '../../interfaces/turno';
+import { Curso2, Especialidad } from '../../../interfaces/Curso';
+import { Periodo } from '../../../interfaces/turno';
+import { HorarioService } from '../../../services/horario.service';
+import { CursoService } from '../../../services/curso.service';
+import { AlertService } from '../../../services/alert.service';
+import { TurnoService } from '../../../services/turno.service';
 
 @Component({
   selector: 'app-ver-transversal',

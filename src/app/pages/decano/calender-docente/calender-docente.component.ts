@@ -6,7 +6,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { CalendarOptions } from '@fullcalendar/core';
 import esLocale from '@fullcalendar/core/locales/es';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DocenteService } from '../../services/docente.service';
+import { DocenteService } from '../../../services/docente.service';
 @Component({
   selector: 'app-calender-docente',
   standalone: false,

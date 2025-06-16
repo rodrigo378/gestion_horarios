@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ActivatedRoute } from '@angular/router';
-import { Turno } from '../../interfaces/turno';
-import { HorarioService } from '../../services/horario.service';
-import { TurnoService } from '../../services/turno.service';
-import { AulaService } from '../../services/aula.service';
-import { Docente } from '../../interfaces/Docente';
-import { Aula } from '../../interfaces/Aula';
-import { DocenteService } from '../../services/docente.service';
+import { Turno } from '../../../interfaces/turno';
+import { Docente } from '../../../interfaces/Docente';
+import { Aula } from '../../../interfaces/Aula';
+import { HorarioService } from '../../../services/horario.service';
+import { TurnoService } from '../../../services/turno.service';
+import { DocenteService } from '../../../services/docente.service';
+import { AulaService } from '../../../services/aula.service';
 
 @Component({
   selector: 'app-calender-director',

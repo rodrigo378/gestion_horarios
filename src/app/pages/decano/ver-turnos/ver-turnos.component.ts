@@ -1,17 +1,17 @@
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Especialidad } from '../../interfaces/Curso';
-import { Periodo, Turno } from '../../interfaces/turno';
 import { HttpErrorResponse } from '@angular/common/http';
-import { TurnoService } from '../../services/turno.service';
-import { CursoService } from '../../services/curso.service';
-import { AlertService } from '../../services/alert.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HorarioService } from '../../services/horario.service';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { format } from 'date-fns';
+import { Periodo, Turno } from '../../../interfaces/turno';
+import { Especialidad } from '../../../interfaces/Curso';
+import { AlertService } from '../../../services/alert.service';
+import { TurnoService } from '../../../services/turno.service';
+import { CursoService } from '../../../services/curso.service';
+import { HorarioService } from '../../../services/horario.service';
 
 @Component({
   selector: 'app-ver-turnos',

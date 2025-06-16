@@ -5,15 +5,14 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { CalendarOptions } from '@fullcalendar/core';
 import esLocale from '@fullcalendar/core/locales/es';
 import { ActivatedRoute } from '@angular/router';
-import { AulaService } from '../../services/aula.service';
+import { AulaService } from '../../../services/aula.service';
 @Component({
   selector: 'app-calender-aula',
   standalone: false,
   templateUrl: './calender-aula.component.html',
-  styleUrl: './calender-aula.component.css'
+  styleUrl: './calender-aula.component.css',
 })
-export class CalenderAulaComponent implements OnInit{
-
+export class CalenderAulaComponent implements OnInit {
   nombreAula: string = '';
   aulaId: number = 1;
 
@@ -43,11 +42,11 @@ export class CalenderAulaComponent implements OnInit{
 
   constructor(
     private aulaService: AulaService,
-    private route: ActivatedRoute,
-  ){}
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       const aulaId = +params['id'];
       if (!aulaId) return;
       this.cargarHorarioAula(aulaId);
@@ -67,40 +66,43 @@ export class CalenderAulaComponent implements OnInit{
       '7': '7mo piso',
     };
     return nombres[piso.toString()] || `Piso ${piso}`;
-  }  
+  }
 
   private cargarHorarioAula(aulaId: number): void {
     this.aulaService.getAula().subscribe((aulas) => {
-      const aula = aulas.find(a => a.id === aulaId);
+      const aula = aulas.find((a) => a.id === aulaId);
       if (!aula) return;
-  
-      this.nombreAula = `Aula ${aula.c_codaula} - Pabellón ${aula.pabellon} - ${this.obtenerNombrePiso(aula.n_piso)}`;
-  
-      const eventos = aula.Horario.map(h => {
+
+      this.nombreAula = `Aula ${aula.c_codaula} - Pabellón ${
+        aula.pabellon
+      } - ${this.obtenerNombrePiso(aula.n_piso)}`;
+
+      const eventos = aula.Horario.map((h) => {
         let backgroundColor = h.tipo === 'Teoría' ? '#3788d8' : '#28a745';
         let borderColor = backgroundColor;
-  
+
         // Revisar si es agrupado o transversal
         const tipoPadre = h.curso?.cursosPadres?.[0]?.tipo;
         if (tipoPadre === 0) backgroundColor = borderColor = '#facc15'; // amarillo
         if (tipoPadre === 1) backgroundColor = borderColor = '#9333ea'; // morado
-  
+
         // // Etiqueta visual opcional para el tipo
         // let etiquetaTipo = '';
         // if (tipoPadre === 0) etiquetaTipo = ' [Transversal]';
         // if (tipoPadre === 1) etiquetaTipo = ' [Agrupado]';
-  
+
         return {
-          title: `${h.curso?.c_nomcur || 'Curso'} (${h.tipo}) - ${h.Docente?.c_nomdoc || 'Sin docente'}`,
+          title: `${h.curso?.c_nomcur || 'Curso'} (${h.tipo}) - ${
+            h.Docente?.c_nomdoc || 'Sin docente'
+          }`,
           start: h.h_inicio,
           end: h.h_fin,
           backgroundColor,
           borderColor,
         };
       });
-  
+
       this.calendarOptions.events = eventos;
     });
   }
-  
 }

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { AulaService } from '../../services/aula.service';
-import { AulaExtendido, AulaReporte } from '../../interfaces/Aula';
 import { Location } from '@angular/common';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { format, toZonedTime } from 'date-fns-tz';
 import { Router } from '@angular/router';
+import { AulaExtendido } from '../../../interfaces/Aula';
+import { AulaService } from '../../../services/aula.service';
 
 @Component({
   selector: 'app-reporteria-aula',

@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { HorarioService } from '../../services/horario.service';
-import { AlertService } from '../../services/alert.service';
-import { Curso2 } from '../../interfaces/Curso';
 import { ActivatedRoute } from '@angular/router';
-import { TurnoService } from '../../services/turno.service';
-import { Turno } from '../../interfaces/turno';
-import { Horario } from '../../interfaces/Horario';
-import { DocenteService } from '../../services/docente.service';
-import { AulaService } from '../../services/aula.service';
-import { Docente } from '../../interfaces/Docente';
-import { Aula } from '../../interfaces/Aula';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Curso2 } from '../../../interfaces/Curso';
+import { Turno } from '../../../interfaces/turno';
+import { Docente } from '../../../interfaces/Docente';
+import { Aula } from '../../../interfaces/Aula';
+import { HorarioService } from '../../../services/horario.service';
+import { DocenteService } from '../../../services/docente.service';
+import { AulaService } from '../../../services/aula.service';
+import { TurnoService } from '../../../services/turno.service';
+import { AlertService } from '../../../services/alert.service';
+import { Horario } from '../../../interfaces/Horario';
 
 @Component({
   selector: 'app-ver-cursos',

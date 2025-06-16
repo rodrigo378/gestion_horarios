@@ -257,12 +257,12 @@
             class="flex flex-1 items-center sm:items-stretch sm:justify-start"
           >
             <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
-              <span
+              <nz-tag
                 class="trigger"
                 nz-icon
-                [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
+                [nzColor]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
               >
-              </span>
+              </nz-tag>
             </span>
           </div>
           <div

@@ -1,19 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertService } from '../../services/alert.service';
 import { Location } from '@angular/common';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { format, toZonedTime } from 'date-fns-tz';
+import { Router } from '@angular/router';
 import {
   CreateDocente,
   Docente,
   DocenteExtendido,
   HorarioAsignado,
-} from '../../interfaces/Docente';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
-import { format, toZonedTime } from 'date-fns-tz';
-import { DocenteService } from '../../services/docente.service';
-import { Router } from '@angular/router';
-import { CursoService } from '../../services/curso.service';
-import { Especialidad } from '../../interfaces/Curso';
+} from '../../../interfaces/Docente';
+import { Especialidad } from '../../../interfaces/Curso';
+import { AlertService } from '../../../services/alert.service';
+import { CursoService } from '../../../services/curso.service';
+import { DocenteService } from '../../../services/docente.service';
 
 @Component({
   selector: 'app-reporteria',
