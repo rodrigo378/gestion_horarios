@@ -32,9 +32,6 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('login');
-    console.log('v2.1');
-
     this.route.queryParams.subscribe((params) => {
       const token = params['token'];
       if (token) {
@@ -65,7 +62,7 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(user).subscribe({
       next: (res: any) => {
-        this.router.navigate(['/welcome']);
+        this.router.navigate(['dashboard/welcome']);
       },
       error: (e: HttpErrorResponse) => {
         this.boolLogin = true;

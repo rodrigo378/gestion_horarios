@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Periodo, Turno } from '../interfaces/turno';
 import { environment } from '../../environment/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Curso2 } from '../interfaces/Curso';
 
 @Injectable({
   providedIn: 'root',
@@ -13,17 +14,21 @@ export class TurnoService {
 
   constructor(private http: HttpClient) {}
 
-  getTurnos(): Observable<Turno[]> {
-    return this.http.get<Turno[]>(this.apiUrl);
+  getTurnos(params: any): Observable<Turno[]> {
+    const httpParams = new HttpParams({ fromObject: params });
+    return this.http.get<Turno[]>(this.apiUrl, { params: httpParams });
   }
 
-  getTurnoById(id: number): Observable<Turno> {
+  getTurno(id: number): Observable<Turno> {
     return this.http.get<Turno>(`${this.apiUrl}/${id}`);
   }
 
-  getTurnosFiltrados(params: any): Observable<Turno[]> {
-    const httpParams = new HttpParams({ fromObject: params });
-    return this.http.get<Turno[]>(this.apiUrl, { params: httpParams });
+  getCursosPlanTurno(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/plan/cursos/${id}`);
+  }
+
+  getCursosTurno(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/cursos/${id}`);
   }
 
   createTurno(turno: Turno) {
@@ -32,6 +37,12 @@ export class TurnoService {
 
   deleteTurno(id: number) {
     return this.http.delete(`${this.apiUrl}/${id}`, { withCredentials: true });
+  }
+
+  generarCurso(curso: Curso2) {
+    return this.http.post(`${this.apiUrl}/generar/curso`, curso, {
+      withCredentials: true,
+    });
   }
 
   actualizarEstado(id: number, estado: number) {

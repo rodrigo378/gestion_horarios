@@ -4,6 +4,7 @@ import { LayoutComponent } from '../../common/layout/layout.component';
 import { DocenteComponent } from './docente/docente.component';
 import { PlanCursosComponent } from './plan-cursos/plan-cursos.component';
 import { VerTurnoComponent } from './ver-turno/ver-turno.component';
+import { GenerarCursosComponent } from './generar-cursos/generar-cursos.component';
 
 const routes: Routes = [
   {
@@ -13,6 +14,7 @@ const routes: Routes = [
       { path: 'docente', component: DocenteComponent },
       { path: 'plan/curso', component: PlanCursosComponent },
       { path: 'turno', component: VerTurnoComponent },
+      { path: 'generar/:turno_id', component: GenerarCursosComponent },
     ],
   },
 ];

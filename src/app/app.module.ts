@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import en from '@angular/common/locales/en';
 import { AppComponent } from './app.component';
-import { registerLocaleData } from '@angular/common';
+import { CommonModule, registerLocaleData } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { es_ES, provideNzI18n } from 'ng-zorro-antd/i18n';
 import { LoginComponent } from './pages/login/login.component';
@@ -22,6 +22,7 @@ import { RouterOutlet } from '@angular/router';
 import { DecanoModule } from './pages/decano/decano.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
+import { DocenteModule } from './pages/docente/docente.module';
 
 registerLocaleData(en);
 
@@ -35,6 +36,7 @@ registerLocaleData(en);
   imports: [
     FormsModule,
     ReactiveFormsModule,
+    CommonModule,
 
     NzLayoutModule,
     NzMenuModule,
@@ -49,6 +51,7 @@ registerLocaleData(en);
     AdminModule,
     DashboardModule,
     DecanoModule,
+    DocenteModule,
   ],
   providers: [
     provideNzI18n(es_ES),

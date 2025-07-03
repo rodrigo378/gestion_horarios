@@ -14,15 +14,18 @@ import { NgxApexchartsModule } from 'ngx-apexcharts';
 import { DocenteComponent } from './docente/docente.component';
 import { FormsModule } from '@angular/forms';
 import { PlanCursosComponent } from './plan-cursos/plan-cursos.component';
-import { VerTurnoComponent } from './ver-turno/ver-turno.component';
 import { PeriodoComponent } from './periodo/periodo.component';
-
+import { VerTurnoComponent } from './ver-turno/ver-turno.component';
+import { GenerarCursosComponent } from './generar-cursos/generar-cursos.component';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 @NgModule({
   declarations: [
     DocenteComponent,
     PlanCursosComponent,
-    VerTurnoComponent,
     PeriodoComponent,
+    VerTurnoComponent,
+    GenerarCursosComponent,
   ],
   imports: [
     CommonModule,
@@ -37,6 +40,8 @@ import { PeriodoComponent } from './periodo/periodo.component';
     NgxApexchartsModule,
     NzAutocompleteModule,
     NzInputModule,
+    NzDividerModule,
+    NzModalModule,
   ],
 })
 export class TiModule {}

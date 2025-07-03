@@ -1,6 +1,29 @@
 import { Horario } from './Horario';
 import { Turno } from './turno';
 
+export interface PlanCursos {
+  id: number;
+  n_codper: number;
+  c_codmod: number;
+  c_codfac: string;
+  c_codesp: string;
+  c_codcur: string;
+  c_nomcur: string;
+  n_ciclo: number;
+  n_ht: number;
+  n_hp: number;
+  c_area: string;
+  c_curup: number;
+}
+
+export interface Curso2 {
+  id?: number;
+  id_planCurso: number;
+  c_alu: number;
+  turno_id: number;
+}
+
+//antes
 export interface Curso {
   n_codper: number;
   c_codmod: string;
@@ -46,31 +69,31 @@ export interface Especialidad {
 }
 
 //////////////////
-export interface Curso2 {
-  id: number;
-  n_codper: string;
-  c_codmod: number;
-  c_codfac: string;
-  nom_fac: string;
-  c_codesp: string;
-  nomesp: string;
-  c_codcur: string;
-  c_nomcur: string;
-  n_ciclo: number;
-  c_area: string;
-  n_codper_equ?: string;
-  c_codmod_equ?: string;
-  c_codfac_equ?: string;
-  c_codesp_equ?: string;
-  c_codcur_equ?: string;
-  c_nomcur_equ?: string;
-  turno_id: number;
-  Horario: Horario[];
-  turno: Turno;
-  cursosPadres: CursoPadre[];
-  cursosHijos: CursoHijo[];
-  vencio: boolean;
-}
+// export interface Curso2 {
+//   id: number;
+//   n_codper: string;
+//   c_codmod: number;
+//   c_codfac: string;
+//   nom_fac: string;
+//   c_codesp: string;
+//   nomesp: string;
+//   c_codcur: string;
+//   c_nomcur: string;
+//   n_ciclo: number;
+//   c_area: string;
+//   n_codper_equ?: string;
+//   c_codmod_equ?: string;
+//   c_codfac_equ?: string;
+//   c_codesp_equ?: string;
+//   c_codcur_equ?: string;
+//   c_nomcur_equ?: string;
+//   turno_id: number;
+//   Horario: Horario[];
+//   turno: Turno;
+//   cursosPadres: CursoPadre[];
+//   cursosHijos: CursoHijo[];
+//   vencio: boolean;
+// }
 
 export interface CursoPadre {
   id: number;

@@ -7,8 +7,6 @@
   </button>
 </div>
 
-
-
 <!-- <full-calendar
   [options]="calendarOptions"
   class="shadow-lg border border-gray-200 rounded-lg p-4 mt-5"
@@ -16,9 +14,15 @@
 </full-calendar> -->
 
 <!-- Modal -->
-<div *ngIf="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+<div
+  *ngIf="showModal"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+>
   <div class="bg-white p-6 rounded-lg w-96 shadow-xl relative">
-    <button (click)="closeModal()" class="absolute top-3 right-3 bg-gray-200 hover:bg-gray-400 text-gray-700 hover:text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md transition">
+    <button
+      (click)="closeModal()"
+      class="absolute top-3 right-3 bg-gray-200 hover:bg-gray-400 text-gray-700 hover:text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md transition"
+    >
       <i class="fa-solid fa-xmark text-lg"></i>
     </button>
 
@@ -28,19 +32,36 @@
 
     <ol class="relative border-l-2 border-blue-900 pl-4">
       <li *ngFor="let event of selectedClasses" class="mb-4">
-        <div class="absolute w-3 h-3 bg-blue-900 rounded-full -left-1.5 border border-white"></div>
-        <h3 class="text-lg font-semibold text-gray-900">{{ event.subject }} - {{ event.codcurso }}</h3>
+        <div
+          class="absolute w-3 h-3 bg-blue-900 rounded-full -left-1.5 border border-white"
+        ></div>
+        <h3 class="text-lg font-semibold text-gray-900">
+          {{ event.subject }} - {{ event.codcurso }}
+        </h3>
         <p class="text-sm font-medium text-gray-600">⏰ {{ event.time }}</p>
-        <p class="text-sm text-gray-700">🏛 Facultad: <span class="font-semibold">{{ event.faculty }}</span></p>
-        <p class="text-sm text-gray-700">📚 Ciclo: <span class="font-semibold">{{ event.cycle }}</span></p>
-        <p class="text-sm text-gray-700">📍 Aula/Piso: <span class="font-semibold">{{ event.floor }}</span></p>
-        <p class="text-sm text-gray-700">👨‍🏫 Docente: <span class="font-semibold">{{ event.docente }}</span></p>
-        <p class="text-sm text-gray-700">💻 Modalidad: <span class="font-semibold">{{ event.modality }}</span></p>
+        <p class="text-sm text-gray-700">
+          🏛 Facultad: <span class="font-semibold">{{ event.faculty }}</span>
+        </p>
+        <p class="text-sm text-gray-700">
+          📚 Ciclo: <span class="font-semibold">{{ event.cycle }}</span>
+        </p>
+        <p class="text-sm text-gray-700">
+          📍 Aula/Piso: <span class="font-semibold">{{ event.floor }}</span>
+        </p>
+        <p class="text-sm text-gray-700">
+          👨‍🏫 Docente: <span class="font-semibold">{{ event.docente }}</span>
+        </p>
+        <p class="text-sm text-gray-700">
+          💻 Modalidad: <span class="font-semibold">{{ event.modality }}</span>
+        </p>
       </li>
     </ol>
 
     <div class="flex justify-center mt-6">
-      <button (click)="closeModal()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition">
+      <button
+        (click)="closeModal()"
+        class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition"
+      >
         Cerrar
       </button>
     </div>
@@ -49,31 +70,33 @@
 
 <div class="flex justify-between items-center my-4 flex-wrap gap-4">
   <!-- Filtro de turno a la izquierda -->
-<div class="flex flex-wrap items-center gap-3">
-  <!-- Filtro de turno -->
-  <!-- <label class="font-semibold text-gray-700">Turno:</label> -->
-  <!-- <select [(ngModel)]="turnoFiltro" class="border px-8 py-2 rounded-lg">
+  <div class="flex flex-wrap items-center gap-3">
+    <!-- Filtro de turno -->
+    <!-- <label class="font-semibold text-gray-700">Turno:</label> -->
+    <!-- <select [(ngModel)]="turnoFiltro" class="border px-8 py-2 rounded-lg">
     <option value="todos">Todos</option>
     <option value="mañana">Mañana</option>
     <option value="noche">Noche</option>
   </select> -->
 
-  <!-- Filtro de rango de horas -->
-  <label class="ml-4 font-semibold text-gray-700">Imprimir desde las:</label>
-  <select [(ngModel)]="horaInicioFiltro" class="border px-8 py-1 rounded-lg">
-    <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
-  </select>
+    <!-- Filtro de rango de horas -->
+    <label class="ml-4 font-semibold text-gray-700">Imprimir desde las:</label>
+    <select [(ngModel)]="horaInicioFiltro" class="border px-8 py-1 rounded-lg">
+      <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
+    </select>
 
-  <label class="font-semibold text-gray-700">Hasta:</label>
-  <select [(ngModel)]="horaFinFiltro" class="border px-8 py-1 rounded-lg">
-    <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
-  </select>
-</div>
-
+    <label class="font-semibold text-gray-700">Hasta:</label>
+    <select [(ngModel)]="horaFinFiltro" class="border px-8 py-1 rounded-lg">
+      <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
+    </select>
+  </div>
 
   <!-- Botones a la derecha -->
   <div class="flex gap-3">
-    <button (click)="exportarCalendarioAPDF()" class="bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition">
+    <button
+      (click)="exportarCalendarioAPDF()"
+      class="bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition"
+    >
       📄 Exportar a PDF
     </button>
     <!-- <button (click)="capturarCalendario()" class="bg-purple-700 text-white px-4 py-2 rounded shadow hover:bg-purple-800 transition">
@@ -81,8 +104,6 @@
     </button> -->
   </div>
 </div>
-
-
 
 <div class="horario-table">
   <div *ngIf="turnoData" class="bg-white shadow-lg border p-5 rounded-xl">
@@ -123,36 +144,61 @@
     <thead>
       <tr>
         <th class="border px-2 py-1 bg-gray-200 text-center">Hora</th>
-        <th *ngFor="let dia of dias" class="border px-2 py-1 bg-gray-200 text-center">{{ dia }}</th>
+        <th
+          *ngFor="let dia of dias"
+          class="border px-2 py-1 bg-gray-200 text-center"
+        >
+          {{ dia }}
+        </th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let hora of horasFiltradas">
-        <td class="border px-2 py-1 font-bold bg-gray-50 text-center">{{ hora }}</td>
-        <td *ngFor="let dia of dias" class="border px-2 py-1 h-[12rem] align-top">
+        <td class="border px-2 py-1 font-bold bg-gray-50 text-center">
+          {{ hora }}
+        </td>
+        <td
+          *ngFor="let dia of dias"
+          class="border px-2 py-1 h-[12rem] align-top"
+        >
           <ng-container *ngIf="obtenerEvento(dia, hora) as evento">
-            <div class="text-sm rounded px-5 py-1 text-white shadow"
-                [ngStyle]="{ 'background-color': evento.color }">
-                  <div class="flex gap-1 mb-1">
-                    <span class="bg-yellow-400 text-black px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase">
-                      {{ evento.modalidad === 'pre' ? 'Presencial' : 
-                      evento.modalidad === 'vir' ? 'Virtual' : 
-                      evento.modalidad === 'lab' ? 'LABORATORIO' : 
-                      evento.modalidad === 'tep' ? 'TEORIA PRESENCIAL' : 
-                      evento.modalidad === 'tev' ? 'TEORIA VIRTUAL' : 
-                      evento.modalidad === 'lbp' ? 'LABORATORIO PRESENCIAL' :  
-                      '---' }}
-                    </span>
-                    <span class="bg-blue-600 text-white px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase">
-                      {{ evento.tipo === 'Práctica' ? 'Práctica' : 'Teoría' }}
-                    </span>
-                  </div>
-                  <p class="text-sm font-bold">
-                    {{ formatHora(evento.h_inicio) }} - {{ formatHora(evento.h_fin) }}
-                  </p>
-                  <p class="text-sm font-bold">{{ evento.curso }}</p>
-                  <p class="text-xs">{{ evento.docente }}</p>
-                  <p class="text-xs mb-5">Aula: {{ evento.aula }}</p>
+            <div
+              class="text-sm rounded px-5 py-1 text-white shadow"
+              [ngStyle]="{ 'background-color': evento.color }"
+            >
+              <div class="flex gap-1 mb-1">
+                <span
+                  class="bg-yellow-400 text-black px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase"
+                >
+                  {{
+                    evento.modalidad === "pre"
+                      ? "Presencial"
+                      : evento.modalidad === "vir"
+                      ? "Virtual"
+                      : evento.modalidad === "lab"
+                      ? "LABORATORIO"
+                      : evento.modalidad === "tep"
+                      ? "TEORIA PRESENCIAL"
+                      : evento.modalidad === "tev"
+                      ? "TEORIA VIRTUAL"
+                      : evento.modalidad === "lbp"
+                      ? "LABORATORIO PRESENCIAL"
+                      : "---"
+                  }}
+                </span>
+                <span
+                  class="bg-blue-600 text-white px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase"
+                >
+                  {{ evento.tipo === "Práctica" ? "Práctica" : "Teoría" }}
+                </span>
+              </div>
+              <p class="text-sm font-bold">
+                {{ formatHora(evento.h_inicio) }} -
+                {{ formatHora(evento.h_fin) }}
+              </p>
+              <p class="text-sm font-bold">{{ evento.curso }}</p>
+              <p class="text-xs">{{ evento.docente }}</p>
+              <p class="text-xs mb-5">Aula: {{ evento.aula }}</p>
             </div>
           </ng-container>
         </td>

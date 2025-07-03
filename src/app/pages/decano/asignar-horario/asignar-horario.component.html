@@ -1,0 +1,86 @@
+<div class="mb-4">
+  <button
+    routerLink="/coa/turno"
+    nz-button
+    class="inline-flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded transition duration-200"
+  >
+    <i class="fa-solid fa-arrow-left"></i> Turnos
+  </button>
+</div>
+
+<div *ngIf="turno" class="bg-white shadow-lg border p-5 rounded-xl">
+  <p class="text-2xl font-bold">Asignación de horarios</p>
+  <p class="text-2xl font-bold">
+    {{ turno.n_codper }} - {{ turno.n_codpla }} - {{ turno.nomesp }} -
+    {{ turno.n_ciclo }}° Ciclo - {{ turno.c_nommod }} - Sección
+    {{ turno.c_grpcur }} -
+  </p>
+</div>
+
+<div id="external-events" class="bg-white shadow-lg border p-5 rounded-xl mt-5">
+  <h2
+    class="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2"
+  >
+    📚 Cursos por Plan
+  </h2>
+
+  <div nz-row>
+    <div nz-col [nzSpan]="12" class="gutter-row">
+      <h3 class="text-lg font-semibold text-blue-600 mb-3">
+        📘 Plan 2023 (0) - Asignados
+      </h3>
+    </div>
+    <div nz-col [nzSpan]="12" class="gutter-row">
+      <h3 class="text-lg font-semibold text-green-600 mb-3">
+        📗 Plan 2025 (0) - Asignados
+      </h3>
+      <div class="space-y-3">
+        <div
+          class="relative fc-event bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3 cursor-move"
+        >
+          <!-- Área -->
+          <span
+            class="absolute right-1 bottom-2 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-r-lg"
+          >
+            curso.c_nom_cur_area
+          </span>
+
+          <!-- BADGE: tipoAgrupado -->
+          <span
+            class="absolute top-1 right-1 text-[15px] font-semibold px-2 py-1 rounded-md text-white"
+            [ngClass]="{}"
+          >
+            +curso.tipoAgrupado! === 1 ? "Agrupado" : "Transversal"
+          </span>
+
+          <!-- Curso principal -->
+          <p class="text-sm text-slate-800 font-medium">
+            <span class="font-semibold text-emerald-600"
+              >[ curso.c_codcur ]</span
+            >
+            - curso.c_nomcur
+          </p>
+
+          <!-- Equivalente si existe y es distinto -->
+          <ng-container>
+            <p class="text-sm text-slate-500 font-medium mt-1">
+              <span class="font-semibold">Equiv: [ curso.c_codcur_equ ]</span>
+              - curso.c_nomcur_equ
+            </p>
+          </ng-container>
+
+          <!-- Tipo y horas -->
+          <p class="text-xs text-gray-600 mt-1">
+            curso.tipo · curso.horasRestantes hrs
+            <span class="ml-1 italic text-blue-600 text-[11px]">
+              <!-- POR QUE NO JAAAAAAAAAAAAAAAAAAAAAAAAAAALAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA -->
+              (umaPlus curso.h_umaPlus )
+            </span>
+          </p>
+          <!-- Modalidad -->
+          <p class="text-xs text-gray-500">curso.c_nommod</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

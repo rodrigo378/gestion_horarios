@@ -1,0 +1,112 @@
+<!-- component -->
+<div class="max-w-[100%] mx-auto">
+  <div
+    class="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border"
+  >
+    <div
+      class="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border"
+    >
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2"
+      >
+        @if (turno) {
+        <div>
+          <h3 class="text-2xl font-semibold text-slate-800">Generar Cursos</h3>
+          <p class="text-2xl font-bold">
+            {{ turno.n_codper }} - {{ turno.n_codpla }} - {{ turno.nomesp }} -
+            {{ turno.n_ciclo }}° Ciclo - {{ turno.c_nommod }} - Sección
+            {{ turno.c_grpcur }} -
+          </p>
+        </div>
+        }
+
+        <div class="flex flex-wrap items-center gap-4 mb-4">
+          <!-- <button
+            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm font-medium shadow"
+          >
+            📥 Exportar a Excel
+          </button>
+
+          <button
+            class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
+          >
+            ➕ Agregar Docente
+          </button> -->
+        </div>
+      </div>
+    </div>
+
+    <!-- tabla -->
+    <div class="p-0 overflow-scrolls pt-4">
+      <nz-table #basicTable [nzData]="listOfData">
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Codigo</th>
+            <th>Nombre</th>
+            <th>Ciclo</th>
+            <th>H. Teoria</th>
+            <th>H. Practia</th>
+            <th>Area</th>
+            <th>H. UmaPlus</th>
+            <th>Vacantes</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of basicTable.data; track data) {
+          <tr>
+            <td>{{ data.n_codper }}</td>
+            <td>{{ data.c_codcur }}</td>
+            <td>{{ data.c_nomcur }}</td>
+            <td>{{ data.n_ciclo }}</td>
+            <td>{{ data.n_ht }}</td>
+            <td>{{ data.n_hp }}</td>
+            <td>{{ data.c_area }}</td>
+            <td>{{ data.c_curup }}</td>
+            <td>{{ data.cursoGenerado == null ? "- - -" : 10 }}</td>
+            <td>
+              {{ data.cursoGenerado == null ? "⛔ pendiente" : "generado" }}
+            </td>
+            <td>
+              <button nz-button (click)="showModal(data)">➕ Generar</button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="
+    cursoSeleccionado
+      ? 'Generar curso: ' + cursoSeleccionado.c_nomcur
+      : 'Generar curso'
+  "
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+>
+  <ng-container *nzModalContent>
+    <div class="mb-4">
+      <label
+        for="vacantes"
+        class="block text-sm font-medium text-gray-700 mb-1"
+      >
+        Vacantes
+      </label>
+      <input
+        id="vacantes"
+        type="number"
+        min="1"
+        [(ngModel)]="vacantes"
+        class="w-full border rounded px-3 py-2"
+        placeholder="Ingrese número de vacantes"
+      />
+    </div>
+  </ng-container>
+</nz-modal>

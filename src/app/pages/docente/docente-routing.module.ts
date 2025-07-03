@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LayoutComponent } from '../../common/layout/layout.component';
-import { ListarUsuariosComponent } from './listar-usuarios/listar-usuarios.component';
-import { PermisosUsuariosComponent } from './permisos-usuarios/permisos-usuarios.component';
+import { MarcarAsistenciaComponent } from './marcar-asistencia/marcar-asistencia.component';
+import { VerAsistenciaComponent } from './ver-asistencia/ver-asistencia.component';
 
 const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
     children: [
-      { path: 'usuario', component: ListarUsuariosComponent },
-      { path: 'permiso', component: PermisosUsuariosComponent },
+      { path: 'marcar', component: MarcarAsistenciaComponent },
+      { path: 'ver-asistencia', component: VerAsistenciaComponent },
     ],
   },
 ];
@@ -19,4 +19,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class AdminRoutingModule {}
+export class DocenteRoutingModule {}

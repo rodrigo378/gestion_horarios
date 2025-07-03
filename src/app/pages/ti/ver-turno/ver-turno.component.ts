@@ -124,7 +124,7 @@ export class VerTurnoComponent {
   }
 
   getTurnos() {
-    this.turnoService.getTurnosFiltrados(this.filtros).subscribe((data) => {
+    this.turnoService.getTurnos(this.filtros).subscribe((data) => {
       this.listOfData = data;
       this.datosFiltrados = [...this.listOfData];
 
