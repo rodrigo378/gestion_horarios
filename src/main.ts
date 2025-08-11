@@ -5,6 +5,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 platformBrowserDynamic()
   .bootstrapModule(AppModule, {
     ngZoneEventCoalescing: true,
-    providers: [provideAnimations()]
+    providers: [provideAnimations()],
   })
   .catch((err) => console.error(err));
+// esta es la version 2
