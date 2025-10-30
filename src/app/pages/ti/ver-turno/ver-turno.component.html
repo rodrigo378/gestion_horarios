@@ -1,6 +1,8 @@
 <!-- component -->
-<div class="min-h-[calc(100vh-4rem)] bg-slate-50 py-6">
-  <div class="mx-auto w-full max-w-6xl px-3 sm:px-6">
+<div class="max-w-[100%] mx-auto">
+  <div
+    class="relative flex flex-col w-full h-full text-slate-700 bg-transparent"
+  >
     <!-- CONTENEDOR GRANDE Y BLANCO -->
     <div
       class="bg-white rounded-2xl shadow-md ring-1 ring-slate-200/70 p-4 sm:p-6"
@@ -33,7 +35,7 @@
 
           <!-- Filtros + botones -->
           <div
-            class="flex flex-col sm:flex-row justify-between items-center gap-4 p-2"
+            class="flex flex-col sm:flex-row justify-between items-center gap-4 p-2 bg-slate-50/40 rounded-xl"
           >
             <!-- Filtros -->
             <div class="flex flex-wrap gap-2 items-center">
@@ -117,13 +119,13 @@
             <div class="flex gap-2">
               <button
                 (click)="clickBloquearTodo()"
-                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition text-sm font-medium shadow"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-semibold shadow"
               >
                 Blockear Turnos
               </button>
               <button
                 (click)="clickDesbloquearTodo()"
-                class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm font-medium shadow"
+                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm font-semibold shadow"
               >
                 Deslockear Turnos
               </button>
@@ -147,19 +149,21 @@
             [nzPageSizeOptions]="[5, 10, 20, 50, total]"
             [nzShowSizeChanger]="true"
           >
-            <thead>
-              <tr>
+            <thead class="bg-slate-50">
+              <tr class="text-slate-900">
                 <th
                   nzWidth="6%"
                   [(nzChecked)]="checked"
                   [nzIndeterminate]="indeterminate"
                   (nzCheckedChange)="onAllChecked($event)"
+                  class="font-semibold"
                 ></th>
                 @for (column of listOfColumn; track column) {
                 <th
                   [nzWidth]="column.nzWidth"
                   [nzSortFn]="column.compare"
                   [nzSortPriority]="column.priority"
+                  class="font-semibold"
                 >
                   {{ column.title }}
                 </th>
@@ -167,9 +171,9 @@
               </tr>
             </thead>
 
-            <tbody>
+            <tbody class="divide-y divide-slate-100">
               @for (data of editRowTable.data; track data) {
-              <tr>
+              <tr class="hover:bg-slate-50 transition-colors">
                 @if (!editCache[data.id].edit) {
                 <td
                   [nzChecked]="setOfCheckedId.has(data.id)"
