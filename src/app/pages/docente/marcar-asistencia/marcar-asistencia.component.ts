@@ -1,4 +1,4 @@
-import { Aula } from '../../../interfaces/Aula';
+import { Aula } from '../../../interfaces_2/Aula';
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../services/user.service';

@@ -1,9 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Departamento } from '../interfaces/Departamento';
-import { Distrito } from '../interfaces/Distrito';
-import { Provincia } from '../interfaces/Provincia';
+import { Departamento } from '../interfaces_2/Departamento';
+import { Distrito } from '../interfaces_2/Distrito';
+import { Provincia } from '../interfaces_2/Provincia';
 import { AuthService } from './auth.service';
 import { environment } from '../../environment/environment';
 

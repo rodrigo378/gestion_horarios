@@ -41,11 +41,22 @@
             class="w-auto h-[30px]"
           >
             <nz-option nzValue="" nzLabel="Periodo"></nz-option>
+            <nz-option nzValue="20252" nzLabel="20252"></nz-option>
             <nz-option nzValue="20251" nzLabel="20251"></nz-option>
             <nz-option nzValue="20242" nzLabel="20242"></nz-option>
           </nz-select>
 
+          <!-- <nz-select
+            [(ngModel)]="filtros.c_codfac"
+            (ngModelChange)="onChangeFacultad('facultad', $event)"
+            class="w-auto h-[30px]"
+          >
+            <nz-option nzValue="" nzLabel="Facultad"></nz-option>
+            <nz-option nzValue="S" nzLabel="CIENCIAS Y SALUD"></nz-option>
+            <nz-option nzValue="E" nzLabel="INGENIERIA Y NEGOCIOS"></nz-option>
+          </nz-select> -->
           <nz-select
+            *ngIf="showFacultad"
             [(ngModel)]="filtros.c_codfac"
             (ngModelChange)="onChangeFacultad('facultad', $event)"
             class="w-auto h-[30px]"
@@ -109,7 +120,7 @@
     </div>
 
     <!-- tabla -->
-    <div class="p-0 overflow-scrolls pt-4">
+    <div class="p-0 overflow-scrolls pt-4 px-5">
       <nz-table
         #editRowTable
         #sortTable

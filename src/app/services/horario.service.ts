@@ -8,8 +8,8 @@ import {
   Horario,
   HorarioExtendido,
   UpdateHorarioData,
-} from '../interfaces/Horario';
-import { Curso2 } from '../interfaces/Curso';
+} from '../interfaces_2/Horario';
+import { Curso2 } from '../interfaces_2/Curso';
 @Injectable({
   providedIn: 'root',
 })

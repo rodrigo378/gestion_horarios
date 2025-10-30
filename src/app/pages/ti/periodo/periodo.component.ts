@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PeriodoService } from '../../../services/periodo.service';
-import { Periodo } from '../../../interfaces/turno';
+import { Periodo } from '../../../interfaces_2/turno';
 import { AlertService } from '../../../services/alert.service';
 
 @Component({

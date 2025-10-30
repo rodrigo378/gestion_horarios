@@ -25,12 +25,12 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {
     path: 'ti',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     loadChildren: () => import('./pages/ti/ti.module').then((m) => m.TiModule),
   },
   {
     path: 'dashboard',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     loadChildren: () =>
       import('./pages/dashboard/dashboard.module').then(
         (m) => m.DashboardModule
@@ -38,25 +38,25 @@ const routes: Routes = [
   },
   {
     path: 'admin',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     loadChildren: () =>
       import('./pages/admin/admin.module').then((m) => m.AdminModule),
   },
   {
     path: 'coa',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     loadChildren: () =>
       import('./pages/decano/decano.module').then((m) => m.DecanoModule),
   },
   {
     path: 'director',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     loadChildren: () =>
       import('./pages/director/director.module').then((m) => m.DirectorModule),
   },
   {
     path: 'docente',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     loadChildren: () =>
       import('./pages/docente/docente.module').then((m) => m.DocenteModule),
   },

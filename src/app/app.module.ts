@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import en from '@angular/common/locales/en';
 import { AppComponent } from './app.component';
 import { CommonModule, registerLocaleData } from '@angular/common';
@@ -24,6 +24,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { DocenteModule } from './pages/docente/docente.module';
 
+import { NzIconModule } from 'ng-zorro-antd/icon';
+
 registerLocaleData(en);
 
 @NgModule({
@@ -34,6 +36,8 @@ registerLocaleData(en);
     NotFountComponent,
   ],
   imports: [
+    NzIconModule,
+
     FormsModule,
     ReactiveFormsModule,
     CommonModule,

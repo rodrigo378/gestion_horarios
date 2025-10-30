@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Periodo } from '../interfaces/turno';
+import { Periodo } from '../interfaces_2/turno';
 
 @Injectable({
   providedIn: 'root',

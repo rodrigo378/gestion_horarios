@@ -4,16 +4,12 @@ import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { format, toZonedTime } from 'date-fns-tz';
 import { Router } from '@angular/router';
-import {
-  CreateDocente,
-  Docente,
-  DocenteExtendido,
-  HorarioAsignado,
-} from '../../../interfaces/Docente';
-import { Especialidad } from '../../../interfaces/Curso';
+
+import { Especialidad } from '../../../interfaces_2/Curso';
 import { AlertService } from '../../../services/alert.service';
-import { CursoService } from '../../../services/curso.service';
 import { DocenteService } from '../../../services/docente.service';
+import { HR_Docente } from '../../../interfaces/hr/hr_docente';
+import { HR_Horario } from '../../../interfaces/hr/hr_horario';
 
 @Component({
   selector: 'app-reporteria',
@@ -24,12 +20,12 @@ import { DocenteService } from '../../../services/docente.service';
 export class ReporteriaComponent implements OnInit {
   itemsPorPagina = 10;
   paginaActual = 1;
-  usuariosFiltrados: DocenteExtendido[] = [];
-  docentes: DocenteExtendido[] = [];
+  usuariosFiltrados: HR_Docente[] = [];
+  docentes: HR_Docente[] = [];
   mostrarModal = false;
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
-  nuevoDocente: CreateDocente = {
+  nuevoDocente: Partial<HR_Docente> = {
     c_dnidoc: '',
     c_codfac: '',
     nom_fac: '',
@@ -47,20 +43,12 @@ export class ReporteriaComponent implements OnInit {
   constructor(
     private location: Location,
     private alertService: AlertService,
-    private cursoService: CursoService,
     private docenteService: DocenteService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.cargarDocentes();
-    this.getEspecialidades();
-  }
-
-  getEspecialidades() {
-    this.cursoService.getEspecialidades().subscribe((data) => {
-      this.especialidades = data;
-    });
   }
 
   cargarDocentes() {
@@ -87,18 +75,19 @@ export class ReporteriaComponent implements OnInit {
   }
 
   crearDocente() {
-    if (!this.nuevoDocente.c_nomdoc.trim()) {
+    if (!this.nuevoDocente.c_nomdoc!.trim()) {
       this.alertService.error('El nombre del docente es obligatorio');
       return;
     }
 
-    this.nuevoDocente.nom_fac = this.nombreFacultad(this.nuevoDocente.c_codfac); // sincronizar
+    this.nuevoDocente.nom_fac = this.nombreFacultad(
+      this.nuevoDocente.c_codfac!
+    );
 
     this.docenteService.crearDocente(this.nuevoDocente).subscribe({
       next: (res) => {
         this.alertService.success('Docente creado correctamente');
-        this.cargarDocentes(); // recarga lista
-        // reiniciar formulario
+        this.cargarDocentes();
         this.nuevoDocente = {
           c_dnidoc: '',
           c_codfac: 'E',
@@ -134,19 +123,20 @@ export class ReporteriaComponent implements OnInit {
     this.mostrarModal = false;
   }
 
-  getHorariosPorFacultad(docente: Docente): {
-    [key: string]: HorarioAsignado[];
+  getHorariosPorFacultad(docente: HR_Docente): {
+    [key: string]: HR_Docente[];
   } {
-    const agrupado: { [key: string]: HorarioAsignado[] } = {};
+    const agrupado: { [key: string]: HR_Docente[] } = {};
 
-    if (!docente.Horario || docente.Horario.length === 0) return agrupado;
+    if (!docente.horarios || docente.horarios.length === 0) return agrupado;
 
-    docente.Horario.forEach((h) => {
-      const codfac = h.curso?.c_codfac || 'N/A';
+    docente.horarios.forEach((h) => {
+      // const codfac = h.curso?.c_codfac || 'N/A';
+      const codfac = 'N/A';
       if (!agrupado[codfac]) {
         agrupado[codfac] = [];
       }
-      agrupado[codfac].push(h);
+      agrupado[codfac].push({ ...(h as any) });
     });
 
     return agrupado;
@@ -163,7 +153,7 @@ export class ReporteriaComponent implements OnInit {
     }
   }
 
-  sumarHoras(grupo: HorarioAsignado[]): number {
+  sumarHoras(grupo: HR_Horario[]): number {
     return grupo.reduce((acc, h) => acc + h.n_horas, 0);
   }
 
@@ -192,7 +182,7 @@ export class ReporteriaComponent implements OnInit {
     this.location.back();
   }
 
-  toggleExpand(docente: DocenteExtendido) {
+  toggleExpand(docente: HR_Docente) {
     docente.expanded = !docente.expanded;
   }
 
@@ -206,14 +196,14 @@ export class ReporteriaComponent implements OnInit {
 
     this.usuariosFiltrados = this.docentes.filter((docente) => {
       const nombre = docente.c_nomdoc?.toLowerCase() || '';
-      const categoria = docente.categoria?.toLowerCase() || '';
+      // const categoria = docente.categoria?.toLowerCase() || '';
       const hMin = docente.h_min?.toString() || '';
       const hMax = docente.h_max?.toString() || '';
       const hTotal = docente.h_total?.toString() || '';
 
       return (
         nombre.includes(filtro) ||
-        categoria.includes(filtro) ||
+        // categoria.includes(filtro) ||
         hMin.includes(filtro) ||
         hMax.includes(filtro) ||
         hTotal.includes(filtro)
@@ -228,11 +218,11 @@ export class ReporteriaComponent implements OnInit {
     const zonaHoraria = 'America/Lima';
 
     this.usuariosFiltrados.forEach((docente) => {
-      const horarios = docente.Horario || [];
+      const horarios = docente.horarios || [];
       const asignado = horarios.length;
 
       horarios.forEach((h, index) => {
-        const cursoPadre = h.curso?.cursosPadres?.[0];
+        const cursoPadre = h.curso?.grupos_padre?.[0];
         const tipoCursoPadre = cursoPadre
           ? cursoPadre.tipo === 0
             ? 'Transversal'
@@ -251,8 +241,9 @@ export class ReporteriaComponent implements OnInit {
           ? format(toZonedTime(new Date(h.h_fin), zonaHoraria), 'HH:mm')
           : '';
 
-        const cursosUnicos = new Set(horarios.map((h) => h.curso?.c_codcur))
-          .size;
+        const cursosUnicos = new Set(
+          horarios.map((h) => h.curso?.plan?.c_codcur)
+        ).size;
         rows.push({
           Docente: index === 0 ? docente.c_nomdoc : '',
           'H. Min': index === 0 ? docente.h_min : '',
@@ -270,9 +261,9 @@ export class ReporteriaComponent implements OnInit {
           'Hora Inicio': horaInicio,
           'Hora Fin': horaFin,
           'Nro Horas': h.n_horas,
-          Curso: h.curso?.c_nomcur,
-          Ciclo: h.curso?.n_ciclo,
-          Facultad: this.nombreFacultad(h.curso?.c_codfac),
+          Curso: h.curso?.plan?.c_nomcur || 'error_1',
+          Ciclo: h.curso?.plan?.n_ciclo || 'error_2',
+          Facultad: this.nombreFacultad(h.curso?.plan?.c_codfac || 'error_3'),
           'Tipo Curso': tipoCursoPadre,
           'Shortname Curso': shortname,
         });
@@ -323,7 +314,7 @@ export class ReporteriaComponent implements OnInit {
 
   cambiarItemsPorPagina(valor: number) {
     this.itemsPorPagina = valor;
-    this.paginaActual = 1; // Reinicia a la primera página
+    this.paginaActual = 1;
   }
 
   sortBy(column: string) {

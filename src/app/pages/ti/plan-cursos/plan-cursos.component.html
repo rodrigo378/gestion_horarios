@@ -1,183 +1,199 @@
 <!-- component -->
 <div class="max-w-[100%] mx-auto">
   <div
-    class="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border"
+    class="relative flex flex-col w-full h-full text-slate-700 bg-transparent"
   >
+    <!-- CONTENEDOR PRINCIPAL BLANCO -->
     <div
-      class="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border"
+      class="bg-white rounded-2xl shadow-md ring-1 ring-slate-200/70 p-6 m-4"
     >
-      <!-- Fila: Título + botón -->
-      <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2"
-      >
-        <!-- Título -->
-        <div>
-          <h3 class="text-2xl font-semibold text-slate-800">Plan Cursos</h3>
-          <p class="text-slate-500">Lista de cursos del Plan:</p>
+      <!-- PARTE SUPERIOR SIN CARD -->
+      <div class="mb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+          <!-- Título -->
+          <div>
+            <h3 class="text-2xl font-semibold text-slate-900">Plan Cursos</h3>
+            <p class="text-slate-500">Lista de cursos del Plan:</p>
+          </div>
+
+          <!-- Buscador a la derecha -->
+          <div class="w-full sm:justify-self-end sm:w-80">
+            <label class="text-sm font-medium text-slate-600 mb-1 block"
+              >Buscar:</label
+            >
+            <div class="relative h-10 w-full">
+              <div
+                class="absolute inset-y-0 right-3 flex items-center pointer-events-none"
+              >
+                <i class="fa fa-search text-slate-400"></i>
+              </div>
+              <input
+                nz-input
+                placeholder="Buscar curso"
+                [(ngModel)]="searchValue"
+                (ngModelChange)="buscar()"
+                class="!h-10 rounded-xl placeholder:text-slate-400 pr-9"
+              />
+            </div>
+          </div>
         </div>
 
-        <!-- Botón exportar alineado a la derecha -->
-        <div class="flex flex-wrap items-center gap-4 mb-4">
-          <!-- <button
-            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm font-medium shadow"
-          >
-            📥 Exportar a Excel
-          </button>
-
-          <button
-            class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
-          >
-            ➕ Agregar Docente
-          </button> -->
+        <!-- Botones (comentados) -->
+        <div class="flex flex-wrap items-center gap-4 mt-4">
+          <!-- (se mantiene comentado) -->
         </div>
       </div>
 
-      <!-- Buscador debajo -->
-      <div class="flex flex-col sm:flex-row justify-end">
-        <!-- Filtros + buscador -->
-        <div class="w-full md:w-72">
-          <label class="text-sm font-medium text-slate-600 mb-1 block"
-            >Buscar:</label
-          >
-          <div class="relative h-10 w-full">
-            <div
-              class="absolute inset-y-0 right-3 flex items-center pointer-events-none"
+      <!-- TABLA CON SCROLL -->
+      <div
+        class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200/70 p-2 sm:p-4"
+      >
+        <div class="w-full overflow-x-auto">
+          <div class="min-w-[1100px]">
+            <nz-table
+              #editRowTable
+              #sortTable
+              [nzData]="datosFiltrados"
+              nzTableLayout="fixed"
+              class="w-full"
             >
-              <i class="fa fa-search text-gray-400"></i>
-            </div>
-            <input
-              nz-input
-              placeholder="Buscar curso"
-              [(ngModel)]="searchValue"
-              (ngModelChange)="buscar()"
-              class="mb-4"
-            />
+              <thead class="bg-slate-50">
+                <tr>
+                  @for (column of listOfColumn; track column) {
+                  <th
+                    class="text-slate-900 font-semibold"
+                    [nzWidth]="column.nzWidth"
+                    [nzSortFn]="column.compare"
+                    [nzSortPriority]="column.priority"
+                  >
+                    {{ column.title }}
+                  </th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (data of editRowTable.data; track data) {
+                <tr class="hover:bg-slate-50 transition-colors">
+                  @if (!editCache[data.id].edit) {
+                  <td class="font-medium text-slate-700">
+                    {{ data.c_codfac }}
+                  </td>
+                  <td>{{ data.c_codesp }}</td>
+                  <td>{{ data.c_codmod }}</td>
+                  <td class="font-mono text-slate-700">{{ data.c_codcur }}</td>
+                  <td class="text-slate-800">{{ data.c_nomcur }}</td>
+                  <td>
+                    <span
+                      class="inline-flex items-center rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-700"
+                    >
+                      {{ data.c_area }}
+                    </span>
+                  </td>
+                  <td>{{ data.n_ht }}</td>
+                  <td>{{ data.n_hp }}</td>
+                  <td>{{ data.c_curup }}</td>
+                  <td>
+                    <a
+                      (click)="startEdit(data.id)"
+                      class="text-blue-600 hover:text-blue-700 font-medium"
+                      >Editar</a
+                    >
+                  </td>
+                  } @else {
+                  <td>
+                    <input
+                      type="text"
+                      nz-input
+                      [(ngModel)]="editCache[data.id].data.c_codfac"
+                      class="rounded-lg"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      nz-input
+                      [(ngModel)]="editCache[data.id].data.c_codesp"
+                      class="rounded-lg"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      nz-input
+                      [(ngModel)]="editCache[data.id].data.c_codmod"
+                      class="rounded-lg"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      nz-input
+                      [(ngModel)]="editCache[data.id].data.c_codcur"
+                      class="rounded-lg"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      nz-input
+                      [(ngModel)]="editCache[data.id].data.c_nomcur"
+                      class="rounded-lg"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      nz-input
+                      [(ngModel)]="editCache[data.id].data.c_area"
+                      class="rounded-lg"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      nz-input
+                      [(ngModel)]="editCache[data.id].data.n_ht"
+                      class="rounded-lg"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      nz-input
+                      [(ngModel)]="editCache[data.id].data.n_hp"
+                      class="rounded-lg"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      nz-input
+                      [(ngModel)]="editCache[data.id].data.c_curup"
+                      class="rounded-lg"
+                    />
+                  </td>
+                  <td>
+                    <a
+                      (click)="saveEdit(data.id)"
+                      class="save me-2 inline-block px-3 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                      >Save</a
+                    >
+                    <a
+                      nz-popconfirm
+                      nzPopconfirmTitle="Seguro que quiere cancelar?"
+                      (nzOnConfirm)="cancelEdit(data.id)"
+                      class="inline-block px-3 py-1 rounded-lg text-slate-600 hover:text-slate-800"
+                      >Cancel</a
+                    >
+                  </td>
+                  }
+                </tr>
+                }
+              </tbody>
+            </nz-table>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- tabla -->
-    <div class="p-0 overflow-scrolls">
-      <nz-table
-        #editRowTable
-        #sortTable
-        [nzData]="datosFiltrados"
-        nzTableLayout="fixed"
-      >
-        <thead>
-          <tr>
-            <!-- <th nzWidth="8%">Id</th>
-            <th nzWidth="25%">Nombre</th>
-            <th nzWidth="10%">H. Min</th>
-            <th nzWidth="10%">H. Max</th>
-            <th nzWidth="12%">H. asignadas</th>
-            <th nzWidth="15%">Tipo</th>
-            <th>Action</th> -->
-            @for (column of listOfColumn; track column) {
-            <th
-              [nzWidth]="column.nzWidth"
-              [nzSortFn]="column.compare"
-              [nzSortPriority]="column.priority"
-            >
-              {{ column.title }}
-            </th>
-            }
-          </tr>
-        </thead>
-        <tbody>
-          @for (data of editRowTable.data; track data) {
-          <tr>
-            @if (!editCache[data.id].edit) {
-            <!-- <td>{{ data.id }}</td> -->
-            <td>{{ data.c_codfac }}</td>
-            <td>{{ data.c_codesp }}</td>
-            <td>{{ data.c_codmod }}</td>
-            <td>{{ data.c_codcur }}</td>
-            <td>{{ data.c_nomcur }}</td>
-            <td>{{ data.c_area }}</td>
-            <td>{{ data.n_ht }}</td>
-            <td>{{ data.n_hp }}</td>
-            <td>{{ data.c_curup }}</td>
-            <td><a (click)="startEdit(data.id)">Editar</a></td>
-            } @else {
-            <td>
-              <input
-                type="text"
-                nz-input
-                [(ngModel)]="editCache[data.id].data.c_codfac"
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                nz-input
-                [(ngModel)]="editCache[data.id].data.c_codesp"
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                nz-input
-                [(ngModel)]="editCache[data.id].data.c_codmod"
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                nz-input
-                [(ngModel)]="editCache[data.id].data.c_codcur"
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                nz-input
-                [(ngModel)]="editCache[data.id].data.c_nomcur"
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                nz-input
-                [(ngModel)]="editCache[data.id].data.c_area"
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                nz-input
-                [(ngModel)]="editCache[data.id].data.n_ht"
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                nz-input
-                [(ngModel)]="editCache[data.id].data.n_hp"
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                nz-input
-                [(ngModel)]="editCache[data.id].data.c_curup"
-              />
-            </td>
-            <td>
-              <a (click)="saveEdit(data.id)" class="save me-2">Save</a>
-              <a
-                nz-popconfirm
-                nzPopconfirmTitle="Seguro que quiere cancelar?"
-                (nzOnConfirm)="cancelEdit(data.id)"
-                >Cancel</a
-              >
-            </td>
-            }
-          </tr>
-          }
-        </tbody>
-      </nz-table>
     </div>
   </div>
 </div>

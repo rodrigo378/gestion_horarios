@@ -19,6 +19,14 @@ import { VerTurnoComponent } from './ver-turno/ver-turno.component';
 import { GenerarCursosComponent } from './generar-cursos/generar-cursos.component';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
+import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NzFormPatchModule } from 'ng-zorro-antd/core/form';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+
 @NgModule({
   declarations: [
     DocenteComponent,
@@ -42,6 +50,12 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
     NzInputModule,
     NzDividerModule,
     NzModalModule,
+    NzTagModule,
+    NzBadgeModule,
+    NzSpaceModule,
+
+    NzToolTipModule,
+    NzPaginationModule,
   ],
 })
 export class TiModule {}

@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Periodo, Turno } from '../interfaces/turno';
+import { Periodo, Turno } from '../interfaces_2/turno';
 import { environment } from '../../environment/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Curso2 } from '../interfaces/Curso';
+import { Curso2 } from '../interfaces_2/Curso';
+import { HR_Turno } from '../interfaces/hr/hr_turno';
+import { HR_Curso } from '../interfaces/hr/hr_curso';
 
 @Injectable({
   providedIn: 'root',
@@ -14,13 +16,13 @@ export class TurnoService {
 
   constructor(private http: HttpClient) {}
 
-  getTurnos(params: any): Observable<Turno[]> {
+  getTurnos(params: any): Observable<HR_Turno[]> {
     const httpParams = new HttpParams({ fromObject: params });
-    return this.http.get<Turno[]>(this.apiUrl, { params: httpParams });
+    return this.http.get<HR_Turno[]>(this.apiUrl, { params: httpParams });
   }
 
-  getTurno(id: number): Observable<Turno> {
-    return this.http.get<Turno>(`${this.apiUrl}/${id}`);
+  getTurno(id: number): Observable<HR_Turno> {
+    return this.http.get<HR_Turno>(`${this.apiUrl}/${id}`);
   }
 
   getCursosPlanTurno(id: number): Observable<any> {
@@ -39,7 +41,7 @@ export class TurnoService {
     return this.http.delete(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 
-  generarCurso(curso: Curso2) {
+  generarCurso(curso: Partial<HR_Curso>) {
     return this.http.post(`${this.apiUrl}/generar/curso`, curso, {
       withCredentials: true,
     });

@@ -1,0 +1,6 @@
+/* Ellipsis de 2 líneas sin NzTypography (compatible con cualquier versión) */
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

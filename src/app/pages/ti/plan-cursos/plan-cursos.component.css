@@ -1,0 +1,27 @@
+/* Scroll horizontal sutil en tablas */
+:host ::-webkit-scrollbar {
+  height: 8px;
+}
+:host ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 999px;
+}
+:host ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+:host ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Encabezado de tabla legible y sin exceso de redondeo */
+:host ::ng-deep .ant-table-thead > tr > th {
+  background: #f8fafc !important; /* slate-50 */
+  font-weight: 600;
+  color: #334155; /* slate-700 */
+}
+
+/* Densidad un poco más compacta */
+:host ::ng-deep .ant-table-cell {
+  padding: 8px 12px !important;
+}

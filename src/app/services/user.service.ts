@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
 import { AuthService } from './auth.service';
 import { map, Observable } from 'rxjs';
-import { Modulo } from '../interfaces/Modulo';
-import { CreateUserDTO, User, Usernew } from '../interfaces/User';
+import { Modulo } from '../interfaces_2/Modulo';
+import { CreateUserDTO, User, Usernew } from '../interfaces_2/User';
 
 @Injectable({
   providedIn: 'root',

@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CreateDocente, Docente, UpdateDocente } from '../interfaces/Docente';
+import { CreateDocente, Docente, UpdateDocente } from '../interfaces_2/Docente';
+import { HR_Docente } from '../interfaces/hr/hr_docente';
 
 @Injectable({
   providedIn: 'root',
@@ -12,8 +13,8 @@ export class DocenteService {
 
   constructor(private http: HttpClient) {}
 
-  obtenerDocentes(): Observable<Docente[]> {
-    return this.http.get<Docente[]>(this.apiUrl);
+  obtenerDocentes(): Observable<HR_Docente[]> {
+    return this.http.get<HR_Docente[]>(this.apiUrl);
   }
 
   obtenerDocentesreporteria(
@@ -33,7 +34,7 @@ export class DocenteService {
     return this.http.get<Docente[]>(`${this.apiUrl}?${params.toString()}`);
   }
 
-  crearDocente(docente: CreateDocente): Observable<any> {
+  crearDocente(docente: Partial<HR_Docente>): Observable<any> {
     return this.http.post(this.apiUrl, docente, { withCredentials: true });
   }
 

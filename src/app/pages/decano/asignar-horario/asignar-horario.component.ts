@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TurnoService } from '../../../services/turno.service';
-import { Turno } from '../../../interfaces/turno';
+import { HR_Turno } from '../../../interfaces/hr/hr_turno';
 
 @Component({
   selector: 'app-asignar-horario',
@@ -11,7 +11,7 @@ import { Turno } from '../../../interfaces/turno';
 })
 export class AsignarHorarioComponent implements OnInit {
   turno_id!: number;
-  turno!: Turno;
+  turno!: HR_Turno;
 
   constructor(
     private route: ActivatedRoute,

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { User } from '../../interfaces/User';
+import { User } from '../../interfaces_2/User';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -68,6 +68,14 @@ export class LoginComponent implements OnInit {
         this.boolLogin = true;
       },
     });
+  }
+
+  submit_2() {
+    const apiUrl = 'http://localhost:4000';
+    const returnTo = '/';
+    window.location.href = `${apiUrl}/auth/login?app=horario&returnTo=${encodeURIComponent(
+      returnTo
+    )}`;
   }
 
   togglePassword() {

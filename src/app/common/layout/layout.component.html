@@ -1,6 +1,7 @@
-<div *ngIf="alertService.loading$ | async" class="loader-overlay">
+<!-- Loader opcional -->
+<!-- <div *ngIf="alertService.loading$ | async" class="loader-overlay">
   <div class="spinner"></div>
-</div>
+</div> -->
 
 <nz-layout class="app-layout">
   <nz-sider
@@ -12,323 +13,110 @@
     [nzTrigger]="null"
   >
     <div class="sidebar-logo">
-      <a href="/welcome">
-        <img src="assets/img/logo-uma.png" alt="logo" />
-        <h1>Gestion de Horarios</h1>
+      <a class="logo-link" routerLink="/welcome" aria-label="Ir al dashboard">
+        <img src="assets/img/logo-uma.png" alt="logo UMA" />
+        <h1>Gestión de Horarios</h1>
       </a>
     </div>
-    @if (permisosMap) {
+
+    <!-- ===== MENÚ (solo módulo HR) desde IamMenuService ===== -->
     <ul
       nz-menu
       nzTheme="dark"
       nzMode="inline"
       [nzInlineCollapsed]="isCollapsed"
     >
-      <!-- "nzOpen" para abrir la opcion -->
-      <li
-        nz-submenu
-        nzTitle="Dashboard"
-        nzIcon="dashboard"
-        [nzOpen]="selectedMenu === 'dashboard'"
-      >
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/welcome">Dashboard</a>
-          </li>
-        </ul>
-      </li>
+      <ng-container *ngFor="let mod of modules; trackBy: trackByKey">
+        <ng-container *ngIf="mod?.key === 'HR'">
+          <li
+            nz-submenu
+            *ngFor="let g of mod.groups || []; trackBy: trackByKey"
+            [nzTitle]="g.label"
+            [nzOpen]="isGroupOpen(g)"
+          >
+            <ng-template #groupIconTpl>
+              <!-- Si algún día agregas ícono por grupo, puedes mapearlo aquí -->
+              <span nz-icon nzType="appstore" nzTheme="outline"></span>
+            </ng-template>
 
-      <li
-        nz-submenu
-        nzTitle="Gestion de Usuario"
-        nzIcon="usergroup-add"
-        [nzOpen]="selectedMenu === 'admin'"
-        *ngIf="hasPermiso('1.1') || hasPermiso('1.2')"
-      >
-        <ul>
-          <li
-            nz-menu-item
-            *ngIf="hasPermiso('1.1')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'admin' && item === 'usuario'
-            "
-          >
-            <a routerLink="/admin/usuario">Listar Usuario</a>
-          </li>
-          <li
-            nz-menu-item
-            *ngIf="hasPermiso('1.2')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'admin' && item === 'permiso'
-            "
-          >
-            <a routerLink="/admin/permiso">Permisos de usuarios</a>
-          </li>
-        </ul>
-      </li>
-
-      <li
-        nz-submenu
-        nzTitle="COA"
-        nzIcon="usergroup-add"
-        [nzOpen]="selectedMenu === 'coa'"
-        *ngIf="
-          hasPermiso('2.1') ||
-          hasPermiso('2.2') ||
-          hasPermiso('2.3') ||
-          hasPermiso('2.4') ||
-          hasPermiso('2.5') ||
-          hasPermiso('2.6')
-        "
-      >
-        <ul>
-          <li
-            nz-menu-item
-            *ngIf="hasPermiso('2.1')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'coa' && item === 'turno'
-            "
-          >
-            <a routerLink="/coa/turno">Asignar Horarios</a>
-          </li>
-          <li
-            nz-menu-item
-            *ngIf="hasPermiso('2.2')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'coa' && item === 'docente'
-            "
-          >
-            <a routerLink="/coa/docente">Reporte docente</a>
-          </li>
-          <li
-            nz-menu-item
-            *ngIf="hasPermiso('2.3')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'coa' && item === 'aula'
-            "
-          >
-            <a routerLink="/coa/aula">Reporte Aula</a>
-          </li>
-          <li
-            nz-menu-item
-            *ngIf="hasPermiso('2.4')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'coa' && item === 'transversal'
-            "
-          >
-            <a routerLink="/coa/transversal">Definir cursos transversales</a>
-          </li>
-          <li
-            nz-menu-item
-            *ngIf="hasPermiso('2.5')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'coa' && item === 'agrupar'
-            "
-          >
-            <a routerLink="/coa/agrupar">Definir cursos agrupados</a>
-          </li>
-          <li
-            nz-menu-item
-            *ngIf="hasPermiso('2.6')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'coa' && item === 'periodo'
-            "
-          >
-            <a routerLink="/coa/periodo">Agregar Periodo</a>
-          </li>
-        </ul>
-      </li>
-
-      <li
-        nz-submenu
-        nzTitle="Director"
-        nzIcon="user"
-        [nzOpen]="selectedMenu === 'director'"
-        *ngIf="hasPermiso('3.1')"
-      >
-        <ul>
-          <li
-            nz-menu-item
-            nzMatchRouter
-            *ngIf="hasPermiso('3.1')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'director' && item === 'turno'
-            "
-          >
-            <a routerLink="/director/turno">Asignar Horario</a>
-          </li>
-        </ul>
-        <ul>
-          <li
-            nz-menu-item
-            nzMatchRouter
-            *ngIf="hasPermiso('3.2')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'director' && item === 'docente'
-            "
-          >
-            <a routerLink="/director/docente">Reporte docente</a>
-          </li>
-        </ul>
-      </li>
-
-      <li
-        nz-submenu
-        nzTitle="Docente"
-        nzIcon="user"
-        [nzOpen]="selectedMenu === 'docente'"
-        *ngIf="hasPermiso('4.1')"
-      >
-        <ul>
-          <li
-            nz-menu-item
-            nzMatchRouter
-            *ngIf="hasPermiso('4.1')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'docente' && item === 'marcar'
-            "
-          >
-            <a routerLink="/docente/marcar">Marcar asistencia</a>
-          </li>
-        </ul>
-        <ul>
-          <li
-            nz-menu-item
-            nzMatchRouter
-            *ngIf="hasPermiso('4.2')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'docente' && item === 'ver-asistencia'
-            "
-          >
-            <a routerLink="/docente/ver-asistencia">Ver asistencia</a>
-          </li>
-        </ul>
-      </li>
-
-      <li
-        nz-submenu
-        nzTitle="Ti"
-        nzIcon="user"
-        [nzOpen]="selectedMenu === 'ti'"
-        *ngIf="hasPermiso('4.1')"
-      >
-        <ul>
-          <li
-            nz-menu-item
-            nzMatchRouter
-            *ngIf="hasPermiso('4.1')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'docente' && item === 'marcar'
-            "
-          >
-            <a routerLink="/ti/docente">Reporte docente</a>
-          </li>
-          <li
-            nz-menu-item
-            nzMatchRouter
-            *ngIf="hasPermiso('4.1')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'docente' && item === 'marcar'
-            "
-          >
-            <a routerLink="/ti/plan/curso">Curso Plan</a>
-          </li>
-          <li
-            nz-menu-item
-            nzMatchRouter
-            *ngIf="hasPermiso('4.1')"
-            [class.ant-menu-item-selected]="
-              selectedMenu === 'docente' && item === 'marcar'
-            "
-          >
-            <a routerLink="/ti/turno">Ver turno</a>
-          </li>
-        </ul>
-      </li>
-    </ul>
-
-    }
-  </nz-sider>
-  <nz-layout>
-    <nav class="bg-gray-800">
-      <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-        <div class="relative flex h-16 items-center justify-between">
-          <div
-            class="flex flex-1 items-center sm:items-stretch sm:justify-start"
-          >
-            <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
-              <nz-tag
-                class="trigger"
-                nz-icon
-                [nzColor]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
-              >
-              </nz-tag>
-            </span>
-          </div>
-          <div
-            class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0"
-          >
-            <!-- Profile dropdown -->
-            <div class="relative ml-3">
-              <div>
-                <button
-                  type="button"
-                  class="relative flex items-center justify-center size-8 rounded-full bg-white text-slate-700 text-sm shadow-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
-                  id="user-menu-button"
-                  aria-expanded="false"
-                  aria-haspopup="true"
-                  (click)="toggleMenu()"
-                >
-                  <!-- Zona de interacción -->
-                  <span class="absolute -inset-1.5"></span>
-                  <span class="sr-only">Abrir menú de usuario</span>
-
-                  <!-- Icono de usuario FontAwesome -->
-                  <i class="fa-solid fa-user text-[16px]"></i>
-                </button>
-              </div>
-
-              <!-- Mostrar/Ocultar el menú con *ngIf -->
-              <div
-                *ngIf="isMenuOpen"
-                class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 ring-1 shadow-lg ring-black/5 focus:outline-hidden menu-dropdown"
-                role="menu"
-                aria-orientation="vertical"
-                aria-labelledby="user-menu-button"
-                tabindex="-1"
+            <ul>
+              <li
+                nz-menu-item
+                *ngFor="let it of g.children || []; trackBy: trackByKey"
+                [class.ant-menu-item-selected]="isItemActive(it)"
               >
                 <a
-                  class="block px-4 py-2 text-sm text-gray-700"
-                  role="menuitem"
-                  tabindex="-1"
-                  id="user-menu-item-2"
-                  (click)="logout()"
-                  >Cerrar seción
+                  [routerLink]="it.path || it.key"
+                  class="menu-link"
+                  [attr.aria-current]="isItemActive(it) ? 'page' : null"
+                >
+                  <span class="menu-icon">
+                    <span nz-icon nzTheme="outline"></span>
+                  </span>
+                  <span class="menu-text">{{ it.label }}</span>
                 </a>
-              </div>
+              </li>
+            </ul>
+          </li>
+        </ng-container>
+      </ng-container>
+    </ul>
+    <!-- =============================================== -->
+  </nz-sider>
+
+  <nz-layout>
+    <!-- Topbar -->
+    <nav class="topbar">
+      <div class="topbar-inner">
+        <div class="left">
+          <button
+            class="header-trigger-btn"
+            (click)="isCollapsed = !isCollapsed"
+            aria-label="Alternar menú lateral"
+          >
+            <span
+              nz-icon
+              [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
+              nzTheme="outline"
+            ></span>
+          </button>
+        </div>
+
+        <div class="right">
+          <div class="user-wrap">
+            <button
+              type="button"
+              id="user-menu-button"
+              class="user-btn"
+              aria-haspopup="true"
+              [attr.aria-expanded]="isMenuOpen"
+              (click)="toggleMenu()"
+            >
+              <i class="fa-solid fa-user"></i>
+              <span class="sr-only">Abrir menú de usuario</span>
+            </button>
+
+            <div
+              *ngIf="isMenuOpen"
+              class="menu-dropdown"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="user-menu-button"
+              tabindex="-1"
+            >
+              <a class="dropdown-item" (click)="logout()" role="menuitem"
+                >Cerrar sesión</a
+              >
             </div>
           </div>
         </div>
       </div>
     </nav>
+
     <nz-content>
       <div class="inner-content">
         <router-outlet></router-outlet>
       </div>
     </nz-content>
-    <!-- Footer -->
-    <!-- <nz-footer
-      class="footer bg-{#f0f2f5} text-red-600 text-center pb-2 pt-0 font-bold text-[15px]"
-    >
-      © {{ currentYear }} Developed by -
-      <a
-        href="https://github.com/VictorSinche?tab=repositories"
-        rel=""
-        target="_blank"
-        title="Codepen aji"
-        class="text-blue-900 hover:text-blue-900"
-        >Team TI.</a
-      >
-    </nz-footer> -->
   </nz-layout>
 </nz-layout>

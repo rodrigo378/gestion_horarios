@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { PlanCurso } from '../../../interfaces/Plan';
+import { PlanCurso } from '../../../interfaces_2/Plan';
 import { AlertService } from '../../../services/alert.service';
 import { PlanCursoService } from '../../../services/plan-curso.service';
 import { HttpErrorResponse } from '@angular/common/http';

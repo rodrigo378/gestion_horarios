@@ -4,8 +4,8 @@ import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { format, toZonedTime } from 'date-fns-tz';
 import { Router } from '@angular/router';
-import { AulaExtendido } from '../../../interfaces/Aula';
 import { AulaService } from '../../../services/aula.service';
+import { HR_Aula } from '../../../interfaces/hr/hr_aula';
 
 @Component({
   selector: 'app-reporteria-aula',
@@ -16,9 +16,16 @@ import { AulaService } from '../../../services/aula.service';
 export class ReporteriaAulaComponent implements OnInit {
   itemsPorPagina = 10;
   paginaActual = 1;
-  usuariosFiltrados: AulaExtendido[] = []; // Se inicializa correctamente
-  aula: AulaExtendido[] = [];
+  usuariosFiltrados: HR_Aula[] = [];
+  aula: HR_Aula[] = [];
   filtroBusqueda: string = '';
+
+  /** único expandido activo (id del aula) */
+  expandedAulaId: number | null = null;
+
+  // Ordenamiento
+  sortColumn: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
 
   constructor(
     private location: Location,
@@ -48,10 +55,7 @@ export class ReporteriaAulaComponent implements OnInit {
   cargarAula() {
     this.aulaService.getAula().subscribe({
       next: (data: any[]) => {
-        this.aula = data.map((aula) => ({
-          ...aula,
-          expanded: false,
-        }));
+        this.aula = data; // 👈 ya no agregamos propiedad expanded
         this.usuariosFiltrados = [...this.aula];
       },
       error: (error) => {
@@ -60,12 +64,13 @@ export class ReporteriaAulaComponent implements OnInit {
     });
   }
 
+  /** Exportar a Excel */
   exportarExcel(): void {
     const zonaHoraria = 'America/Lima';
     const rows: any[] = [];
 
     this.usuariosFiltrados.forEach((aula) => {
-      const horarios = aula.Horario || [];
+      const horarios = aula.horarios || [];
 
       horarios.forEach((h, index) => {
         const horaInicio = h.h_inicio
@@ -88,12 +93,11 @@ export class ReporteriaAulaComponent implements OnInit {
           'Hora Fin': horaFin,
           'Nro Horas': h.n_horas,
           Tipo: h.tipo,
-          Curso: h.curso?.c_nomcur || '',
-          Docente: h.Docente?.c_nomdoc || 'No asignado',
+          Curso: h.curso?.plan?.c_nomcur || '',
+          Docente: h.docente?.c_nomdoc || 'No asignado',
         });
       });
 
-      // Si no tiene horarios, aún exportamos la info del aula
       if (horarios.length === 0) {
         rows.push({
           Aula: aula.c_codaula,
@@ -134,35 +138,30 @@ export class ReporteriaAulaComponent implements OnInit {
     );
   }
 
+  // Paginación
   siguientePagina() {
-    if (this.paginaActual < this.totalPaginas) {
-      this.paginaActual++;
-    }
+    if (this.paginaActual < this.totalPaginas) this.paginaActual++;
   }
-
   anteriorPagina() {
-    if (this.paginaActual > 1) {
-      this.paginaActual--;
-    }
+    if (this.paginaActual > 1) this.paginaActual--;
   }
-
   get totalPaginas() {
     return Math.ceil(this.usuariosFiltrados.length / this.itemsPorPagina);
   }
-
   get usuariosPaginados() {
     const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
     return this.usuariosFiltrados.slice(inicio, inicio + this.itemsPorPagina);
+  }
+  cambiarItemsPorPagina(valor: number) {
+    this.itemsPorPagina = valor;
+    this.paginaActual = 1;
   }
 
   cancel() {
     this.location.back();
   }
 
-  toggleExpand(aula: AulaExtendido) {
-    aula.expanded = !aula.expanded;
-  }
-
+  // Filtro por texto
   filtrarUsuarios() {
     const filtro = this.filtroBusqueda.toLowerCase();
 
@@ -191,16 +190,12 @@ export class ReporteriaAulaComponent implements OnInit {
         (aula.c_obs ? aula.c_obs.toLowerCase().includes(filtro) : false)
       );
     });
+
+    // mantener coherencia de paginación
+    this.paginaActual = 1;
   }
 
-  cambiarItemsPorPagina(valor: number) {
-    this.itemsPorPagina = valor;
-    this.paginaActual = 1; // Reinicia a la primera página
-  }
-
-  sortColumn: string = '';
-  sortDirection: 'asc' | 'desc' = 'asc';
-
+  // Ordenamiento
   sortBy(column: string) {
     if (this.sortColumn === column) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
@@ -208,14 +203,19 @@ export class ReporteriaAulaComponent implements OnInit {
       this.sortColumn = column;
       this.sortDirection = 'asc';
     }
-
     this.sortData();
   }
 
   sortData() {
+    if (!this.sortColumn) return;
+
     this.usuariosFiltrados.sort((a, b) => {
       const valA = (a as any)[this.sortColumn];
       const valB = (b as any)[this.sortColumn];
+
+      if (valA == null && valB == null) return 0;
+      if (valA == null) return this.sortDirection === 'asc' ? -1 : 1;
+      if (valB == null) return this.sortDirection === 'asc' ? 1 : -1;
 
       if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
       if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
@@ -225,17 +225,21 @@ export class ReporteriaAulaComponent implements OnInit {
 
   getSortIconClass(column: string): string {
     if (this.sortColumn !== column) return '';
-
     return this.sortDirection === 'asc' ? 'rotate-180' : '';
+  }
+
+  // Expandible (único)
+  toggleExpandById(id: number) {
+    this.expandedAulaId = this.expandedAulaId === id ? null : id;
+  }
+  isExpanded(id: number): boolean {
+    return this.expandedAulaId === id;
   }
 
   verCalendarioAula(id: number) {
     const url = this.router
-      .createUrlTree(['/coa/calendario_aula'], {
-        queryParams: { id },
-      })
+      .createUrlTree(['/coa/calendario_aula'], { queryParams: { id } })
       .toString();
-
     window.open(url, '_blank');
   }
 }

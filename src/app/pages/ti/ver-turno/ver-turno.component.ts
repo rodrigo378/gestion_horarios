@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
-import { AlertService } from '../../../services/alert.service';
-import { CursoService } from '../../../services/curso.service';
 import { TurnoService } from '../../../services/turno.service';
-import { Turno } from '../../../interfaces/turno';
 import { HttpErrorResponse } from '@angular/common/http';
+import { HR_Turno } from '../../../interfaces/hr/hr_turno';
 
 @Component({
   selector: 'app-ver-turno',
@@ -12,23 +10,60 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './ver-turno.component.css',
 })
 export class VerTurnoComponent {
-  editCache: { [key: string]: { edit: boolean; data: Turno } } = {};
-  listOfData: Turno[] = [];
+  editCache: { [key: string]: { edit: boolean; data: HR_Turno } } = {};
+  listOfData: HR_Turno[] = [];
   searchValue: string = '';
-  datosFiltrados: Turno[] = [];
+  datosFiltrados: HR_Turno[] = [];
 
   pageSize = 10;
   pageIndex = 1;
   checked = false;
   indeterminate = false;
-  listOfCurrentPageData: readonly Turno[] = [];
+  listOfCurrentPageData: readonly HR_Turno[] = [];
   setOfCheckedId = new Set<number>();
 
-  especialidades: any = [];
+  especialidades: { nomesp: string; codesp: string; codfac: string }[] = [
+    {
+      nomesp: 'ADMINISTRACIÓN DE NEGOCIOS INTERNACIONALES',
+      codesp: 'E1',
+      codfac: 'E',
+    },
+    { nomesp: 'ADMINISTRACIÓN Y MARKETING', codesp: 'E2', codfac: 'E' },
+    { nomesp: 'CONTABILIDAD Y FINANZAS', codesp: 'E3', codfac: 'E' },
+    {
+      nomesp: 'ADMINISTRACIÓN Y NEGOCIOS INTERNACIONALES',
+      codesp: 'E4',
+      codfac: 'E',
+    },
+    { nomesp: 'INGENIERÍA INDUSTRIAL', codesp: 'E5', codfac: 'E' },
+    {
+      nomesp: 'INGENIERÍA DE INTELIGENCIA ARTIFICIAL',
+      codesp: 'E6',
+      codfac: 'E',
+    },
+    { nomesp: 'INGENIERÍA DE SISTEMAS', codesp: 'E7', codfac: 'E' },
+    { nomesp: 'ADMINISTRACIÓN DE EMPRESAS', codesp: 'E8', codfac: 'E' },
+    { nomesp: 'DERECHO', codesp: 'E9', codfac: 'E' },
+    { nomesp: 'ENFERMERÍA', codesp: 'S1', codfac: 'S' },
+    { nomesp: 'FARMACIA Y BIOQUÍMICA', codesp: 'S2', codfac: 'S' },
+    { nomesp: 'NUTRICIÓN Y DIETÉTICA', codesp: 'S3', codfac: 'S' },
+    { nomesp: 'PSICOLOGÍA', codesp: 'S4', codfac: 'S' },
+    {
+      nomesp: 'TEC. MÉDICA EN TERAPIA FÍSICA Y REHABILITACIÓN',
+      codesp: 'S5',
+      codfac: 'S',
+    },
+    {
+      nomesp: 'TEC. MÉDICA EN LAB. CLÍNICO Y ANATOMÍA PATOLÓGICA',
+      codesp: 'S6',
+      codfac: 'S',
+    },
+    { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
+  ];
   especialidadesFiltradas: any = [];
 
   filtros = {
-    n_codper: '20242',
+    n_codper: '20252',
     c_codfac: '',
     c_codesp: '',
     c_codmod: '',
@@ -40,87 +75,81 @@ export class VerTurnoComponent {
   listOfColumn = [
     {
       title: 'Periodo',
-      compare: (a: Turno, b: Turno) => a.n_codper - b.n_codper,
+      compare: (a: HR_Turno, b: HR_Turno) => a.n_codper - b.n_codper,
       priority: false,
       nzWidth: 'auto',
     },
     {
       title: 'Plan',
-      compare: (a: Turno, b: Turno) => a.n_codpla - b.n_codpla,
+      compare: (a: HR_Turno, b: HR_Turno) => a.n_codpla - b.n_codpla,
       priority: false,
       nzWidth: 'auto',
     },
     {
       title: 'Facultad',
-      compare: (a: Turno, b: Turno) => a.c_codfac.localeCompare(b.c_codfac),
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.c_codfac.localeCompare(b.c_codfac),
       priority: 3,
       nzWidth: 'auto',
     },
     {
       title: 'Especialidad',
-      compare: (a: Turno, b: Turno) => a.c_codesp.localeCompare(b.c_codesp),
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.c_codesp.localeCompare(b.c_codesp),
       priority: 2,
       nzWidth: 'auto',
     },
     {
       title: 'Seccion',
-      compare: (a: Turno, b: Turno) => a.c_grpcur.localeCompare(b.c_grpcur),
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.c_grpcur.localeCompare(b.c_grpcur),
       priority: 1,
       nzWidth: 'auto',
     },
     {
       title: 'Ciclo',
-      compare: (a: Turno, b: Turno) => a.n_ciclo - b.n_ciclo,
+      compare: (a: HR_Turno, b: HR_Turno) => a.n_ciclo - b.n_ciclo,
       priority: 1,
       nzWidth: 'auto',
     },
     {
       title: 'Modalidad',
-      compare: (a: Turno, b: Turno) => a.c_nommod.localeCompare(b.c_nommod),
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.c_nommod.localeCompare(b.c_nommod),
       priority: 1,
       nzWidth: '10%',
     },
     {
       title: 'Estado',
-      compare: (a: Turno, b: Turno) => a.estado - b.estado,
+      compare: (a: HR_Turno, b: HR_Turno) => a.estado - b.estado,
       priority: 1,
       nzWidth: '10%',
     },
     {
       title: 'Bloqueado',
-      compare: (a: Turno, b: Turno) => a.estado - b.estado,
+      compare: (a: HR_Turno, b: HR_Turno) => a.estado - b.estado,
       priority: 1,
       nzWidth: '10%',
     },
     {
       title: 'Accion',
-      compare: (a: Turno, b: Turno) => a.c_nommod.localeCompare(b.c_nommod),
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.c_nommod.localeCompare(b.c_nommod),
       priority: 1,
       nzWidth: 'auto',
     },
   ];
 
-  constructor(
-    private turnoService: TurnoService,
-    private siguService: CursoService,
-    private alertService: AlertService
-  ) {}
+  constructor(private turnoService: TurnoService) {}
 
   ngOnInit(): void {
-    this.getEspecialidades();
     this.getTurnos();
     this.updateEditCache();
   }
 
-  getEspecialidades() {
-    this.siguService.getEspecialidades().subscribe((data) => {
-      this.especialidades = data;
-    });
-  }
-
   onPageSizeChange(size: number): void {
     this.pageSize = size;
-    this.pageIndex = 1; // opcional: vuelve a la primera página
+    this.pageIndex = 1;
   }
 
   getTurnos() {
@@ -254,7 +283,7 @@ export class VerTurnoComponent {
       });
   }
 
-  onCurrentPageDataChange($event: readonly Turno[]): void {
+  onCurrentPageDataChange($event: readonly HR_Turno[]): void {
     this.listOfCurrentPageData = $event;
     this.refreshCheckedStatus();
   }

@@ -1,10 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit, effect } from '@angular/core';
 import { TurnoService } from '../../../services/turno.service';
-import { CursoService } from '../../../services/curso.service';
-import { AlertService } from '../../../services/alert.service';
-import { Turno } from '../../../interfaces/turno';
-import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthContextService } from '../../../services/auth-context.service';
+import { HR_Turno } from '../../../interfaces/hr/hr_turno';
 
 @Component({
   selector: 'app-ver-turnos',
@@ -13,23 +11,86 @@ import { Router } from '@angular/router';
   styleUrl: './ver-turnos.component.css',
 })
 export class VerTurnosComponent implements OnInit {
-  editCache: { [key: string]: { edit: boolean; data: Turno } } = {};
-  listOfData: Turno[] = [];
+  private ctx = inject(AuthContextService);
+
+  get isLoaded() {
+    return this.ctx.isLoaded();
+  }
+  get isAuthenticated() {
+    return this.ctx.isAuthenticated();
+  }
+  get user() {
+    return this.ctx.userConfig()?.user;
+  }
+  get hrModule() {
+    return this.ctx.hr();
+  }
+  get hrRole() {
+    return this.ctx.hrRole();
+  }
+  get hrEspecialidades() {
+    return this.ctx.hrConfig()?.especialidades as string[] | undefined;
+  }
+
+  editCache: { [key: string]: { edit: boolean; data: HR_Turno } } = {};
+  listOfData: HR_Turno[] = [];
   searchValue: string = '';
-  datosFiltrados: Turno[] = [];
+  datosFiltrados: HR_Turno[] = [];
 
   pageSize = 10;
   pageIndex = 1;
   checked = false;
   indeterminate = false;
-  listOfCurrentPageData: readonly Turno[] = [];
+  listOfCurrentPageData: readonly HR_Turno[] = [];
   setOfCheckedId = new Set<number>();
 
-  especialidades: any = [];
-  especialidadesFiltradas: any = [];
+  especialidades: { nomesp: string; codesp: string; codfac: string }[] = [
+    {
+      nomesp: 'ADMINISTRACIÓN DE NEGOCIOS INTERNACIONALES',
+      codesp: 'E1',
+      codfac: 'E',
+    },
+    { nomesp: 'ADMINISTRACIÓN Y MARKETING', codesp: 'E2', codfac: 'E' },
+    { nomesp: 'CONTABILIDAD Y FINANZAS', codesp: 'E3', codfac: 'E' },
+    {
+      nomesp: 'ADMINISTRACIÓN Y NEGOCIOS INTERNACIONALES',
+      codesp: 'E4',
+      codfac: 'E',
+    },
+    { nomesp: 'INGENIERÍA INDUSTRIAL', codesp: 'E5', codfac: 'E' },
+    {
+      nomesp: 'INGENIERÍA DE INTELIGENCIA ARTIFICIAL',
+      codesp: 'E6',
+      codfac: 'E',
+    },
+    { nomesp: 'INGENIERÍA DE SISTEMAS', codesp: 'E7', codfac: 'E' },
+    { nomesp: 'ADMINISTRACIÓN DE EMPRESAS', codesp: 'E8', codfac: 'E' },
+    { nomesp: 'DERECHO', codesp: 'E9', codfac: 'E' },
+    { nomesp: 'ENFERMERÍA', codesp: 'S1', codfac: 'S' },
+    { nomesp: 'FARMACIA Y BIOQUÍMICA', codesp: 'S2', codfac: 'S' },
+    { nomesp: 'NUTRICIÓN Y DIETÉTICA', codesp: 'S3', codfac: 'S' },
+    { nomesp: 'PSICOLOGÍA', codesp: 'S4', codfac: 'S' },
+    {
+      nomesp: 'TEC. MÉDICA EN TERAPIA FÍSICA Y REHABILITACIÓN',
+      codesp: 'S5',
+      codfac: 'S',
+    },
+    {
+      nomesp: 'TEC. MÉDICA EN LAB. CLÍNICO Y ANATOMÍA PATOLÓGICA',
+      codesp: 'S6',
+      codfac: 'S',
+    },
+    { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
+  ];
+
+  especialidadesFiltradas: {
+    nomesp: string;
+    codesp: string;
+    codfac: string;
+  }[] = [];
 
   filtros = {
-    n_codper: '20242',
+    n_codper: '20252',
     c_codfac: '',
     c_codesp: '',
     c_codmod: '',
@@ -41,90 +102,81 @@ export class VerTurnosComponent implements OnInit {
   listOfColumn = [
     {
       title: 'Periodo',
-      compare: (a: Turno, b: Turno) => a.n_codper - b.n_codper,
+      compare: (a: HR_Turno, b: HR_Turno) => a.n_codper - b.n_codper,
       priority: false,
       nzWidth: 'auto',
     },
     {
       title: 'Plan',
-      compare: (a: Turno, b: Turno) => a.n_codpla - b.n_codpla,
+      compare: (a: HR_Turno, b: HR_Turno) => a.n_codpla - b.n_codpla,
       priority: false,
       nzWidth: 'auto',
     },
     {
       title: 'Facultad',
-      compare: (a: Turno, b: Turno) => a.c_codfac.localeCompare(b.c_codfac),
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.c_codfac.localeCompare(b.c_codfac),
       priority: 3,
       nzWidth: 'auto',
     },
     {
       title: 'Especialidad',
-      compare: (a: Turno, b: Turno) => a.c_codesp.localeCompare(b.c_codesp),
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.c_codesp.localeCompare(b.c_codesp),
       priority: 2,
       nzWidth: 'auto',
     },
     {
       title: 'Seccion',
-      compare: (a: Turno, b: Turno) => a.c_grpcur.localeCompare(b.c_grpcur),
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.c_grpcur.localeCompare(b.c_grpcur),
       priority: 1,
       nzWidth: 'auto',
     },
     {
       title: 'Ciclo',
-      compare: (a: Turno, b: Turno) => a.n_ciclo - b.n_ciclo,
+      compare: (a: HR_Turno, b: HR_Turno) => a.n_ciclo - b.n_ciclo,
       priority: 1,
       nzWidth: 'auto',
     },
     {
       title: 'Modalidad',
-      compare: (a: Turno, b: Turno) => a.c_nommod.localeCompare(b.c_nommod),
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.c_nommod.localeCompare(b.c_nommod),
       priority: 1,
       nzWidth: 'auto',
     },
     {
       title: 'Estado',
-      compare: (a: Turno, b: Turno) => a.estado - b.estado,
+      compare: (a: HR_Turno, b: HR_Turno) => a.estado - b.estado,
       priority: 1,
       nzWidth: '10%',
     },
-
-    {
-      title: 'Accion',
-      compare: (a: Turno, b: Turno) => a.c_nommod.localeCompare(b.c_nommod),
-      priority: 1,
-      nzWidth: 'auto',
-    },
+    { title: 'Accion', compare: false, priority: 1, nzWidth: 'auto' },
   ];
 
-  constructor(
-    private turnoService: TurnoService,
-    private siguService: CursoService,
-    private alertService: AlertService,
-    private router: Router
-  ) {}
+  constructor(private turnoService: TurnoService, private router: Router) {
+    effect(() => {
+      const _loaded = this.isLoaded;
+      if (_loaded) this.recalcularEspecialidadesVisibles();
+    });
+  }
 
   ngOnInit(): void {
-    this.getEspecialidades();
+    this.recalcularEspecialidadesVisibles();
     this.getTurnos();
     this.updateEditCache();
   }
 
-  getEspecialidades() {
-    this.siguService.getEspecialidades().subscribe((data) => {
-      this.especialidades = data;
-    });
-  }
-
   onPageSizeChange(size: number): void {
     this.pageSize = size;
-    this.pageIndex = 1; // opcional: vuelve a la primera página
+    this.pageIndex = 1;
   }
 
   getTurnos() {
     this.turnoService.getTurnos(this.filtros).subscribe((data) => {
       this.listOfData = data;
       this.datosFiltrados = [...this.listOfData];
-
       this.updateEditCache();
     });
   }
@@ -137,35 +189,32 @@ export class VerTurnosComponent implements OnInit {
       case 'n_codper':
         this.filtros.n_codper = valor;
         this.getTurnos();
-        console.log(this.filtros);
         break;
+
       case 'facultad':
         this.filtros.c_codfac = valor;
-        this.especialidadesFiltradas = this.especialidades.filter(
-          (item: any) => item.codfac === this.filtros.c_codfac
-        );
+        this.recalcularEspecialidadesVisibles();
         this.getTurnos();
-        console.log(this.filtros);
         break;
+
       case 'especialidad':
         this.filtros.c_codesp = valor;
         this.getTurnos();
-        console.log(this.filtros);
         break;
+
       case 'modalidad':
         this.filtros.c_codmod = valor;
         this.getTurnos();
-        console.log(this.filtros);
         break;
+
       case 'ciclo':
         this.filtros.n_ciclo = valor;
         this.getTurnos();
-        console.log(this.filtros);
         break;
+
       case 'estado':
         this.filtros.estado = valor;
         this.getTurnos();
-        console.log(this.filtros);
         break;
     }
   }
@@ -176,10 +225,7 @@ export class VerTurnosComponent implements OnInit {
 
   cancelEdit(id: number): void {
     const index = this.listOfData.findIndex((item) => item.id === id);
-    this.editCache[id] = {
-      data: { ...this.listOfData[index] },
-      edit: false,
-    };
+    this.editCache[id] = { data: { ...this.listOfData[index] }, edit: false };
   }
 
   onAllChecked(value: boolean): void {
@@ -190,11 +236,8 @@ export class VerTurnosComponent implements OnInit {
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
-    if (checked) {
-      this.setOfCheckedId.add(id);
-    } else {
-      this.setOfCheckedId.delete(id);
-    }
+    if (checked) this.setOfCheckedId.add(id);
+    else this.setOfCheckedId.delete(id);
   }
 
   refreshCheckedStatus(): void {
@@ -214,19 +257,16 @@ export class VerTurnosComponent implements OnInit {
 
   updateEditCache(): void {
     this.listOfData.forEach((item) => {
-      this.editCache[item.id] = {
-        edit: false,
-        data: { ...item },
-      };
+      this.editCache[item.id] = { edit: false, data: { ...item } };
     });
   }
 
-  onCurrentPageDataChange($event: readonly Turno[]): void {
+  onCurrentPageDataChange($event: readonly HR_Turno[]): void {
     this.listOfCurrentPageData = $event;
     this.refreshCheckedStatus();
   }
 
-  verCursos(turno: Turno) {
+  verCursos(turno: HR_Turno) {
     const currentPrefix = this.router.url.split('/')[1];
     const url = `/${currentPrefix}/asignarhorario?id=${turno.id}`;
     window.open(url, '_blank');
@@ -236,7 +276,51 @@ export class VerTurnosComponent implements OnInit {
     const url = this.router
       .createUrlTree([`/coa/asignar/${id}`], {})
       .toString();
-
     window.open(url, '_blank');
+  }
+
+  private detectFaculties(codes?: string[]): ('E' | 'S')[] {
+    if (!codes || codes.length === 0) return [];
+    const set = new Set<'E' | 'S'>();
+    for (const c of codes) {
+      const ch = c?.[0] as 'E' | 'S';
+      if (ch === 'E' || ch === 'S') set.add(ch);
+    }
+    return Array.from(set);
+  }
+
+  get showFacultad(): boolean {
+    const facs = this.detectFaculties(this.hrEspecialidades);
+    return facs.length > 1; // true si hay E y S; false si solo una de las dos
+  }
+
+  private recalcularEspecialidadesVisibles(): void {
+    const permitidas = this.hrEspecialidades;
+    const facs = this.detectFaculties(permitidas);
+
+    let base = this.especialidades;
+
+    if (Array.isArray(permitidas) && permitidas.length > 0) {
+      base = base.filter((e) => permitidas.includes(e.codesp));
+    }
+
+    if (facs.length === 1) {
+      this.filtros.c_codfac = facs[0];
+    }
+
+    if (this.filtros.c_codfac === 'E' || this.filtros.c_codfac === 'S') {
+      base = base.filter((e) => e.codfac === this.filtros.c_codfac);
+    }
+
+    this.especialidadesFiltradas = base;
+
+    if (
+      this.filtros.c_codesp &&
+      !this.especialidadesFiltradas.some(
+        (e) => e.codesp === this.filtros.c_codesp
+      )
+    ) {
+      this.filtros.c_codesp = '';
+    }
   }
 }

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { DocenteService } from '../../../services/docente.service';
-import { Docente } from '../../../interfaces/Docente';
+import { Docente } from '../../../interfaces_2/Docente';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../../services/alert.service';
+import { HR_Docente } from '../../../interfaces/hr/hr_docente';
 
 @Component({
   selector: 'app-docente',
@@ -11,51 +12,53 @@ import { AlertService } from '../../../services/alert.service';
   styleUrl: './docente.component.css',
 })
 export class DocenteComponent implements OnInit {
-  editCache: { [key: string]: { edit: boolean; data: Docente } } = {};
-  listOfData: Docente[] = [];
+  editCache: { [key: string]: { edit: boolean; data: HR_Docente } } = {};
+  listOfData: HR_Docente[] = [];
   searchValue: string = '';
-  datosFiltrados: Docente[] = [];
+  datosFiltrados: HR_Docente[] = [];
 
   listOfColumn = [
     {
       title: 'id',
       nzWidth: '20%',
-      compare: (a: Docente, b: Docente) => a.id - b.id,
+      compare: (a: HR_Docente, b: HR_Docente) => a.id - b.id,
       priority: false,
     },
     {
       title: 'dni',
-      compare: (a: Docente, b: Docente) => a.c_dnidoc.localeCompare(b.c_dnidoc),
+      compare: (a: HR_Docente, b: HR_Docente) =>
+        a.c_dnidoc.localeCompare(b.c_dnidoc),
       priority: false,
     },
     {
       title: 'Nombre',
-      compare: (a: Docente, b: Docente) => a.c_nomdoc.localeCompare(b.c_nomdoc),
+      compare: (a: HR_Docente, b: HR_Docente) =>
+        a.c_nomdoc.localeCompare(b.c_nomdoc),
       priority: 3,
     },
     {
       title: 'H. Min',
-      compare: (a: Docente, b: Docente) => a.h_min - b.h_min,
+      compare: (a: HR_Docente, b: HR_Docente) => a.h_min - b.h_min,
       priority: 2,
     },
     {
       title: 'H. Max',
-      compare: (a: Docente, b: Docente) => a.h_max - b.h_max,
+      compare: (a: HR_Docente, b: HR_Docente) => a.h_max - b.h_max,
       priority: 1,
     },
     {
       title: 'H. Asignadas',
-      compare: (a: Docente, b: Docente) => a.h_total - b.h_total,
+      compare: (a: HR_Docente, b: HR_Docente) => a.h_total - b.h_total,
       priority: 1,
     },
     {
       title: 'Tipo',
-      compare: (a: Docente, b: Docente) => a.tipo - b.tipo,
+      compare: (a: HR_Docente, b: HR_Docente) => a.tipo - b.tipo,
       priority: 1,
     },
     {
       title: 'Accion',
-      compare: (a: Docente, b: Docente) => a.tipo - b.tipo,
+      compare: (a: HR_Docente, b: HR_Docente) => a.tipo - b.tipo,
       priority: 1,
     },
   ];
@@ -104,7 +107,6 @@ export class DocenteComponent implements OnInit {
 
   saveEdit(id: number): void {
     this.alertService.iniciarSolicitud();
-    console.log('saveEdit => ', id);
     const index = this.listOfData.findIndex((item) => item.id === id);
 
     this.docenteService.updateDocente(this.editCache[id].data).subscribe({

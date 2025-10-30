@@ -12,7 +12,7 @@ const routes: Routes = [
     component: LayoutComponent,
     children: [
       { path: 'docente', component: DocenteComponent },
-      { path: 'plan/curso', component: PlanCursosComponent },
+      { path: 'plan-estudio', component: PlanCursosComponent },
       { path: 'turno', component: VerTurnoComponent },
       { path: 'generar/:turno_id', component: GenerarCursosComponent },
     ],
