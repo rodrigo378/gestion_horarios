@@ -1,218 +1,232 @@
 <!-- component -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="max-w-[100%] mx-auto">
   <div
-    class="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-sm rounded-md border border-slate-200"
+    class="relative flex flex-col w-full h-full text-slate-700 bg-transparent"
   >
-    <!-- Header -->
-    <div class="px-5 pt-5">
-      <div
-        class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
-      >
-        @if (turno) {
-        <div class="space-y-1">
-          <h3 class="text-xl font-semibold text-slate-900 tracking-tight">
-            Generar Cursos
-          </h3>
+    <!-- CONTENEDOR PRINCIPAL BLANCO -->
+    <div
+      class="bg-white rounded-2xl shadow-md ring-1 ring-slate-200/70 p-5 sm:p-6"
+    >
+      <!-- Header -->
+      <div class="px-1 pt-1">
+        <div
+          class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+        >
+          @if (turno) {
+          <div class="space-y-1">
+            <h3 class="text-2xl font-semibold text-slate-900 tracking-tight">
+              Generar Cursos
+            </h3>
 
-          <!-- Chips turno -->
-          <div class="flex flex-wrap items-center gap-2">
-            <nz-tag nzColor="blue">Periodo: {{ turno.n_codper }}</nz-tag>
-            <nz-tag nzColor="green">Plan: {{ turno.n_codpla }}</nz-tag>
-            <nz-tag nzColor="purple">{{ turno.nomesp }}</nz-tag>
-            <nz-tag nzColor="gold">{{ turno.n_ciclo }}° Ciclo</nz-tag>
-            <nz-tag nzColor="magenta">{{ turno.c_nommod }}</nz-tag>
-            <nz-tag>Sección {{ turno.c_grpcur }}</nz-tag>
+            <!-- Chips turno -->
+            <div class="flex flex-wrap items-center gap-2">
+              <nz-tag nzColor="blue">Periodo: {{ turno.n_codper }}</nz-tag>
+              <nz-tag nzColor="green">Plan: {{ turno.n_codpla }}</nz-tag>
+              <nz-tag nzColor="purple">{{ turno.nomesp }}</nz-tag>
+              <nz-tag nzColor="gold">{{ turno.n_ciclo }}° Ciclo</nz-tag>
+              <nz-tag nzColor="magenta">{{ turno.c_nommod }}</nz-tag>
+              <nz-tag>Sección {{ turno.c_grpcur }}</nz-tag>
+            </div>
+          </div>
+          }
+
+          <!-- Controles -->
+          <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+            <nz-input-group nzSearch [nzAddOnAfter]="btnBuscarTpl" class="w-72">
+              <input
+                nz-input
+                placeholder="Buscar curso o código"
+                [(ngModel)]="searchText"
+                (ngModelChange)="applyFilters()"
+                class="!h-10 rounded-xl placeholder:text-slate-400 bg-white ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500/50 transition"
+              />
+            </nz-input-group>
+            <ng-template #btnBuscarTpl>
+              <button nz-button nzType="primary" (click)="applyFilters()">
+                Buscar
+              </button>
+            </ng-template>
+
+            <nz-select
+              class="w-48 h-[40px]"
+              nzAllowClear
+              nzPlaceHolder="Estado"
+              [(ngModel)]="estadoFiltro"
+              (ngModelChange)="applyFilters()"
+            >
+              <nz-option nzLabel="Generado" nzValue="generado"></nz-option>
+              <nz-option nzLabel="Pendiente" nzValue="pendiente"></nz-option>
+            </nz-select>
+
+            <button
+              nz-button
+              nzType="default"
+              (click)="resetFilters()"
+              nz-tooltip
+              nzTooltipTitle="Limpiar filtros"
+              class="h-[40px]"
+            >
+              Limpiar
+            </button>
           </div>
         </div>
-        }
+      </div>
 
-        <!-- Controles -->
-        <div class="flex flex-wrap items-center gap-2">
-          <nz-input-group nzSearch [nzAddOnAfter]="btnBuscarTpl" class="w-72">
-            <input
-              nz-input
-              placeholder="Buscar curso o código"
-              [(ngModel)]="searchText"
-              (ngModelChange)="applyFilters()"
-            />
-          </nz-input-group>
-          <ng-template #btnBuscarTpl>
-            <button nz-button nzType="primary" (click)="applyFilters()">
-              Buscar
-            </button>
-          </ng-template>
-
-          <nz-select
-            class="w-48"
-            nzAllowClear
-            nzPlaceHolder="Estado"
-            [(ngModel)]="estadoFiltro"
-            (ngModelChange)="applyFilters()"
+      <!-- Tabla -->
+      <div class="p-5 pt-4">
+        <div
+          class="rounded-xl ring-1 ring-slate-200/70 overflow-hidden bg-white shadow-sm"
+        >
+          <nz-table
+            #basicTable
+            [nzData]="displayData"
+            [nzLoading]="loading"
+            [nzFrontPagination]="false"
+            [nzShowPagination]="false"
+            [nzScroll]="{ x: '1200px', y: '60vh' }"
+            [nzNoResult]="'Sin resultados. Ajusta tu búsqueda o filtros.'"
+            (nzQueryParams)="onQueryParamsChange($event)"
+            nzBordered
+            [nzSize]="'middle'"
+            class="!mb-0 min-w-[1200px]"
           >
-            <nz-option nzLabel="Generado" nzValue="generado"></nz-option>
-            <nz-option nzLabel="Pendiente" nzValue="pendiente"></nz-option>
-          </nz-select>
+            <thead class="sticky top-0 z-10 bg-slate-50">
+              <tr
+                class="text-center text-slate-700 text-[13px] font-semibold uppercase tracking-wide"
+              >
+                <th nzWidth="120px" class="text-center">Plan</th>
 
-          <button
-            nz-button
-            nzType="default"
-            (click)="resetFilters()"
-            nz-tooltip
-            nzTooltipTitle="Limpiar filtros"
-          >
-            Limpiar
-          </button>
+                <th
+                  nzWidth="120px"
+                  class="text-center"
+                  nzShowSort
+                  nzSortKey="c_codcur"
+                >
+                  Código
+                </th>
+
+                <th
+                  nzWidth="420px"
+                  class="text-center"
+                  nzShowSort
+                  nzSortKey="c_nomcur"
+                >
+                  Nombre del Curso
+                </th>
+
+                <th
+                  nzWidth="90px"
+                  class="text-center"
+                  nzShowSort
+                  nzSortKey="n_ciclo"
+                >
+                  Ciclo
+                </th>
+
+                <th
+                  nzWidth="110px"
+                  class="text-center"
+                  nzShowSort
+                  nzSortKey="n_ht"
+                >
+                  H. Teoría
+                </th>
+
+                <th
+                  nzWidth="120px"
+                  class="text-center"
+                  nzShowSort
+                  nzSortKey="n_hp"
+                >
+                  H. Práctica
+                </th>
+
+                <th nzWidth="120px" class="text-center">Área</th>
+                <th nzWidth="130px" class="text-center">H. UmaPlus</th>
+                <th nzWidth="120px" class="text-center">Vacantes</th>
+                <th nzWidth="140px" class="text-center">Estado</th>
+                <th nzWidth="160px" class="text-center">Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody
+              class="[&>tr:nth-child(even)]:bg-slate-50/50 text-sm text-slate-800"
+            >
+              @for (data of basicTable.data; track trackByCur($index, data)) {
+              <tr class="hover:bg-blue-50 transition-colors duration-150">
+                <td class="font-medium text-center whitespace-nowrap">
+                  {{ data.n_codper }}
+                </td>
+
+                <td class="text-center whitespace-nowrap">
+                  <code class="tabular-nums">{{ data.c_codcur }}</code>
+                </td>
+
+                <td class="text-left whitespace-normal max-w-[420px]">
+                  <span class="clamp-2">{{ data.c_nomcur }}</span>
+                </td>
+
+                <td class="text-center whitespace-nowrap">
+                  {{ data.n_ciclo }}
+                </td>
+                <td class="text-center whitespace-nowrap">{{ data.n_ht }}</td>
+                <td class="text-center whitespace-nowrap">{{ data.n_hp }}</td>
+                <td class="text-center whitespace-nowrap">{{ data.c_area }}</td>
+                <td class="text-center whitespace-nowrap">
+                  {{ data.c_curup }}
+                </td>
+
+                <td class="text-center whitespace-nowrap">
+                  {{
+                    data.cursoGenerado == null
+                      ? "— — —"
+                      : data.cursoGenerado.c_alu ?? "—"
+                  }}
+                </td>
+
+                <td class="text-center whitespace-nowrap">
+                  <nz-badge
+                    [nzStatus]="data.cursoGenerado ? 'success' : 'error'"
+                    [nzText]="data.cursoGenerado ? 'Generado' : 'Pendiente'"
+                  >
+                  </nz-badge>
+                </td>
+
+                <td class="text-center whitespace-nowrap">
+                  @if (!data.cursoGenerado) {
+                  <button
+                    nz-button
+                    nzType="primary"
+                    class="!px-3 !py-1.5 rounded"
+                    nz-tooltip
+                    nzTooltipTitle="Generar curso"
+                    (click)="showModal(data)"
+                  >
+                    <i class="fa-solid fa-plus mr-1"></i> Generar
+                  </button>
+                  } @else {
+                  <button
+                    nz-button
+                    nzDanger
+                    class="!px-3 !py-1.5 rounded"
+                    nz-popconfirm
+                    nzPopconfirmTitle="¿Borrar este curso generado?"
+                    nzPopconfirmOkText="Sí, borrar"
+                    nzPopconfirmCancelText="Cancelar"
+                    (nzOnConfirm)="eliminarCurso(data)"
+                  >
+                    <i class="fa-solid fa-trash mr-1"></i> Borrar
+                  </button>
+                  }
+                </td>
+              </tr>
+              }
+            </tbody>
+          </nz-table>
         </div>
       </div>
     </div>
-
-    <!-- Tabla -->
-    <div class="p-5">
-      <div class="rounded-md border border-slate-200 overflow-hidden">
-        <nz-table
-          #basicTable
-          [nzData]="displayData"
-          [nzLoading]="loading"
-          [nzFrontPagination]="false"
-          [nzShowPagination]="false"
-          [nzScroll]="{ x: '1200px', y: '60vh' }"
-          [nzNoResult]="'Sin resultados. Ajusta tu búsqueda o filtros.'"
-          (nzQueryParams)="onQueryParamsChange($event)"
-          nzBordered
-          [nzSize]="'middle'"
-          class="!mb-0"
-        >
-          <thead class="sticky top-0 z-10 bg-slate-100">
-            <tr
-              class="text-center text-slate-700 text-[13px] font-semibold uppercase tracking-wide"
-            >
-              <th nzWidth="120px" class="text-center">Plan</th>
-
-              <th
-                nzWidth="120px"
-                class="text-center"
-                nzShowSort
-                nzSortKey="c_codcur"
-              >
-                Código
-              </th>
-
-              <th
-                nzWidth="420px"
-                class="text-center"
-                nzShowSort
-                nzSortKey="c_nomcur"
-              >
-                Nombre del Curso
-              </th>
-
-              <th
-                nzWidth="90px"
-                class="text-center"
-                nzShowSort
-                nzSortKey="n_ciclo"
-              >
-                Ciclo
-              </th>
-
-              <th
-                nzWidth="110px"
-                class="text-center"
-                nzShowSort
-                nzSortKey="n_ht"
-              >
-                H. Teoría
-              </th>
-
-              <th
-                nzWidth="120px"
-                class="text-center"
-                nzShowSort
-                nzSortKey="n_hp"
-              >
-                H. Práctica
-              </th>
-
-              <th nzWidth="120px" class="text-center">Área</th>
-              <th nzWidth="130px" class="text-center">H. UmaPlus</th>
-              <th nzWidth="120px" class="text-center">Vacantes</th>
-              <th nzWidth="140px" class="text-center">Estado</th>
-              <th nzWidth="160px" class="text-center">Acciones</th>
-            </tr>
-          </thead>
-
-          <tbody
-            class="[&>tr:nth-child(even)]:bg-slate-50/50 text-sm text-slate-800"
-          >
-            @for (data of basicTable.data; track trackByCur($index, data)) {
-            <tr class="hover:bg-blue-50 transition-colors duration-150">
-              <td class="font-medium text-center whitespace-nowrap">
-                {{ data.n_codper }}
-              </td>
-
-              <td class="text-center whitespace-nowrap">
-                <code class="tabular-nums">{{ data.c_codcur }}</code>
-              </td>
-
-              <td class="text-left whitespace-normal max-w-[420px]">
-                <span class="clamp-2">{{ data.c_nomcur }}</span>
-              </td>
-
-              <td class="text-center whitespace-nowrap">{{ data.n_ciclo }}</td>
-              <td class="text-center whitespace-nowrap">{{ data.n_ht }}</td>
-              <td class="text-center whitespace-nowrap">{{ data.n_hp }}</td>
-              <td class="text-center whitespace-nowrap">{{ data.c_area }}</td>
-              <td class="text-center whitespace-nowrap">{{ data.c_curup }}</td>
-
-              <td class="text-center whitespace-nowrap">
-                {{
-                  data.cursoGenerado == null
-                    ? "— — —"
-                    : data.cursoGenerado.c_alu ?? "—"
-                }}
-              </td>
-
-              <td class="text-center whitespace-nowrap">
-                <nz-badge
-                  [nzStatus]="data.cursoGenerado ? 'success' : 'error'"
-                  [nzText]="data.cursoGenerado ? 'Generado' : 'Pendiente'"
-                >
-                </nz-badge>
-              </td>
-
-              <td class="text-center whitespace-nowrap">
-                @if (!data.cursoGenerado) {
-                <button
-                  nz-button
-                  nzType="primary"
-                  class="!px-3 !py-1.5 rounded"
-                  nz-tooltip
-                  nzTooltipTitle="Generar curso"
-                  (click)="showModal(data)"
-                >
-                  <i class="fa-solid fa-plus mr-1"></i> Generar
-                </button>
-                } @else {
-                <button
-                  nz-button
-                  nzDanger
-                  class="!px-3 !py-1.5 rounded"
-                  nz-popconfirm
-                  nzPopconfirmTitle="¿Borrar este curso generado?"
-                  nzPopconfirmOkText="Sí, borrar"
-                  nzPopconfirmCancelText="Cancelar"
-                  (nzOnConfirm)="eliminarCurso(data)"
-                >
-                  <i class="fa-solid fa-trash mr-1"></i> Borrar
-                </button>
-                }
-              </td>
-            </tr>
-            }
-          </tbody>
-        </nz-table>
-      </div>
-    </div>
+    <!-- /CONTENEDOR PRINCIPAL BLANCO -->
   </div>
 </div>
 
