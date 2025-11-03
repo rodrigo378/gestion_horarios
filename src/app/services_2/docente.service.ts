@@ -2,24 +2,19 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Docente, UpdateDocente } from '../interfaces_2/Docente';
 import { HR_Docente } from '../interfaces/hr/hr_docente';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DocenteService {
-  private apiUrl = `${environment.api}/hr/docente`;
+  private apiUrl = `${environment.api}/docente`;
 
   constructor(private http: HttpClient) {}
 
-  getDocentes(): Observable<HR_Docente[]> {
+  obtenerDocentes(): Observable<HR_Docente[]> {
     return this.http.get<HR_Docente[]>(this.apiUrl);
-  }
-
-  updateDocente(docente: Partial<HR_Docente>) {
-    return this.http.put(`${this.apiUrl}/${docente.id}`, docente, {
-      withCredentials: true,
-    });
   }
 
   obtenerDocentesreporteria(
@@ -28,7 +23,7 @@ export class DocenteService {
     aula: boolean,
     c_codfac?: string | null,
     c_codesp?: string | null
-  ): Observable<HR_Docente[]> {
+  ): Observable<Docente[]> {
     const params = new URLSearchParams();
     params.set('horario', String(horario));
     params.set('curso', String(curso));
@@ -36,6 +31,16 @@ export class DocenteService {
     if (c_codfac) params.set('c_codfac', c_codfac);
     if (c_codesp) params.set('c_codesp', c_codesp);
 
-    return this.http.get<HR_Docente[]>(`${this.apiUrl}?${params.toString()}`);
+    return this.http.get<Docente[]>(`${this.apiUrl}?${params.toString()}`);
+  }
+
+  crearDocente(docente: Partial<HR_Docente>): Observable<any> {
+    return this.http.post(this.apiUrl, docente, { withCredentials: true });
+  }
+
+  updateDocente(docente: UpdateDocente) {
+    return this.http.put(`${this.apiUrl}/${docente.id}`, docente, {
+      withCredentials: true,
+    });
   }
 }

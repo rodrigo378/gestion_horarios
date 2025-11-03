@@ -1,110 +1,66 @@
 <!-- component -->
 <div class="max-w-[100%] mx-auto">
+  <!-- PANEL PRINCIPAL (estándar) -->
   <div
-    class="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border"
+    class="relative flex flex-col w-full h-full text-slate-700 bg-white rounded-2xl shadow-md ring-1 ring-slate-200/70 px-8 sm:px-12 py-6 sm:py-8 bg-clip-border"
   >
-    <div
-      class="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border"
-    >
-      <!-- Fila: Título + botón -->
+    <div class="relative overflow-hidden text-slate-700 bg-white rounded-2xl">
+      <!-- Fila: Título + acciones -->
       <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2"
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5 gap-3"
       >
-        <!-- Título -->
         <div>
-          <h3 class="text-2xl font-semibold text-slate-800">
+          <h3 class="text-2xl font-semibold text-slate-900">
             Reportería Docentes
           </h3>
           <p class="text-slate-500">Reporte de todos los docentes:</p>
         </div>
 
-        <!-- Botón exportar alineado a la derecha -->
-        <div class="flex flex-wrap items-center gap-4 mb-4">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
           <button
             (click)="exportarExcel()"
-            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm font-medium shadow"
+            class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-emerald-700 transition"
           >
             📥 Exportar a Excel
           </button>
+        </div>
+      </div>
 
-          <button
-            (click)="abrirModalCrearDocente()"
-            class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
+      <!-- 🔎 Filtros (compacto, sin fondo separado) -->
+      <div class="flex flex-col sm:flex-row justify-end gap-3">
+        <!-- Buscador -->
+        <div class="w-full md:w-80">
+          <label class="text-sm font-medium text-slate-600 mb-1 block"
+            >Buscar:</label
           >
-            ➕ Agregar Docente
-          </button>
-        </div>
-      </div>
-
-      <!-- Buscador debajo -->
-      <div class="flex flex-col sm:flex-row justify-end">
-        <!-- Filtros + buscador -->
-        <div
-          class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4"
-        >
-          <!-- Select Facultad -->
-          <div class="w-full md:w-60">
-            <label class="text-sm font-medium text-slate-600 mb-1 block"
-              >Facultad:</label
+          <div class="relative h-10 w-full">
+            <div
+              class="absolute inset-y-0 right-3 flex items-center pointer-events-none"
             >
-            <select
-              [(ngModel)]="selectFacultad"
-              (change)="aplicarFiltros()"
-              class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-            >
-              <option value="">-- Todas --</option>
-              <option value="E">Ingeniería y Negocios</option>
-              <option value="S">Ciencias de la Salud</option>
-            </select>
-          </div>
-
-          <!-- Select Especialidad -->
-          <div class="w-full md:w-60">
-            <label class="text-sm font-medium text-slate-600 mb-1 block"
-              >Especialidad:</label
-            >
-            <select
-              [(ngModel)]="selectEspecialidad"
-              (change)="aplicarFiltros()"
-              class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-            >
-              <option value="">-- Todas --</option>
-              <option *ngFor="let esp of especialidades" [value]="esp.codesp">
-                {{ esp.nomesp }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Buscador -->
-          <div class="w-full md:w-72">
-            <label class="text-sm font-medium text-slate-600 mb-1 block"
-              >Buscar:</label
-            >
-            <div class="relative h-10 w-full">
-              <div
-                class="absolute inset-y-0 right-3 flex items-center pointer-events-none"
-              >
-                <i class="fa fa-search text-gray-400"></i>
-              </div>
-              <input
-                [(ngModel)]="filtroBusqueda"
-                (input)="filtrarUsuarios()"
-                class="w-full border border-gray-300 rounded px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-                placeholder="Buscar docente..."
-              />
+              <i class="fa fa-search text-slate-400"></i>
             </div>
+            <input
+              [(ngModel)]="filtroBusqueda"
+              (input)="filtrarUsuarios()"
+              class="!h-9 w-full rounded-xl px-3 py-2 pr-10 bg-white ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500/50 text-slate-700 transition"
+              placeholder="Buscar docente..."
+            />
           </div>
         </div>
       </div>
+      <!-- /Filtros -->
     </div>
+  </div>
 
-    <div class="p-0 overflow-scroll px-5">
-      <table class="w-full mt-4 text-left table-auto min-w-max">
-        <thead>
+  <!-- SECCIÓN INTERNA: TABLA (borde interno estándar) -->
+  <div class="mt-5 bg-white rounded-xl shadow-sm ring-1 ring-slate-200/70 p-6">
+    <div class="w-full overflow-x-auto rounded-xl">
+      <table class="w-full text-left table-auto min-w-max">
+        <thead class="bg-slate-50">
           <tr>
             <th
               (click)="sortBy('id')"
-              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 hover:bg-slate-100"
             >
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
@@ -112,12 +68,11 @@
                 Id
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
+                  class="w-4 h-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke-width="2"
                   stroke="currentColor"
-                  aria-hidden="true"
-                  class="w-4 h-4"
                 >
                   <path
                     stroke-linecap="round"
@@ -129,7 +84,7 @@
             </th>
             <th
               (click)="sortBy('c_nomdoc')"
-              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 hover:bg-slate-100"
             >
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
@@ -137,12 +92,11 @@
                 Docente
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
+                  class="w-4 h-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke-width="2"
                   stroke="currentColor"
-                  aria-hidden="true"
-                  class="w-4 h-4"
                 >
                   <path
                     stroke-linecap="round"
@@ -154,7 +108,7 @@
             </th>
             <th
               (click)="sortBy('h_min')"
-              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 hover:bg-slate-100"
             >
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
@@ -162,12 +116,11 @@
                 H. Mín
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
+                  class="w-4 h-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke-width="2"
                   stroke="currentColor"
-                  aria-hidden="true"
-                  class="w-4 h-4"
                 >
                   <path
                     stroke-linecap="round"
@@ -179,7 +132,7 @@
             </th>
             <th
               (click)="sortBy('h_max')"
-              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 hover:bg-slate-100"
             >
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
@@ -187,12 +140,11 @@
                 H. Max
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
+                  class="w-4 h-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke-width="2"
                   stroke="currentColor"
-                  aria-hidden="true"
-                  class="w-4 h-4"
                 >
                   <path
                     stroke-linecap="round"
@@ -204,20 +156,19 @@
             </th>
             <th
               (click)="sortBy('h_total')"
-              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 hover:bg-slate-100"
             >
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
               >
-                H. Academicas
+                H. Académicas
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
+                  class="w-4 h-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke-width="2"
                   stroke="currentColor"
-                  aria-hidden="true"
-                  class="w-4 h-4"
                 >
                   <path
                     stroke-linecap="round"
@@ -229,7 +180,7 @@
             </th>
             <th
               (click)="sortBy('tipo')"
-              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 hover:bg-slate-100"
             >
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
@@ -237,12 +188,11 @@
                 Tipo
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
+                  class="w-4 h-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke-width="2"
                   stroke="currentColor"
-                  aria-hidden="true"
-                  class="w-4 h-4"
                 >
                   <path
                     stroke-linecap="round"
@@ -254,7 +204,7 @@
             </th>
             <th
               (click)="sortBy('Horario')"
-              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
+              class="p-4 transition-colors cursor-pointer border-y border-slate-200 hover:bg-slate-100"
             >
               <p
                 class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
@@ -262,12 +212,11 @@
                 Cursos Asignados
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
+                  class="w-4 h-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke-width="2"
                   stroke="currentColor"
-                  aria-hidden="true"
-                  class="w-4 h-4"
                 >
                   <path
                     stroke-linecap="round"
@@ -277,31 +226,15 @@
                 </svg>
               </p>
             </th>
-            <th
-              class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100"
-            >
-              <p
-                class="flex items-center justify-between gap-2 font-sans text-sm font-semibold leading-none text-black"
-              >
-                <!-- Acciones
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" aria-hidden="true" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
-                            </svg> -->
-              </p>
-            </th>
+            <th class="p-4 border-y border-slate-200 bg-slate-50"></th>
           </tr>
         </thead>
+
         <tbody>
           <ng-container *ngFor="let docente of usuariosPaginados">
-            <!-- Fila principal del docente -->
-            <tr class="hover:bg-gray-100 transition duration-200">
-              <!-- Horas mín -->
-              <td class="p-4 border-b border-slate-200">
-                {{ docente.id }}
-              </td>
-              <!-- Nombre y foto -->
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="p-4 border-b border-slate-200">{{ docente.id }}</td>
+
               <td class="p-4 border-b border-slate-200">
                 <div class="flex items-center gap-3">
                   <img
@@ -317,26 +250,18 @@
                 </div>
               </td>
 
-              <!-- Horas mín -->
-              <td class="p-4 border-b border-slate-200">
-                {{ docente.h_min }}
-              </td>
+              <td class="p-4 border-b border-slate-200">{{ docente.h_min }}</td>
+              <td class="p-4 border-b border-slate-200">{{ docente.h_max }}</td>
 
-              <!-- Horas máx -->
-              <td class="p-4 border-b border-slate-200">
-                {{ docente.h_max }}
-              </td>
-
-              <!-- Total de horas -->
               <td class="p-4 border-b border-slate-200">
                 <span
                   [ngClass]="{
-                    'text-yellow-600 font-semibold':
+                    'text-yellow-700 font-semibold':
                       docente.h_total < docente.h_min,
-                    'text-green-600 font-semibold':
+                    'text-emerald-700 font-semibold':
                       docente.h_total >= docente.h_min &&
                       docente.h_total <= docente.h_max,
-                    'text-red-600 font-semibold':
+                    'text-red-700 font-semibold':
                       docente.h_total > docente.h_max
                   }"
                 >
@@ -353,14 +278,15 @@
                 </span>
               </td>
 
-              <!-- Horas máx -->
               <td class="p-4 border-b border-slate-200">
                 <span
                   [ngClass]="{
-                    'bg-blue-100 text-blue-800': docente.tipo === 0,
-                    'bg-green-100 text-green-800': docente.tipo === 1
+                    'bg-blue-100 text-blue-700 ring-blue-600/20':
+                      docente.tipo === 0,
+                    'bg-emerald-100 text-emerald-700 ring-emerald-600/20':
+                      docente.tipo === 1
                   }"
-                  class="px-3 py-1 rounded-full text-sm font-semibold"
+                  class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset"
                 >
                   {{
                     docente.tipo === 0 ? "Tiempo Completo" : "Tiempo Parcial"
@@ -368,12 +294,10 @@
                 </span>
               </td>
 
-              <!-- Nro de horarios -->
               <td class="p-4 border-b border-slate-200">
                 {{ docente.horarios!.length }} horarios
               </td>
 
-              <!-- Botón expandir -->
               <td class="p-4 border-b border-slate-200">
                 <button
                   (click)="toggleExpand(docente)"
@@ -386,97 +310,23 @@
                     {{ docente.horarios!.length }}
                   </span>
                 </button>
-                <!-- [routerLink]="['calendario_docente']" -->
-                <!-- [queryParams]="{ id: docente.id }" -->
+
                 <button
                   (click)="clickCalendarioDocente(docente.id)"
-                  class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                  class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20"
                   type="button"
                 >
                   <span
-                    class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                    class="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
                   >
                     <i class="fa-solid fa-eye text-xl"></i>
                   </span>
                 </button>
               </td>
             </tr>
-
-            <!-- Fila expandida con detalle de horarios -->
-            <!-- <tr *ngIf="docente.expanded">
-              <td
-                colspan="7"
-                class="bg-slate-50 p-4 border-t border-b border-slate-200"
-              >
-                <p
-                  class="text-base font-semibold text-slate-800 underline mb-2"
-                >
-                  🗓️ Horarios Asignados:
-                </p>
-                <div
-                  *ngFor="
-                    let grupo of getHorariosPorFacultad(docente) | keyvalue
-                  "
-                >
-
-                  <p class="text-sm font-semibold text-indigo-700 mb-1">
-                    🏛️ Facultad: {{ nombreFacultad(grupo.key) }} - Total:
-                    {{ sumarHoras(grupo.value) }} hora{{
-                      sumarHoras(grupo.value) > 1 ? "s" : ""
-                    }}
-                  </p>
-                  <ul class="space-y-1 mb-4">
-                    <li
-                      *ngFor="let h of grupo.value"
-                      class="text-sm text-slate-700 px-3 py-1 rounded border border-slate-200 bg-white shadow-sm"
-                    >
-                      <span class="font-medium text-slate-900">{{
-                        h.dia
-                      }}</span>
-                      | {{ h.h_inicio | date : "shortTime" }} -
-                      {{ h.h_fin | date : "shortTime" }} ({{ h.n_horas }} hora{{
-                        h.n_horas > 1 ? "s" : ""
-                      }}) |
-                      <span class="font-medium text-slate-900">Curso:</span>
-                      {{ h.curso.c_nomcur }} |
-                      <span class="font-medium text-slate-900">Tipo:</span>
-                      {{
-                        h.modalidad == "pre"
-                          ? "Presencial"
-                          : h.modalidad == "vir"
-                          ? "Virtual"
-                          : "Desconocido"
-                      }}
-                      |
-                      <span class="font-medium text-slate-900">Ciclo:</span>
-                      {{ h.curso.n_ciclo }}
-
-                      <ng-container *ngIf="h.curso?.cursosPadres?.length">
-                        <span
-                          [ngClass]="{
-                            'bg-[#EAB308] text-black':
-                              h.curso.cursosPadres[0].tipo === 0,
-                            'bg-[#7E22CE] text-white':
-                              h.curso.cursosPadres[0].tipo === 1
-                          }"
-                          class="ml-2 inline-block rounded-full text-xs font-semibold px-2 py-0.5"
-                        >
-                          {{
-                            h.curso.cursosPadres[0].tipo === 0
-                              ? "Transversal"
-                              : h.curso.cursosPadres[0].tipo === 1
-                              ? "Agrupado"
-                              : "Otro"
-                          }}
-                        </span>
-                      </ng-container>
-                    </li>
-                  </ul>
-                </div>
-              </td>
-            </tr> -->
           </ng-container>
         </tbody>
+
         <tr *ngIf="usuariosPaginados.length === 0">
           <td colspan="8" class="text-center text-slate-500 p-4 italic">
             No se encontraron docentes que coincidan con la búsqueda.
@@ -484,17 +334,18 @@
         </tr>
       </table>
     </div>
+
+    <!-- Paginación / controles inferiores -->
     <div
       class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-3 py-3"
     >
-      <!-- Select de cantidad por página -->
       <div class="flex items-center gap-2">
         <label for="cantidad" class="text-sm text-slate-500">Mostrar:</label>
         <select
           id="cantidad"
           [ngModel]="itemsPorPagina"
           (ngModelChange)="cambiarItemsPorPagina($event)"
-          class="rounded border border-slate-300 px-4 py-1 text-sm text-slate-700"
+          class="rounded-xl bg-white ring-1 ring-slate-200 px-4 py-1 text-sm text-slate-700 focus:ring-2 focus:ring-blue-500/50 transition"
         >
           <option [ngValue]="10">10</option>
           <option [ngValue]="20">20</option>
@@ -505,7 +356,6 @@
         </select>
       </div>
 
-      <!-- Navegación de páginas -->
       <div class="flex items-center gap-3">
         <p class="text-sm text-slate-500">
           Página {{ paginaActual }} de {{ totalPaginas }}
@@ -514,131 +364,19 @@
           <button
             (click)="anteriorPagina()"
             [disabled]="paginaActual === 1"
-            class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+            class="rounded-xl bg-white ring-1 ring-slate-200 py-2.5 px-3 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
           >
             Anterior
           </button>
           <button
             (click)="siguientePagina()"
             [disabled]="paginaActual === totalPaginas"
-            class="rounded border border-slate-300 py-2.5 px-3 text-xs font-semibold text-slate-600 transition-all hover:opacity-75 disabled:opacity-50"
+            class="rounded-xl bg-white ring-1 ring-slate-200 py-2.5 px-3 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
           >
             Siguiente
           </button>
         </div>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- Modal -->
-<div
-  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  *ngIf="mostrarModal"
->
-  <div class="bg-white rounded-2xl p-8 w-full max-w-lg shadow-xl relative">
-    <h2 class="text-2xl font-bold mb-6 text-center text-blue-800">
-      Nuevo Docente
-    </h2>
-
-    <form (ngSubmit)="crearDocente()" #formDocente="ngForm" class="grid gap-4">
-      <div>
-        <label class="block text-sm font-medium mb-1">Facultad</label>
-        <select
-          [(ngModel)]="nuevoDocente.c_codfac"
-          name="c_codfac"
-          required
-          class="w-full border rounded px-3 py-2"
-        >
-          <option value="E">INGENIERÍA Y NEGOCIOS</option>
-          <option value="S">CIENCIAS DE LA SALUD</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Nombre del Docente</label>
-        <input
-          type="text"
-          [(ngModel)]="nuevoDocente.c_nomdoc"
-          name="c_nomdoc"
-          required
-          class="w-full border rounded px-3 py-2"
-        />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">DNI</label>
-        <input
-          type="text"
-          [(ngModel)]="nuevoDocente.c_dnidoc"
-          name="c_nomdoc"
-          required
-          class="w-full border rounded px-3 py-2"
-        />
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium mb-1">Horas Mín.</label>
-          <input
-            type="number"
-            [(ngModel)]="nuevoDocente.h_min"
-            name="h_min"
-            required
-            min="1"
-            class="w-full border rounded px-3 py-2"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">Horas Máx.</label>
-          <input
-            type="number"
-            [(ngModel)]="nuevoDocente.h_max"
-            name="h_max"
-            required
-            min="1"
-            class="w-full border rounded px-3 py-2"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Tipo</label>
-        <select
-          [(ngModel)]="nuevoDocente.tipo"
-          name="tipo"
-          required
-          class="w-full border rounded px-3 py-2"
-        >
-          <option [value]="0">Tiempo Completo</option>
-          <option [value]="1">Tiempo Parcial</option>
-        </select>
-      </div>
-
-      <div class="flex justify-end mt-4 gap-2">
-        <button
-          type="button"
-          class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-          (click)="cerrarModal()"
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          [disabled]="formDocente.invalid"
-          class="px-5 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
-        >
-          Guardar
-        </button>
-      </div>
-    </form>
-
-    <!-- Botón cerrar arriba a la derecha -->
-    <button
-      (click)="cerrarModal()"
-      class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl"
-    >
-      &times;
-    </button>
   </div>
 </div>

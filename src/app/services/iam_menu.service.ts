@@ -1,6 +1,7 @@
 // src/app/services/iam-menu.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environment/environment';
 
 export interface IamMenuItem {
   key: string;
@@ -24,12 +25,12 @@ export interface IamMenuModule {
 
 @Injectable({ providedIn: 'root' })
 export class IamMenuService {
-  private readonly API = `http://localhost:4000`; // ej. http://localhost:4000
+  private readonly apiUrl = `${environment.api}`;
 
   constructor(private http: HttpClient) {}
 
   getFullMenu() {
-    return this.http.get<IamMenuModule[]>(`${this.API}/core/iam/menu`, {
+    return this.http.get<IamMenuModule[]>(`${this.apiUrl}/core/iam/menu`, {
       withCredentials: true,
     });
   }

@@ -1,8 +1,8 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Usernew } from '../../../interfaces_2/User';
-import { UserService } from '../../../services/user.service';
-import { AlertService } from '../../../services/alert.service';
+import { UserService } from '../../../services_2/user.service';
+import { AlertService } from '../../../services_2/alert.service';
 
 @Component({
   selector: 'app-listar-usuarios',

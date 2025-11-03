@@ -5,7 +5,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { CalendarOptions } from '@fullcalendar/core';
 import esLocale from '@fullcalendar/core/locales/es';
 import { ActivatedRoute } from '@angular/router';
-import { AulaService } from '../../../services/aula.service';
+import { AulaService } from '../../../services_2/aula.service';
 @Component({
   selector: 'app-calender-aula',
   standalone: false,

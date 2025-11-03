@@ -4,14 +4,12 @@ import { LayoutComponent } from '../../common/layout/layout.component';
 import { PeriodoComponent } from '../ti/periodo/periodo.component';
 import { ReporteriaComponent } from './reporteria/reporteria.component';
 import { ReporteriaAulaComponent } from './reporteria-aula/reporteria-aula.component';
-// import { VerCursosComponent } from './ver-cursos/ver-cursos.component';
-// import { AgruparCursosComponent } from './agrupar-cursos/agrupar-cursos.component';
-// import { VerTransversalComponent } from './ver-transversal/ver-transversal.component';
 import { CalenderAulaComponent } from './calender-aula/calender-aula.component';
-// import { CalenderDirectorComponent } from '../director/calender-director/calender-director.component';
 import { CalenderDocenteComponent } from './calender-docente/calender-docente.component';
 import { VerTurnosComponent } from './ver-turnos/ver-turnos.component';
 import { AsignarHorarioComponent } from './asignar-horario/asignar-horario.component';
+// import { AsignarHorarioComponent } from './asignar-horario/asignar-horario.component';
+// import { AsignarhorarioComponent } from './asignar-horario-antiguo/asignarhorario.component';
 
 const routes: Routes = [
   {
@@ -26,7 +24,10 @@ const routes: Routes = [
       // { path: 'agrupar', component: AgruparCursosComponent },
       // { path: 'transversal', component: VerTransversalComponent },
       { path: 'calendario_aula', component: CalenderAulaComponent },
+
       { path: 'asignar/:turno_id', component: AsignarHorarioComponent },
+      // { path: 'asignar/:turno_id', component: AsignarhorarioComponent },
+
       // { path: 'calender_turno', component: CalenderDirectorComponent },
       { path: 'calendario_docente', component: CalenderDocenteComponent },
     ],

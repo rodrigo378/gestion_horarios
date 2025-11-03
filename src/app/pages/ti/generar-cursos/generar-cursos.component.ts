@@ -68,23 +68,22 @@ export class GenerarCursosComponent implements OnInit {
     this.loading = true;
     forkJoin({
       plan: this.turnoService.getCursosPlanTurno(this.turno_id),
-      generados: this.turnoService.getCursosTurno(this.turno_id),
+      turno: this.turnoService.getTurno(this.turno_id),
     }).subscribe({
-      next: ({ plan, generados }) => {
-        this.cursosPlan = plan;
+      next: ({ plan, turno }) => {
+        this.turno = turno;
+        const generados: HR_Curso[] = turno?.cursos ?? [];
+
+        this.cursosPlan = plan ?? [];
         this.cursos = generados;
 
-        this.listOfData = plan.map((cursoPlan: HR_Plan_Estudio_Curso) => {
+        this.listOfData = this.cursosPlan.map((cursoPlan) => {
           const yaGenerado =
-            generados.find(
-              (c: any) => c.plan?.c_codcur === cursoPlan.c_codcur
-            ) ?? null;
-
+            generados.find((c) => c?.plan?.id === cursoPlan.id) ?? null; // <-- AQUÍ
           return { ...cursoPlan, cursoGenerado: yaGenerado };
         });
 
         this.displayData = [...this.listOfData];
-        this.applyFilters();
         this.loading = false;
       },
       error: (err) => {
@@ -199,7 +198,7 @@ export class GenerarCursosComponent implements OnInit {
 
     const newCurso: Partial<HR_Curso> = {
       turno_id: this.turno_id,
-      curso_id: Number(this.cursoSeleccionado.id),
+      plan_id: Number(this.cursoSeleccionado.id),
       c_alu: Number(this.vacantes),
     };
 

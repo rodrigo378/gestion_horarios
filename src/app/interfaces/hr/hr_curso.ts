@@ -7,7 +7,7 @@ export interface HR_Curso {
   id: number;
   c_alu?: number | null;
 
-  curso_id: number;
+  plan_id: number;
   plan?: HR_Plan_Estudio_Curso;
 
   turno_id: number;

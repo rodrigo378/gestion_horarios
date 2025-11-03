@@ -8,17 +8,16 @@
 // import { ActivatedRoute, Router } from '@angular/router';
 // import tippy from 'tippy.js';
 // import { FullCalendarComponent } from '@fullcalendar/angular';
-// import { Turno } from '../../../interfaces/turno';
-// import { Curso } from '../../../interfaces/Curso';
-// import { Aula } from '../../../interfaces/Aula';
-// import { Docente } from '../../../interfaces/Docente';
 // import { AlertService } from '../../../services/alert.service';
 // import { HorarioService } from '../../../services/horario.service';
 // import { CursoService } from '../../../services/curso.service';
 // import { TurnoService } from '../../../services/turno.service';
 // import { DocenteService } from '../../../services/docente.service';
 // import { AulaService } from '../../../services/aula.service';
-// import { HorarioExtendido } from '../../../interfaces/Horario';
+// import { HR_Turno } from '../../../interfaces/hr/hr_turno';
+// import { HR_Curso } from '../../../interfaces/hr/hr_curso';
+// import { HR_Aula } from '../../../interfaces/hr/hr_aula';
+// import { HR_Docente } from '../../../interfaces/hr/hr_docente';
 
 // @Component({
 //   selector: 'app-asignarhorario',
@@ -36,8 +35,8 @@
 //   fechaDrop: Date | null = null;
 //   //para traer cursos y data
 //   turnoId!: number;
-//   turnoData?: Turno;
-//   cursos: Curso[] = [];
+//   turnoData?: HR_Turno;
+//   cursos: HR_Curso[] = [];
 //   //idparaeventocruzetem
 //   ultimoEventoIdTemporal: string | null = null;
 //   //para el nuvo html-modal
@@ -46,11 +45,11 @@
 //   docenteSeleccionado: number | null = null;
 //   diaSeleccionado: string = '';
 //   horaInicio: string = '';
-//   aulas: Aula[] = [];
-//   docentes: Docente[] = [];
+//   aulas: HR_Aula[] = [];
+//   docentes: HR_Docente[] = [];
 //   //para separa los cursos por planes
-//   cursosPlan2023: Curso[] = [];
-//   cursosPlan2025: Curso[] = [];
+//   cursosPlan2023: HR_Curso[] = [];
+//   cursosPlan2025: HR_Curso[] = [];
 //   //detruir y contruir calender
 //   mostrarCalendario: boolean = true;
 //   //nro vacamtes
@@ -64,15 +63,15 @@
 //   nom_facultad: string[] = [];
 //   selectedFacultad: string = '';
 
-//   docentesFiltrados: Docente[] = [];
-//   selectedDocente: Docente | null = null;
+//   docentesFiltrados: HR_Docente[] = [];
+//   selectedDocente: HR_Docente | null = null;
 //   // para guardar datos temporales
 //   originalStart: Date | null = null;
 //   originalEnd: Date | null = null;
 //   eventoMovido: any = null;
 //   //paginato calender
 //   paginaActual: 'calendar' | 'async' = 'calendar';
-//   cursosAsyncDesdeAPI: Curso[] = [];
+//   cursosAsyncDesdeAPI: HR_Curso[] = [];
 //   //loader
 //   cargandoCursos: boolean = true;
 //   guardandoHorarios: boolean = false;
@@ -168,29 +167,30 @@
 //   }
 
 //   private calcularHorasRestantesPorCurso(
-//     cursos: Curso[],
+//     cursos: HR_Curso[],
 //     horasAsignadas: Record<string, { teoria: number; practica: number }>
 //   ): {
-//     cursos: Curso[];
-//     cursosPlan2023: Curso[];
-//     cursosPlan2025: Curso[];
+//     cursos: HR_Curso[];
+//     cursosPlan2023: HR_Curso[];
+//     cursosPlan2025: HR_Curso[];
 //   } {
-//     const cursosResult: Curso[] = [];
-//     const plan2023: Curso[] = [];
-//     const plan2025: Curso[] = [];
+//     const cursosResult: HR_Curso[] = [];
+//     const plan2023: HR_Curso[] = [];
+//     const plan2025: HR_Curso[] = [];
 
 //     cursos.forEach((curso) => {
-//       const codCur = curso.c_codcur;
+//       // const codCur = curso.c_codcur;
+//       const codCur = curso.plan!.c_codcur;
 //       const asignado = horasAsignadas[codCur] || { teoria: 0, practica: 0 };
 
 //       // Si HT > 0: aplicar h_umaPlus
-//       if (curso.n_ht && curso.n_ht > 0) {
-//         const h_uma = curso.h_umaPlus ?? 0;
-//         const htReal = curso.n_ht - h_uma;
+//       if (curso.plan!.n_ht && curso.plan!.n_ht > 0) {
+//         const h_uma = curso.plan!.c_curup ?? 0;
+//         const htReal = curso.plan!.n_ht - h_uma;
 
 //         const horasRestantes = htReal - asignado.teoria;
 
-//         const cursoTeoria: Curso = {
+//         const cursoTeoria: HR_Curso = {
 //           ...curso,
 //           tipo: 'Teoría',
 //           n_ht: htReal,
@@ -2194,4 +2194,18 @@
 //     this.vacantesAula = null;
 //     this.resetCamposModal();
 //   }
+// }
+
+// {
+//     "dia": "Miércoles",
+//     "h_inicio": "2024-01-03T12:00:00.000Z",
+//     "h_fin": "2024-01-03T12:50:00.000Z",
+//     "n_horas": 1,
+//     "aula_id": 0,
+//     "docente_id": 0,
+//     "h_total": 1,
+//     "turno_id": 2392,
+//     "tipo": "Teoría",
+//     "h_umaPlus": "0",
+//     "modalidad": "pre"
 // }

@@ -4,12 +4,11 @@ import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { format, toZonedTime } from 'date-fns-tz';
 import { Router } from '@angular/router';
-
-import { Especialidad } from '../../../interfaces_2/Curso';
-import { AlertService } from '../../../services/alert.service';
-import { DocenteService } from '../../../services/docente.service';
 import { HR_Docente } from '../../../interfaces/hr/hr_docente';
 import { HR_Horario } from '../../../interfaces/hr/hr_horario';
+
+import { AlertService } from '../../../services_2/alert.service';
+import { DocenteService } from '../../../services/docente.service';
 
 @Component({
   selector: 'app-reporteria',
@@ -38,7 +37,6 @@ export class ReporteriaComponent implements OnInit {
   selectEspecialidad: string = '';
 
   filtroBusqueda: string = '';
-  especialidades: Especialidad[] = [];
 
   constructor(
     private location: Location,
@@ -84,25 +82,6 @@ export class ReporteriaComponent implements OnInit {
       this.nuevoDocente.c_codfac!
     );
 
-    this.docenteService.crearDocente(this.nuevoDocente).subscribe({
-      next: (res) => {
-        this.alertService.success('Docente creado correctamente');
-        this.cargarDocentes();
-        this.nuevoDocente = {
-          c_dnidoc: '',
-          c_codfac: 'E',
-          nom_fac: 'INGENIERÍA Y NEGOCIOS',
-          c_nomdoc: '',
-          h_min: 1,
-          h_max: 8,
-          tipo: 0,
-        };
-      },
-      error: (err) => {
-        console.error(err);
-        this.alertService.error('Error al crear docente');
-      },
-    });
     this.mostrarModal = false;
   }
 
@@ -353,7 +332,6 @@ export class ReporteriaComponent implements OnInit {
   }
 
   aplicarFiltros() {
-    this.especialidades.filter((e) => e.codfac == this.selectFacultad);
     this.cargarDocentes();
   }
 }

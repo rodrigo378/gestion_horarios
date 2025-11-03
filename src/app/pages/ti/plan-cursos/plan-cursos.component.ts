@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PlanCurso } from '../../../interfaces_2/Plan';
-import { AlertService } from '../../../services/alert.service';
-import { PlanCursoService } from '../../../services/plan-curso.service';
+import { AlertService } from '../../../services_2/alert.service';
+import { PlanCursoService } from '../../../services_2/plan-curso.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({

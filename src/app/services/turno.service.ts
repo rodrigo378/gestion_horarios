@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Periodo, Turno } from '../interfaces_2/turno';
+import { Observable } from 'rxjs';
 import { environment } from '../../environment/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Curso2 } from '../interfaces_2/Curso';
 import { HR_Turno } from '../interfaces/hr/hr_turno';
 import { HR_Curso } from '../interfaces/hr/hr_curso';
 
@@ -11,8 +9,7 @@ import { HR_Curso } from '../interfaces/hr/hr_curso';
   providedIn: 'root',
 })
 export class TurnoService {
-  private apiUrl = `${environment.api}/turno`;
-  private apiUrlget = `${environment.api}`;
+  private apiUrl = `${environment.api}/hr/turno`;
 
   constructor(private http: HttpClient) {}
 
@@ -29,44 +26,10 @@ export class TurnoService {
     return this.http.get<any>(`${this.apiUrl}/plan/cursos/${id}`);
   }
 
-  getCursosTurno(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/cursos/${id}`);
-  }
-
-  createTurno(turno: Turno) {
-    return this.http.post(this.apiUrl, turno, { withCredentials: true });
-  }
-
-  deleteTurno(id: number) {
-    return this.http.delete(`${this.apiUrl}/${id}`, { withCredentials: true });
-  }
-
   generarCurso(curso: Partial<HR_Curso>) {
     return this.http.post(`${this.apiUrl}/generar/curso`, curso, {
       withCredentials: true,
     });
-  }
-
-  actualizarEstado(id: number, estado: number) {
-    return this.http.put(
-      `${this.apiUrl}/${id}`,
-      { estado },
-      { withCredentials: true }
-    );
-  }
-
-  private estadoActualizado = new BehaviorSubject<number | null>(null);
-
-  emitirCambioEstado(turnoId: number) {
-    this.estadoActualizado.next(turnoId), { withCredentials: true };
-  }
-
-  onCambioEstado() {
-    return this.estadoActualizado.asObservable();
-  }
-
-  getPeriodos(): Observable<Periodo[]> {
-    return this.http.get<Periodo[]>(`${this.apiUrlget}/periodo`);
   }
 
   bloquearTurnos(turnos_id: number[]) {

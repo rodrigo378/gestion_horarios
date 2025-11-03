@@ -6,8 +6,8 @@ import { HR_Turno } from './hr_turno';
 export interface HR_Horario {
   id: number;
   dia?: string | null;
-  h_inicio?: Date | null;
-  h_fin?: Date | null;
+  h_inicio?: string | null;
+  h_fin?: string | null;
   n_horas: number;
   c_color?: string | null;
   tipo: string;

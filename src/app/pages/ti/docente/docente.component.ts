@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { DocenteService } from '../../../services/docente.service';
-import { Docente } from '../../../interfaces_2/Docente';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AlertService } from '../../../services/alert.service';
 import { HR_Docente } from '../../../interfaces/hr/hr_docente';
+import { AlertService } from '../../../services_2/alert.service';
+import { DocenteService } from '../../../services/docente.service';
 
 @Component({
   selector: 'app-docente',
@@ -16,6 +15,7 @@ export class DocenteComponent implements OnInit {
   listOfData: HR_Docente[] = [];
   searchValue: string = '';
   datosFiltrados: HR_Docente[] = [];
+  selectedFacultadFilter: '' | 'S' | 'E' = '';
 
   listOfColumn = [
     {
@@ -34,6 +34,12 @@ export class DocenteComponent implements OnInit {
       title: 'Nombre',
       compare: (a: HR_Docente, b: HR_Docente) =>
         a.c_nomdoc.localeCompare(b.c_nomdoc),
+      priority: 3,
+    },
+    {
+      title: 'Facultad',
+      compare: (a: HR_Docente, b: HR_Docente) =>
+        a.c_codfac.localeCompare(b.c_codfac),
       priority: 3,
     },
     {
@@ -76,21 +82,37 @@ export class DocenteComponent implements OnInit {
   }
 
   getDocente() {
-    this.docenteService.obtenerDocentes().subscribe((data) => {
+    this.docenteService.getDocentes().subscribe((data) => {
       this.listOfData = data;
       this.datosFiltrados = [...this.listOfData];
-
       this.updateEditCache();
+      this.aplicarFiltros();
     });
   }
 
   buscar(): void {
-    const filtro = this.searchValue.trim().toLowerCase();
-    this.datosFiltrados = this.listOfData.filter(
-      (item) =>
-        item.c_nomdoc.toLowerCase().includes(filtro) ||
-        item.c_dnidoc.includes(filtro)
-    );
+    this.aplicarFiltros();
+  }
+
+  onChangeFacultad(value: '' | 'S' | 'E') {
+    this.selectedFacultadFilter = value;
+    this.aplicarFiltros();
+  }
+
+  private aplicarFiltros() {
+    const filtroTxt = (this.searchValue ?? '').trim().toLowerCase();
+    const fac = this.selectedFacultadFilter;
+
+    this.datosFiltrados = this.listOfData.filter((item) => {
+      const matchTexto =
+        !filtroTxt ||
+        item.c_nomdoc.toLowerCase().includes(filtroTxt) ||
+        item.c_dnidoc.includes(filtroTxt);
+
+      const matchFac = !fac || item.c_codfac === fac;
+
+      return matchTexto && matchFac;
+    });
   }
 
   startEdit(id: number): void {

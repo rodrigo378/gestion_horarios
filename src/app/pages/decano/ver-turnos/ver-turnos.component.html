@@ -1,27 +1,27 @@
 <!-- component -->
 <div class="max-w-[100%] mx-auto">
+  <!-- PANEL PRINCIPAL -->
   <div
     class="relative flex flex-col w-full h-full text-slate-700 bg-white rounded-2xl shadow-md ring-1 ring-slate-200/70 px-8 sm:px-12 py-6 sm:py-8 bg-clip-border"
   >
     <div class="relative overflow-hidden text-slate-700 bg-white rounded-2xl">
+      <!-- Header -->
       <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2"
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5 gap-3"
       >
         <div>
           <h3 class="text-2xl font-semibold text-slate-900">Lista Turno</h3>
           <p class="text-slate-500">Lista de todos los turnos:</p>
         </div>
-
-        <div class="flex flex-wrap items-center gap-4 mb-4">
-          <!-- (botones comentados, se mantienen igual) -->
+        <div class="flex flex-wrap items-center gap-4">
+          <!-- acciones opcionales -->
         </div>
       </div>
 
-      <!-- Buscador debajo -->
+      <!-- Filtros (estilo unificado) -->
       <div
-        class="flex flex-col sm:flex-row justify-between items-center gap-4 p-2"
+        class="flex flex-col sm:flex-row justify-between items-center gap-4 p-3 bg-slate-50/60 rounded-xl ring-1 ring-slate-200/70"
       >
-        <!-- Filtros a la izquierda -->
         <div class="flex flex-wrap gap-2 items-center">
           <nz-select
             [(ngModel)]="filtros.n_codper"
@@ -78,7 +78,7 @@
           >
             <nz-option nzValue="" nzLabel="Ciclo"></nz-option>
             <nz-option
-              *ngFor="let i of [3, 4, 5, 6, 7, 8, 9, 10]"
+              *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
               [nzValue]="i"
               [nzLabel]="i"
             ></nz-option>
@@ -97,83 +97,117 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- tabla -->
+  <!-- TABLA -->
+  <div class="mt-5 bg-white rounded-xl shadow-sm ring-1 ring-slate-200/70 p-6">
+    <div class="w-full overflow-x-auto rounded-xl">
+      <div class="min-w-[1000px]">
+        <nz-table
+          #sortTable
+          [nzData]="turnosPaginados"
+          nzTableLayout="fixed"
+          [nzFrontPagination]="false"
+        >
+          <thead class="bg-slate-50">
+            <tr>
+              @for (column of listOfColumn; track column) {
+              <th
+                class="text-slate-900 font-semibold"
+                [nzWidth]="column.nzWidth"
+                [nzSortFn]="column.compare"
+                [nzSortPriority]="column.priority"
+              >
+                {{ column.title }}
+              </th>
+              }
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-100">
+            @for (data of sortTable.data; track data) {
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="text-slate-700">{{ data.n_codper }}</td>
+              <td class="text-slate-700">{{ data.n_codpla }}</td>
+              <td class="text-slate-700">{{ data.c_codfac }}</td>
+              <td class="text-slate-700">{{ data.c_codesp }}</td>
+              <td class="text-slate-700">{{ data.c_grpcur }}</td>
+              <td class="text-slate-700">{{ data.n_ciclo }}</td>
+              <td class="text-slate-700">{{ data.c_nommod }}</td>
+              <td>
+                <span
+                  [ngClass]="{
+                    'text-green-900 bg-green-500/20': data.estado === 2,
+                    'text-yellow-700 bg-yellow-500/20': data.estado === 1,
+                    'text-slate-600 bg-slate-200/60': data.estado === 0
+                  }"
+                  class="px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-sm"
+                >
+                  {{
+                    data.estado === 2
+                      ? "asignado"
+                      : data.estado === 0
+                      ? "no asignado"
+                      : "pendiente"
+                  }}
+                </span>
+              </td>
+              <td>
+                <button
+                  type="button"
+                  (click)="clickAsignarHorario(data.id)"
+                  class="text-slate-700 hover:text-slate-900 transition-colors"
+                  title="Asignar horario"
+                >
+                  <i class="fa-solid fa-calendar-days fa-2x"></i>
+                </button>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </nz-table>
+      </div>
+    </div>
+
+    <!-- Paginación personalizada -->
     <div
-      class="mt-4 bg-white rounded-xl shadow-sm ring-1 ring-slate-200/70 p-6"
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-3 py-3"
     >
-      <nz-table
-        #editRowTable
-        #sortTable
-        [nzData]="datosFiltrados"
-        [nzPageSize]="pageSize"
-        [nzPageIndex]="pageIndex"
-        [nzTotal]="datosFiltrados.length"
-        (nzPageSizeChange)="onPageSizeChange($event)"
-        [nzShowSizeChanger]="true"
-        nzTableLayout="fixed"
-        (nzCurrentPageDataChange)="listOfCurrentPageData = $event"
-        [nzPageSizeOptions]="[5, 10, 20, 50, total]"
-        [nzShowSizeChanger]="true"
-      >
-        <thead class="bg-slate-50">
-          <tr>
-            @for (column of listOfColumn; track column) {
-            <th
-              class="text-slate-900 font-semibold"
-              [nzWidth]="column.nzWidth"
-              [nzSortFn]="column.compare"
-              [nzSortPriority]="column.priority"
-            >
-              {{ column.title }}
-            </th>
-            }
-          </tr>
-        </thead>
-        <tbody>
-          @for (data of editRowTable.data; track data) {
-          <tr class="hover:bg-slate-50 transition-colors">
-            @if (!editCache[data.id].edit) {
-            <td class="text-slate-700">{{ data.n_codper }}</td>
-            <td class="text-slate-700">{{ data.n_codpla }}</td>
-            <td class="text-slate-700">{{ data.c_codfac }}</td>
-            <td class="text-slate-700">{{ data.c_codesp }}</td>
-            <td class="text-slate-700">{{ data.c_grpcur }}</td>
-            <td class="text-slate-700">{{ data.n_ciclo }}</td>
-            <td class="text-slate-700">{{ data.c_nommod }}</td>
-            <td>
-              <span
-                [ngClass]="{
-                  'text-green-900 bg-green-500/20': data.estado === 2,
-                  'text-yellow-700 bg-yellow-500/20': data.estado === 1,
-                  'text-slate-600 bg-slate-200/60': data.estado === 0
-                }"
-                class="px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-sm"
-              >
-                {{
-                  data.estado === 2
-                    ? "asignado"
-                    : data.estado === 0
-                    ? "no asignado"
-                    : "pendiente"
-                }}
-              </span>
-            </td>
+      <div class="flex items-center gap-2">
+        <label for="cantidad" class="text-sm text-slate-500">Mostrar:</label>
+        <select
+          id="cantidad"
+          [ngModel]="itemsPorPagina"
+          (ngModelChange)="cambiarItemsPorPagina($event)"
+          class="rounded-xl bg-white ring-1 ring-slate-200 px-4 py-1 text-sm text-slate-700 focus:ring-2 focus:ring-blue-500/50 transition"
+        >
+          <option *ngFor="let opt of opcionesPagina" [ngValue]="opt">
+            {{ opt }}
+          </option>
+        </select>
+      </div>
 
-            <td>
-              <button
-                type="button"
-                (click)="clickAsignarHorario(data.id)"
-                class="text-slate-700 hover:text-slate-900 transition-colors"
-              >
-                <i class="fa-solid fa-calendar-days fa-2x"></i>
-              </button>
-            </td>
-            }
-          </tr>
-          }
-        </tbody>
-      </nz-table>
+      <div class="flex items-center gap-3">
+        <p class="text-sm text-slate-500">
+          Página {{ paginaActual }} de {{ totalPaginas }}
+        </p>
+        <div class="flex gap-1">
+          <button
+            (click)="anteriorPagina()"
+            [disabled]="paginaActual === 1"
+            class="rounded-xl bg-white ring-1 ring-slate-200 py-2.5 px-3 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          <button
+            (click)="siguientePagina()"
+            [disabled]="paginaActual === totalPaginas"
+            class="rounded-xl bg-white ring-1 ring-slate-200 py-2.5 px-3 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

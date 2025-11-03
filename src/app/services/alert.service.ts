@@ -1,108 +1,210 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AlertService {
-  private loadingSubject = new BehaviorSubject<boolean>(false);
-  public loading$ = this.loadingSubject.asObservable();
-
   constructor() {}
 
-  // Llama cuando comienza una solicitud
-  iniciarSolicitud(): void {
-    this.loadingSubject.next(true);
-  }
-
-  // Llama cuando termina una solicitud
-  finalizarSolicitud(): void {
-    this.loadingSubject.next(false);
-  }
-
-  // ✅ Alerta de éxito
-  success(message: string, title: string = '¡Éxito!') {
+  // success(message: string = 'Se actualizó'): void {
+  //   Swal.fire({
+  //     toast: true,
+  //     position: 'top-end',
+  //     icon: 'success',
+  //     title: message,
+  //     showConfirmButton: false,
+  //     timer: 2000,
+  //     timerProgressBar: true,
+  //   });
+  // }
+  // ==========================
+  // 🔄 GUARDADO DE HORARIOS
+  // ==========================
+  showSaving(): void {
     Swal.fire({
-      title: title,
-      text: message,
+      title: 'Guardando horarios...',
+      html: `<div style="font-size:15px;color:#4b5563;">Por favor, espera mientras se procesan los cambios.</div>`,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => Swal.showLoading(),
+      backdrop: true,
+    });
+  }
+
+  saveSuccess(): void {
+    Swal.fire({
       icon: 'success',
-      confirmButtonText: 'OK',
+      title: '¡Horarios guardados!',
+      text: 'Los horarios fueron registrados correctamente.',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#16a34a',
     });
   }
 
-  // ⚠️ Alerta de advertencia con retorno de promesa
-  warning(message: string, title: string = 'Campos obligatorios') {
-    return Swal.fire({
-      title: title,
-      html: `<div style="text-align: left;">
-                <ul style="padding-left: 20px; text-align: left; font-size: 20px;">
-                  ${message
-                    .split('\n')
-                    .map((item) => `<li>${item}</li>`)
-                    .join('')}
-                </ul>
-              </div>`,
-      icon: 'warning',
-      confirmButtonText: 'OK',
-      width: '450px',
-    });
-  }
-
-  // ⚠️ Alerta de erroralerta
-  errorwarning(message: string, title: string = 'Oops...!') {
+  saveError(): void {
     Swal.fire({
-      title: title,
-      text: message,
-      icon: 'warning',
-      confirmButtonText: 'OK',
-    });
-  }
-
-  // ❌ Alerta de error
-  error(message: string, title: string = 'Oops...!') {
-    Swal.fire({
-      title: title,
-      text: message,
       icon: 'error',
-      confirmButtonText: 'OK',
+      title: 'Error al guardar',
+      text: 'Ocurrió un error al intentar guardar los horarios. Intenta nuevamente.',
+      confirmButtonText: 'Reintentar',
+      confirmButtonColor: '#dc2626',
     });
   }
 
-  // ❓ Alerta de confirmación con botón de cancelar
-  confirm(
-    message: string,
-    title: string = 'Confirmar acción'
-  ): Promise<boolean> {
+  // ==========================
+  // ❌ ELIMINAR TODOS
+  // ==========================
+  confirmDeleteAll(): Promise<boolean> {
     return Swal.fire({
-      title: title,
-      text: message,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, continuar',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => result.isConfirmed);
-  }
-
-  info(message: string): void {
-    Swal.fire('ℹ️ Información', message, 'info');
-  }
-
-  confirmConConflictos(htmlErrores: string): Promise<boolean> {
-    return Swal.fire({
-      title: '⚠️ ¡Conflictos detectados!',
-      html: `<div style="text-align:left; font-size:15px;">
-                <p>Se encontraron los siguientes conflictos:</p>
-                <ul style="padding-left: 20px; margin-top:10px;">${htmlErrores}</ul>
-                <p style="margin-top:20px;">Por favor asigna los horarios en otro momento sin conflictos.</p>
-            </div>`,
+      title: '¿Eliminar todos los horarios?',
+      html: `<p style="font-size:15px;">Esta acción eliminará <b>todos los horarios del turno</b> y no se podrá deshacer.</p>`,
       icon: 'warning',
-      confirmButtonText: 'Entendido',
-      showCancelButton: false,
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#d33', // rojo
-      cancelButtonColor: '#3085d6',
-      width: '600px',
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      backdrop: true,
     }).then((result) => result.isConfirmed);
+  }
+
+  deletingAll(): void {
+    Swal.fire({
+      title: 'Eliminando horarios...',
+      html: `<div style="font-size:15px;color:#4b5563;">Por favor espera mientras se eliminan los horarios asignados.</div>`,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => Swal.showLoading(),
+    });
+  }
+
+  deleteAllSuccess(): void {
+    Swal.fire({
+      icon: 'success',
+      title: 'Horarios eliminados',
+      text: 'Todos los horarios del turno fueron eliminados correctamente.',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#16a34a',
+    });
+  }
+
+  deleteAllError(): void {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al eliminar',
+      text: 'No se pudieron eliminar los horarios. Intenta nuevamente.',
+      confirmButtonText: 'Reintentar',
+      confirmButtonColor: '#dc2626',
+    });
+  }
+
+  // ==========================
+  // 🗑️ ELIMINAR UNO
+  // ==========================
+  confirmDeleteOne(): Promise<boolean> {
+    return Swal.fire({
+      title: '¿Eliminar horario?',
+      html: `<p style="font-size:15px;">Este horario será <b>eliminado permanentemente</b> y no se podrá recuperar.</p>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      backdrop: true,
+    }).then((result) => result.isConfirmed);
+  }
+
+  deletingOne(): void {
+    Swal.fire({
+      title: 'Eliminando horario...',
+      html: `<div style="font-size:15px;color:#4b5563;">Por favor espera mientras se elimina el horario seleccionado.</div>`,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => Swal.showLoading(),
+    });
+  }
+
+  deleteOneSuccess(): void {
+    Swal.fire({
+      icon: 'success',
+      title: 'Horario eliminado',
+      text: 'El horario fue eliminado correctamente.',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#16a34a',
+    });
+  }
+
+  deleteOneError(): void {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al eliminar',
+      text: 'No se pudo eliminar el horario. Intenta nuevamente.',
+      confirmButtonText: 'Reintentar',
+      confirmButtonColor: '#dc2626',
+    });
+  }
+
+  // ==========================
+  // ✏️ ACTUALIZAR
+  // ==========================
+  updateSuccess(): void {
+    Swal.fire({
+      icon: 'success',
+      title: 'Horario actualizado',
+      text: 'El horario fue modificado correctamente.',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#16a34a',
+    });
+  }
+
+  updateError(): void {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al actualizar',
+      text: 'Ocurrió un error al intentar actualizar el horario.',
+      confirmButtonText: 'Reintentar',
+      confirmButtonColor: '#dc2626',
+    });
+  }
+
+  // ==========================
+  // 🚫 SALIDA DURANTE GUARDADO
+  // ==========================
+  confirmLeaveWhileSaving(): Promise<boolean> {
+    return Swal.fire({
+      title: 'Guardado en progreso',
+      text: 'Aún se están guardando cambios. ¿Deseas salir de todos modos?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Salir de todos modos',
+      cancelButtonText: 'Esperar',
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+    }).then((result) => result.isConfirmed);
+  }
+
+  // ==========================
+  // 🔄 CIERRE GLOBAL
+  // ==========================
+  close(): void {
+    Swal.close();
+  }
+  // ==========================
+  // ⚠️ ADVERTENCIAS (MODAL)
+  // ==========================
+  warn(
+    title: string = 'Atención',
+    text: string = 'Revisa la información ingresada.'
+  ): void {
+    Swal.fire({
+      icon: 'warning',
+      title,
+      text,
+      confirmButtonText: 'Entendido',
+      confirmButtonColor: '#f59e0b', // amarillo
+      backdrop: true,
+    });
   }
 }

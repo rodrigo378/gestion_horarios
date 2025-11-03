@@ -1,10 +1,10 @@
 import { Aula } from '../../../interfaces_2/Aula';
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { UserService } from '../../../services/user.service';
-import { AulaService } from '../../../services/aula.service';
-import { AlertService } from '../../../services/alert.service';
-import { AsistenciaService } from '../../../services/asistencia.service';
+import { UserService } from '../../../services_2/user.service';
+import { AulaService } from '../../../services_2/aula.service';
+import { AlertService } from '../../../services_2/alert.service';
+import { AsistenciaService } from '../../../services_2/asistencia.service';
 
 @Component({
   standalone: false,

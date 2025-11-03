@@ -2,7 +2,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import en from '@angular/common/locales/en';
 import { AppComponent } from './app.component';
 import { CommonModule, registerLocaleData } from '@angular/common';
-import { provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
 import { es_ES, provideNzI18n } from 'ng-zorro-antd/i18n';
 import { LoginComponent } from './pages/login/login.component';
 import { LayoutComponent } from './common/layout/layout.component';
@@ -25,6 +25,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { DocenteModule } from './pages/docente/docente.module';
 
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 registerLocaleData(en);
 
@@ -58,6 +59,7 @@ registerLocaleData(en);
     DocenteModule,
   ],
   providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     provideNzI18n(es_ES),
     provideAnimationsAsync(),
     provideHttpClient(),

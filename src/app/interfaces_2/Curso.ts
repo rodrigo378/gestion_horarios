@@ -60,13 +60,13 @@ export interface Curso {
   disabled?: boolean;
 }
 
-export interface Especialidad {
-  codfac: string;
-  codesp: string;
-  nomesp: string;
-  estado: number;
-  c_abrevesp: string;
-}
+// export interface Especialidad {
+//   codfac: string;
+//   codesp: string;
+//   nomesp: string;
+//   estado: number;
+//   c_abrevesp: string;
+// }
 
 //////////////////
 // export interface Curso2 {

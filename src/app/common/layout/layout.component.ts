@@ -2,7 +2,7 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
-import { AlertService } from '../../services/alert.service';
+import { AlertService } from '../../services_2/alert.service';
 import { IamMenuModule, IamMenuService } from '../../services/iam_menu.service';
 
 @Component({

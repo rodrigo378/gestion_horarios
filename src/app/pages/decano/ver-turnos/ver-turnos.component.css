@@ -1,0 +1,35 @@
+/* Scrollbar horizontal suave para tablas */
+:host ::-webkit-scrollbar {
+  height: 8px;
+}
+:host ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 999px;
+}
+:host ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+:host ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Altura/alineación de nz-select */
+:host ::ng-deep .ant-select-selector {
+  min-height: 36px !important;
+  display: flex;
+  align-items: center;
+  border-radius: 8px !important; /* menos redondeo */
+}
+
+/* Encabezado de tabla más legible */
+:host ::ng-deep .ant-table-thead > tr > th {
+  background: #f8fafc !important;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Card contenedora y tabla con menos redondeo */
+:host ::ng-deep .ant-table {
+  border-radius: 8px !important;
+}

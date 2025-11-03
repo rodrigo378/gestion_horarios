@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { AlertService } from '../../../services/alert.service';
-import { AsistenciaService } from '../../../services/asistencia.service';
-import { DocenteService } from '../../../services/docente.service';
+import { AlertService } from '../../../services_2/alert.service';
+import { AsistenciaService } from '../../../services_2/asistencia.service';
+import { DocenteService } from '../../../services_2/docente.service';
 
 @Component({
   selector: 'app-ver-asistencia',

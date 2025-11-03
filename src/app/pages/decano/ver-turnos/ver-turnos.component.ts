@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, effect } from '@angular/core';
 import { TurnoService } from '../../../services/turno.service';
 import { Router } from '@angular/router';
-import { AuthContextService } from '../../../services/auth-context.service';
+import { AuthContextService } from '../../../services_2/auth-context.service';
 import { HR_Turno } from '../../../interfaces/hr/hr_turno';
 
 @Component({
@@ -32,17 +32,30 @@ export class VerTurnosComponent implements OnInit {
     return this.ctx.hrConfig()?.especialidades as string[] | undefined;
   }
 
-  editCache: { [key: string]: { edit: boolean; data: HR_Turno } } = {};
+  // datos
   listOfData: HR_Turno[] = [];
-  searchValue: string = '';
-  datosFiltrados: HR_Turno[] = [];
+  datosFiltrados: HR_Turno[] = []; // resultado de servidor (o filtros locales si agregas)
+  turnosPaginados: HR_Turno[] = []; // slice visible en tabla
 
-  pageSize = 10;
-  pageIndex = 1;
-  checked = false;
-  indeterminate = false;
-  listOfCurrentPageData: readonly HR_Turno[] = [];
-  setOfCheckedId = new Set<number>();
+  // paginación personalizada
+  itemsPorPagina = 8;
+  paginaActual = 1;
+  totalPaginas = 1;
+  readonly opcionesPagina = [8, 10, 20, 50, 100, 150];
+
+  // (si mantienes el editCache por alguna otra razón visual)
+  editCache: { [key: string]: { edit: boolean; data: HR_Turno } } = {};
+
+  // filtros
+  filtros = {
+    n_codper: '20252',
+    c_codfac: '',
+    c_codesp: '',
+    c_codmod: '',
+    n_ciclo: '',
+    estado: '',
+    c_grpcur: '',
+  };
 
   especialidades: { nomesp: string; codesp: string; codfac: string }[] = [
     {
@@ -53,16 +66,12 @@ export class VerTurnosComponent implements OnInit {
     { nomesp: 'ADMINISTRACIÓN Y MARKETING', codesp: 'E2', codfac: 'E' },
     { nomesp: 'CONTABILIDAD Y FINANZAS', codesp: 'E3', codfac: 'E' },
     {
-      nomesp: 'ADMINISTRACIÓN Y NEGOCIOS INTERNACIONALES',
+      nomesp: 'ADMINISTRACIÓN Y NEGOS INTERNACIONALES',
       codesp: 'E4',
       codfac: 'E',
     },
     { nomesp: 'INGENIERÍA INDUSTRIAL', codesp: 'E5', codfac: 'E' },
-    {
-      nomesp: 'INGENIERÍA DE INTELIGENCIA ARTIFICIAL',
-      codesp: 'E6',
-      codfac: 'E',
-    },
+    { nomesp: 'INGENIERÍA DE IA', codesp: 'E6', codfac: 'E' },
     { nomesp: 'INGENIERÍA DE SISTEMAS', codesp: 'E7', codfac: 'E' },
     { nomesp: 'ADMINISTRACIÓN DE EMPRESAS', codesp: 'E8', codfac: 'E' },
     { nomesp: 'DERECHO', codesp: 'E9', codfac: 'E' },
@@ -70,34 +79,15 @@ export class VerTurnosComponent implements OnInit {
     { nomesp: 'FARMACIA Y BIOQUÍMICA', codesp: 'S2', codfac: 'S' },
     { nomesp: 'NUTRICIÓN Y DIETÉTICA', codesp: 'S3', codfac: 'S' },
     { nomesp: 'PSICOLOGÍA', codesp: 'S4', codfac: 'S' },
-    {
-      nomesp: 'TEC. MÉDICA EN TERAPIA FÍSICA Y REHABILITACIÓN',
-      codesp: 'S5',
-      codfac: 'S',
-    },
-    {
-      nomesp: 'TEC. MÉDICA EN LAB. CLÍNICO Y ANATOMÍA PATOLÓGICA',
-      codesp: 'S6',
-      codfac: 'S',
-    },
+    { nomesp: 'TM TERAPIA FÍSICA Y REHAB', codesp: 'S5', codfac: 'S' },
+    { nomesp: 'TM LAB. CLÍNICO Y ANAT. PAT', codesp: 'S6', codfac: 'S' },
     { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
   ];
-
   especialidadesFiltradas: {
     nomesp: string;
     codesp: string;
     codfac: string;
   }[] = [];
-
-  filtros = {
-    n_codper: '20252',
-    c_codfac: '',
-    c_codesp: '',
-    c_codmod: '',
-    n_ciclo: '',
-    estado: '',
-    c_grpcur: '',
-  };
 
   listOfColumn = [
     {
@@ -157,126 +147,49 @@ export class VerTurnosComponent implements OnInit {
 
   constructor(private turnoService: TurnoService, private router: Router) {
     effect(() => {
-      const _loaded = this.isLoaded;
-      if (_loaded) this.recalcularEspecialidadesVisibles();
+      if (this.isLoaded) this.recalcularEspecialidadesVisibles();
     });
   }
 
   ngOnInit(): void {
     this.recalcularEspecialidadesVisibles();
     this.getTurnos();
-    this.updateEditCache();
   }
 
-  onPageSizeChange(size: number): void {
-    this.pageSize = size;
-    this.pageIndex = 1;
-  }
-
+  // ====== SERVICIO / REFRESH ======
   getTurnos() {
     this.turnoService.getTurnos(this.filtros).subscribe((data) => {
       this.listOfData = data;
       this.datosFiltrados = [...this.listOfData];
       this.updateEditCache();
+      this.aplicarPaginacion(true); // reset a página 1 en cada fetch
     });
   }
-  get total(): number {
-    return this.datosFiltrados.length;
-  }
 
+  // ====== FILTROS (disparan fetch) ======
   onChangeFacultad(filtro: string, valor: string) {
     switch (filtro) {
       case 'n_codper':
         this.filtros.n_codper = valor;
-        this.getTurnos();
         break;
-
       case 'facultad':
         this.filtros.c_codfac = valor;
         this.recalcularEspecialidadesVisibles();
-        this.getTurnos();
         break;
-
       case 'especialidad':
         this.filtros.c_codesp = valor;
-        this.getTurnos();
         break;
-
       case 'modalidad':
         this.filtros.c_codmod = valor;
-        this.getTurnos();
         break;
-
       case 'ciclo':
         this.filtros.n_ciclo = valor;
-        this.getTurnos();
         break;
-
       case 'estado':
         this.filtros.estado = valor;
-        this.getTurnos();
         break;
     }
-  }
-
-  startEdit(id: number): void {
-    this.editCache[id].edit = true;
-  }
-
-  cancelEdit(id: number): void {
-    const index = this.listOfData.findIndex((item) => item.id === id);
-    this.editCache[id] = { data: { ...this.listOfData[index] }, edit: false };
-  }
-
-  onAllChecked(value: boolean): void {
-    this.listOfCurrentPageData.forEach((item) =>
-      this.updateCheckedSet(item.id, value)
-    );
-    this.refreshCheckedStatus();
-  }
-
-  updateCheckedSet(id: number, checked: boolean): void {
-    if (checked) this.setOfCheckedId.add(id);
-    else this.setOfCheckedId.delete(id);
-  }
-
-  refreshCheckedStatus(): void {
-    this.checked = this.listOfCurrentPageData.every((item) =>
-      this.setOfCheckedId.has(item.id)
-    );
-    this.indeterminate =
-      this.listOfCurrentPageData.some((item) =>
-        this.setOfCheckedId.has(item.id)
-      ) && !this.checked;
-  }
-
-  onItemChecked(id: number, checked: boolean): void {
-    this.updateCheckedSet(id, checked);
-    this.refreshCheckedStatus();
-  }
-
-  updateEditCache(): void {
-    this.listOfData.forEach((item) => {
-      this.editCache[item.id] = { edit: false, data: { ...item } };
-    });
-  }
-
-  onCurrentPageDataChange($event: readonly HR_Turno[]): void {
-    this.listOfCurrentPageData = $event;
-    this.refreshCheckedStatus();
-  }
-
-  verCursos(turno: HR_Turno) {
-    const currentPrefix = this.router.url.split('/')[1];
-    const url = `/${currentPrefix}/asignarhorario?id=${turno.id}`;
-    window.open(url, '_blank');
-  }
-
-  clickAsignarHorario(id: number) {
-    const url = this.router
-      .createUrlTree([`/coa/asignar/${id}`], {})
-      .toString();
-    window.open(url, '_blank');
+    this.getTurnos();
   }
 
   private detectFaculties(codes?: string[]): ('E' | 'S')[] {
@@ -291,23 +204,18 @@ export class VerTurnosComponent implements OnInit {
 
   get showFacultad(): boolean {
     const facs = this.detectFaculties(this.hrEspecialidades);
-    return facs.length > 1; // true si hay E y S; false si solo una de las dos
+    return facs.length > 1;
   }
 
   private recalcularEspecialidadesVisibles(): void {
     const permitidas = this.hrEspecialidades;
     const facs = this.detectFaculties(permitidas);
-
     let base = this.especialidades;
 
     if (Array.isArray(permitidas) && permitidas.length > 0) {
       base = base.filter((e) => permitidas.includes(e.codesp));
     }
-
-    if (facs.length === 1) {
-      this.filtros.c_codfac = facs[0];
-    }
-
+    if (facs.length === 1) this.filtros.c_codfac = facs[0];
     if (this.filtros.c_codfac === 'E' || this.filtros.c_codfac === 'S') {
       base = base.filter((e) => e.codfac === this.filtros.c_codfac);
     }
@@ -321,6 +229,59 @@ export class VerTurnosComponent implements OnInit {
       )
     ) {
       this.filtros.c_codesp = '';
+    }
+  }
+
+  // ====== EDIT CACHE (si lo usas para estilos) ======
+  updateEditCache(): void {
+    this.listOfData.forEach((item) => {
+      this.editCache[item.id] = { edit: false, data: { ...item } };
+    });
+  }
+
+  // ====== NAVEGACIÓN ======
+  clickAsignarHorario(id: number) {
+    const url = this.router
+      .createUrlTree([`/coa/asignar/${id}`], {})
+      .toString();
+    window.open(url, '_blank');
+  }
+
+  // ====== PAGINACIÓN PERSONALIZADA ======
+  private clampPagina(): void {
+    this.totalPaginas = Math.max(
+      1,
+      Math.ceil(this.datosFiltrados.length / this.itemsPorPagina)
+    );
+    if (this.paginaActual > this.totalPaginas)
+      this.paginaActual = this.totalPaginas;
+    if (this.paginaActual < 1) this.paginaActual = 1;
+  }
+
+  aplicarPaginacion(reset = false): void {
+    if (reset) this.paginaActual = 1;
+    this.clampPagina();
+    const ini = (this.paginaActual - 1) * this.itemsPorPagina;
+    const fin = ini + this.itemsPorPagina;
+    this.turnosPaginados = this.datosFiltrados.slice(ini, fin);
+  }
+
+  cambiarItemsPorPagina(n: number): void {
+    this.itemsPorPagina = n;
+    this.aplicarPaginacion(true); // reinicia a página 1
+  }
+
+  siguientePagina(): void {
+    if (this.paginaActual < this.totalPaginas) {
+      this.paginaActual++;
+      this.aplicarPaginacion();
+    }
+  }
+
+  anteriorPagina(): void {
+    if (this.paginaActual > 1) {
+      this.paginaActual--;
+      this.aplicarPaginacion();
     }
   }
 }

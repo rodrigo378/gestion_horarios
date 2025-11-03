@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../../services/user.service';
+import { UserService } from '../../../services_2/user.service';
 import { Modulo } from '../../../interfaces_2/Modulo';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AlertService } from '../../../services/alert.service';
+import { AlertService } from '../../../services_2/alert.service';
 
 @Component({
   selector: 'app-permisos-usuarios',

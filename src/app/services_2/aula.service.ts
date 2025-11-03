@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Aula } from '../interfaces_2/Aula';
 import { Docente } from '../interfaces_2/Docente';
@@ -9,7 +9,7 @@ import { HR_Aula } from '../interfaces/hr/hr_aula';
   providedIn: 'root',
 })
 export class AulaService {
-  private apiUrl = `${environment.api}/hr/aula`;
+  private apiUrl = `${environment.api}/aula`;
 
   constructor(private http: HttpClient) {}
 

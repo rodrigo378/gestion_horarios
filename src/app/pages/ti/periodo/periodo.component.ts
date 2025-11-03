@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { PeriodoService } from '../../../services/periodo.service';
+import { PeriodoService } from '../../../services_2/periodo.service';
 import { Periodo } from '../../../interfaces_2/turno';
-import { AlertService } from '../../../services/alert.service';
+import { AlertService } from '../../../services_2/alert.service';
 
 @Component({
   selector: 'app-periodo',
