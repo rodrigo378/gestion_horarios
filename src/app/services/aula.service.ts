@@ -13,7 +13,7 @@ export class AulaService {
 
   constructor(private http: HttpClient) {}
 
-  obtenerAulas(): Observable<Aula[]> {
+  getAulas(): Observable<Aula[]> {
     return this.http.get<Aula[]>(this.apiUrl);
   }
 

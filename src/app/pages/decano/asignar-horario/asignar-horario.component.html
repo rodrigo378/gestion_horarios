@@ -469,12 +469,12 @@
         <label class="block text-sm font-medium text-gray-700">Docente</label>
         <select
           [(ngModel)]="selectedDocente"
-          class="mt-1 block w-full p-2 border rounded border-gray-300"
+          class="w-full border border-gray-300 rounded px-3 py-2"
           [disabled]="guardando"
         >
-          <option [ngValue]="null" disabled>Selecciona un Docente</option>
-          <option *ngFor="let docente of docentesFiltrados" [ngValue]="docente">
-            {{ docente.c_nomdoc }} ({{ docente.tipo === 0 ? "TC" : "TP" }})
+          <option [ngValue]="null">-- Sin docente asignado --</option>
+          <option *ngFor="let d of docentesFiltrados" [ngValue]="d">
+            {{ d.c_nomdoc }} ({{ d.tipo === 0 ? "TC" : "TP" }})
           </option>
         </select>
       </div>
@@ -492,10 +492,7 @@
         </span>
       </div>
 
-      <div
-        *ngIf="selectedDocente && selectedFacultad"
-        class="mt-4 flex gap-4 border-gray-300"
-      >
+      <div *ngIf="selectedDocente" class="mt-4 flex gap-4 border-gray-300">
         <div class="flex flex-col">
           <label class="text-sm font-medium text-gray-700">Hora Mínima</label>
           <input

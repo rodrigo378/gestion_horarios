@@ -22,6 +22,10 @@ import esLocale from '@fullcalendar/core/locales/es';
 import { AlertService } from '../../../services/alert.service';
 import { HR_Plan_Estudio_Curso } from '../../../interfaces/hr/hr_plan_estudio_curso';
 import { HttpErrorResponse } from '@angular/common/http';
+import { DocenteService } from '../../../services/docente.service';
+import { HR_Docente } from '../../../interfaces/hr/hr_docente';
+import { AulaService } from '../../../services/aula.service';
+import { HR_Aula } from '../../../interfaces/hr/hr_aula';
 
 type FilaCursoPlan = HR_Plan_Estudio_Curso & { cursoGenerado: HR_Curso | null };
 
@@ -72,6 +76,7 @@ export class AsignarHorarioComponent
   guardandoUno = false;
 
   turno!: HR_Turno;
+  aulas: HR_Aula[] = [];
 
   cursos!: HR_Curso[];
   cursosPlan2023: CursoCard[] = [];
@@ -88,7 +93,6 @@ export class AsignarHorarioComponent
   horaInicio: string = '07:00';
   horasAsignadas: number = 1;
 
-  aulas: any[] = [];
   aulaSeleccionada: number | null = null;
 
   docentesFiltrados: any[] = [];
@@ -154,13 +158,17 @@ export class AsignarHorarioComponent
     private route: ActivatedRoute,
     private turnoService: TurnoService,
     private horarioService: HorarioService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private docenteService: DocenteService,
+    private aulaService: AulaService
   ) {}
 
   ngOnInit(): void {
     this.turno_id = Number(this.route.snapshot.paramMap.get('turno_id'));
     window.addEventListener('beforeunload', this.beforeUnloadHandler);
     this.getTurno();
+    this.getDocentes();
+    this.getAulas();
   }
 
   ngAfterViewInit(): void {
@@ -273,7 +281,16 @@ export class AsignarHorarioComponent
     this.horasAsignadas = horas50;
     this.modalidadSeleccionada = ext['modalidad'] ?? null;
     this.aulaSeleccionada = ext['aula_id'] ?? null;
-    this.selectedDocente = ext['docente_id'] ? { id: ext['docente_id'] } : null;
+    // this.selectedDocente = ext['docente_id'] ? { id: ext['docente_id'] } : null;
+    const docenteId = ext['docente_id'] ?? null;
+    if (docenteId) {
+      const docenteEncontrado = this.docentesFiltrados.find(
+        (d) => d.id === docenteId
+      );
+      this.selectedDocente = docenteEncontrado || null;
+    } else {
+      this.selectedDocente = null;
+    }
 
     this.modalHorasActivo = true;
   }
@@ -417,7 +434,16 @@ export class AsignarHorarioComponent
     this.horasAsignadas = horas50;
     this.modalidadSeleccionada = ext['modalidad'] ?? null;
     this.aulaSeleccionada = ext['aula_id'] ?? null;
-    this.selectedDocente = ext['docente_id'] ? { id: ext['docente_id'] } : null;
+    // this.selectedDocente = ext['docente_id'] ? { id: ext['docente_id'] } : null;
+    const docenteId = ext['docente_id'] ?? null;
+    if (docenteId) {
+      const docenteEncontrado = this.docentesFiltrados.find(
+        (d) => d.id === docenteId
+      );
+      this.selectedDocente = docenteEncontrado || null;
+    } else {
+      this.selectedDocente = null;
+    }
 
     this.modalHorasActivo = true;
   }
@@ -435,6 +461,20 @@ export class AsignarHorarioComponent
 
       const horarios = (data as any)?.horarios ?? [];
       this.cargarHorariosEnCalendario(horarios);
+    });
+  }
+
+  getDocentes() {
+    this.docenteService.getDocentes().subscribe((data) => {
+      this.docentesFiltrados = [...data]; // 👈 esto es clave
+      console.log('docentesFiltrados => ', this.docentesFiltrados);
+    });
+  }
+
+  getAulas() {
+    this.aulaService.getAulas().subscribe((data) => {
+      this.aulas = data;
+      console.log('aulas => ', this.aulas);
     });
   }
 
@@ -738,9 +778,6 @@ export class AsignarHorarioComponent
   }
 
   guardarEventos() {
-    if (this.guardando) return;
-    this.guardando = true;
-    this.lockUI(true);
     this.alertService.showSaving();
 
     const api = this.calendarComponent?.getApi();
@@ -837,14 +874,10 @@ export class AsignarHorarioComponent
         this.alertService.saveSuccess();
         this.limpiarCalendario();
         this.getTurno();
-        this.lockUI(false);
-        this.guardando = false;
       },
       error: () => {
         this.alertService.close();
         this.alertService.saveError();
-        this.lockUI(false);
-        this.guardando = false;
       },
     });
   }
@@ -971,7 +1004,21 @@ export class AsignarHorarioComponent
   }
 
   filtrarDocentesBusquedaGeneral() {
-    this.resultadosBusqueda = [];
+    const termino = this.busquedaDocente?.toLowerCase().trim() || '';
+
+    if (!termino) {
+      // Si no hay búsqueda, muestra todos
+      this.docentesFiltrados = this.selectedDocente;
+      this.resultadosBusqueda = [];
+      return;
+    }
+
+    // Filtra los docentes por nombre
+    this.docentesFiltrados = this.selectedDocente.filter((d: any) =>
+      d.c_nomdoc.toLowerCase().includes(termino)
+    );
+
+    this.resultadosBusqueda = this.docentesFiltrados;
   }
 
   seleccionarDocenteDesdeBusqueda(doc: any) {
@@ -1311,12 +1358,10 @@ export class AsignarHorarioComponent
     };
 
     this.lockUI(true);
-    this.alertService.showSaving();
     this.genLoading = true;
 
     this.turnoService.generarCurso(payload).subscribe({
       next: () => {
-        this.alertService.close();
         this.alertService.saveSuccess();
 
         this.turnoService.getTurno(this.turno_id).subscribe({

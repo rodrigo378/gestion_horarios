@@ -6,7 +6,6 @@ import { HR_Turno } from '../../../interfaces/hr/hr_turno';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../../services/alert.service';
-import { NzAutocompleteOptionComponent } from 'ng-zorro-antd/auto-complete';
 
 @Component({
   selector: 'app-ver-turnos',
@@ -16,6 +15,7 @@ import { NzAutocompleteOptionComponent } from 'ng-zorro-antd/auto-complete';
 })
 export class VerTurnosComponent implements OnInit {
   private ctx = inject(AuthContextService);
+  isSaving = false;
 
   get isLoaded() {
     return this.ctx.isLoaded();
@@ -35,6 +35,7 @@ export class VerTurnosComponent implements OnInit {
   get hrEspecialidades() {
     return this.ctx.hrConfig()?.especialidades as string[] | undefined;
   }
+
   listOfColumn = [
     {
       title: 'Periodo',
@@ -164,7 +165,7 @@ export class VerTurnosComponent implements OnInit {
       c_codfac: ['', Validators.required],
       c_codesp: ['', Validators.required],
       n_codper: [20261, Validators.required],
-      c_grpcur: ['', Validators.required],
+      c_grpcur: [[], Validators.required],
       n_ciclo: ['', Validators.required],
       c_codmod: ['', Validators.required],
       n_codpla: ['', Validators.required],
@@ -287,22 +288,22 @@ export class VerTurnosComponent implements OnInit {
   }
 
   // sugerencias automáticas para campo Sección
-  onInputSeccion(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const value = input.value.toUpperCase();
-    const letra = value.charAt(0);
-    this.formularioHorario.get('c_grpcur')?.setValue(value);
+  // onInputSeccion(event: Event): void {
+  //   const input = event.target as HTMLInputElement;
+  //   const value = input.value.toUpperCase();
+  //   const letra = value.charAt(0);
+  //   this.formularioHorario.get('c_grpcur')?.setValue(value);
 
-    // Solo genera sugerencias si la primera letra es válida
-    if (/^[A-Z]$/.test(letra)) {
-      this.seccionesSugeridas = Array.from(
-        { length: 9 },
-        (_, i) => `${letra}${i + 1}`
-      );
-    } else {
-      this.seccionesSugeridas = [];
-    }
-  }
+  //   // Solo genera sugerencias si la primera letra es válida
+  //   if (/^[A-Z]$/.test(letra)) {
+  //     this.seccionesSugeridas = Array.from(
+  //       { length: 9 },
+  //       (_, i) => `${letra}${i + 1}`
+  //     );
+  //   } else {
+  //     this.seccionesSugeridas = [];
+  //   }
+  // }
 
   // guardar nuevo turno
   guardarTurno() {
@@ -311,6 +312,8 @@ export class VerTurnosComponent implements OnInit {
       console.warn('Formulario incompleto');
       return;
     }
+
+    this.isSaving = true; // 👈 inicia estado de carga
 
     const form = this.formularioHorario.value;
     const nom_fac =
@@ -346,10 +349,13 @@ export class VerTurnosComponent implements OnInit {
     this.turnoService.createTurno(nuevoTurno).subscribe({
       next: () => {
         this.alertService.createTurnoSuccess();
+        this.isSaving = false; // 👈 detener loader
         this.mostrarModalCrear = false;
+        this.cerrarModalCrear(); // 👈 limpiar correctamente
         this.getTurnos();
       },
       error: (err: HttpErrorResponse) => {
+        this.isSaving = false; // 👈 detener loader también en error
         const message = err.error?.message || 'Error al crear el turno.';
         this.alertService.createTurnoError(message);
       },
@@ -409,28 +415,44 @@ export class VerTurnosComponent implements OnInit {
 
   cerrarModalCrear(): void {
     this.mostrarModalCrear = false;
+
     this.formularioHorario.reset({
       c_codfac: '',
       c_codesp: '',
-      n_codper: 20261, // tu periodo por defecto
-      c_grpcur: '',
+      n_codper: 20261,
+      c_grpcur: [], // 👈 limpiar correctamente el array
       n_ciclo: '',
       c_codmod: '',
       n_codpla: '',
     });
+
+    this.seccionesSugeridas = []; // 👈 también limpia las sugerencias
   }
 
   // Cuando el usuario selecciona una opción del autocomplete
-  onSeleccionarSeccion(event: NzAutocompleteOptionComponent): void {
-    const valor = event.nzValue;
-    this.formularioHorario.get('c_grpcur')?.setValue(valor);
-  }
+  // onSeleccionarSeccion(event: NzAutocompleteOptionComponent): void {
+  //   const valor = event.nzValue;
+  //   this.formularioHorario.get('c_grpcur')?.setValue(valor);
+  // }
 
   // Si el usuario no selecciona ninguna opción válida
-  validarSeleccionSeccion(): void {
-    const valor = this.formularioHorario.get('c_grpcur')?.value;
-    if (!this.seccionesSugeridas.includes(valor)) {
-      this.formularioHorario.get('c_grpcur')?.setValue('');
+  // validarSeleccionSeccion(): void {
+  //   const valor = this.formularioHorario.get('c_grpcur')?.value;
+  //   if (!this.seccionesSugeridas.includes(valor)) {
+  //     this.formularioHorario.get('c_grpcur')?.setValue('');
+  //   }
+  // }
+
+  onBuscarSeccion(value: string): void {
+    const letra = value.toUpperCase().charAt(0);
+
+    if (/^[A-Z]$/.test(letra)) {
+      this.seccionesSugeridas = Array.from(
+        { length: 9 },
+        (_, i) => `${letra}${i + 1}`
+      );
+    } else {
+      this.seccionesSugeridas = [];
     }
   }
 }

@@ -231,7 +231,7 @@
 
 <!-- MODAL CREAR TURNO -->
 <div
-  *ngIf="mostrarModalCrear"
+  [hidden]="!mostrarModalCrear"
   class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
 >
   <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-4xl">
@@ -318,10 +318,29 @@
         <label class="block text-sm font-medium text-gray-700 mb-1"
           >Sección</label
         >
+        <nz-select
+          formControlName="c_grpcur"
+          nzMode="multiple"
+          nzPlaceHolder="Ej. S1, C3, N2"
+          nzShowSearch
+          (nzOnSearch)="onBuscarSeccion($event)"
+          class="w-full"
+        >
+          <nz-option
+            *ngFor="let opcion of seccionesSugeridas"
+            [nzValue]="opcion"
+            [nzLabel]="opcion"
+          ></nz-option>
+        </nz-select>
+      </div>
+
+      <!-- <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Sección</label
+        >
         <input
           type="text"
           formControlName="c_grpcur"
-          nz-input
           [nzAutocomplete]="autoSeccion"
           (input)="onInputSeccion($event)"
           (blur)="validarSeleccionSeccion()"
@@ -340,7 +359,7 @@
             {{ opcion }}
           </nz-auto-option>
         </nz-autocomplete>
-      </div>
+      </div> -->
 
       <!-- Ciclo -->
       <div>
@@ -375,16 +394,16 @@
 
     <div class="mt-6 flex justify-end gap-3">
       <button
-        (click)="cerrarModalCrear()"
-        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-      >
-        Cancelar
-      </button>
-      <button
-        class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
+        class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800 flex items-center justify-center gap-2"
         (click)="guardarTurno()"
+        [disabled]="isSaving"
       >
-        Guardar
+        <ng-container *ngIf="!isSaving; else cargando"> Guardar </ng-container>
+
+        <ng-template #cargando>
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          Guardando...
+        </ng-template>
       </button>
     </div>
   </div>

@@ -7,8 +7,8 @@ import { Router } from '@angular/router';
 import { HR_Docente } from '../../../interfaces/hr/hr_docente';
 import { HR_Horario } from '../../../interfaces/hr/hr_horario';
 
-import { AlertService } from '../../../services_2/alert.service';
 import { DocenteService } from '../../../services/docente.service';
+import { AlertService } from '../../../services_2/alert.service';
 
 @Component({
   selector: 'app-reporteria',
@@ -102,20 +102,19 @@ export class ReporteriaComponent implements OnInit {
     this.mostrarModal = false;
   }
 
-  getHorariosPorFacultad(docente: HR_Docente): {
-    [key: string]: HR_Docente[];
-  } {
-    const agrupado: { [key: string]: HR_Docente[] } = {};
+  getHorariosPorFacultad(docente: HR_Docente): { [key: string]: HR_Horario[] } {
+    const agrupado: { [key: string]: HR_Horario[] } = {};
 
     if (!docente.horarios || docente.horarios.length === 0) return agrupado;
 
     docente.horarios.forEach((h) => {
-      // const codfac = h.curso?.c_codfac || 'N/A';
-      const codfac = 'N/A';
+      const codfac = h.curso?.plan?.c_codfac || docente.c_codfac || 'N/A';
+
       if (!agrupado[codfac]) {
         agrupado[codfac] = [];
       }
-      agrupado[codfac].push({ ...(h as any) });
+
+      agrupado[codfac].push(h);
     });
 
     return agrupado;
@@ -132,8 +131,8 @@ export class ReporteriaComponent implements OnInit {
     }
   }
 
-  sumarHoras(grupo: HR_Horario[]): number {
-    return grupo.reduce((acc, h) => acc + h.n_horas, 0);
+  sumarHoras(horarios: HR_Horario[]): number {
+    return horarios.reduce((acc, h) => acc + (h.n_horas || 0), 0);
   }
 
   siguientePagina() {
