@@ -19,7 +19,7 @@
       </a>
     </div>
 
-    <!-- ===== MENÚ (solo módulo HR) desde IamMenuService ===== -->
+    <!-- ===== MENÚ (módulo HR) ===== -->
     <ul
       nz-menu
       nzTheme="dark"
@@ -28,17 +28,19 @@
     >
       <ng-container *ngFor="let mod of modules; trackBy: trackByKey">
         <ng-container *ngIf="mod?.key === 'HR'">
+          <!-- Mostrar encabezado solo si el label NO es 'Gestión de Horarios' -->
+          <li class="module-header" *ngIf="mod.label !== 'Gestión de Horarios'">
+            <img [src]="mod.icono" alt="icono módulo" />
+            <span>{{ mod.label }}</span>
+          </li>
+
+          <!-- Grupos del módulo -->
           <li
             nz-submenu
             *ngFor="let g of mod.groups || []; trackBy: trackByKey"
             [nzTitle]="g.label"
             [nzOpen]="isGroupOpen(g)"
           >
-            <ng-template #groupIconTpl>
-              <!-- Si algún día agregas ícono por grupo, puedes mapearlo aquí -->
-              <span nz-icon nzType="appstore" nzTheme="outline"></span>
-            </ng-template>
-
             <ul>
               <li
                 nz-menu-item
@@ -61,7 +63,6 @@
         </ng-container>
       </ng-container>
     </ul>
-    <!-- =============================================== -->
   </nz-sider>
 
   <nz-layout>
@@ -104,9 +105,9 @@
               aria-labelledby="user-menu-button"
               tabindex="-1"
             >
-              <a class="dropdown-item" (click)="logout()" role="menuitem"
-                >Cerrar sesión</a
-              >
+              <a class="dropdown-item" (click)="logout()" role="menuitem">
+                Cerrar sesión
+              </a>
             </div>
           </div>
         </div>

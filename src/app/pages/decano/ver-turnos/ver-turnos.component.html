@@ -13,27 +13,28 @@
           <h3 class="text-2xl font-semibold text-slate-900">Lista Turno</h3>
           <p class="text-slate-500">Lista de todos los turnos:</p>
         </div>
-        <div class="flex flex-wrap items-center gap-4">
-          <!-- acciones opcionales -->
-        </div>
       </div>
 
-      <!-- Filtros (estilo unificado) -->
+      <!-- Filtros -->
       <div
         class="flex flex-col sm:flex-row justify-between items-center gap-4 p-3 bg-slate-50/60 rounded-xl ring-1 ring-slate-200/70"
       >
         <div class="flex flex-wrap gap-2 items-center">
+          <!-- Periodo -->
           <nz-select
             [(ngModel)]="filtros.n_codper"
             (ngModelChange)="onChangeFacultad('n_codper', $event)"
             class="w-auto h-[38px] rounded-xl"
           >
             <nz-option nzValue="" nzLabel="Periodo"></nz-option>
-            <nz-option nzValue="20252" nzLabel="20252"></nz-option>
-            <nz-option nzValue="20251" nzLabel="20251"></nz-option>
-            <nz-option nzValue="20242" nzLabel="20242"></nz-option>
+            <nz-option
+              *ngFor="let p of periodos"
+              [nzValue]="p.n_codper"
+              [nzLabel]="p.n_codper"
+            ></nz-option>
           </nz-select>
 
+          <!-- Facultad (solo visible si el usuario tiene más de una) -->
           <nz-select
             *ngIf="showFacultad"
             [(ngModel)]="filtros.c_codfac"
@@ -41,10 +42,11 @@
             class="w-auto h-[38px] rounded-xl"
           >
             <nz-option nzValue="" nzLabel="Facultad"></nz-option>
-            <nz-option nzValue="S" nzLabel="CIENCIAS Y SALUD"></nz-option>
-            <nz-option nzValue="E" nzLabel="INGENIERIA Y NEGOCIOS"></nz-option>
+            <nz-option nzValue="S" nzLabel="CIENCIAS DE LA SALUD"></nz-option>
+            <nz-option nzValue="E" nzLabel="INGENIERÍA Y NEGOCIOS"></nz-option>
           </nz-select>
 
+          <!-- Especialidades filtradas -->
           <nz-select
             [(ngModel)]="filtros.c_codesp"
             (ngModelChange)="onChangeFacultad('especialidad', $event)"
@@ -54,36 +56,41 @@
             @for (especialidad of especialidadesFiltradas; track
             especialidad.codesp) {
             <nz-option
-              nzValue="{{ especialidad.codesp }}"
-              nzLabel="{{ especialidad.codesp }} - {{ especialidad.nomesp }}"
+              [nzValue]="especialidad.codesp"
+              [nzLabel]="especialidad.codesp + ' - ' + especialidad.nomesp"
             ></nz-option>
             }
           </nz-select>
 
+          <!-- Modalidad -->
           <nz-select
             [(ngModel)]="filtros.c_codmod"
             (ngModelChange)="onChangeFacultad('modalidad', $event)"
             class="w-auto h-[38px] rounded-xl"
           >
             <nz-option nzValue="" nzLabel="Modalidad"></nz-option>
-            <nz-option nzValue="1" nzLabel="Presencial"></nz-option>
-            <nz-option nzValue="2" nzLabel="Semipresencial"></nz-option>
-            <nz-option nzValue="3" nzLabel="Virtual"></nz-option>
+            <nz-option
+              *ngFor="let mod of modalidades"
+              [nzValue]="mod.value"
+              [nzLabel]="mod.label"
+            ></nz-option>
           </nz-select>
 
+          <!-- Ciclo -->
           <nz-select
             [(ngModel)]="filtros.n_ciclo"
             (ngModelChange)="onChangeFacultad('ciclo', $event)"
-            class="w-auto h-[38px] rounded-xl"
+            class="w-20 h-[38px] rounded-xl"
           >
             <nz-option nzValue="" nzLabel="Ciclo"></nz-option>
             <nz-option
-              *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+              *ngFor="let i of ciclos"
               [nzValue]="i"
               [nzLabel]="i"
             ></nz-option>
           </nz-select>
 
+          <!-- Estado -->
           <nz-select
             [(ngModel)]="filtros.estado"
             (ngModelChange)="onChangeFacultad('estado', $event)"
@@ -94,6 +101,17 @@
             <nz-option nzValue="1" nzLabel="Pendiente"></nz-option>
             <nz-option nzValue="2" nzLabel="Asignado"></nz-option>
           </nz-select>
+        </div>
+
+        <!-- Botón Crear Turno -->
+        <div>
+          <button
+            (click)="mostrarModalCrear = true"
+            class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
+          >
+            <i class="fa-solid fa-plus"></i>
+            Crear Turno
+          </button>
         </div>
       </div>
     </div>
@@ -116,7 +134,6 @@
                 class="text-slate-900 font-semibold"
                 [nzWidth]="column.nzWidth"
                 [nzSortFn]="column.compare"
-                [nzSortPriority]="column.priority"
               >
                 {{ column.title }}
               </th>
@@ -169,7 +186,7 @@
       </div>
     </div>
 
-    <!-- Paginación personalizada -->
+    <!-- Paginación -->
     <div
       class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-3 py-3"
     >
@@ -208,6 +225,167 @@
           </button>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CREAR TURNO -->
+<div
+  *ngIf="mostrarModalCrear"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+>
+  <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-4xl">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Crear nuevo Turno</h2>
+      <button
+        class="text-gray-500 hover:text-red-500"
+        (click)="cerrarModalCrear()"
+      >
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+    </div>
+
+    <form
+      [formGroup]="formularioHorario"
+      class="grid grid-cols-1 md:grid-cols-2 gap-6"
+    >
+      <!-- Facultad (solo si el usuario tiene más de una) -->
+      <div *ngIf="showFacultad">
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Facultad</label
+        >
+        <select
+          formControlName="c_codfac"
+          (change)="onChangeFacultadFormulario()"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione facultad</option>
+          <option value="S">CIENCIAS DE LA SALUD</option>
+          <option value="E">INGENIERÍA Y NEGOCIOS</option>
+        </select>
+      </div>
+
+      <!-- Especialidad (filtrada según permisos del usuario) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Especialidad</label
+        >
+        <select
+          formControlName="c_codesp"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione especialidad</option>
+          <option
+            *ngFor="let esp of especialidadesFiltradas"
+            [value]="esp.codesp"
+          >
+            {{ esp.nomesp }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Periodo -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Periodo</label
+        >
+        <select
+          formControlName="n_codper"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione periodo</option>
+          <option *ngFor="let per of periodos" [value]="per.n_codper">
+            {{ per.n_codper }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Plan -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Plan</label>
+        <select
+          formControlName="n_codpla"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione plan</option>
+          <option value="2023">2023</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
+
+      <!-- Sección -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Sección</label
+        >
+        <input
+          type="text"
+          formControlName="c_grpcur"
+          nz-input
+          [nzAutocomplete]="autoSeccion"
+          (input)="onInputSeccion($event)"
+          (blur)="validarSeleccionSeccion()"
+          class="w-full border border-gray-300 rounded-md px-3 py-2 uppercase"
+          placeholder="Ej. S1, C3, N2"
+        />
+
+        <nz-autocomplete
+          #autoSeccion
+          (selectionChange)="onSeleccionarSeccion($event)"
+        >
+          <nz-auto-option
+            *ngFor="let opcion of seccionesSugeridas"
+            [nzValue]="opcion"
+          >
+            {{ opcion }}
+          </nz-auto-option>
+        </nz-autocomplete>
+      </div>
+
+      <!-- Ciclo -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Ciclo</label
+        >
+        <select
+          formControlName="n_ciclo"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione ciclo</option>
+          <option *ngFor="let c of ciclos" [value]="c">{{ c }}</option>
+        </select>
+      </div>
+
+      <!-- Modalidad -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Modalidad</label
+        >
+        <select
+          formControlName="c_codmod"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="">Seleccione modalidad</option>
+          <option *ngFor="let mod of modalidades" [value]="mod.value">
+            {{ mod.label }}
+          </option>
+        </select>
+      </div>
+    </form>
+
+    <div class="mt-6 flex justify-end gap-3">
+      <button
+        (click)="cerrarModalCrear()"
+        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+      >
+        Cancelar
+      </button>
+      <button
+        class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
+        (click)="guardarTurno()"
+      >
+        Guardar
+      </button>
     </div>
   </div>
 </div>

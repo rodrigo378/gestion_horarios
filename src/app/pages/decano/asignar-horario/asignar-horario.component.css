@@ -57,3 +57,14 @@
 }
 
 /* =================== */
+.alert-overlay {
+  z-index: 9999 !important;
+}
+
+.swal-container-top {
+  z-index: 9999 !important;
+}
+
+.swal-top {
+  z-index: 9999 !important;
+}

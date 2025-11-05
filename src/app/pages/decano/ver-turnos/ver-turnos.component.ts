@@ -3,6 +3,10 @@ import { TurnoService } from '../../../services/turno.service';
 import { Router } from '@angular/router';
 import { AuthContextService } from '../../../services_2/auth-context.service';
 import { HR_Turno } from '../../../interfaces/hr/hr_turno';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AlertService } from '../../../services/alert.service';
+import { NzAutocompleteOptionComponent } from 'ng-zorro-antd/auto-complete';
 
 @Component({
   selector: 'app-ver-turnos',
@@ -31,24 +35,70 @@ export class VerTurnosComponent implements OnInit {
   get hrEspecialidades() {
     return this.ctx.hrConfig()?.especialidades as string[] | undefined;
   }
+  listOfColumn = [
+    {
+      title: 'Periodo',
+      compare: (a: HR_Turno, b: HR_Turno) => a.n_codper - b.n_codper,
+      nzWidth: 'auto',
+    },
+    {
+      title: 'Plan',
+      compare: (a: HR_Turno, b: HR_Turno) => a.n_codpla - b.n_codpla,
+      nzWidth: 'auto',
+    },
+    {
+      title: 'Facultad',
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.c_codfac.localeCompare(b.c_codfac),
+      nzWidth: 'auto',
+    },
+    {
+      title: 'Especialidad',
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.c_codesp.localeCompare(b.c_codesp),
+      nzWidth: 'auto',
+    },
+    {
+      title: 'Seccion',
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.c_grpcur.localeCompare(b.c_grpcur),
+      nzWidth: 'auto',
+    },
+    {
+      title: 'Ciclo',
+      compare: (a: HR_Turno, b: HR_Turno) => a.n_ciclo - b.n_ciclo,
+      nzWidth: 'auto',
+    },
+    {
+      title: 'Modalidad',
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.c_nommod.localeCompare(b.c_nommod),
+      nzWidth: 'auto',
+    },
+    {
+      title: 'Estado',
+      compare: (a: HR_Turno, b: HR_Turno) => a.estado - b.estado,
+      nzWidth: '10%',
+    },
+    { title: 'Acción', compare: false, nzWidth: 'auto' },
+  ];
 
-  // datos
+  mostrarModalCrear: boolean = false;
+  seccionesSugeridas: string[] = [];
+
   listOfData: HR_Turno[] = [];
-  datosFiltrados: HR_Turno[] = []; // resultado de servidor (o filtros locales si agregas)
-  turnosPaginados: HR_Turno[] = []; // slice visible en tabla
+  datosFiltrados: HR_Turno[] = [];
+  turnosPaginados: HR_Turno[] = [];
 
-  // paginación personalizada
   itemsPorPagina = 8;
   paginaActual = 1;
   totalPaginas = 1;
   readonly opcionesPagina = [8, 10, 20, 50, 100, 150];
 
-  // (si mantienes el editCache por alguna otra razón visual)
   editCache: { [key: string]: { edit: boolean; data: HR_Turno } } = {};
 
-  // filtros
   filtros = {
-    n_codper: '20252',
+    n_codper: 20261,
     c_codfac: '',
     c_codesp: '',
     c_codmod: '',
@@ -56,6 +106,15 @@ export class VerTurnosComponent implements OnInit {
     estado: '',
     c_grpcur: '',
   };
+
+  periodos = [{ n_codper: 20251 }, { n_codper: 20252 }, { n_codper: 20261 }];
+  ciclos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  modalidades = [
+    { label: 'Presencial', value: '1' },
+    { label: 'Semipresencial', value: '2' },
+    { label: 'Virtual', value: '3' },
+  ];
 
   especialidades: { nomesp: string; codesp: string; codfac: string }[] = [
     {
@@ -65,16 +124,9 @@ export class VerTurnosComponent implements OnInit {
     },
     { nomesp: 'ADMINISTRACIÓN Y MARKETING', codesp: 'E2', codfac: 'E' },
     { nomesp: 'CONTABILIDAD Y FINANZAS', codesp: 'E3', codfac: 'E' },
-    {
-      nomesp: 'ADMINISTRACIÓN Y NEGOS INTERNACIONALES',
-      codesp: 'E4',
-      codfac: 'E',
-    },
     { nomesp: 'INGENIERÍA INDUSTRIAL', codesp: 'E5', codfac: 'E' },
     { nomesp: 'INGENIERÍA DE IA', codesp: 'E6', codfac: 'E' },
     { nomesp: 'INGENIERÍA DE SISTEMAS', codesp: 'E7', codfac: 'E' },
-    { nomesp: 'ADMINISTRACIÓN DE EMPRESAS', codesp: 'E8', codfac: 'E' },
-    { nomesp: 'DERECHO', codesp: 'E9', codfac: 'E' },
     { nomesp: 'ENFERMERÍA', codesp: 'S1', codfac: 'S' },
     { nomesp: 'FARMACIA Y BIOQUÍMICA', codesp: 'S2', codfac: 'S' },
     { nomesp: 'NUTRICIÓN Y DIETÉTICA', codesp: 'S3', codfac: 'S' },
@@ -89,88 +141,59 @@ export class VerTurnosComponent implements OnInit {
     codfac: string;
   }[] = [];
 
-  listOfColumn = [
-    {
-      title: 'Periodo',
-      compare: (a: HR_Turno, b: HR_Turno) => a.n_codper - b.n_codper,
-      priority: false,
-      nzWidth: 'auto',
-    },
-    {
-      title: 'Plan',
-      compare: (a: HR_Turno, b: HR_Turno) => a.n_codpla - b.n_codpla,
-      priority: false,
-      nzWidth: 'auto',
-    },
-    {
-      title: 'Facultad',
-      compare: (a: HR_Turno, b: HR_Turno) =>
-        a.c_codfac.localeCompare(b.c_codfac),
-      priority: 3,
-      nzWidth: 'auto',
-    },
-    {
-      title: 'Especialidad',
-      compare: (a: HR_Turno, b: HR_Turno) =>
-        a.c_codesp.localeCompare(b.c_codesp),
-      priority: 2,
-      nzWidth: 'auto',
-    },
-    {
-      title: 'Seccion',
-      compare: (a: HR_Turno, b: HR_Turno) =>
-        a.c_grpcur.localeCompare(b.c_grpcur),
-      priority: 1,
-      nzWidth: 'auto',
-    },
-    {
-      title: 'Ciclo',
-      compare: (a: HR_Turno, b: HR_Turno) => a.n_ciclo - b.n_ciclo,
-      priority: 1,
-      nzWidth: 'auto',
-    },
-    {
-      title: 'Modalidad',
-      compare: (a: HR_Turno, b: HR_Turno) =>
-        a.c_nommod.localeCompare(b.c_nommod),
-      priority: 1,
-      nzWidth: 'auto',
-    },
-    {
-      title: 'Estado',
-      compare: (a: HR_Turno, b: HR_Turno) => a.estado - b.estado,
-      priority: 1,
-      nzWidth: '10%',
-    },
-    { title: 'Accion', compare: false, priority: 1, nzWidth: 'auto' },
-  ];
+  formularioHorario!: FormGroup;
 
-  constructor(private turnoService: TurnoService, private router: Router) {
+  constructor(
+    private turnoService: TurnoService,
+    private router: Router,
+    private fb: FormBuilder,
+    private alertService: AlertService
+  ) {
     effect(() => {
       if (this.isLoaded) this.recalcularEspecialidadesVisibles();
     });
   }
 
   ngOnInit(): void {
+    this.inicializarFormulario();
     this.recalcularEspecialidadesVisibles();
-    this.getTurnos();
   }
 
-  // ====== SERVICIO / REFRESH ======
+  inicializarFormulario() {
+    this.formularioHorario = this.fb.group({
+      c_codfac: ['', Validators.required],
+      c_codesp: ['', Validators.required],
+      n_codper: [20261, Validators.required],
+      c_grpcur: ['', Validators.required],
+      n_ciclo: ['', Validators.required],
+      c_codmod: ['', Validators.required],
+      n_codpla: ['', Validators.required],
+    });
+  }
+
+  // ===================
+  // === CARGA TURNOS ==
+  // ===================
   getTurnos() {
     this.turnoService.getTurnos(this.filtros).subscribe((data) => {
       this.listOfData = data;
       this.datosFiltrados = [...this.listOfData];
       this.updateEditCache();
-      this.aplicarPaginacion(true); // reset a página 1 en cada fetch
+      this.aplicarPaginacion(true);
     });
   }
 
-  // ====== FILTROS (disparan fetch) ======
+  // ===================
+  // === FILTROS =======
+  // ===================
   onChangeFacultad(filtro: string, valor: string) {
     switch (filtro) {
       case 'n_codper':
-        this.filtros.n_codper = valor;
+        this.filtros.n_codper = Number(valor);
+        // Si ya hay una especialidad seleccionada, recargar turnos
+        if (this.filtros.c_codesp && this.filtros.c_codesp.trim() !== '') {
+          this.getTurnos();
+        }
         break;
       case 'facultad':
         this.filtros.c_codfac = valor;
@@ -178,18 +201,31 @@ export class VerTurnosComponent implements OnInit {
         break;
       case 'especialidad':
         this.filtros.c_codesp = valor;
-        break;
+        // Solo carga cuando se selecciona una especialidad
+        if (valor && valor.trim() !== '') {
+          this.getTurnos();
+        } else {
+          this.datosFiltrados = [];
+          this.turnosPaginados = [];
+        }
+        return;
       case 'modalidad':
         this.filtros.c_codmod = valor;
+        if (this.filtros.c_codesp && this.filtros.c_codesp.trim() !== '') {
+          this.getTurnos();
+        }
         break;
+
       case 'ciclo':
-        this.filtros.n_ciclo = valor;
+        this.filtros.n_ciclo = valor ? valor : '';
+        if (this.filtros.c_codesp && this.filtros.c_codesp.trim() !== '') {
+          this.getTurnos();
+        }
         break;
       case 'estado':
         this.filtros.estado = valor;
         break;
     }
-    this.getTurnos();
   }
 
   private detectFaculties(codes?: string[]): ('E' | 'S')[] {
@@ -210,7 +246,7 @@ export class VerTurnosComponent implements OnInit {
   private recalcularEspecialidadesVisibles(): void {
     const permitidas = this.hrEspecialidades;
     const facs = this.detectFaculties(permitidas);
-    let base = this.especialidades;
+    let base = [...this.especialidades];
 
     if (Array.isArray(permitidas) && permitidas.length > 0) {
       base = base.filter((e) => permitidas.includes(e.codesp));
@@ -221,7 +257,6 @@ export class VerTurnosComponent implements OnInit {
     }
 
     this.especialidadesFiltradas = base;
-
     if (
       this.filtros.c_codesp &&
       !this.especialidadesFiltradas.some(
@@ -232,22 +267,109 @@ export class VerTurnosComponent implements OnInit {
     }
   }
 
-  // ====== EDIT CACHE (si lo usas para estilos) ======
+  // ===================
+  // === FORMULARIO ====
+  // ===================
+
+  // filtra las especialidades según facultad seleccionada
+  onChangeFacultadFormulario() {
+    const codfac = this.formularioHorario.get('c_codfac')?.value;
+    const permitidas = this.hrEspecialidades || [];
+    this.especialidadesFiltradas = this.especialidades.filter(
+      (esp) => esp.codfac === codfac && permitidas.includes(esp.codesp)
+    );
+
+    const actual = this.formularioHorario.get('c_codesp')?.value;
+    const existe = this.especialidadesFiltradas.some(
+      (e) => e.codesp === actual
+    );
+    if (!existe) this.formularioHorario.get('c_codesp')?.setValue('');
+  }
+
+  // sugerencias automáticas para campo Sección
+  onInputSeccion(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const value = input.value.toUpperCase();
+    const letra = value.charAt(0);
+    this.formularioHorario.get('c_grpcur')?.setValue(value);
+
+    // Solo genera sugerencias si la primera letra es válida
+    if (/^[A-Z]$/.test(letra)) {
+      this.seccionesSugeridas = Array.from(
+        { length: 9 },
+        (_, i) => `${letra}${i + 1}`
+      );
+    } else {
+      this.seccionesSugeridas = [];
+    }
+  }
+
+  // guardar nuevo turno
+  guardarTurno() {
+    if (this.formularioHorario.invalid) {
+      this.formularioHorario.markAllAsTouched();
+      console.warn('Formulario incompleto');
+      return;
+    }
+
+    const form = this.formularioHorario.value;
+    const nom_fac =
+      form.c_codfac === 'E'
+        ? 'FACULTAD DE INGENIERÍA Y NEGOCIOS'
+        : 'FACULTAD DE CIENCIAS DE LA SALUD';
+
+    const especialidadSeleccionada = this.especialidades.find(
+      (e) => e.codesp === form.c_codesp
+    );
+    const nomesp = especialidadSeleccionada
+      ? especialidadSeleccionada.nomesp
+      : 'SIN ESPECIALIDAD';
+
+    const modalidadSeleccionada = this.modalidades.find(
+      (m) => m.value === form.c_codmod
+    );
+    const c_nommod = modalidadSeleccionada
+      ? modalidadSeleccionada.label.toUpperCase()
+      : 'SIN MODALIDAD';
+
+    const nuevoTurno = {
+      ...form,
+      n_ciclo: Number(form.n_ciclo),
+      n_codper: Number(form.n_codper),
+      n_codpla: Number(form.n_codpla),
+      estado: 0,
+      nom_fac,
+      nomesp,
+      c_nommod,
+    };
+
+    this.turnoService.createTurno(nuevoTurno).subscribe({
+      next: () => {
+        this.alertService.createTurnoSuccess();
+        this.mostrarModalCrear = false;
+        this.getTurnos();
+      },
+      error: (err: HttpErrorResponse) => {
+        const message = err.error?.message || 'Error al crear el turno.';
+        this.alertService.createTurnoError(message);
+      },
+    });
+  }
+
+  // ===================
+  // === PAGINACIÓN ====
+  // ===================
   updateEditCache(): void {
     this.listOfData.forEach((item) => {
       this.editCache[item.id] = { edit: false, data: { ...item } };
     });
   }
 
-  // ====== NAVEGACIÓN ======
   clickAsignarHorario(id: number) {
-    const url = this.router
-      .createUrlTree([`/coa/asignar/${id}`], {})
-      .toString();
+    const url = this.router.createUrlTree([`/coa/asignar/${id}`]).toString();
     window.open(url, '_blank');
   }
 
-  // ====== PAGINACIÓN PERSONALIZADA ======
   private clampPagina(): void {
     this.totalPaginas = Math.max(
       1,
@@ -268,7 +390,7 @@ export class VerTurnosComponent implements OnInit {
 
   cambiarItemsPorPagina(n: number): void {
     this.itemsPorPagina = n;
-    this.aplicarPaginacion(true); // reinicia a página 1
+    this.aplicarPaginacion(true);
   }
 
   siguientePagina(): void {
@@ -282,6 +404,33 @@ export class VerTurnosComponent implements OnInit {
     if (this.paginaActual > 1) {
       this.paginaActual--;
       this.aplicarPaginacion();
+    }
+  }
+
+  cerrarModalCrear(): void {
+    this.mostrarModalCrear = false;
+    this.formularioHorario.reset({
+      c_codfac: '',
+      c_codesp: '',
+      n_codper: 20261, // tu periodo por defecto
+      c_grpcur: '',
+      n_ciclo: '',
+      c_codmod: '',
+      n_codpla: '',
+    });
+  }
+
+  // Cuando el usuario selecciona una opción del autocomplete
+  onSeleccionarSeccion(event: NzAutocompleteOptionComponent): void {
+    const valor = event.nzValue;
+    this.formularioHorario.get('c_grpcur')?.setValue(valor);
+  }
+
+  // Si el usuario no selecciona ninguna opción válida
+  validarSeleccionSeccion(): void {
+    const valor = this.formularioHorario.get('c_grpcur')?.value;
+    if (!this.seccionesSugeridas.includes(valor)) {
+      this.formularioHorario.get('c_grpcur')?.setValue('');
     }
   }
 }

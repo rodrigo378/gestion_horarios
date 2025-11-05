@@ -19,4 +19,8 @@ export class HorarioService {
   deleteHorarios(turno_id: number) {
     return this.http.delete(`${this.apiUrl}/turno/${turno_id}`);
   }
+
+  deleteHorario(turno_id: number) {
+    return this.http.delete(`${this.apiUrl}/${turno_id}`);
+  }
 }

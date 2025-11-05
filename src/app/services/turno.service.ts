@@ -13,9 +13,8 @@ export class TurnoService {
 
   constructor(private http: HttpClient) {}
 
-  getTurnos(params: any): Observable<HR_Turno[]> {
-    const httpParams = new HttpParams({ fromObject: params });
-    return this.http.get<HR_Turno[]>(this.apiUrl, { params: httpParams });
+  createTurno(data: Partial<HR_Turno>) {
+    return this.http.post(`${this.apiUrl}`, data, { withCredentials: true });
   }
 
   getTurno(id: number): Observable<HR_Turno> {
@@ -32,11 +31,29 @@ export class TurnoService {
     });
   }
 
+  deleteCurso(curso_id: number) {
+    return this.http.delete(`${this.apiUrl}/delete/curso/${curso_id}`);
+  }
+
   bloquearTurnos(turnos_id: number[]) {
     return this.http.post(`${this.apiUrl}/bloquear`, turnos_id);
   }
 
   desbloquearTurnos(turnos_id: number[]) {
     return this.http.post(`${this.apiUrl}/desbloquear`, turnos_id);
+  }
+
+  getTurnos(filtros: any = {}): Observable<HR_Turno[]> {
+    let params = new HttpParams();
+
+    // Añadimos solo los filtros que tienen valor
+    Object.keys(filtros).forEach((key) => {
+      const value = filtros[key];
+      if (value !== null && value !== undefined && value !== '') {
+        params = params.set(key, value);
+      }
+    });
+
+    return this.http.get<HR_Turno[]>(this.apiUrl, { params });
   }
 }

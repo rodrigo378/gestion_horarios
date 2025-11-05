@@ -42,11 +42,25 @@ export class AlertService {
     });
   }
 
-  saveError(): void {
+  success(title: string, text: string): void {
+    Swal.fire({
+      icon: 'success',
+      title,
+      text,
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#16a34a',
+      customClass: {
+        container: 'swal-container-top',
+      },
+    });
+  }
+
+  saveError(error?: string): void {
     Swal.fire({
       icon: 'error',
       title: 'Error al guardar',
-      text: 'Ocurrió un error al intentar guardar los horarios. Intenta nuevamente.',
+      text: `Ocurrió un error . Intenta nuevamente.
+      ${error}`,
       confirmButtonText: 'Reintentar',
       confirmButtonColor: '#dc2626',
     });
@@ -205,6 +219,31 @@ export class AlertService {
       confirmButtonText: 'Entendido',
       confirmButtonColor: '#f59e0b', // amarillo
       backdrop: true,
+    });
+  }
+
+  // ==========================
+  // 🗓️ TURNOS
+  // ==========================
+  createTurnoSuccess(): void {
+    Swal.fire({
+      icon: 'success',
+      title: 'Turno creado',
+      text: 'El turno fue registrado correctamente.',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#16a34a',
+    });
+  }
+
+  createTurnoError(
+    message: string = 'Ocurrió un error al registrar el turno.'
+  ): void {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al crear el turno',
+      text: message,
+      confirmButtonText: 'Reintentar',
+      confirmButtonColor: '#dc2626',
     });
   }
 }

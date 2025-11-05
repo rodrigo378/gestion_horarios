@@ -20,10 +20,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import esLocale from '@fullcalendar/core/locales/es';
 
 import { AlertService } from '../../../services/alert.service';
-// +++ NUEVOS IMPORTS +++
-import { forkJoin } from 'rxjs';
-import { HR_Plan_Estudio_Curso } from '../../../interfaces/hr/hr_plan_estudio_curso'; // interfaz del plan
-// (Usa HR_Curso ya importado)
+import { HR_Plan_Estudio_Curso } from '../../../interfaces/hr/hr_plan_estudio_curso';
+import { HttpErrorResponse } from '@angular/common/http';
 
 type FilaCursoPlan = HR_Plan_Estudio_Curso & { cursoGenerado: HR_Curso | null };
 
@@ -65,7 +63,7 @@ export class AsignarHorarioComponent
   genVisible = false;
   genLoading = false;
   genList: FilaCursoPlan[] = [];
-  genVacantes = 20; // por si quieres una cantidad por defecto
+  genVacantes = 20;
 
   turnoSeleccionado: 'C' | 'M' | 'N' = 'C';
   private modalAnchorWeekStart: Date | null = null;
@@ -781,7 +779,6 @@ export class AsignarHorarioComponent
     const items: any[] = [];
 
     for (const e of eventos) {
-      // --------- NUEVO: evita re-crear eventos ya guardados sin ID en el front ---------
       const yaPersistido = !!e.extendedProps?.['persisted'];
       const persistidoSinId = !!e.extendedProps?.['persisted_without_id'];
       const horarioIdRaw = e.extendedProps?.['horario_id'];
@@ -791,11 +788,8 @@ export class AsignarHorarioComponent
           : Number(horarioIdRaw) || undefined;
 
       if (yaPersistido && !horario_id && persistidoSinId) {
-        // Este evento se guardó individualmente (guardarSoloEvento)
-        // pero aún no tenemos el ID en el front. Saltarlo del batch.
         continue;
       }
-      // -------------------------------------------------------------------------------
 
       const start: Date = e.start!;
       const end: Date = e.end!;
@@ -1065,32 +1059,52 @@ export class AsignarHorarioComponent
 
   eliminarEvento() {
     if (this.guardando || !this.eventoSeleccionado) return;
+
     const e = this.eventoSeleccionado;
+    const horarioId = e.extendedProps?.['horario_id'];
 
-    const codigo = e.extendedProps?.['codigo'];
-    const tipo = e.extendedProps?.['tipo'] ?? 'Teoría';
-    const nh = Number(e.extendedProps?.['n_horas_asignadas'] ?? 1);
-    this.restarHorasDisponibles(
-      codigo,
-      tipo === 'Teoría' ? 'Práctica' : 'Teoría',
-      0
-    );
+    if (!horarioId) {
+      this.alertService.warn('No se encontró el ID del horario para eliminar.');
+      return;
+    }
 
-    const addBack = (arr: CursoCard[]) => {
-      const item = arr.find(
-        (c) =>
-          c.c_codcur === codigo &&
-          ((tipo === 'Teoría' && c.tipo === 'teoria') ||
-            (tipo === 'Práctica' && c.tipo === 'practica'))
-      );
-      if (item) item.horasRestantes = Math.max(0, item.horasRestantes + nh);
-    };
-    addBack(this.cursosPlan2023);
-    addBack(this.cursosPlan2025);
+    this.lockUI(true);
+    this.alertService.showSaving();
 
-    e.remove();
-    this.modalHorasActivo = false;
-    this.eventoSeleccionado = null;
+    this.horarioService.deleteHorario(horarioId).subscribe({
+      next: () => {
+        const codigo = e.extendedProps?.['codigo'];
+        const tipo = e.extendedProps?.['tipo'] ?? 'Teoría';
+        const nh = Number(e.extendedProps?.['n_horas_asignadas'] ?? 1);
+
+        const addBack = (arr: CursoCard[]) => {
+          const item = arr.find(
+            (c) =>
+              c.c_codcur === codigo &&
+              ((tipo === 'Teoría' && c.tipo === 'teoria') ||
+                (tipo === 'Práctica' && c.tipo === 'practica'))
+          );
+          if (item) item.horasRestantes = Math.max(0, item.horasRestantes + nh);
+        };
+        addBack(this.cursosPlan2023);
+        addBack(this.cursosPlan2025);
+
+        e.remove();
+        this.alertService.close();
+        this.alertService.success(
+          'Eliminar Horario',
+          'Horario eliminado correctamente'
+        );
+        this.modalHorasActivo = false;
+        this.eventoSeleccionado = null;
+        this.lockUI(false);
+      },
+      error: () => {
+        this.alertService.close();
+        this.alertService.saveError();
+        this.lockUI(false);
+      },
+    });
   }
 
   private guardarSoloEvento(e: any) {
@@ -1104,11 +1118,6 @@ export class AsignarHorarioComponent
       .createHorarios({ items: [item] }, this.turno_id)
       .subscribe({
         next: (resp: any) => {
-          // Intenta extraer el id devuelto por el backend si existe
-          // Adapta esta lectura según tu respuesta real:
-          // - algunos backends devuelven {items:[{id:123, ...}]}
-          // - otros devuelven [{id:123,...}]
-          // - o devuelven el registro directamente
           let newId: number | undefined;
           if (resp?.items?.[0]?.id) newId = Number(resp.items[0].id);
           else if (Array.isArray(resp) && resp[0]?.id)
@@ -1241,47 +1250,20 @@ export class AsignarHorarioComponent
     this.genVisible = false;
   }
 
-  // private cargarGenerables() {
-  //   this.genLoading = true;
-  //   forkJoin({
-  //     plan: this.turnoService.getCursosPlanTurno(this.turno_id),
-  //     generados: this.turnoService.getCursosTurno(this.turno_id),
-  //   }).subscribe({
-  //     next: ({ plan, generados }) => {
-  //       this.genList = (plan || []).map((p: HR_Plan_Estudio_Curso) => {
-  //         const ya =
-  //           (generados || []).find(
-  //             (c: any) => c.plan?.c_codcur === p.c_codcur
-  //           ) ?? null;
-  //         return { ...p, cursoGenerado: ya };
-  //       });
-  //       this.genLoading = false;
-  //     },
-  //     error: () => {
-  //       this.genLoading = false;
-  //       this.alertService.saveError();
-  //     },
-  //   });
-  // }
   private cargarGenerables() {
     this.genLoading = true;
 
-    // Asegúrate de haber llamado antes a getTurno() para poblar this.cursos.
-    // Si por cualquier motivo aún no estuviera, hacemos un fallback rápido:
     const ensureCursos$ = this.cursos
       ? null
       : this.turnoService.getTurno(this.turno_id);
 
     const loadPlan$ = this.turnoService.getCursosPlanTurno(this.turno_id);
 
-    // Si ya tienes this.cursos, solo consulta el plan.
-    // Si no, primero trae el turno para poblar cursos y luego el plan.
     (ensureCursos$ ? ensureCursos$ : loadPlan$).subscribe({
       next: (maybeTurno: any) => {
         if (maybeTurno && maybeTurno.cursos) {
-          // Fallback: poblar cursos si vinimos por ensureCursos$
           this.cursos = maybeTurno.cursos;
-          // ahora sí pedimos el plan
+
           loadPlan$.subscribe({
             next: (plan: HR_Plan_Estudio_Curso[]) => {
               const generados = this.cursos || [];
@@ -1300,8 +1282,7 @@ export class AsignarHorarioComponent
             },
           });
         } else if (!ensureCursos$) {
-          // Ruta normal: ya teníamos this.cursos y la llamada fue loadPlan$
-          const plan = maybeTurno as unknown as HR_Plan_Estudio_Curso[]; // typing local
+          const plan = maybeTurno as unknown as HR_Plan_Estudio_Curso[];
           const generados = this.cursos || [];
           this.genList = (plan || []).map((p: HR_Plan_Estudio_Curso) => {
             const ya =
@@ -1337,10 +1318,30 @@ export class AsignarHorarioComponent
       next: () => {
         this.alertService.close();
         this.alertService.saveSuccess();
-        this.getTurno(); // refresca cards/calendario
-        this.cargarGenerables(); // refresca tabla del modal
-        this.lockUI(false);
-        this.genLoading = false;
+
+        this.turnoService.getTurno(this.turno_id).subscribe({
+          next: (turnoActualizado) => {
+            this.turno = turnoActualizado;
+            this.cursos = turnoActualizado.cursos || [];
+
+            const transformados = this.transformarCursos(this.cursos);
+            this.cursosPlan2023 = transformados.filter(
+              (c) => c.n_codper === 2023
+            );
+            this.cursosPlan2025 = transformados.filter(
+              (c) => c.n_codper === 2025
+            );
+
+            this.cargarGenerables();
+
+            this.lockUI(false);
+            this.genLoading = false;
+          },
+          error: () => {
+            this.lockUI(false);
+            this.genLoading = false;
+          },
+        });
       },
       error: () => {
         this.alertService.close();
@@ -1360,22 +1361,37 @@ export class AsignarHorarioComponent
     this.alertService.showSaving();
     this.genLoading = true;
 
-    // Asegúrate de tener este endpoint en TurnoService
-    // this.turnoService.eliminarCurso(id).subscribe({
-    //   next: () => {
-    //     this.alertService.close();
-    //     this.alertService.deleteAllSuccess(); // o un método de éxito de borrado simple si tienes
-    //     this.getTurno();
-    //     this.cargarGenerables();
-    //     this.lockUI(false);
-    //     this.genLoading = false;
-    //   },
-    //   error: () => {
-    //     this.alertService.close();
-    //     this.alertService.deleteAllError();
-    //     this.lockUI(false);
-    //     this.genLoading = false;
-    //   },
+    this.turnoService.deleteCurso(id).subscribe({
+      next: () => {
+        this.alertService.close();
+        this.alertService.success(
+          'Curso eliminado',
+          'El curso fue eliminado correctamente.'
+        );
+
+        this.turnoService.getTurno(this.turno_id).subscribe({
+          next: (turnoActualizado) => {
+            this.turno = turnoActualizado;
+            this.cursos = turnoActualizado.cursos || [];
+            this.cargarGenerables();
+            this.lockUI(false);
+            this.genLoading = false;
+          },
+          error: () => {
+            this.lockUI(false);
+            this.genLoading = false;
+          },
+        });
+      },
+      error: (err: HttpErrorResponse) => {
+        this.alertService.close();
+        console.log('Error => ', err.error.message);
+
+        this.alertService.saveError(err.error.message);
+        this.lockUI(false);
+        this.genLoading = false;
+      },
+    });
   }
 
   abrirModalDesdeCard(curso: CursoCard, ev?: MouseEvent) {
@@ -1391,7 +1407,6 @@ export class AsignarHorarioComponent
       return;
     }
 
-    // Construye el “dragData” igual que stringifyEvent para reutilizar flujos
     const dragData = {
       title: `${curso.c_nomcur} (${tipoTexto})`,
       extendedProps: {
@@ -1404,14 +1419,12 @@ export class AsignarHorarioComponent
       },
     };
 
-    // Fecha base: lunes de la semana actual del calendario (08:00)
     const api = this.calendarComponent?.getApi();
     const base = api?.getDate?.() ?? new Date();
     const weekStart = this.getWeekStart(base);
     const dropDate = new Date(weekStart);
     dropDate.setHours(8, 0, 0, 0);
 
-    // Abre tu modal con la misma ruta que usas al “drop”
     this.eventoSeleccionado = null;
     this.cursoSeleccionado = { ...dragData, horasDisponibles: horasDisp };
     this.diaSeleccionado = 'Lunes';
@@ -1431,7 +1444,6 @@ export class AsignarHorarioComponent
       e.setExtendedProp('horario_id', Number(horarioId));
       e.setExtendedProp('persisted_without_id', false);
     } else {
-      // Marca temporal para saltarlo en el batch si aún no tenemos ID
       e.setExtendedProp('persisted_without_id', true);
     }
   }

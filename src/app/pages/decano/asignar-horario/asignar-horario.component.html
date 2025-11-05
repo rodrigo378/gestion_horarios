@@ -49,7 +49,6 @@
   </h2>
 
   <div nz-row [nzGutter]="16">
-    <!-- PLAN 2023 -->
     <div nz-col [nzSpan]="12" class="gutter-row">
       <h3 class="text-lg font-semibold text-blue-600 mb-3">
         📘 Plan 2023 ({{ count2023 }}) - Asignados
@@ -67,15 +66,13 @@
           [attr.data-event]="isDraggable(curso) ? stringifyEvent(curso) : null"
           [attr.aria-disabled]="!isDraggable(curso)"
         >
-          <!-- Estado (moved to left to dejar libre la derecha) -->
           <span
             *ngIf="!isDraggable(curso)"
-            class="absolute top-2 left-2 text-[10px] font-bold tracking-wide bg-gray-200 text-gray-700 px-2 py-0.5 rounded pointer-events-none"
+            class="absolute top-2 right-10 text-[10px] font-bold tracking-wide bg-gray-200 text-gray-700 px-2 py-0.5 rounded pointer-events-none"
           >
             {{ estadoHorasTexto(curso) }}
           </span>
 
-          <!-- Botón a la DERECHA para abrir modal -->
           <button
             type="button"
             class="absolute top-1/2 -translate-y-1/2 right-2 z-10 inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 shadow-sm transition pointer-events-auto"
@@ -88,7 +85,6 @@
             <i class="fa-solid fa-chevron-down text-xs"></i>
           </button>
 
-          <!-- Área -->
           <span
             class="absolute right-10 bottom-2 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-r-lg pointer-events-none"
           >
@@ -132,7 +128,6 @@
       </ng-template>
     </div>
 
-    <!-- PLAN 2025 -->
     <div nz-col [nzSpan]="12" class="gutter-row">
       <h3 class="text-lg font-semibold text-green-600 mb-3">
         📗 Plan 2025 ({{ count2025 }}) - Asignados
@@ -150,15 +145,13 @@
           [attr.data-event]="isDraggable(curso) ? stringifyEvent(curso) : null"
           [attr.aria-disabled]="!isDraggable(curso)"
         >
-          <!-- Estado (moved to left) -->
           <span
             *ngIf="!isDraggable(curso)"
-            class="absolute top-2 left-2 text-[10px] font-bold tracking-wide bg-gray-200 text-gray-700 px-2 py-0.5 rounded pointer-events-none"
+            class="absolute top-2 right-10 text-[10px] font-bold tracking-wide bg-gray-200 text-gray-700 px-2 py-0.5 rounded pointer-events-none"
           >
             {{ estadoHorasTexto(curso) }}
           </span>
 
-          <!-- Botón a la DERECHA para abrir modal -->
           <button
             type="button"
             class="absolute top-1/2 -translate-y-1/2 right-2 z-10 inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 shadow-sm transition pointer-events-auto"
@@ -171,7 +164,6 @@
             <i class="fa-solid fa-chevron-down text-xs"></i>
           </button>
 
-          <!-- Área -->
           <span
             class="absolute right-10 bottom-2 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-r-lg pointer-events-none"
           >
@@ -217,7 +209,6 @@
   </div>
 </div>
 
-<!-- BARRA DE ACCIONES -->
 <div
   class="flex justify-between items-center bg-white shadow-lg border p-5 rounded-xl mt-5"
   [class.opacity-60]="guardando"
@@ -307,7 +298,6 @@
   [class.opacity-60]="guardando"
 ></full-calendar>
 
-<!-- MODAL ASIGNACIÓN / EDICIÓN -->
 <div
   *ngIf="modalHorasActivo"
   (keydown.enter)="$event.preventDefault()"
@@ -578,15 +568,13 @@
   </div>
 </div>
 
-<!-- MODAL: Generar cursos (simple) -->
 <div
   *ngIf="genVisible"
-  class="fixed inset-0 z-[10000] bg-black/40 flex items-center justify-center"
+  class="fixed inset-0 z-[100] bg-black/40 flex items-center justify-center"
 >
   <div
     class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto"
   >
-    <!-- Header -->
     <div class="flex items-center justify-between px-6 py-4 border-b">
       <h3 class="text-xl font-bold text-slate-800">Generar cursos del turno</h3>
       <button
@@ -598,7 +586,6 @@
       </button>
     </div>
 
-    <!-- Tabla -->
     <div class="px-6 py-4">
       <div class="mb-3 flex items-center gap-3">
         <label class="text-sm text-slate-700 font-semibold"
@@ -704,7 +691,6 @@
         </table>
       </div>
 
-      <!-- Footer -->
       <div class="flex items-center justify-end gap-3 mt-4">
         <button
           (click)="cerrarGenerarCursosModal()"
