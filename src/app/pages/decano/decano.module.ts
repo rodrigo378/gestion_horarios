@@ -29,6 +29,8 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 // Otros módulos externos
 import { NgxApexchartsModule } from 'ngx-apexcharts';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { AgruparCursosComponent } from './agrupar-cursos/agrupar-cursos.component';
+import { VerTransversalComponent } from './ver-transversal/ver-transversal.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +41,8 @@ import { NgxPaginationModule } from 'ngx-pagination';
     PisoPipe,
     VerTurnosComponent,
     AsignarHorarioComponent,
+    AgruparCursosComponent,
+    VerTransversalComponent,
   ],
   imports: [
     CommonModule,
@@ -60,6 +64,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
     NzTagModule,
     NzPaginationModule,
     NzFormModule,
+    FormsModule,
 
     // Otros
     NgxApexchartsModule,

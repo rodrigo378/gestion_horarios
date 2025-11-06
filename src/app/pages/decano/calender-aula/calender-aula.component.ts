@@ -5,7 +5,8 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { CalendarOptions } from '@fullcalendar/core';
 import esLocale from '@fullcalendar/core/locales/es';
 import { ActivatedRoute } from '@angular/router';
-import { AulaService } from '../../../services_2/aula.service';
+import { AulaService } from '../../../services/aula.service';
+
 @Component({
   selector: 'app-calender-aula',
   standalone: false,
@@ -69,40 +70,67 @@ export class CalenderAulaComponent implements OnInit {
   }
 
   private cargarHorarioAula(aulaId: number): void {
+    const diasMap: Record<string, number> = {
+      LUNES: 1,
+      MARTES: 2,
+      MIÉRCOLES: 3,
+      MIERCOLES: 3,
+      JUEVES: 4,
+      VIERNES: 5,
+      SÁBADO: 6,
+      SABADO: 6,
+    };
+
     this.aulaService.getAula().subscribe((aulas) => {
       const aula = aulas.find((a) => a.id === aulaId);
       if (!aula) return;
 
+      // 🏷️ Nombre del aula en el encabezado
       this.nombreAula = `Aula ${aula.c_codaula} - Pabellón ${
         aula.pabellon
       } - ${this.obtenerNombrePiso(aula.n_piso)}`;
 
+      const baseDate = new Date('2024-01-01'); // Semana base
       const eventos = aula.horarios!.map((h) => {
-        let backgroundColor = h.tipo === 'Teoría' ? '#3788d8' : '#28a745';
+        // ✅ Mapeo del día (para ubicar en la semana)
+        const diaUpper = (h.dia || '').toUpperCase();
+        const diaOffset = diasMap[diaUpper] ?? 1;
+
+        // Calcular fecha base (lunes, martes, etc.)
+        const fechaInicio = new Date(baseDate);
+        fechaInicio.setDate(baseDate.getDate() + (diaOffset - 1));
+        const fechaBase = fechaInicio.toISOString().split('T')[0];
+
+        // ✅ Color según tipo de clase o grupo
+        let backgroundColor = h.tipo === 'PRA' ? '#16a34a' : '#2563eb'; // verde / azul
         let borderColor = backgroundColor;
 
-        // Revisar si es agrupado o transversal
         const tipoPadre = h.curso?.grupos_padre?.[0]?.tipo;
-        if (tipoPadre === 0) backgroundColor = borderColor = '#facc15'; // amarillo
-        if (tipoPadre === 1) backgroundColor = borderColor = '#9333ea'; // morado
+        if (tipoPadre === 0) backgroundColor = borderColor = '#facc15'; // amarillo transversal
+        if (tipoPadre === 1) backgroundColor = borderColor = '#9333ea'; // morado agrupado
 
-        // // Etiqueta visual opcional para el tipo
-        // let etiquetaTipo = '';
-        // if (tipoPadre === 0) etiquetaTipo = ' [Transversal]';
-        // if (tipoPadre === 1) etiquetaTipo = ' [Agrupado]';
+        // ✅ Construcción del evento
+        const seccion = h.curso?.turno?.c_grpcur
+          ? ` (Sec. ${h.curso.turno.c_grpcur})`
+          : '';
+        const docente = h.docente?.c_nomdoc
+          ? ` - ${h.docente.c_nomdoc}`
+          : ' - Sin docente';
 
         return {
-          title: `${h.curso?.plan?.c_nomcur || 'Curso'} (${h.tipo}) - ${
-            h.docente?.c_nomdoc || 'Sin docente'
-          }`,
-          start: h.h_inicio,
-          end: h.h_fin,
+          title: `${h.curso?.plan?.c_nomcur || 'Curso'}${seccion}${docente}`,
+          start: `${fechaBase}T${h.h_inicio}`,
+          end: `${fechaBase}T${h.h_fin}`,
           backgroundColor,
           borderColor,
         };
       });
 
-      // this.calendarOptions.events = eventos;
+      // ✅ Asigna los eventos al calendario
+      this.calendarOptions = {
+        ...this.calendarOptions,
+        events: eventos,
+      };
     });
   }
 }

@@ -1,12 +1,23 @@
-import { Component } from '@angular/core';
-import { OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { CalendarOptions } from '@fullcalendar/core';
 import esLocale from '@fullcalendar/core/locales/es';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DocenteService } from '../../../services_2/docente.service';
+import { DocenteService } from '../../../services/docente.service';
+
+const diasMap: Record<string, number> = {
+  LUNES: 1,
+  MARTES: 2,
+  MIÉRCOLES: 3,
+  MIERCOLES: 3,
+  JUEVES: 4,
+  VIERNES: 5,
+  SÁBADO: 6,
+  SABADO: 6,
+};
+
 @Component({
   selector: 'app-calender-docente',
   standalone: false,
@@ -31,13 +42,40 @@ export class CalenderDocenteComponent implements OnInit {
     editable: false,
     selectable: false,
     droppable: false,
-    eventStartEditable: false,
-    eventDurationEditable: false,
     height: 'auto',
     dayHeaderFormat: { weekday: 'long' },
     slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
-    events: [], // Acá vas a cargar los eventos del docente
-    hiddenDays: [0], // oculta domingo
+    events: [],
+    hiddenDays: [0],
+
+    eventDidMount: (info) => {
+      const evento = info.event.extendedProps as any;
+      const curso = info.event.title || 'Curso';
+      const seccion = evento.c_grpcur
+        ? `<span style="font-weight:700;color:#FFD700;background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:5px;margin-left:3px;">${evento.c_grpcur}</span>`
+        : '<span style="opacity:0.8;">Sin sección</span>';
+      const aula = evento.aula
+        ? `<span style="color:#d1fae5;font-weight:600;">Aula ${evento.aula}</span>`
+        : '<span style="opacity:0.8;">Sin asignar aula</span>';
+
+      // ✅ Tooltip completo
+      info.el.setAttribute(
+        'title',
+        `${curso}\nSección: ${evento.c_grpcur || 'Sin sección'}\n${
+          evento.aula ? 'Aula ' + evento.aula : 'Sin asignar aula'
+        }`
+      );
+
+      // ✅ Contenido visual mejorado
+      const el = info.el.querySelector('.fc-event-title');
+      if (el) {
+        el.innerHTML = `
+          <div style="font-weight:700;font-size:12px;">${curso}</div>
+          <div style="font-size:14px;margin-top:3px;">Sección ${seccion}</div>
+          <div style="font-size:13px;opacity:0.95;margin-top:2px;">${aula}</div>
+        `;
+      }
+    },
   };
 
   constructor(
@@ -49,10 +87,7 @@ export class CalenderDocenteComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const docenteId = +params['id'];
-      if (!docenteId) {
-        console.warn('⚠️ No se recibió ID');
-        return;
-      }
+      if (!docenteId) return;
       this.cargarHorarioDocente(docenteId);
     });
   }
@@ -62,49 +97,40 @@ export class CalenderDocenteComponent implements OnInit {
       .obtenerDocentesreporteria(true, true, true)
       .subscribe((docentes) => {
         const docente = docentes.find((d) => d.id === docenteId);
-
-        if (!docente) {
-          console.warn('⚠️ Docente no encontrado');
-          return;
-        }
+        if (!docente) return;
 
         this.nombreDocente = docente.c_nomdoc;
 
-        const eventos = docente.Horario.map((h) => {
-          let backgroundColor = '';
-          let borderColor = '';
+        const baseDate = new Date('2024-01-01');
 
-          if (h.modalidad === 'pre') {
-            backgroundColor = '#0c7734'; // Azul brillante
-            borderColor = '#15d200';
-          } else if (h.modalidad === 'vir') {
-            backgroundColor = '#7E22CE'; // Verde esmeralda
-            borderColor = '#7E22CE';
-          } else {
-            backgroundColor = '#9CA3AF'; // Gris por defecto si no hay modalidad
-            borderColor = '#9CA3AF';
-          }
+        const eventos = docente.horarios!.map((h) => {
+          const diaUpper = (h.dia || '').toUpperCase();
+          const diaOffset = diasMap[diaUpper] ?? 1;
 
-          const aulaNombre = h.aula?.c_codaula
-            ? ` - Aula ${h.aula.c_codaula}`
-            : '';
+          const fechaInicio = new Date(baseDate);
+          fechaInicio.setDate(baseDate.getDate() + (diaOffset - 1));
+          const fechaBase = fechaInicio.toISOString().split('T')[0];
 
-          const docenteNombre = docente.c_nomdoc
-            ? ` - ${docente.c_nomdoc}`
-            : '';
+          const backgroundColor =
+            h.modalidad === 'pre'
+              ? '#0c7734'
+              : h.modalidad === 'vir'
+              ? '#7E22CE'
+              : '#9CA3AF';
 
           return {
-            title: `${
-              h.curso?.c_nomcur || 'Curso'
-            }${aulaNombre}${docenteNombre}`,
-            start: h.h_inicio,
-            end: h.h_fin,
+            title: h.curso?.plan?.c_nomcur || 'Curso',
+            start: `${fechaBase}T${h.h_inicio}`,
+            end: `${fechaBase}T${h.h_fin}`,
             backgroundColor,
-            borderColor,
+            borderColor: backgroundColor,
+            dia: h.dia,
+            aula: h.aula?.c_codaula || '',
+            c_grpcur: h.turno?.c_grpcur || '',
           };
         });
 
-        this.calendarOptions.events = eventos;
+        this.calendarOptions = { ...this.calendarOptions, events: eventos };
       });
   }
 

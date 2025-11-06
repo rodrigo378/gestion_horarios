@@ -136,6 +136,7 @@ export class VerTurnosComponent implements OnInit {
     { nomesp: 'TM LAB. CLÍNICO Y ANAT. PAT', codesp: 'S6', codfac: 'S' },
     { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
   ];
+
   especialidadesFiltradas: {
     nomesp: string;
     codesp: string;
@@ -306,10 +307,70 @@ export class VerTurnosComponent implements OnInit {
   // }
 
   // guardar nuevo turno
+  // guardarTurno() {
+  //   if (this.formularioHorario.invalid) {
+  //     this.formularioHorario.markAllAsTouched();
+  //     console.warn('Formulario incompleto');
+  //     return;
+  //   }
+
+  //   this.isSaving = true; // 👈 inicia estado de carga
+
+  //   const form = this.formularioHorario.value;
+  //   const nom_fac =
+  //     form.c_codfac === 'E'
+  //       ? 'FACULTAD DE INGENIERÍA Y NEGOCIOS'
+  //       : 'FACULTAD DE CIENCIAS DE LA SALUD';
+
+  //   const especialidadSeleccionada = this.especialidades.find(
+  //     (e) => e.codesp === form.c_codesp
+  //   );
+  //   const nomesp = especialidadSeleccionada
+  //     ? especialidadSeleccionada.nomesp
+  //     : 'SIN ESPECIALIDAD';
+
+  //   const modalidadSeleccionada = this.modalidades.find(
+  //     (m) => m.value === form.c_codmod
+  //   );
+  //   const c_nommod = modalidadSeleccionada
+  //     ? modalidadSeleccionada.label.toUpperCase()
+  //     : 'SIN MODALIDAD';
+
+  //   const nuevoTurno = {
+  //     ...form,
+  //     n_ciclo: Number(form.n_ciclo),
+  //     n_codper: Number(form.n_codper),
+  //     n_codpla: Number(form.n_codpla),
+  //     estado: 0,
+  //     nom_fac,
+  //     nomesp,
+  //     c_nommod,
+  //   };
+
+  //   this.turnoService.createTurno(nuevoTurno).subscribe({
+  //     next: () => {
+  //       this.alertService.createTurnoSuccess();
+  //       this.isSaving = false; // 👈 detener loader
+  //       this.mostrarModalCrear = false;
+  //       this.cerrarModalCrear(); // 👈 limpiar correctamente
+  //       this.getTurnos();
+  //     },
+  //     error: (err: HttpErrorResponse) => {
+  //       this.isSaving = false; // 👈 detener loader también en error
+  //       const message = err.error?.message || 'Error al crear el turno.';
+  //       this.alertService.createTurnoError(message);
+  //     },
+  //   });
+  // }
   guardarTurno() {
     if (this.formularioHorario.invalid) {
       this.formularioHorario.markAllAsTouched();
       console.warn('Formulario incompleto');
+
+      // ⚠️ Mostrar alerta personalizada
+      this.alertService.saveError(
+        'Completa todos los campos requeridos antes de guardar.'
+      );
       return;
     }
 
@@ -349,15 +410,15 @@ export class VerTurnosComponent implements OnInit {
     this.turnoService.createTurno(nuevoTurno).subscribe({
       next: () => {
         this.alertService.createTurnoSuccess();
-        this.isSaving = false; // 👈 detener loader
+        this.isSaving = false;
         this.mostrarModalCrear = false;
-        this.cerrarModalCrear(); // 👈 limpiar correctamente
+        this.cerrarModalCrear();
         this.getTurnos();
       },
       error: (err: HttpErrorResponse) => {
-        this.isSaving = false; // 👈 detener loader también en error
+        this.isSaving = false;
         const message = err.error?.message || 'Error al crear el turno.';
-        this.alertService.createTurnoError(message);
+        this.alertService.saveError(message);
       },
     });
   }

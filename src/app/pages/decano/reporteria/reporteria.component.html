@@ -253,7 +253,7 @@
               <td class="p-4 border-b border-slate-200">{{ docente.h_min }}</td>
               <td class="p-4 border-b border-slate-200">{{ docente.h_max }}</td>
 
-              <td class="p-4 border-b border-slate-200">
+              <!-- <td class="p-4 border-b border-slate-200">
                 <span
                   [ngClass]="{
                     'text-yellow-700 font-semibold':
@@ -276,6 +276,45 @@
                     }}
                   </span>
                 </span>
+              </td> -->
+
+              <td class="p-4 border-b border-slate-200">
+                <ng-container
+                  *ngIf="
+                    docente.horarios && docente.horarios.length > 0;
+                    else sinHoras
+                  "
+                >
+                  <ng-container
+                    *ngIf="sumarHoras(docente.horarios) as totalHoras"
+                  >
+                    <span
+                      [ngClass]="{
+                        'text-yellow-700 font-semibold':
+                          totalHoras < docente.h_min,
+                        'text-emerald-700 font-semibold':
+                          totalHoras >= docente.h_min &&
+                          totalHoras <= docente.h_max,
+                        'text-red-700 font-semibold': totalHoras > docente.h_max
+                      }"
+                    >
+                      {{ totalHoras }}
+                      <span class="text-xs ml-1 italic">
+                        {{
+                          totalHoras < docente.h_min
+                            ? "(insuficiente)"
+                            : totalHoras > docente.h_max
+                            ? "(exceso)"
+                            : "(bien)"
+                        }}
+                      </span>
+                    </span>
+                  </ng-container>
+                </ng-container>
+
+                <ng-template #sinHoras>
+                  <span class="text-slate-500 font-medium">0</span>
+                </ng-template>
               </td>
 
               <td class="p-4 border-b border-slate-200">

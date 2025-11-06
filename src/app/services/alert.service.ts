@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AlertService {
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+  public loading$ = this.loadingSubject.asObservable();
+
   constructor() {}
 
   // success(message: string = 'Se actualizó'): void {
@@ -54,6 +58,14 @@ export class AlertService {
       },
     });
   }
+  // success(message: string, title: string = '¡Éxito!') {
+  //   Swal.fire({
+  //     title: title,
+  //     text: message,
+  //     icon: 'success',
+  //     confirmButtonText: 'OK',
+  //   });
+  // }
 
   saveError(error?: string): void {
     Swal.fire({
@@ -245,5 +257,56 @@ export class AlertService {
       confirmButtonText: 'Reintentar',
       confirmButtonColor: '#dc2626',
     });
+  }
+
+  // Llama cuando comienza una solicitud
+  iniciarSolicitud(): void {
+    this.loadingSubject.next(true);
+  }
+
+  // Llama cuando termina una solicitud
+  finalizarSolicitud(): void {
+    this.loadingSubject.next(false);
+  }
+
+  // ❌ Alerta de error
+  error(message: string, title: string = 'Oops...!') {
+    Swal.fire({
+      title: title,
+      text: message,
+      icon: 'error',
+      confirmButtonText: 'OK',
+    });
+  }
+
+  warning(message: string, title: string = 'Campos obligatorios') {
+    return Swal.fire({
+      title: title,
+      html: `<div style="text-align: left;">
+                  <ul style="padding-left: 20px; text-align: left; font-size: 20px;">
+                    ${message
+                      .split('\n')
+                      .map((item) => `<li>${item}</li>`)
+                      .join('')}
+                  </ul>
+                </div>`,
+      icon: 'warning',
+      confirmButtonText: 'OK',
+      width: '450px',
+    });
+  }
+
+  confirm(
+    message: string,
+    title: string = 'Confirmar acción'
+  ): Promise<boolean> {
+    return Swal.fire({
+      title: title,
+      text: message,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, continuar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => result.isConfirmed);
   }
 }

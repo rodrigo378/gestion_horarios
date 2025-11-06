@@ -1,6 +1,6 @@
 /* 📌 Aumentar la altura de las franjas horarias normales */
 ::ng-deep .fc-timegrid-slot {
-  height: 100px !important;
+  height: 140px !important; /* Ajusta la altura de las filas normales */
   min-height: 100px !important;
 }
 
@@ -18,7 +18,6 @@
 /* 📌 Ajustar el tamaño del texto de los eventos */
 ::ng-deep .fc-event {
   font-size: 20px !important;
-  padding: 10px !important;
   line-height: 20px !important;
 }
 
@@ -44,6 +43,7 @@
 ::ng-deep .fc-event-title {
   font-size: 11px !important; /* o prueba con 12px */
   font-weight: 500;
+  /* border: 1px solid red; */
 }
 
 [draggable="true"] {
@@ -53,18 +53,39 @@
 .curso-disabled {
   opacity: 0.5;
   pointer-events: none;
-  filter: grayscale(100%);
 }
 
-/* =================== */
-.alert-overlay {
-  z-index: 9999 !important;
+::ng-deep .docente-text {
+  font-size: 10px !important;
+  color: #ffffff !important;
+  opacity: 0.95;
+  text-align: left;
+  margin-top: 2px;
+  line-height: 1.2;
+  pointer-events: none;
+  z-index: 100 !important;
+  /* border: 1px solid white; */
 }
 
-.swal-container-top {
-  z-index: 9999 !important;
+::ng-deep .fc-event-title-container {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  z-index: 100 !important;
+}
+::ng-deep .fc-event-title-container {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 10px !important;
+  z-index: 100 !important;
 }
 
-.swal-top {
-  z-index: 9999 !important;
+::ng-deep .aula-text {
+  font-size: 11px !important;
+  color: white !important; /* gris claro para diferenciar del docente */
+  /* opacity: ; */
+  font-weight: 400;
+  margin-top: 1px !important;
+  /* line-height: 1.1 !important; */
+  pointer-events: none;
+  z-index: 100 !important;
 }

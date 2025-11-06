@@ -8,7 +8,7 @@ import { PlanCurso } from '../interfaces_2/Plan';
   providedIn: 'root',
 })
 export class PlanCursoService {
-  private apiUrl = `${environment.api}/plan`;
+  private apiUrl = `${environment.api}/hr/plan`;
 
   constructor(private http: HttpClient) {}
 

@@ -138,13 +138,34 @@
           *ngFor="let curso of cursosPlan2025"
           class="relative bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3"
           [ngClass]="{
-            'fc-event cursor-move': isDraggable(curso),
+            'fc-event cursor-move': isDraggable(curso) && curso.grupos_hijos?.[0]?.tipo !== 0,
             'opacity-60 cursor-not-allowed pointer-events-none':
-              !isDraggable(curso)
+              !isDraggable(curso) || curso.grupos_hijos?.[0]?.tipo === 0
           }"
-          [attr.data-event]="isDraggable(curso) ? stringifyEvent(curso) : null"
-          [attr.aria-disabled]="!isDraggable(curso)"
+          [attr.data-event]="
+            isDraggable(curso) && curso.grupos_hijos?.[0]?.tipo !== 0
+              ? stringifyEvent(curso)
+              : null
+          "
+          [attr.aria-disabled]="!isDraggable(curso) || curso.grupos_hijos?.[0]?.tipo === 0"
+          style="padding: 5px !important"
         >
+          <ng-container *ngIf="curso.grupos_hijos?.length">
+            <span
+              *ngIf="curso.grupos_hijos[0]?.tipo === 0"
+              class="absolute top-1.5 right-11 bg-yellow-400 text-white text-[13px] font-bold px-2 py-0.5 rounded shadow"
+            >
+              Transversal
+            </span>
+            <span
+              *ngIf="curso.grupos_hijos[0]?.tipo === 1"
+              class="absolute top-1.5 right-11 bg-purple-700 text-white text-[13px] font-bold px-2 py-0.5 rounded shadow"
+            >
+              Agrupado
+            </span>
+          </ng-container>
+
+          <!-- 🩶 Estado (ASIGNADO SIN HORAS) -->
           <span
             *ngIf="!isDraggable(curso)"
             class="absolute top-2 right-10 text-[10px] font-bold tracking-wide bg-gray-200 text-gray-700 px-2 py-0.5 rounded pointer-events-none"
@@ -152,24 +173,42 @@
             {{ estadoHorasTexto(curso) }}
           </span>
 
-          <button
-            type="button"
-            class="absolute top-1/2 -translate-y-1/2 right-2 z-10 inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 shadow-sm transition pointer-events-auto"
-            title="Crear horario para este curso"
-            (click)="abrirModalDesdeCard(curso, $event)"
-            [disabled]="guardando"
-            draggable="false"
-            aria-label="Crear horario"
+          <!-- 🔽 Botón para abrir modal o candado -->
+          <ng-container
+            *ngIf="curso.grupos_hijos?.[0]?.tipo === 0; else botonHorario"
           >
-            <i class="fa-solid fa-chevron-down text-xs"></i>
-          </button>
+            <button
+              type="button"
+              class="absolute top-1/2 -translate-y-1/2 right-2 z-10 inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 border border-gray-300 text-gray-500 shadow-sm cursor-not-allowed m-0 p-0"
+              title="Curso transversal (no editable)"
+              disabled
+            >
+              <i class="fa-solid fa-lock text-xs"></i>
+            </button>
+          </ng-container>
 
+          <ng-template #botonHorario>
+            <button
+              type="button"
+              class="absolute top-1/2 -translate-y-1/2 right-2 z-10 inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 shadow-sm transition pointer-events-auto"
+              title="Crear horario para este curso"
+              (click)="abrirModalDesdeCard(curso, $event)"
+              [disabled]="guardando"
+              draggable="false"
+              aria-label="Crear horario"
+            >
+              <i class="fa-solid fa-chevron-down text-xs"></i>
+            </button>
+          </ng-template>
+
+          <!-- 🟩 Área del curso -->
           <span
             class="absolute right-10 bottom-2 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-r-lg pointer-events-none"
           >
             {{ curso.c_nom_cur_area }}
           </span>
 
+          <!-- 🧩 Información principal -->
           <p class="text-sm text-slate-800 font-medium pr-10">
             <span class="font-semibold text-emerald-600"
               >[ {{ curso.c_codcur }} ]</span

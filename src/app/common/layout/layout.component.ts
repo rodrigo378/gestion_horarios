@@ -104,31 +104,94 @@ export class LayoutComponent implements OnInit {
   }
 
   /** Abre el grupo si alguno de sus hijos coincide con la URL actual */
+  // isGroupOpen(g: any): boolean {
+  //   const current = this.router.url.split('?')[0];
+  //   return (g?.children || []).some((it: any) => {
+  //     const p = (it.path || it.key || '').toString();
+  //     return p && current.startsWith(p);
+  //   });
+  // }
+  /** Abre solo el grupo del módulo actual (sin activar otros como TI) */
   isGroupOpen(g: any): boolean {
     const current = this.router.url.split('?')[0];
+    const [, seg1, seg2, seg3] = current.split('/');
+
     return (g?.children || []).some((it: any) => {
       const p = (it.path || it.key || '').toString();
-      return p && current.startsWith(p);
+      if (!p) return false;
+
+      const itemSegs = p.split('/').slice(1);
+      if (itemSegs.length < 2) return false;
+
+      const itemSeg1 = itemSegs[0];
+      const itemSeg2 = itemSegs[1];
+      const alias = this.aliasItemMap[seg2 || ''];
+
+      // ✅ Coincide solo si el grupo pertenece al mismo módulo (ej. 'coa')
+      if (seg1 !== itemSeg1) return false;
+
+      // ✅ Caso especial: /coa/asignar/:id abre el grupo que contiene /coa/asignarhorario
+      const esRutaAsignarConId =
+        seg1 === 'coa' &&
+        seg2 === 'asignar' &&
+        !!seg3 &&
+        (itemSeg2 === 'asignarhorario' || itemSeg2 === 'turno');
+
+      const coincideNormal =
+        current.startsWith(p) || seg2 === itemSeg2 || alias === itemSeg2;
+
+      return coincideNormal || esRutaAsignarConId;
     });
   }
 
   /** Marca el item activo (usa path completo, y alias para compatibilidad) */
+  // isItemActive(it: any): boolean {
+  //   const current = this.router.url.split('?')[0];
+  //   const p = (it.path || it.key || '').toString();
+  //   if (!p) return false;
+  //   // activo si match exacto o si coincide segmento 2 via alias
+  //   if (current === p) return true;
+
+  //   // /coa/turno vs /coa/asignarhorario (alias 'turno')
+  //   const [, seg1, seg2] = current.split('/');
+  //   const itemSegs = p.split('/').slice(1);
+  //   if (itemSegs.length >= 2) {
+  //     const itemSeg2 = itemSegs[1];
+  //     const alias = this.aliasItemMap[seg2 || ''];
+  //     return seg1 === itemSegs[0] && (seg2 === itemSeg2 || alias === itemSeg2);
+  //   }
+  //   return false;
+  // }
+  /** Marca el item activo (usa path completo, alias y rutas con ID) */
+  /** Marca el ítem activo solo si pertenece al grupo actualmente abierto */
   isItemActive(it: any): boolean {
     const current = this.router.url.split('?')[0];
     const p = (it.path || it.key || '').toString();
     if (!p) return false;
-    // activo si match exacto o si coincide segmento 2 via alias
-    if (current === p) return true;
 
-    // /coa/turno vs /coa/asignarhorario (alias 'turno')
-    const [, seg1, seg2] = current.split('/');
+    const [, seg1, seg2, seg3] = current.split('/');
     const itemSegs = p.split('/').slice(1);
-    if (itemSegs.length >= 2) {
-      const itemSeg2 = itemSegs[1];
-      const alias = this.aliasItemMap[seg2 || ''];
-      return seg1 === itemSegs[0] && (seg2 === itemSeg2 || alias === itemSeg2);
-    }
-    return false;
+    if (itemSegs.length < 2) return false;
+
+    const itemSeg1 = itemSegs[0];
+    const itemSeg2 = itemSegs[1];
+    const alias = this.aliasItemMap[seg2 || ''];
+
+    // ✅ Coincide solo si pertenece al mismo módulo (por ejemplo 'coa')
+    if (seg1 !== itemSeg1) return false;
+
+    // ✅ Detecta alias o rutas con parámetros dinámicos (como /coa/asignar/2341)
+    const esRutaAsignarConId =
+      seg1 === 'coa' &&
+      seg2 === 'asignar' &&
+      !!seg3 &&
+      (itemSeg2 === 'asignarhorario' || itemSeg2 === 'turno');
+
+    // Coincidencia normal o por alias
+    const coincideNormal = seg2 === itemSeg2 || alias === itemSeg2;
+
+    // Solo es activo si coincide y el grupo del módulo está abierto
+    return coincideNormal || esRutaAsignarConId;
   }
 
   /** Mapear 'IdcardOutlined' → 'idcard' (ng-zorro) */

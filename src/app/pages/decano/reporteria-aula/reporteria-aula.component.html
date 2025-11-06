@@ -314,8 +314,7 @@
                         h.dia || "—"
                       }}</span>
                       |
-                      {{ h.h_inicio | date : "shortTime" }} -
-                      {{ h.h_fin | date : "shortTime" }} ({{ h.n_horas }} hora{{
+                      {{ h.h_inicio }} - {{ h.h_fin }} ({{ h.n_horas }} hora{{
                         h.n_horas > 1 ? "s" : ""
                       }})
 
@@ -335,12 +334,17 @@
                             ? "Presencial"
                             : h.modalidad === "vir"
                             ? "Virtual"
-                            : h.modalidad || ""
+                            : h.modalidad || "h."
                         }}
                       </span>
 
                       <span class="font-medium text-slate-900"> | Curso:</span>
                       {{ h.curso?.plan?.c_nomcur || "—" }}
+
+                      <span class="font-medium text-slate-900">
+                        | Sección:</span
+                      >
+                      {{ h.curso?.turno?.c_grpcur || "—" }}
 
                       <span class="font-medium text-slate-900">
                         | Docente:</span

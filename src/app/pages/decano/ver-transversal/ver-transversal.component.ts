@@ -1,340 +1,345 @@
-// import { Component, OnInit } from '@angular/core';
-// import { HttpErrorResponse } from '@angular/common/http';
-// import { Curso2, Especialidad } from '../../../interfaces/Curso';
-// import { Periodo } from '../../../interfaces/turno';
-// import { HorarioService } from '../../../services/horario.service';
-// import { CursoService } from '../../../services/curso.service';
-// import { AlertService } from '../../../services/alert.service';
-// import { TurnoService } from '../../../services/turno.service';
+import { Component } from '@angular/core';
+import { HR_Curso } from '../../../interfaces/hr/hr_curso';
+import { HR_Periodo } from '../../../interfaces/hr/hr_periodo';
+import { CursoService } from '../../../services/curso.service';
+import { AlertService } from '../../../services/alert.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
-// @Component({
-//   selector: 'app-ver-transversal',
-//   standalone: false,
-//   templateUrl: './ver-transversal.component.html',
-//   styleUrl: './ver-transversal.component.css',
-// })
-// export class VerTransversalComponent implements OnInit {
-//   cursos: Curso2[] = [];
-//   curso!: Curso2;
+@Component({
+  selector: 'app-ver-transversal',
+  standalone: false,
+  templateUrl: './ver-transversal.component.html',
+  styleUrl: './ver-transversal.component.css',
+})
 
-//   Math = Math;
+// export class VerTransversalComponent implements OnInit {}
+export class VerTransversalComponent {
+  cursos: HR_Curso[] = [];
+  curso!: HR_Curso;
 
-//   totalCursos!: number;
+  Math = Math;
 
-//   periodos!: Periodo[];
+  totalCursos!: number;
 
-//   paginaActual: number = 1;
-//   todosSeleccionados: boolean = false;
+  periodos: HR_Periodo[] = [
+    { n_codper: 20251, f_cierre: new Date() },
+    { n_codper: 20252, f_cierre: new Date() },
+    { n_codper: 20261, f_cierre: new Date() },
+  ];
 
-//   especialidades: Especialidad[] = [];
-//   especialidadesModal: Especialidad[] = [];
-//   cursosFiltrados: any[] = [];
+  paginaActual: number = 1;
+  todosSeleccionados: boolean = false;
 
-//   selectFacultadad: string = '';
-//   selectEspecialidad: string = '';
-//   selectModalidad: string = '';
-//   selectPlan: string = '2025';
-//   selectPeriodo: number = 20252;
-//   selectCiclo: string = '';
+  // especialidades: any[] = [];
+  especialidades: { nomesp: string; codesp: string; codfac: string }[] = [
+    {
+      nomesp: 'ADMINISTRACIÓN DE NEGOCIOS INTERNACIONALES',
+      codesp: 'E1',
+      codfac: 'E',
+    },
+    { nomesp: 'ADMINISTRACIÓN Y MARKETING', codesp: 'E2', codfac: 'E' },
+    { nomesp: 'CONTABILIDAD Y FINANZAS', codesp: 'E3', codfac: 'E' },
+    { nomesp: 'INGENIERÍA INDUSTRIAL', codesp: 'E5', codfac: 'E' },
+    { nomesp: 'INGENIERÍA DE IA', codesp: 'E6', codfac: 'E' },
+    { nomesp: 'INGENIERÍA DE SISTEMAS', codesp: 'E7', codfac: 'E' },
+    { nomesp: 'ENFERMERÍA', codesp: 'S1', codfac: 'S' },
+    { nomesp: 'FARMACIA Y BIOQUÍMICA', codesp: 'S2', codfac: 'S' },
+    { nomesp: 'NUTRICIÓN Y DIETÉTICA', codesp: 'S3', codfac: 'S' },
+    { nomesp: 'PSICOLOGÍA', codesp: 'S4', codfac: 'S' },
+    { nomesp: 'TM TERAPIA FÍSICA Y REHAB', codesp: 'S5', codfac: 'S' },
+    { nomesp: 'TM LAB. CLÍNICO Y ANAT. PAT', codesp: 'S6', codfac: 'S' },
+    { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
+  ];
 
-//   cargandoCursos: boolean = true;
-//   busquedaEjecutada: boolean = false;
+  // especialidadesModal: any[] = [];
+  especialidadesModal: { nomesp: string; codesp: string; codfac: string }[] = [
+    {
+      nomesp: 'ADMINISTRACIÓN DE NEGOCIOS INTERNACIONALES',
+      codesp: 'E1',
+      codfac: 'E',
+    },
+    { nomesp: 'ADMINISTRACIÓN Y MARKETING', codesp: 'E2', codfac: 'E' },
+    { nomesp: 'CONTABILIDAD Y FINANZAS', codesp: 'E3', codfac: 'E' },
+    { nomesp: 'INGENIERÍA INDUSTRIAL', codesp: 'E5', codfac: 'E' },
+    { nomesp: 'INGENIERÍA DE IA', codesp: 'E6', codfac: 'E' },
+    { nomesp: 'INGENIERÍA DE SISTEMAS', codesp: 'E7', codfac: 'E' },
+    { nomesp: 'ENFERMERÍA', codesp: 'S1', codfac: 'S' },
+    { nomesp: 'FARMACIA Y BIOQUÍMICA', codesp: 'S2', codfac: 'S' },
+    { nomesp: 'NUTRICIÓN Y DIETÉTICA', codesp: 'S3', codfac: 'S' },
+    { nomesp: 'PSICOLOGÍA', codesp: 'S4', codfac: 'S' },
+    { nomesp: 'TM TERAPIA FÍSICA Y REHAB', codesp: 'S5', codfac: 'S' },
+    { nomesp: 'TM LAB. CLÍNICO Y ANAT. PAT', codesp: 'S6', codfac: 'S' },
+    { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
+  ];
 
-//   arrayCheckboxCursos: number[] = [];
+  cursosFiltrados: HR_Curso[] = [];
 
-//   mostrarModalCrear: boolean = false;
+  selectFacultadad: string = '';
+  selectEspecialidad: string = '';
+  selectModalidad: string = '';
+  selectPlan: string = '2025';
+  selectPeriodo: number = 20261;
+  selectCiclo: string = '';
 
-//   itemsPorPagina: number = 20;
+  arrayCheckboxCursos: number[] = [];
 
-//   filtros = {
-//     c_codmod: '',
-//     n_codper: '0',
-//     periodo: 0,
-//     c_codfac: '',
-//     c_codesp: '',
-//     n_ciclo: 0,
-//     busqueda: '',
-//   };
+  mostrarModalCrear: boolean = false;
 
-//   filtroBusqueda: string = '';
+  itemsPorPagina: number = 20;
 
-//   constructor(
-//     private horarioService: HorarioService,
-//     private cursoService: CursoService,
-//     private alertService: AlertService,
-//     private turnoService: TurnoService
-//   ) {}
+  cargandoCursos: boolean = true;
 
-//   ngOnInit(): void {
-//     this.getPeriodos();
-//   }
+  busquedaEjecutada: boolean = false;
 
-//   getCursos() {
-//     const skip = (this.paginaActual - 1) * this.itemsPorPagina;
-//     const take = this.itemsPorPagina;
+  filtros = {
+    c_codmod: '',
+    n_codper: '2025',
+    periodo: 20261,
+    c_codfac: '',
+    c_codesp: '',
+    n_ciclo: 0,
+    busqueda: '',
+  };
 
-//     this.horarioService
-//       .getCurso(
-//         Number(this.selectModalidad),
-//         this.selectPlan,
-//         this.selectPeriodo,
-//         this.selectFacultadad,
-//         this.selectEspecialidad,
-//         undefined,
-//         Number(this.selectCiclo),
-//         undefined,
-//         this.filtroBusqueda.trim(),
-//         skip,
-//         take
-//       )
-//       .subscribe((data) => {
-//         this.cursos = data.data;
-//         console.log('cursos => ', this.cursos);
+  filtroBusqueda: string = '';
 
-//         this.totalCursos = data.total;
-//       });
-//   }
+  constructor(
+    private cursoService: CursoService,
+    private alertService: AlertService
+  ) {}
 
-//   getPeriodos() {
-//     this.turnoService.getPeriodos().subscribe((data) => {
-//       this.periodos = data;
-//     });
-//   }
+  ngOnInit(): void {}
 
-//   buscarDesdeInput() {
-//     this.paginaActual = 1;
-//     this.getCursos();
-//   }
+  getCursos() {
+    const skip = (this.paginaActual - 1) * this.itemsPorPagina;
+    const take = this.itemsPorPagina;
 
-//   avanzarPagina() {
-//     const totalPaginas = Math.ceil(this.totalCursos / 20);
-//     if (this.paginaActual < totalPaginas) {
-//       this.paginaActual++;
-//       this.getCursos();
-//     }
-//   }
+    this.cursoService
+      .getCurso(
+        Number(this.selectModalidad),
+        this.selectPlan,
+        this.selectPeriodo,
+        this.selectFacultadad,
+        this.selectEspecialidad,
+        undefined,
+        Number(this.selectCiclo),
+        undefined,
+        this.filtroBusqueda.trim(),
+        skip,
+        take
+      )
+      .subscribe((data) => {
+        this.cursos = data.data;
+        this.totalCursos = data.total;
+      });
+  }
 
-//   retrocederPagina() {
-//     if (this.paginaActual > 1) {
-//       this.paginaActual--;
-//       this.getCursos();
-//     }
-//   }
+  buscarDesdeInput() {
+    this.paginaActual = 1;
+    this.getCursos();
+  }
 
-//   getCursoTransversal() {
-//     this.cargandoCursos = true;
-//     this.alertService.iniciarSolicitud();
+  avanzarPagina() {
+    const totalPaginas = Math.ceil(this.totalCursos / 20);
+    if (this.paginaActual < totalPaginas) {
+      this.paginaActual++;
+      this.getCursos();
+    }
+  }
 
-//     this.horarioService
-//       .getCurso(
-//         Number(this.filtros.c_codmod),
-//         this.filtros.n_codper,
-//         this.filtros.periodo,
-//         this.filtros.c_codfac,
-//         this.filtros.c_codesp,
-//         undefined,
-//         this.filtros.n_ciclo,
-//         undefined,
-//         this.filtros.busqueda.trim()
-//       )
-//       .subscribe({
-//         next: (data) => {
-//           this.cursosFiltrados = data.data.filter((curso) => {
-//             console.log('curso => ', curso);
+  retrocederPagina() {
+    if (this.paginaActual > 1) {
+      this.paginaActual--;
+      this.getCursos();
+    }
+  }
 
-//             return (
-//               curso.turno_id !== this.curso.turno_id &&
-//               curso.cursosPadres.length === 0
-//             );
-//           });
-//         },
-//         error: (error) => {
-//           console.error('Error al obtener cursos transversales', error);
-//           this.alertService.error(
-//             'No se pudieron obtener los cursos transversales'
-//           );
-//         },
-//         complete: () => {
-//           this.cargandoCursos = false;
-//           this.alertService.finalizarSolicitud();
-//           if (this.cursosFiltrados.length === 0) {
-//             this.alertService.warning('No hay cursos');
-//           }
-//         },
-//       });
+  getCursosAgrupados() {
+    this.cargandoCursos = true;
+    this.alertService.iniciarSolicitud();
 
-//     // .subscribe((data) => {
-//     //   this.cursosFiltrados = data.data.filter((curso) => {
-//     //     const codA = this.curso.c_codcur;
-//     //     const codAeq = this.curso.c_codcur_equ;
-//     //     const codB = curso.c_codcur;
-//     //     const codBeq = curso.c_codcur_equ;
-//     //     const turno_idA = this.curso.turno_id;
-//     //     const turno_idB = curso.turno_id;
-//     //     const esMismoCurso = this.curso.id === curso.id;
-//     //     const esMismoTurno = turno_idA === turno_idB;
+    this.cursoService
+      .getCurso(
+        Number(this.filtros.c_codmod),
+        this.filtros.n_codper,
+        this.filtros.periodo,
+        this.filtros.c_codfac,
+        this.filtros.c_codesp,
+        undefined,
+        this.filtros.n_ciclo,
+        undefined,
+        this.filtros.busqueda.trim()
+      )
+      .subscribe({
+        next: (data) => {
+          this.cursosFiltrados = data.data.filter((curso) => {
+            return (
+              curso.turno_id !== this.curso.turno_id &&
+              // curso.cursosPadres.length === 0
+              curso.grupos_hijo?.length === 0
+            );
+          });
+        },
+        error: (error) => {
+          console.error('Error al obtener cursos transversales', error);
+          this.alertService.error(
+            'No se pudieron obtener los cursos transversales'
+          );
+        },
+        complete: () => {
+          this.cargandoCursos = false;
+          this.alertService.finalizarSolicitud();
+          if (this.cursosFiltrados.length === 0) {
+            this.alertService.warning('No hay cursos');
+          }
+        },
+      });
+  }
 
-//     //     return (
-//     //       !esMismoCurso &&
-//     //       !esMismoTurno &&
-//     //       (codA === codB ||
-//     //         codA === codBeq ||
-//     //         (codAeq && (codAeq === codB || codAeq === codBeq)))
-//     //     );
-//     //   });
+  changeSelectFacultad() {
+    // this.cursoService.getEspecialidades().subscribe((data) => {
+    //   this.especialidades = data.filter(
+    //     (especialidad) => especialidad.codfac === this.selectFacultadad
+    //   );
+    //   this.selectEspecialidad = '';
+    // });
+    this.especialidades = this.especialidades.filter(
+      (especialidad) => especialidad.codfac === this.selectFacultadad
+    );
+    this.selectEspecialidad = '';
+  }
 
-//     //   if (this.cursosFiltrados.length === 0) {
-//     //     this.alertService.info('Sin equivalencias');
-//     //   }
-//     // });
-//   }
+  changeSelectFacultadModal() {
+    // this.cursoService.getEspecialidades().subscribe((data) => {
+    //   this.especialidadesModal = data.filter(
+    //     (especialidad) => especialidad.codfac === this.filtros.c_codfac
+    //   );
 
-//   changeSelectFacultad() {
-//     this.cursoService.getEspecialidades().subscribe((data) => {
-//       this.especialidades = data.filter(
-//         (especialidad) => especialidad.codfac === this.selectFacultadad
-//       );
+    //   this.filtros.c_codesp = '';
+    // });
 
-//       this.selectEspecialidad = '';
-//     });
-//   }
+    this.especialidadesModal = this.especialidadesModal.filter(
+      (especialidad) => especialidad.codfac === this.filtros.c_codfac
+    );
 
-//   changeSelectFacultadModal() {
-//     this.cursoService.getEspecialidades().subscribe((data) => {
-//       this.especialidadesModal = data.filter(
-//         (especialidad) => especialidad.codfac === this.filtros.c_codfac
-//       );
+    this.filtros.c_codesp = '';
+  }
 
-//       this.filtros.c_codesp = '';
-//     });
-//   }
+  clickDefinirCursoTransversales() {
+    this.getCursos();
+  }
 
-//   clickMas(curso: Curso2) {
-//     this.curso = curso;
-//     this.filtros.periodo = curso.turno.n_codper;
-//     this.mostrarModalCrear = true;
-//   }
+  clickMas(curso: HR_Curso) {
+    this.curso = curso;
+    this.mostrarModalCrear = true;
+  }
 
-//   clickBuscarCursosModal() {
-//     this.busquedaEjecutada = true;
-//     this.getCursoTransversal();
-//   }
+  clickBuscarCursosModal() {
+    this.busquedaEjecutada = true;
+    this.getCursosAgrupados();
+  }
 
-//   clickMasCursoTransversal(hijo_id: number) {
-//     this.horarioService
-//       .asociarHorarioTransversal(Number(this.curso.id), hijo_id)
-//       .subscribe({
-//         next: (res: any) => {
-//           this.getCursoTransversal();
-//           this.getCursos();
-//           this.alertService.success('Se crea el curso transversal');
-//         },
-//         error: (err: HttpErrorResponse) => {
-//           this.alertService.error(err.error.message);
-//           console.log(err);
-//         },
-//       });
-//   }
+  cerrarModal() {
+    this.todosSeleccionados = false;
+    this.mostrarModalCrear = false;
+    this.cursosFiltrados = [];
+    this.arrayCheckboxCursos = [];
+    this.filtros = {
+      c_codmod: '',
+      n_codper: '2025',
+      periodo: 20261,
+      c_codfac: '',
+      c_codesp: '',
+      n_ciclo: 0,
+      busqueda: '',
+    };
+  }
 
-//   cerrarModal() {
-//     this.todosSeleccionados = false;
-//     this.mostrarModalCrear = false;
-//     this.cursosFiltrados = [];
-//     this.arrayCheckboxCursos = [];
-//     this.filtros = {
-//       c_codmod: '',
-//       n_codper: '0',
-//       periodo: 20252,
-//       c_codfac: '',
-//       c_codesp: '',
-//       n_ciclo: 0,
-//       busqueda: '',
-//     };
-//   }
+  estaSeleccionado(id: number): boolean {
+    return this.arrayCheckboxCursos.includes(id);
+  }
 
-//   estaSeleccionado(id: number): boolean {
-//     return this.arrayCheckboxCursos.includes(id);
-//   }
+  toggleSeleccionCurso(curso: any) {
+    const index = this.arrayCheckboxCursos.indexOf(curso.id);
 
-//   toggleSeleccionCurso(curso: any) {
-//     const index = this.arrayCheckboxCursos.indexOf(curso.id);
+    if (index !== -1) {
+      this.arrayCheckboxCursos.splice(index, 1);
+    } else {
+      this.arrayCheckboxCursos.push(curso.id);
+    }
+  }
 
-//     if (index !== -1) {
-//       this.arrayCheckboxCursos.splice(index, 1);
-//     } else {
-//       this.arrayCheckboxCursos.push(curso.id);
-//     }
-//   }
+  toggleSeleccionarTodos() {
+    this.todosSeleccionados = !this.todosSeleccionados;
 
-//   toggleSeleccionarTodos() {
-//     this.todosSeleccionados = !this.todosSeleccionados;
+    if (this.todosSeleccionados) {
+      this.arrayCheckboxCursos = this.cursosFiltrados.map((c) => c.id);
+    } else {
+      this.arrayCheckboxCursos = [];
+    }
+  }
 
-//     if (this.todosSeleccionados) {
-//       this.arrayCheckboxCursos = this.cursosFiltrados.map((c: any) => c.id);
-//     } else {
-//       this.arrayCheckboxCursos = [];
-//     }
-//   }
+  clickGuardarModal() {
+    // this.horarioService.createGrupo(this.curso.id, this.arrayCheckboxCursos, 0)
+    this.cursoService
+      .createTransversal(this.curso.id, this.arrayCheckboxCursos, 0)
+      .subscribe({
+        next: (res: any) => {
+          this.getCursos();
+          this.cursosFiltrados = [];
+          this.arrayCheckboxCursos = [];
+          this.filtros = {
+            c_codmod: '',
+            n_codper: '2025',
+            periodo: 20261,
+            c_codfac: '',
+            c_codesp: '',
+            n_ciclo: 0,
+            busqueda: '',
+          };
+          this.mostrarModalCrear = false;
+          this.alertService.success('Exito', 'Se creo grupo correctamente');
+        },
+        error: (err: HttpErrorResponse) => {
+          console.log(err);
+          this.alertService.error(`${err.error.errores}`);
+        },
+      });
+  }
 
-//   clickGuardarModal() {
-//     this.horarioService
-//       .createTransversal(this.curso.id, this.arrayCheckboxCursos, 0)
-//       .subscribe({
-//         next: (res: any) => {
-//           this.getCursos();
-//           this.cursosFiltrados = [];
-//           this.arrayCheckboxCursos = [];
-//           this.filtros = {
-//             c_codmod: '',
-//             n_codper: '0',
-//             periodo: 20252,
-//             c_codfac: '',
-//             c_codesp: '',
-//             n_ciclo: 0,
-//             busqueda: '',
-//           };
-//           this.mostrarModalCrear = false;
-//           this.alertService.success('Se creo grupo correctamente');
-//         },
-//         error: (err: HttpErrorResponse) => {
-//           console.log(err);
-//           this.alertService.error(`${err.error.errores}`);
-//         },
-//       });
-//   }
+  async confirmarEliminacionTransversal(padre_id: number) {
+    const confirmado = this.alertService.confirm(
+      '¿Estás seguro de eliminar este grupo?\n\n⚠️ Esto eliminará todos los horarios asignados actualmente.'
+    );
 
-//   async confirmarEliminacionTransversal(padre_id: number) {
-//     const confirmado = this.alertService.confirm(
-//       '¿Estás seguro de eliminar este grupo transversal?\n\n⚠️ Esto eliminará todos los horarios asignados actualmente.'
-//     );
+    if (await confirmado) {
+      this.clickDeleteTransversal(padre_id);
+    }
+  }
 
-//     if (await confirmado) {
-//       this.clickDeleteTransversal(padre_id);
-//     }
-//   }
+  clickDeleteTransversal(padre_id: number) {
+    // this.horarioService.deleteTransversal(padre_id).subscribe({
+    this.cursoService.deleteTransversal(padre_id).subscribe({
+      next: (res: any) => {
+        this.getCursos();
+        this.alertService.success('Exito', 'Se borro este grupo correctamente');
+      },
+      error: (err: HttpErrorResponse) => {
+        console.log(err);
+        this.alertService.error(`${err.error.errores}`);
+      },
+    });
+  }
 
-//   clickDeleteTransversal(padre_id: number) {
-//     this.horarioService.deleteTransversal(padre_id).subscribe({
-//       next: (res: any) => {
-//         this.getCursos();
-//         this.alertService.success('Se borro este grupo correctamente');
-//       },
-//       error: (err: HttpErrorResponse) => {
-//         console.log(err);
-//         this.alertService.error(`${err.error.errores}`);
-//       },
-//     });
-//   }
+  cambiarItemsPorPagina(valor: number) {
+    this.itemsPorPagina = valor;
+    this.paginaActual = 1;
+    this.getCursos();
+  }
 
-//   cambiarItemsPorPagina(valor: number) {
-//     this.itemsPorPagina = valor;
-//     this.paginaActual = 1;
-//     this.getCursos();
-//   }
-
-//   mostrarAlertaVencido() {
-//     this.alertService.error(
-//       'La fecha de asignación ha caducado. Ya no puedes modificar este turno.'
-//     );
-//   }
-// }
+  mostrarAlertaVencido() {
+    this.alertService.error(
+      'La fecha de asignación ha caducado. Ya no puedes modificar este turno.'
+    );
+  }
+}
