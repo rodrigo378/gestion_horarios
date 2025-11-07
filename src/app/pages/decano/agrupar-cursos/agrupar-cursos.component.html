@@ -208,9 +208,8 @@
                 curso.horarios; track horario.id) {
                 <p class="text-sm text-slate-700">
                   {{ horario.docente?.c_nomdoc || "sin docente" }}
-                  ({{ horario.dia }})
-                  {{ horario.h_inicio | date : "shortTime" }} -
-                  {{ horario.h_fin | date : "shortTime" }}
+                  ({{ horario.dia }}) {{ horario.h_inicio }} -
+                  {{ horario.h_fin }}
                 </p>
                 } } @else {
                 <p class="text-sm text-slate-500">Sin asignar</p>

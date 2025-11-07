@@ -79,7 +79,7 @@ export class CursoService {
   }
 
   deleteTransversal(padre_id: number) {
-    return this.http.delete(`${this.apiUrl}/curso/transversal/${padre_id}`, {
+    return this.http.delete(`${this.apiUrl}/grupo/${padre_id}`, {
       withCredentials: true,
     });
   }

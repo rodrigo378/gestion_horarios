@@ -309,4 +309,30 @@ export class AlertService {
       cancelButtonText: 'Cancelar',
     }).then((result) => result.isConfirmed);
   }
+  // ==========================
+  // 🧁 TOAST SUAVE (NO BLOQUEANTE)
+  // ==========================
+
+  toastSuccess(
+    message: string = 'Acción completada correctamente',
+    icon: 'success' | 'info' | 'warning' | 'error' = 'success',
+    duration: number = 2500
+  ): void {
+    Swal.fire({
+      toast: true,
+      position: 'bottom-end',
+      icon,
+      title: message,
+      showConfirmButton: false,
+      timer: duration,
+      timerProgressBar: true,
+      background: '#ffffff',
+      color:
+        icon === 'error'
+          ? '#dc2626'
+          : icon === 'warning'
+          ? '#f59e0b'
+          : '#16a34a',
+    });
+  }
 }

@@ -133,21 +133,22 @@
         📗 Plan 2025 ({{ count2025 }}) - Asignados
       </h3>
 
+      <!-- [ngClass]="{
+            'fc-event cursor-move': isDraggable(curso) && curso.grupos_hijos?.[0]?.tipo !== 0,
+            'opacity-60 cursor-not-allowed pointer-events-none':
+              !isDraggable(curso) || curso.grupos_hijos?.[0]?.tipo === 0
+          }" -->
       <div class="space-y-3" *ngIf="cursosPlan2025?.length; else no2025">
         <div
           *ngFor="let curso of cursosPlan2025"
           class="relative bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3"
           [ngClass]="{
-            'fc-event cursor-move': isDraggable(curso) && curso.grupos_hijos?.[0]?.tipo !== 0,
+            'fc-event cursor-move': isDraggable(curso),
             'opacity-60 cursor-not-allowed pointer-events-none':
-              !isDraggable(curso) || curso.grupos_hijos?.[0]?.tipo === 0
+              !isDraggable(curso)
           }"
-          [attr.data-event]="
-            isDraggable(curso) && curso.grupos_hijos?.[0]?.tipo !== 0
-              ? stringifyEvent(curso)
-              : null
-          "
-          [attr.aria-disabled]="!isDraggable(curso) || curso.grupos_hijos?.[0]?.tipo === 0"
+          [attr.data-event]="isDraggable(curso) ? stringifyEvent(curso) : null"
+          [attr.aria-disabled]="!isDraggable(curso)"
           style="padding: 5px !important"
         >
           <ng-container *ngIf="curso.grupos_hijos?.length">
@@ -317,7 +318,7 @@
       🗑️ Eliminar todos los horarios
     </button>
 
-    <button
+    <!-- <button
       (click)="guardarEventos()"
       nz-button
       nzType="primary"
@@ -325,7 +326,7 @@
       class="bg-green-600 text-white px-4 py-2 rounded-2xl hover:bg-green-700 transition"
     >
       💾 Guardar horarios
-    </button>
+    </button> -->
   </div>
 </div>
 

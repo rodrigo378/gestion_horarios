@@ -25,7 +25,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DocenteService } from '../../../services/docente.service';
 import { AulaService } from '../../../services/aula.service';
 import { HR_Aula } from '../../../interfaces/hr/hr_aula';
-import 'tippy.js/dist/tippy.css'; // opcional, si quieres los estilos del tooltip
+import 'tippy.js/dist/tippy.css';
 
 type FilaCursoPlan = HR_Plan_Estudio_Curso & { cursoGenerado: HR_Curso | null };
 
@@ -64,6 +64,7 @@ export class AsignarHorarioComponent
   @ViewChild('selModalidad') selModalidadRef!: ElementRef<HTMLSelectElement>;
 
   private lastDropRevert: (() => void) | null = null;
+  private estadoAnteriorEvento: any = null;
 
   genVisible = false;
   genLoading = false;
@@ -206,8 +207,6 @@ export class AsignarHorarioComponent
   private addEstadoBadge(info: any) {
     try {
       const ext = info.event.extendedProps || {};
-      const estRaw = (ext['estado'] ?? '').toString().toUpperCase();
-      const estado = estRaw === 'TEMPORAL' ? 'TEMPORAL' : 'GUARDADO';
       const modalidad = (ext['modalidad'] ?? '').toString().toUpperCase();
       const docente = ext['docente'] || ext['docente_nombre'] || '';
       const aula =
@@ -222,33 +221,8 @@ export class AsignarHorarioComponent
 
       (main as HTMLElement).style.position = 'relative';
 
-      // ==========================
-      // 🔹 Badge superior derecha (estado)
-      // ==========================
-      const badge = document.createElement('span');
-      badge.className = 'badge-estado';
-      badge.textContent = estado;
-      Object.assign(badge.style, {
-        position: 'absolute',
-        top: '4px',
-        right: '4px',
-        fontSize: '10px',
-        color: '#fff',
-        padding: '2px 6px',
-        borderRadius: '4px',
-        background: estado === 'TEMPORAL' ? '#ec4899' : '#38bdf8',
-        zIndex: '-1', // ✅ fuerza a estar detrás del contenido
-
-        pointerEvents: 'none',
-      });
-      main.appendChild(badge);
-
-      // ==========================
-      // 🧱 Contenedor del título (curso, docente y aula)
-      // ==========================
       const titleContainer = main.querySelector('.fc-event-title-container');
       if (titleContainer) {
-        // 👨‍🏫 Docente
         if (docente) {
           const docenteSpan = document.createElement('div');
           docenteSpan.className = 'docente-text';
@@ -256,18 +230,14 @@ export class AsignarHorarioComponent
           titleContainer.appendChild(docenteSpan);
         }
 
-        // 🏫 Aula
         if (aula) {
           const aulaSpan = document.createElement('div');
           aulaSpan.className = 'aula-text';
-          aulaSpan.textContent = aula;
+          aulaSpan.textContent = `aula : ${aula}`;
           titleContainer.appendChild(aulaSpan);
         }
       }
 
-      // ==========================
-      // 💻 Badge inferior derecha (modalidad)
-      // ==========================
       if (modalidad) {
         const badgeModalidad = document.createElement('span');
         badgeModalidad.className = 'badge-modalidad';
@@ -281,7 +251,7 @@ export class AsignarHorarioComponent
           padding: '2px 6px',
           borderRadius: '4px',
           background: '#374151',
-          zIndex: '-1', // ✅ fuerza a estar detrás del contenido
+          zIndex: '-1',
 
           pointerEvents: 'none',
         });
@@ -289,6 +259,66 @@ export class AsignarHorarioComponent
       }
     } catch (error) {
       console.error('Error en addEstadoBadge:', error);
+    }
+  }
+
+  private refreshBadgesForEvent(e: any): void {
+    try {
+      const el = e.el || document.querySelector(`[data-event-id="${e.id}"]`);
+      if (!el) return;
+      const main = el.querySelector('.fc-event-main') || el;
+      if (!main) return;
+
+      main
+        .querySelectorAll('.docente-text, .aula-text, .badge-modalidad')
+        .forEach((elm: any) => elm.remove());
+
+      const ext = e.extendedProps || {};
+      const modalidad = (ext['modalidad'] ?? '').toString().toUpperCase();
+      const docente = ext['docente'] || ext['docente_nombre'] || '';
+      const aula =
+        ext['aula'] ||
+        ext['aula_nombre'] ||
+        ext['c_codaula'] ||
+        ext['nombre_aula'] ||
+        '';
+
+      const titleContainer = main.querySelector('.fc-event-title-container');
+      if (titleContainer) {
+        if (docente) {
+          const docenteSpan = document.createElement('div');
+          docenteSpan.className = 'docente-text';
+          docenteSpan.textContent = docente;
+          titleContainer.appendChild(docenteSpan);
+        }
+
+        if (aula) {
+          const aulaSpan = document.createElement('div');
+          aulaSpan.className = 'aula-text';
+          aulaSpan.textContent = `aula : ${aula}`;
+          titleContainer.appendChild(aulaSpan);
+        }
+      }
+
+      if (modalidad) {
+        const badgeModalidad = document.createElement('span');
+        badgeModalidad.className = 'badge-modalidad';
+        badgeModalidad.textContent = modalidad;
+        Object.assign(badgeModalidad.style, {
+          position: 'absolute',
+          bottom: '4px',
+          right: '4px',
+          fontSize: '10px',
+          color: '#fff',
+          padding: '2px 6px',
+          borderRadius: '4px',
+          background: '#374151',
+          pointerEvents: 'none',
+        });
+        main.appendChild(badgeModalidad);
+      }
+    } catch (err) {
+      console.error('Error al refrescar badges:', err);
     }
   }
 
@@ -300,6 +330,27 @@ export class AsignarHorarioComponent
     arg.jsEvent?.stopPropagation?.();
 
     const e = arg.event;
+    console.log(
+      '🟣 [CLICK] Antes de capturar estado:',
+      e.extendedProps['n_horas_asignadas']
+    );
+
+    this.estadoAnteriorEvento = {
+      start: e.start ? new Date(e.start) : null,
+      end: e.end ? new Date(e.end) : null,
+      extendedProps: { ...e.extendedProps },
+    };
+
+    console.log(
+      '🟢 [CLICK] Estado capturado ->',
+      this.estadoAnteriorEvento.extendedProps['n_horas_asignadas']
+    );
+
+    console.log(
+      '📦 Estado original capturado:',
+      this.estadoAnteriorEvento.extendedProps
+    );
+
     const ext = e.extendedProps || {};
     const start = new Date(e.start!);
 
@@ -324,13 +375,12 @@ export class AsignarHorarioComponent
     this.diaSeleccionado = this.mapDayIndexToName(start.getDay());
     this.horaInicio = this.toLocalHHmm(start);
     this.horasAsignadas = horas50;
-    // this.modalidadSeleccionada = ext['modalidad'] ?? null;
 
     this.modalidadSeleccionada =
       (ext['modalidad'] ?? '').toString().toLowerCase() || null;
 
     this.aulaSeleccionada = ext['aula_id'] ?? null;
-    // this.selectedDocente = ext['docente_id'] ? { id: ext['docente_id'] } : null;
+
     const docenteId = ext['docente_id'] ?? null;
     if (docenteId) {
       const docenteEncontrado = this.docentesFiltrados.find(
@@ -481,12 +531,12 @@ export class AsignarHorarioComponent
     this.diaSeleccionado = this.mapDayIndexToName(nuevoStart.getDay());
     this.horaInicio = this.toLocalHHmm(nuevoStart);
     this.horasAsignadas = horas50;
-    // this.modalidadSeleccionada = ext['modalidad'] ?? null;
+
     this.modalidadSeleccionada =
       (ext['modalidad'] ?? '').toString().toLowerCase() || null;
 
     this.aulaSeleccionada = ext['aula_id'] ?? null;
-    // this.selectedDocente = ext['docente_id'] ? { id: ext['docente_id'] } : null;
+
     const docenteId = ext['docente_id'] ?? null;
     if (docenteId) {
       const docenteEncontrado = this.docentesFiltrados.find(
@@ -508,7 +558,6 @@ export class AsignarHorarioComponent
       const transformados = this.transformarCursos(this.cursos);
       this.cursosPlan2023 = transformados.filter((c) => c.n_codper === 2023);
       this.cursosPlan2025 = transformados.filter((c) => c.n_codper === 2025);
-      // console.log('cursosPlan2025 => ', this.cursosPlan2025);
 
       this.count2023 = this.cursosPlan2023.length;
       this.count2025 = this.cursosPlan2025.length;
@@ -520,15 +569,13 @@ export class AsignarHorarioComponent
 
   getDocentes() {
     this.docenteService.getDocentes().subscribe((data) => {
-      this.docentesFiltrados = [...data]; // 👈 esto es clave
-      console.log('docentesFiltrados => ', this.docentesFiltrados);
+      this.docentesFiltrados = [...data];
     });
   }
 
   getAulas() {
     this.aulaService.getAulas().subscribe((data) => {
       this.aulas = data;
-      console.log('aulas => ', this.aulas);
     });
   }
 
@@ -573,7 +620,7 @@ export class AsignarHorarioComponent
           c_codcur_equ: (item as any).c_codcur_equ,
           c_nomcur_equ: (item as any).c_nomcur_equ,
           n_codper: Number(p.n_codper),
-          // grupos_hijos: 'aca 1',
+
           grupos_hijos: item.grupos_hijo,
         });
       }
@@ -619,6 +666,7 @@ export class AsignarHorarioComponent
         tipo: curso.tipo === 'teoria' ? 'Teoría' : 'Práctica',
         n_horas: 1,
         h_umaPlus: curso.tipo === 'teoria' ? curso.h_umaPlus ?? 0 : 0,
+        grupos_hijo: curso.grupos_hijos ?? [],
       },
     });
   }
@@ -641,7 +689,6 @@ export class AsignarHorarioComponent
       const c_codcur = plan?.c_codcur ?? '';
       const curso_id = h?.curso?.id ?? h.curso_id ?? 0;
 
-      // 🕓 Construir fechas con el día actual de la semana
       const start = this.buildDateFromCurrentWeek(
         this.normalizarDia(h.dia),
         h.h_inicio
@@ -651,15 +698,18 @@ export class AsignarHorarioComponent
         h.h_fin
       );
 
-      // 🎨 Color por tipo
-      const color = isTeoria ? '#3788d8' : '#28a745';
+      let color = isTeoria ? '#3788d8' : '#28a745';
 
-      // 🧩 Nombres de aula y docente
-      const aulaNombre =
-        h.aula?.c_codaula ??
-        h.aula?.nombre ??
-        h.aula_nombre ??
-        (h.aula_id ? `Aula ${h.aula_id}` : null);
+      const grupos = h?.curso?.grupos_hijo ?? [];
+      if (Array.isArray(grupos) && grupos.length > 0) {
+        const tipoGrupo = grupos[0]?.tipo;
+        if (tipoGrupo === 0) color = '#FACC15';
+        if (tipoGrupo === 1) color = '#7C3AED';
+      }
+
+      const aulaId = Number(h.aula_id ?? h.aula?.id ?? 0);
+      const aulaObj = this.aulas.find((a) => a.id === aulaId);
+      const aulaNombre = aulaObj?.c_codaula ?? aulaObj?.c_codaula ?? null;
 
       const docenteNombre =
         h.docente?.c_nomdoc ??
@@ -667,7 +717,6 @@ export class AsignarHorarioComponent
         h.docente_nombre ??
         (h.docente_id ? `Docente ${h.docente_id}` : null);
 
-      // 🧠 Modalidad legible
       const modalidadTxt = (h.modalidad ?? '').toString().toUpperCase();
       const modalidadLabel =
         modalidadTxt === 'VIR'
@@ -678,7 +727,6 @@ export class AsignarHorarioComponent
           ? 'Semipresencial'
           : modalidadTxt || '—';
 
-      // 📅 Crear evento en el calendario
       api.addEvent({
         id: `loaded-${h.id}`,
         title: `${c_nomcur} (${tipoTexto})`,
@@ -691,12 +739,12 @@ export class AsignarHorarioComponent
           curso_id,
           codigo: c_codcur,
           tipo: tipoTexto,
-          // modalidad: modalidadLabel,
-          modalidad: modalidadTxt, // Mantén el código original (VIR, PRE, etc.)
+
+          modalidad: modalidadTxt,
 
           aula_id: Number(h.aula_id ?? 0),
           docente_id: Number(h.docente_id ?? 0),
-          // 👇 añadidos
+
           aula_nombre: aulaNombre,
           docente_nombre: docenteNombre,
           n_horas_asignadas: Number(h.n_horas ?? 1),
@@ -706,7 +754,6 @@ export class AsignarHorarioComponent
         },
       });
 
-      // 🔢 Restar horas al curso
       const nHoras = Number(h.n_horas ?? 1);
       this.restarHorasDisponibles(c_codcur, tipoTexto, nHoras);
     });
@@ -811,10 +858,18 @@ export class AsignarHorarioComponent
     }
 
     const calApi = this.calendarComponent.getApi();
-    const isTeoria = this.cursoSeleccionado?.extendedProps?.tipo === 'Teoría';
-    const color = isTeoria ? '#3788d8' : '#28a745';
 
-    calApi.addEvent({
+    const isTeoria = this.cursoSeleccionado?.extendedProps?.tipo === 'Teoría';
+    let color = isTeoria ? '#3788d8' : '#28a745';
+
+    const grupos = this.cursoSeleccionado?.extendedProps?.grupos_hijo ?? [];
+    if (Array.isArray(grupos) && grupos.length > 0) {
+      const tipoGrupo = grupos[0]?.tipo;
+      if (tipoGrupo === 0) color = '#FACC15';
+      if (tipoGrupo === 1) color = '#7C3AED';
+    }
+
+    const nuevoEvento = calApi.addEvent({
       id: `ev-${this.cursoSeleccionado.extendedProps.codigo}-${Date.now()}`,
       title: this.cursoSeleccionado.title,
       start,
@@ -826,11 +881,17 @@ export class AsignarHorarioComponent
         modalidad: this.modalidadSeleccionada,
         aula_id: this.aulaSeleccionada ?? 0,
         docente_id: this.selectedDocente?.id ?? 0,
+        docente_nombre: this.selectedDocente?.c_nomdoc ?? '',
+        aula_nombre:
+          this.aulas.find((a) => a.id === this.aulaSeleccionada)?.c_codaula ??
+          '',
         n_horas_asignadas: aAsignar,
         persisted: false,
-        estado: 'TEMPORAL',
+        estado: 'GUARDADO',
       },
     });
+
+    this.guardarSoloEvento(nuevoEvento);
 
     this.restarHorasDisponibles(
       this.cursoSeleccionado.extendedProps.codigo,
@@ -968,13 +1029,11 @@ export class AsignarHorarioComponent
       error: (err: any) => {
         this.alertService.close();
 
-        // ✅ Captura el mensaje exacto del backend
         const msg =
           err?.error?.message ||
           err?.message ||
           'Ocurrió un error al guardar los horarios.';
 
-        // ✅ Muestra el mensaje de conflicto o error
         this.alertService.warn('Conflicto detectado', msg);
 
         console.error('Error al guardar horarios:', err);
@@ -1107,13 +1166,11 @@ export class AsignarHorarioComponent
     const termino = this.busquedaDocente?.toLowerCase().trim() || '';
 
     if (!termino) {
-      // Si no hay búsqueda, muestra todos
       this.docentesFiltrados = this.selectedDocente;
       this.resultadosBusqueda = [];
       return;
     }
 
-    // Filtra los docentes por nombre
     this.docentesFiltrados = this.selectedDocente.filter((d: any) =>
       d.c_nomdoc.toLowerCase().includes(termino)
     );
@@ -1135,6 +1192,32 @@ export class AsignarHorarioComponent
 
   actualizarEvento() {
     if (this.guardando || !this.eventoSeleccionado) return;
+
+    console.log(
+      '🔵 [ACTUALIZAR] Antes de guardar snapshot ->',
+      this.eventoSeleccionado.extendedProps['n_horas_asignadas']
+    );
+
+    // 🧩 GUARDAR ESTADO ANTERIOR ANTES DE CAMBIAR NADA
+    this.estadoAnteriorEvento = {
+      start: this.eventoSeleccionado.start
+        ? new Date(this.eventoSeleccionado.start)
+        : null,
+      end: this.eventoSeleccionado.end
+        ? new Date(this.eventoSeleccionado.end)
+        : null,
+      extendedProps: { ...this.eventoSeleccionado.extendedProps },
+    };
+
+    console.log(
+      '🟠 [ACTUALIZAR] Snapshot guardado con ->',
+      this.estadoAnteriorEvento.extendedProps['n_horas_asignadas']
+    );
+
+    console.log(
+      '📦 EstadoAnterior guardado antes de modificar:',
+      this.estadoAnteriorEvento.extendedProps?.['n_horas_asignadas']
+    );
 
     if (!this.modalidadSeleccionada) {
       this.alertService.warn('Selecciona una modalidad antes de actualizar');
@@ -1196,63 +1279,38 @@ export class AsignarHorarioComponent
     );
     this.eventoSeleccionado.setExtendedProp('n_horas_asignadas', newHoras);
 
+    this.eventoSeleccionado.setExtendedProp(
+      'docente_nombre',
+      this.selectedDocente?.c_nomdoc ?? ''
+    );
+    this.eventoSeleccionado.setExtendedProp(
+      'aula_nombre',
+      this.aulas.find((a) => a.id === this.aulaSeleccionada)?.c_codaula ?? ''
+    );
+
+    this.eventoSeleccionado.setExtendedProp(
+      'docente_nombre',
+      this.selectedDocente?.c_nomdoc ?? ''
+    );
+    this.eventoSeleccionado.setExtendedProp(
+      'aula_nombre',
+      this.aulas.find((a) => a.id === this.aulaSeleccionada)?.c_codaula ?? ''
+    );
+
+    console.log(
+      '🔴 [ACTUALIZAR] Justo antes de guardar evento ->',
+      this.eventoSeleccionado.extendedProps['n_horas_asignadas']
+    );
+
     this.guardarSoloEvento(this.eventoSeleccionado);
-    this.lastDropRevert = null;
+
+    this.refreshBadgesForEvent(this.eventoSeleccionado);
 
     this.modalHorasActivo = false;
     this.eventoSeleccionado = null;
     this.modalAnchorWeekStart = null;
   }
 
-  // eliminarEvento() {
-  //   if (this.guardando || !this.eventoSeleccionado) return;
-
-  //   const e = this.eventoSeleccionado;
-  //   const horarioId = e.extendedProps?.['horario_id'];
-
-  //   if (!horarioId) {
-  //     this.alertService.warn('No se encontró el ID del horario para eliminar.');
-  //     return;
-  //   }
-
-  //   this.lockUI(true);
-  //   this.alertService.showSaving();
-
-  //   this.horarioService.deleteHorario(horarioId).subscribe({
-  //     next: () => {
-  //       const codigo = e.extendedProps?.['codigo'];
-  //       const tipo = e.extendedProps?.['tipo'] ?? 'Teoría';
-  //       const nh = Number(e.extendedProps?.['n_horas_asignadas'] ?? 1);
-
-  //       const addBack = (arr: CursoCard[]) => {
-  //         const item = arr.find(
-  //           (c) =>
-  //             c.c_codcur === codigo &&
-  //             ((tipo === 'Teoría' && c.tipo === 'teoria') ||
-  //               (tipo === 'Práctica' && c.tipo === 'practica'))
-  //         );
-  //         if (item) item.horasRestantes = Math.max(0, item.horasRestantes + nh);
-  //       };
-  //       addBack(this.cursosPlan2023);
-  //       addBack(this.cursosPlan2025);
-
-  //       e.remove();
-  //       this.alertService.close();
-  //       this.alertService.success(
-  //         'Eliminar Horario',
-  //         'Horario eliminado correctamente'
-  //       );
-  //       this.modalHorasActivo = false;
-  //       this.eventoSeleccionado = null;
-  //       this.lockUI(false);
-  //     },
-  //     error: () => {
-  //       this.alertService.close();
-  //       this.alertService.saveError();
-  //       this.lockUI(false);
-  //     },
-  //   });
-  // }
   eliminarEvento() {
     if (this.guardando || !this.eventoSeleccionado) return;
 
@@ -1260,9 +1318,7 @@ export class AsignarHorarioComponent
     const horarioId = e.extendedProps?.['horario_id'];
     const estado = (e.extendedProps?.['estado'] ?? '').toString().toUpperCase();
 
-    // 🟡 Si es un evento TEMPORAL (no guardado en BD)
     if (!horarioId || estado === 'TEMPORAL') {
-      // Devolver horas al curso
       const codigo = e.extendedProps?.['codigo'];
       const tipo = e.extendedProps?.['tipo'] ?? 'Teoría';
       const nh = Number(e.extendedProps?.['n_horas_asignadas'] ?? 1);
@@ -1279,7 +1335,6 @@ export class AsignarHorarioComponent
       addBack(this.cursosPlan2023);
       addBack(this.cursosPlan2025);
 
-      // 🧹 Eliminar solo del calendario
       e.remove();
 
       this.alertService.success(
@@ -1291,7 +1346,6 @@ export class AsignarHorarioComponent
       return;
     }
 
-    // 🔵 Si el evento ya fue guardado (tiene ID)
     this.lockUI(true);
     this.alertService.showSaving();
 
@@ -1332,6 +1386,37 @@ export class AsignarHorarioComponent
   }
 
   private guardarSoloEvento(e: any) {
+    // 🧩 Guardamos un clon del estado actual antes de modificarlo
+    console.log(
+      '⚙️ [GUARDAR] Llega estadoAnteriorEvento con ->',
+      this.estadoAnteriorEvento?.extendedProps?.['n_horas_asignadas']
+    );
+    console.log(
+      '⚙️ [GUARDAR] Evento actual llega con ->',
+      e.extendedProps['n_horas_asignadas']
+    );
+
+    const estadoAnterior = this.estadoAnteriorEvento || {
+      start: e.start ? new Date(e.start) : null,
+      end: e.end ? new Date(e.end) : null,
+      extendedProps: { ...e.extendedProps },
+    };
+
+    // 🪵 Log inicial para monitorear el estado antes del guardado
+    console.log('=== 🟢 INICIO GUARDAR EVENTO ===');
+    console.log('Evento ->', e.title);
+    console.log(
+      'Horas actuales antes del intento:',
+      e.extendedProps?.['n_horas_asignadas']
+    );
+    console.log(
+      'Horas restantes antes del intento:',
+      this.getHorasDisponibles(
+        e.extendedProps?.['codigo'],
+        e.extendedProps?.['tipo']
+      )
+    );
+
     const item = this.dtoFromEvent(e);
 
     this.guardandoUno = true;
@@ -1350,38 +1435,158 @@ export class AsignarHorarioComponent
 
           this.marcarPersistido(e, newId);
 
+          const api = this.calendarComponent.getApi();
+          const eventData = e.toPlainObject();
+          e.remove();
+          api.addEvent(eventData);
+
           this.alertService.close();
-          this.alertService.saveSuccess();
+          this.alertService.toastSuccess('Horario guardado correctamente');
+
           this.lockUI(false);
           this.guardandoUno = false;
           this.lastDropRevert = null;
-        },
-        error: (err: any) => {
-          this.alertService.close();
+          this.estadoAnteriorEvento = null;
 
-          // ✅ Captura el mensaje exacto del backend
+          console.log('=== ✅ GUARDADO EXITOSO ===');
+        },
+
+        error: (err: any) => {
+          console.error('Error al guardar horario:', err);
+          console.log('=== 🔴 ERROR DE CONFLICTO DETECTADO ===');
+          console.log(
+            'Horas actuales del evento fallido:',
+            e.extendedProps?.['n_horas_asignadas']
+          );
+          console.log(
+            'Horas restantes antes de revertir:',
+            this.getHorasDisponibles(
+              e.extendedProps?.['codigo'],
+              e.extendedProps?.['tipo']
+            )
+          );
+
+          if (err?.status === 409) console.log('⚠️ ACA CRUCE ⚠️');
+
+          // ⚙️ Si hay revert interno
+          if (this.lastDropRevert) {
+            try {
+              this.lastDropRevert();
+            } catch (revertErr) {
+              console.warn('Error al revertir evento:', revertErr);
+            }
+          } else {
+            const yaPersistido = !!e.extendedProps?.persisted;
+            console.log('yaPersistido => ', yaPersistido);
+
+            if (yaPersistido) {
+              // 🔹 Guardar las horas que intentó asignar ANTES de revertir visualmente
+              const horasIntentadas = Number(
+                e.extendedProps?.['n_horas_asignadas'] ?? 1
+              );
+
+              // 🔙 Revertimos el evento a su estado anterior (día, hora, aula, docente, etc.)
+              if (estadoAnterior.start) e.setStart(estadoAnterior.start);
+              if (estadoAnterior.end) e.setEnd(estadoAnterior.end);
+
+              for (const key in estadoAnterior.extendedProps) {
+                e.setExtendedProp(key, estadoAnterior.extendedProps[key]);
+              }
+
+              this.refreshBadgesForEvent(e);
+              this.eventoSeleccionado = null;
+              this.cursoSeleccionado = null;
+
+              const api = this.calendarComponent?.getApi();
+              if (api) {
+                const eventData = e.toPlainObject();
+                e.remove();
+                api.addEvent(eventData);
+              }
+
+              console.log(
+                '🔁 Evento revertido y re-renderizado por conflicto.'
+              );
+
+              // ♻️ Revertir también las horasRestantes si hubo cambio previo
+              try {
+                const codigo = estadoAnterior.extendedProps?.['codigo'];
+                const tipo = estadoAnterior.extendedProps?.['tipo'] ?? 'Teoría';
+                const horasPrevias = Number(
+                  estadoAnterior.extendedProps?.['n_horas_asignadas'] ?? 1
+                );
+                const delta = horasIntentadas - horasPrevias;
+
+                console.log(
+                  '🧩 [ERROR] estadoAnteriorEvento usado con ->',
+                  estadoAnterior.extendedProps['n_horas_asignadas']
+                );
+                console.log('Horas previas:', horasPrevias);
+                console.log(
+                  'Horas intentadas (antes del revert):',
+                  horasIntentadas
+                );
+                console.log('Delta calculado:', delta);
+
+                if (delta !== 0) {
+                  // this.aplicarDeltaHorasRestantes(codigo, tipo, delta * -1);
+                  this.aplicarDeltaHorasRestantes(codigo, tipo, delta);
+
+                  console.log(
+                    '♻️ HorasRestantes revertidas. Delta aplicado:',
+                    delta * -1
+                  );
+                }
+
+                console.log(
+                  'Horas restantes después del revert:',
+                  this.getHorasDisponibles(codigo, tipo)
+                );
+              } catch (err) {
+                console.warn(
+                  'No se pudo revertir las horas restantes tras conflicto:',
+                  err
+                );
+              }
+            } else {
+              try {
+                e.remove();
+              } catch (removeErr) {
+                console.warn(
+                  'No se pudo eliminar el evento tras conflicto:',
+                  removeErr
+                );
+              }
+            }
+          }
+
+          this.lastDropRevert = null;
+          this.lockUI(false);
+          this.guardandoUno = false;
+          this.alertService.close();
+          this.estadoAnteriorEvento = null;
+
           const msg =
             err?.error?.message ||
             err?.message ||
             'Ocurrió un error al guardar el horario.';
 
-          // ✅ Muestra el mensaje específico si es conflicto
           if (err?.status === 409) {
             this.alertService.warn('Conflicto detectado', msg);
           } else {
             this.alertService.saveError(msg);
           }
 
-          // 🔁 Revierte el evento en el calendario si falló el guardado
-          if (this.lastDropRevert) {
-            try {
-              this.lastDropRevert();
-            } catch {}
-          }
-          this.lastDropRevert = null;
-
-          this.lockUI(false);
-          this.guardandoUno = false;
+          // 🪵 Estado final tras error
+          console.log('=== 🔚 FIN ERROR GUARDADO ===');
+          console.log(
+            'Horas restantes finales:',
+            this.getHorasDisponibles(
+              e.extendedProps?.['codigo'],
+              e.extendedProps?.['tipo']
+            )
+          );
+          console.log('============================');
         },
       });
   }
@@ -1608,7 +1813,17 @@ export class AsignarHorarioComponent
           next: (turnoActualizado) => {
             this.turno = turnoActualizado;
             this.cursos = turnoActualizado.cursos || [];
+
+            const transformados = this.transformarCursos(this.cursos);
+            this.cursosPlan2023 = transformados.filter(
+              (c) => c.n_codper === 2023
+            );
+            this.cursosPlan2025 = transformados.filter(
+              (c) => c.n_codper === 2025
+            );
+
             this.cargarGenerables();
+
             this.lockUI(false);
             this.genLoading = false;
           },
@@ -1658,6 +1873,7 @@ export class AsignarHorarioComponent
         tipo: tipoTexto,
         n_horas: 1,
         h_umaPlus: curso.tipo === 'teoria' ? curso.h_umaPlus ?? 0 : 0,
+        grupos_hijo: curso.grupos_hijos ?? [],
       },
     };
 
@@ -1688,5 +1904,16 @@ export class AsignarHorarioComponent
     } else {
       e.setExtendedProp('persisted_without_id', true);
     }
+  }
+
+  getTipoGrupo(curso: any): number | null {
+    // Busca el primer registro de grupo válido
+    if (Array.isArray(curso.grupos_hijos) && curso.grupos_hijos.length > 0) {
+      const grupo = curso.grupos_hijos.find(
+        (g: any) => g.tipo === 0 || g.tipo === 1
+      );
+      return grupo ? grupo.tipo : null;
+    }
+    return null;
   }
 }

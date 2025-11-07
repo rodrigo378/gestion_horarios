@@ -11,8 +11,6 @@ import { HttpErrorResponse } from '@angular/common/http';
   templateUrl: './ver-transversal.component.html',
   styleUrl: './ver-transversal.component.css',
 })
-
-// export class VerTransversalComponent implements OnInit {}
 export class VerTransversalComponent {
   cursos: HR_Curso[] = [];
   curso!: HR_Curso;
@@ -30,7 +28,6 @@ export class VerTransversalComponent {
   paginaActual: number = 1;
   todosSeleccionados: boolean = false;
 
-  // especialidades: any[] = [];
   especialidades: { nomesp: string; codesp: string; codfac: string }[] = [
     {
       nomesp: 'ADMINISTRACIÓN DE NEGOCIOS INTERNACIONALES',
@@ -51,7 +48,6 @@ export class VerTransversalComponent {
     { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
   ];
 
-  // especialidadesModal: any[] = [];
   especialidadesModal: { nomesp: string; codesp: string; codfac: string }[] = [
     {
       nomesp: 'ADMINISTRACIÓN DE NEGOCIOS INTERNACIONALES',
@@ -175,7 +171,6 @@ export class VerTransversalComponent {
           this.cursosFiltrados = data.data.filter((curso) => {
             return (
               curso.turno_id !== this.curso.turno_id &&
-              // curso.cursosPadres.length === 0
               curso.grupos_hijo?.length === 0
             );
           });
@@ -197,12 +192,6 @@ export class VerTransversalComponent {
   }
 
   changeSelectFacultad() {
-    // this.cursoService.getEspecialidades().subscribe((data) => {
-    //   this.especialidades = data.filter(
-    //     (especialidad) => especialidad.codfac === this.selectFacultadad
-    //   );
-    //   this.selectEspecialidad = '';
-    // });
     this.especialidades = this.especialidades.filter(
       (especialidad) => especialidad.codfac === this.selectFacultadad
     );
@@ -210,14 +199,6 @@ export class VerTransversalComponent {
   }
 
   changeSelectFacultadModal() {
-    // this.cursoService.getEspecialidades().subscribe((data) => {
-    //   this.especialidadesModal = data.filter(
-    //     (especialidad) => especialidad.codfac === this.filtros.c_codfac
-    //   );
-
-    //   this.filtros.c_codesp = '';
-    // });
-
     this.especialidadesModal = this.especialidadesModal.filter(
       (especialidad) => especialidad.codfac === this.filtros.c_codfac
     );
@@ -280,7 +261,6 @@ export class VerTransversalComponent {
   }
 
   clickGuardarModal() {
-    // this.horarioService.createGrupo(this.curso.id, this.arrayCheckboxCursos, 0)
     this.cursoService
       .createTransversal(this.curso.id, this.arrayCheckboxCursos, 0)
       .subscribe({
@@ -318,7 +298,6 @@ export class VerTransversalComponent {
   }
 
   clickDeleteTransversal(padre_id: number) {
-    // this.horarioService.deleteTransversal(padre_id).subscribe({
     this.cursoService.deleteTransversal(padre_id).subscribe({
       next: (res: any) => {
         this.getCursos();

@@ -28,7 +28,6 @@ export class AgruparCursosComponent {
   paginaActual: number = 1;
   todosSeleccionados: boolean = false;
 
-  // especialidades: any[] = [];
   especialidades: { nomesp: string; codesp: string; codfac: string }[] = [
     {
       nomesp: 'ADMINISTRACIÓN DE NEGOCIOS INTERNACIONALES',
@@ -49,7 +48,6 @@ export class AgruparCursosComponent {
     { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
   ];
 
-  // especialidadesModal: any[] = [];
   especialidadesModal: { nomesp: string; codesp: string; codfac: string }[] = [
     {
       nomesp: 'ADMINISTRACIÓN DE NEGOCIOS INTERNACIONALES',
@@ -173,7 +171,6 @@ export class AgruparCursosComponent {
           this.cursosFiltrados = data.data.filter((curso) => {
             return (
               curso.turno_id !== this.curso.turno_id &&
-              // curso.cursosPadres.length === 0
               curso.grupos_hijo?.length === 0
             );
           });
@@ -195,12 +192,6 @@ export class AgruparCursosComponent {
   }
 
   changeSelectFacultad() {
-    // this.cursoService.getEspecialidades().subscribe((data) => {
-    //   this.especialidades = data.filter(
-    //     (especialidad) => especialidad.codfac === this.selectFacultadad
-    //   );
-    //   this.selectEspecialidad = '';
-    // });
     this.especialidades = this.especialidades.filter(
       (especialidad) => especialidad.codfac === this.selectFacultadad
     );
@@ -208,14 +199,6 @@ export class AgruparCursosComponent {
   }
 
   changeSelectFacultadModal() {
-    // this.cursoService.getEspecialidades().subscribe((data) => {
-    //   this.especialidadesModal = data.filter(
-    //     (especialidad) => especialidad.codfac === this.filtros.c_codfac
-    //   );
-
-    //   this.filtros.c_codesp = '';
-    // });
-
     this.especialidadesModal = this.especialidadesModal.filter(
       (especialidad) => especialidad.codfac === this.filtros.c_codfac
     );
@@ -236,23 +219,6 @@ export class AgruparCursosComponent {
     this.busquedaEjecutada = true;
     this.getCursosAgrupados();
   }
-
-  // clickMasCursoTransversal(hijo_id: number) {
-  //   // this.horarioService.asociarHorarioTransversal(Number(this.curso.id), hijo_id)
-  //   this.cursoService
-  //     .createTransversal(Number(this.curso.id), hijo_id)
-  //     .subscribe({
-  //       next: (res: any) => {
-  //         this.getCursosAgrupados();
-  //         this.getCursos();
-  //         this.alertService.success('Exito', 'Se crea el curso transversal');
-  //       },
-  //       error: (err: HttpErrorResponse) => {
-  //         this.alertService.error(err.error.message);
-  //         console.log(err);
-  //       },
-  //     });
-  // }
 
   cerrarModal() {
     this.todosSeleccionados = false;
@@ -295,7 +261,6 @@ export class AgruparCursosComponent {
   }
 
   clickGuardarModal() {
-    // this.horarioService.createGrupo(this.curso.id, this.arrayCheckboxCursos, 0)
     this.cursoService
       .createGrupo(this.curso.id, this.arrayCheckboxCursos, 0)
       .subscribe({
@@ -333,7 +298,6 @@ export class AgruparCursosComponent {
   }
 
   clickDeleteTransversal(padre_id: number) {
-    // this.horarioService.deleteTransversal(padre_id).subscribe({
     this.cursoService.deleteTransversal(padre_id).subscribe({
       next: (res: any) => {
         this.getCursos();
