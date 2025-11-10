@@ -45,7 +45,8 @@
               "src/styles.css",
               "node_modules/tippy.js/dist/tippy.css"
             ],
-            "scripts": ["node_modules/tippy.js/dist/tippy.umd.min.js"]
+            "scripts": ["node_modules/tippy.js/dist/tippy.umd.min.js"],
+            "allowedCommonJsDependencies": ["file-saver", "sweetalert2"]
           },
           "configurations": {
             "production": {
@@ -59,7 +60,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1mb",
+                  "maximumWarning": "3mb",
                   "maximumError": "5mb"
                 },
                 {
