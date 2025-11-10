@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { HR_Docente } from '../../../interfaces/hr/hr_docente';
-import { AlertService } from '../../../services_2/alert.service';
 import { DocenteService } from '../../../services/docente.service';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
   selector: 'app-docente',

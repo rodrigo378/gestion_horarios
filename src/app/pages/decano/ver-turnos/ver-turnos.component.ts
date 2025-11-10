@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, effect } from '@angular/core';
 import { TurnoService } from '../../../services/turno.service';
 import { Router } from '@angular/router';
-import { AuthContextService } from '../../../services_2/auth-context.service';
+import { AuthContextService } from '../../../services/auth-context.service';
 import { HR_Turno } from '../../../interfaces/hr/hr_turno';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -108,7 +108,7 @@ export class VerTurnosComponent implements OnInit {
     c_grpcur: '',
   };
 
-  periodos = [{ n_codper: 20251 }, { n_codper: 20252 }, { n_codper: 20261 }];
+  periodos = [{ n_codper: 20261 }];
   ciclos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   modalidades = [
@@ -151,19 +151,48 @@ export class VerTurnosComponent implements OnInit {
     private fb: FormBuilder,
     private alertService: AlertService
   ) {
+    // 🟢 Loader global al cargar la vista
+    this.alertService.showLoadingScreen('Cargando información...');
+
     effect(() => {
-      if (this.isLoaded) this.recalcularEspecialidadesVisibles();
+      if (this.isLoaded) {
+        // 🔵 Cierra loader cuando todo esté listo
+        this.alertService.close();
+
+        this.recalcularEspecialidadesVisibles();
+
+        // 🧠 Ahora el formulario se crea con permisos ya cargados
+        this.inicializarFormulario();
+
+        console.log('✅ Página completamente cargada con permisos aplicados');
+      }
     });
   }
 
   ngOnInit(): void {
-    this.inicializarFormulario();
-    this.recalcularEspecialidadesVisibles();
+    // Si ya está cargado, no mostrar loader innecesario
+    if (!this.isLoaded) {
+      this.alertService.showLoadingScreen('Cargando información...');
+    }
+
+    // Si ya cargó por alguna razón (por ejemplo, vienes de otra ruta y el contexto ya está listo)
+    if (this.isLoaded) {
+      this.recalcularEspecialidadesVisibles();
+      this.inicializarFormulario();
+    }
   }
 
   inicializarFormulario() {
+    console.log('aca');
+
+    const facultadDefault = this.facultadUnica ?? '';
+    console.log('facultadDefault => ', facultadDefault);
+
     this.formularioHorario = this.fb.group({
-      c_codfac: ['', Validators.required],
+      c_codfac: [
+        { value: facultadDefault, disabled: this.facultadUnica !== null },
+        Validators.required,
+      ],
       c_codesp: ['', Validators.required],
       n_codper: [20261, Validators.required],
       c_grpcur: [[], Validators.required],
@@ -173,9 +202,6 @@ export class VerTurnosComponent implements OnInit {
     });
   }
 
-  // ===================
-  // === CARGA TURNOS ==
-  // ===================
   getTurnos() {
     this.turnoService.getTurnos(this.filtros).subscribe((data) => {
       this.listOfData = data;
@@ -185,14 +211,11 @@ export class VerTurnosComponent implements OnInit {
     });
   }
 
-  // ===================
-  // === FILTROS =======
-  // ===================
   onChangeFacultad(filtro: string, valor: string) {
     switch (filtro) {
       case 'n_codper':
         this.filtros.n_codper = Number(valor);
-        // Si ya hay una especialidad seleccionada, recargar turnos
+
         if (this.filtros.c_codesp && this.filtros.c_codesp.trim() !== '') {
           this.getTurnos();
         }
@@ -203,7 +226,7 @@ export class VerTurnosComponent implements OnInit {
         break;
       case 'especialidad':
         this.filtros.c_codesp = valor;
-        // Solo carga cuando se selecciona una especialidad
+
         if (valor && valor.trim() !== '') {
           this.getTurnos();
         } else {
@@ -241,8 +264,12 @@ export class VerTurnosComponent implements OnInit {
   }
 
   get showFacultad(): boolean {
+    return true;
+  }
+  get facultadUnica(): 'E' | 'S' | null {
     const facs = this.detectFaculties(this.hrEspecialidades);
-    return facs.length > 1;
+    if (facs.length === 1) return facs[0];
+    return null;
   }
 
   private recalcularEspecialidadesVisibles(): void {
@@ -253,12 +280,17 @@ export class VerTurnosComponent implements OnInit {
     if (Array.isArray(permitidas) && permitidas.length > 0) {
       base = base.filter((e) => permitidas.includes(e.codesp));
     }
-    if (facs.length === 1) this.filtros.c_codfac = facs[0];
+
+    if (facs.length === 1) {
+      this.filtros.c_codfac = facs[0];
+    }
+
     if (this.filtros.c_codfac === 'E' || this.filtros.c_codfac === 'S') {
       base = base.filter((e) => e.codfac === this.filtros.c_codfac);
     }
 
     this.especialidadesFiltradas = base;
+
     if (
       this.filtros.c_codesp &&
       !this.especialidadesFiltradas.some(
@@ -269,11 +301,6 @@ export class VerTurnosComponent implements OnInit {
     }
   }
 
-  // ===================
-  // === FORMULARIO ====
-  // ===================
-
-  // filtra las especialidades según facultad seleccionada
   onChangeFacultadFormulario() {
     const codfac = this.formularioHorario.get('c_codfac')?.value;
     const permitidas = this.hrEspecialidades || [];
@@ -288,93 +315,18 @@ export class VerTurnosComponent implements OnInit {
     if (!existe) this.formularioHorario.get('c_codesp')?.setValue('');
   }
 
-  // sugerencias automáticas para campo Sección
-  // onInputSeccion(event: Event): void {
-  //   const input = event.target as HTMLInputElement;
-  //   const value = input.value.toUpperCase();
-  //   const letra = value.charAt(0);
-  //   this.formularioHorario.get('c_grpcur')?.setValue(value);
-
-  //   // Solo genera sugerencias si la primera letra es válida
-  //   if (/^[A-Z]$/.test(letra)) {
-  //     this.seccionesSugeridas = Array.from(
-  //       { length: 9 },
-  //       (_, i) => `${letra}${i + 1}`
-  //     );
-  //   } else {
-  //     this.seccionesSugeridas = [];
-  //   }
-  // }
-
-  // guardar nuevo turno
-  // guardarTurno() {
-  //   if (this.formularioHorario.invalid) {
-  //     this.formularioHorario.markAllAsTouched();
-  //     console.warn('Formulario incompleto');
-  //     return;
-  //   }
-
-  //   this.isSaving = true; // 👈 inicia estado de carga
-
-  //   const form = this.formularioHorario.value;
-  //   const nom_fac =
-  //     form.c_codfac === 'E'
-  //       ? 'FACULTAD DE INGENIERÍA Y NEGOCIOS'
-  //       : 'FACULTAD DE CIENCIAS DE LA SALUD';
-
-  //   const especialidadSeleccionada = this.especialidades.find(
-  //     (e) => e.codesp === form.c_codesp
-  //   );
-  //   const nomesp = especialidadSeleccionada
-  //     ? especialidadSeleccionada.nomesp
-  //     : 'SIN ESPECIALIDAD';
-
-  //   const modalidadSeleccionada = this.modalidades.find(
-  //     (m) => m.value === form.c_codmod
-  //   );
-  //   const c_nommod = modalidadSeleccionada
-  //     ? modalidadSeleccionada.label.toUpperCase()
-  //     : 'SIN MODALIDAD';
-
-  //   const nuevoTurno = {
-  //     ...form,
-  //     n_ciclo: Number(form.n_ciclo),
-  //     n_codper: Number(form.n_codper),
-  //     n_codpla: Number(form.n_codpla),
-  //     estado: 0,
-  //     nom_fac,
-  //     nomesp,
-  //     c_nommod,
-  //   };
-
-  //   this.turnoService.createTurno(nuevoTurno).subscribe({
-  //     next: () => {
-  //       this.alertService.createTurnoSuccess();
-  //       this.isSaving = false; // 👈 detener loader
-  //       this.mostrarModalCrear = false;
-  //       this.cerrarModalCrear(); // 👈 limpiar correctamente
-  //       this.getTurnos();
-  //     },
-  //     error: (err: HttpErrorResponse) => {
-  //       this.isSaving = false; // 👈 detener loader también en error
-  //       const message = err.error?.message || 'Error al crear el turno.';
-  //       this.alertService.createTurnoError(message);
-  //     },
-  //   });
-  // }
   guardarTurno() {
     if (this.formularioHorario.invalid) {
       this.formularioHorario.markAllAsTouched();
       console.warn('Formulario incompleto');
 
-      // ⚠️ Mostrar alerta personalizada
       this.alertService.saveError(
         'Completa todos los campos requeridos antes de guardar.'
       );
       return;
     }
 
-    this.isSaving = true; // 👈 inicia estado de carga
+    this.isSaving = true;
 
     const form = this.formularioHorario.value;
     const nom_fac =
@@ -401,7 +353,6 @@ export class VerTurnosComponent implements OnInit {
       n_ciclo: Number(form.n_ciclo),
       n_codper: Number(form.n_codper),
       n_codpla: Number(form.n_codpla),
-      estado: 0,
       nom_fac,
       nomesp,
       c_nommod,
@@ -423,9 +374,6 @@ export class VerTurnosComponent implements OnInit {
     });
   }
 
-  // ===================
-  // === PAGINACIÓN ====
-  // ===================
   updateEditCache(): void {
     this.listOfData.forEach((item) => {
       this.editCache[item.id] = { edit: false, data: { ...item } };
@@ -477,32 +425,27 @@ export class VerTurnosComponent implements OnInit {
   cerrarModalCrear(): void {
     this.mostrarModalCrear = false;
 
+    const facultadDefault = this.facultadUnica ?? '';
+    const disabled = this.facultadUnica !== null;
+
     this.formularioHorario.reset({
-      c_codfac: '',
+      c_codfac: facultadDefault,
       c_codesp: '',
       n_codper: 20261,
-      c_grpcur: [], // 👈 limpiar correctamente el array
+      c_grpcur: [],
       n_ciclo: '',
       c_codmod: '',
       n_codpla: '',
     });
 
-    this.seccionesSugeridas = []; // 👈 también limpia las sugerencias
+    if (disabled) {
+      this.formularioHorario.get('c_codfac')?.disable();
+    } else {
+      this.formularioHorario.get('c_codfac')?.enable();
+    }
+
+    this.seccionesSugeridas = [];
   }
-
-  // Cuando el usuario selecciona una opción del autocomplete
-  // onSeleccionarSeccion(event: NzAutocompleteOptionComponent): void {
-  //   const valor = event.nzValue;
-  //   this.formularioHorario.get('c_grpcur')?.setValue(valor);
-  // }
-
-  // Si el usuario no selecciona ninguna opción válida
-  // validarSeleccionSeccion(): void {
-  //   const valor = this.formularioHorario.get('c_grpcur')?.value;
-  //   if (!this.seccionesSugeridas.includes(valor)) {
-  //     this.formularioHorario.get('c_grpcur')?.setValue('');
-  //   }
-  // }
 
   onBuscarSeccion(value: string): void {
     const letra = value.toUpperCase().charAt(0);

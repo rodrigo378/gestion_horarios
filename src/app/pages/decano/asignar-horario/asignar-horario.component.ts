@@ -80,6 +80,8 @@ export class AsignarHorarioComponent
   turno!: HR_Turno;
   aulas: HR_Aula[] = [];
 
+  boolTransversal: boolean = true;
+
   cursos!: HR_Curso[];
   cursosPlan2023: CursoCard[] = [];
   cursosPlan2025: CursoCard[] = [];
@@ -170,6 +172,9 @@ export class AsignarHorarioComponent
   ngOnInit(): void {
     this.turno_id = Number(this.route.snapshot.paramMap.get('turno_id'));
     window.addEventListener('beforeunload', this.beforeUnloadHandler);
+
+    this.alertService.showLoadingScreen('Cargando datos del turno...');
+
     this.getTurno();
     this.getDocentes();
     this.getAulas();
@@ -325,6 +330,20 @@ export class AsignarHorarioComponent
   onEventClick(arg: any) {
     if (this.guardando) return;
     this.lastDropRevert = null;
+
+    console.log('aca 1');
+
+    const grupos = arg.event.extendedProps?.['grupos_hijo'] ?? [];
+    console.log('grupos => ', grupos);
+
+    if (
+      this.boolTransversal &&
+      Array.isArray(grupos) &&
+      grupos[0]?.tipo === 0
+    ) {
+      this.alertService.warn('Los cursos transversales no pueden editarse.');
+      return;
+    }
 
     arg.jsEvent?.preventDefault?.();
     arg.jsEvent?.stopPropagation?.();
@@ -564,6 +583,8 @@ export class AsignarHorarioComponent
 
       const horarios = (data as any)?.horarios ?? [];
       this.cargarHorariosEnCalendario(horarios);
+
+      this.alertService.close();
     });
   }
 
@@ -751,6 +772,7 @@ export class AsignarHorarioComponent
           h_umaPlus: isTeoria ? Number(plan?.c_curup ?? 0) : 0,
           persisted: true,
           estado: 'GUARDADO',
+          grupos_hijo: h?.curso?.grupos_hijo ?? [],
         },
       });
 
@@ -826,6 +848,16 @@ export class AsignarHorarioComponent
     if (!this.modalidadSeleccionada) {
       this.alertService.warn('Selecciona una modalidad antes de asignar');
       this.focusModalidad();
+      return;
+    }
+
+    if (
+      this.boolTransversal &&
+      this.cursoSeleccionado?.extendedProps?.grupos_hijo?.[0]?.tipo === 0
+    ) {
+      this.alertService.warn(
+        'No puedes crear horarios para cursos transversales.'
+      );
       return;
     }
 
@@ -1193,6 +1225,16 @@ export class AsignarHorarioComponent
   actualizarEvento() {
     if (this.guardando || !this.eventoSeleccionado) return;
 
+    if (
+      this.boolTransversal &&
+      this.eventoSeleccionado.extendedProps?.grupos_hijo?.[0]?.tipo === 0
+    ) {
+      this.alertService.warn(
+        'No puedes modificar horarios de cursos transversales.'
+      );
+      return;
+    }
+
     console.log(
       '🔵 [ACTUALIZAR] Antes de guardar snapshot ->',
       this.eventoSeleccionado.extendedProps['n_horas_asignadas']
@@ -1313,6 +1355,16 @@ export class AsignarHorarioComponent
 
   eliminarEvento() {
     if (this.guardando || !this.eventoSeleccionado) return;
+
+    if (
+      this.boolTransversal &&
+      this.eventoSeleccionado.extendedProps?.grupos_hijo?.[0]?.tipo === 0
+    ) {
+      this.alertService.warn(
+        'No puedes eliminar horarios de cursos transversales.'
+      );
+      return;
+    }
 
     const e = this.eventoSeleccionado;
     const horarioId = e.extendedProps?.['horario_id'];
@@ -1847,6 +1899,12 @@ export class AsignarHorarioComponent
   abrirModalDesdeCard(curso: CursoCard, ev?: MouseEvent) {
     if (ev) ev.stopPropagation();
     if (this.guardando) return;
+    console.log('aca');
+
+    if (this.boolTransversal && curso.grupos_hijos?.[0]?.tipo === 0) {
+      this.alertService.warn('Los cursos transversales están bloqueados.');
+      return;
+    }
 
     if (!this.aulas.length || !this.docentesFiltrados.length) {
       this.alertService.warn(

@@ -10,7 +10,6 @@ import { NotFountComponent } from './pages/not-fount/not-fount.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { TiModule } from './pages/ti/ti.module';
-import { AdminModule } from './pages/admin/admin.module';
 import { DashboardModule } from './pages/dashboard/dashboard.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
@@ -22,7 +21,6 @@ import { RouterOutlet } from '@angular/router';
 import { DecanoModule } from './pages/decano/decano.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
-import { DocenteModule } from './pages/docente/docente.module';
 
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
@@ -38,11 +36,9 @@ registerLocaleData(en);
   ],
   imports: [
     NzIconModule,
-
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-
     NzLayoutModule,
     NzMenuModule,
     NzButtonModule,
@@ -50,13 +46,10 @@ registerLocaleData(en);
     NzAlertModule,
     RouterOutlet,
     BrowserModule,
-    //nuevo
     AppRoutingModule,
     TiModule,
-    AdminModule,
     DashboardModule,
     DecanoModule,
-    DocenteModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

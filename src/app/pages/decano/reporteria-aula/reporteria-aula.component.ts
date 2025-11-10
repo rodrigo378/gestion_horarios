@@ -6,6 +6,7 @@ import { format, toZonedTime } from 'date-fns-tz';
 import { Router } from '@angular/router';
 import { AulaService } from '../../../services/aula.service';
 import { HR_Aula } from '../../../interfaces/hr/hr_aula';
+import { AlertService } from '../../../services/alert.service'; // 👈 agregado
 
 @Component({
   selector: 'app-reporteria-aula',
@@ -19,11 +20,8 @@ export class ReporteriaAulaComponent implements OnInit {
   usuariosFiltrados: HR_Aula[] = [];
   aula: HR_Aula[] = [];
   filtroBusqueda: string = '';
-
-  /** único expandido activo (id del aula) */
   expandedAulaId: number | null = null;
 
-  // Ordenamiento
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
 
@@ -31,7 +29,8 @@ export class ReporteriaAulaComponent implements OnInit {
     private location: Location,
     private aulaService: AulaService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private alertService: AlertService // 👈 agregado
   ) {}
 
   ngOnInit(): void {
@@ -54,92 +53,117 @@ export class ReporteriaAulaComponent implements OnInit {
   }
 
   cargarAula() {
+    // 🟢 Mostrar loader antes de la carga
+    setTimeout(() => {
+      this.alertService.showLoadingScreen('Cargando información de aulas...');
+    });
+
     this.aulaService.getAula().subscribe({
       next: (data: any[]) => {
-        this.aula = data; // 👈 ya no agregamos propiedad expanded
+        this.aula = data;
         this.usuariosFiltrados = [...this.aula];
+
+        // 🔵 Cierra loader cuando termina la carga
+        this.alertService.close();
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error al obtener aulas:', error);
+        this.alertService.saveError('Error al obtener aulas.');
+        this.alertService.close();
       },
     });
   }
 
   /** Exportar a Excel */
   exportarExcel(): void {
-    const zonaHoraria = 'America/Lima';
-    const rows: any[] = [];
+    // 🟣 Mostrar loader mientras se genera el archivo
+    setTimeout(() => {
+      this.alertService.showLoadingScreen('Generando archivo Excel...');
+    });
 
-    this.usuariosFiltrados.forEach((aula) => {
-      const horarios = aula.horarios || [];
+    try {
+      const zonaHoraria = 'America/Lima';
+      const rows: any[] = [];
 
-      horarios.forEach((h, index) => {
-        const horaInicio = h.h_inicio
-          ? format(toZonedTime(new Date(h.h_inicio), zonaHoraria), 'HH:mm')
-          : '';
-        const horaFin = h.h_fin
-          ? format(toZonedTime(new Date(h.h_fin), zonaHoraria), 'HH:mm')
-          : '';
+      this.usuariosFiltrados.forEach((aula) => {
+        const horarios = aula.horarios || [];
 
-        rows.push({
-          Aula: index === 0 ? aula.c_codaula : '',
-          Piso: index === 0 ? this.obtenerNombrePiso(aula.n_piso) : '',
-          Pabellón: index === 0 ? aula.pabellon : '',
-          Capacidad: index === 0 ? aula.n_capacidad : '',
-          Observaciones: index === 0 ? aula.c_obs || 'Sin observaciones' : '',
-          'Nro Horarios': index === 0 ? horarios.length : '',
+        horarios.forEach((h, index) => {
+          const horaInicio = h.h_inicio
+            ? format(toZonedTime(new Date(h.h_inicio), zonaHoraria), 'HH:mm')
+            : '';
+          const horaFin = h.h_fin
+            ? format(toZonedTime(new Date(h.h_fin), zonaHoraria), 'HH:mm')
+            : '';
 
-          Día: h.dia,
-          'Hora Inicio': horaInicio,
-          'Hora Fin': horaFin,
-          'Nro Horas': h.n_horas,
-          Tipo: h.tipo,
-          Curso: h.curso?.plan?.c_nomcur || '',
-          Docente: h.docente?.c_nomdoc || 'No asignado',
+          rows.push({
+            Aula: index === 0 ? aula.c_codaula : '',
+            Piso: index === 0 ? this.obtenerNombrePiso(aula.n_piso) : '',
+            Pabellón: index === 0 ? aula.pabellon : '',
+            Capacidad: index === 0 ? aula.n_capacidad : '',
+            Observaciones: index === 0 ? aula.c_obs || 'Sin observaciones' : '',
+            'Nro Horarios': index === 0 ? horarios.length : '',
+
+            Día: h.dia,
+            'Hora Inicio': horaInicio,
+            'Hora Fin': horaFin,
+            'Nro Horas': h.n_horas,
+            Tipo: h.tipo,
+            Curso: h.curso?.plan?.c_nomcur || '',
+            Docente: h.docente?.c_nomdoc || 'No asignado',
+          });
         });
+
+        if (horarios.length === 0) {
+          rows.push({
+            Aula: aula.c_codaula,
+            Piso: this.obtenerNombrePiso(aula.n_piso),
+            Pabellón: aula.pabellon,
+            Capacidad: aula.n_capacidad,
+            Observaciones: aula.c_obs || 'Sin observaciones',
+            'Nro Horarios': 0,
+            Día: '',
+            'Hora Inicio': '',
+            'Hora Fin': '',
+            'Nro Horas': '',
+            Tipo: '',
+            Curso: '',
+            Docente: '',
+          });
+        }
       });
 
-      if (horarios.length === 0) {
-        rows.push({
-          Aula: aula.c_codaula,
-          Piso: this.obtenerNombrePiso(aula.n_piso),
-          Pabellón: aula.pabellon,
-          Capacidad: aula.n_capacidad,
-          Observaciones: aula.c_obs || 'Sin observaciones',
-          'Nro Horarios': 0,
-          Día: '',
-          'Hora Inicio': '',
-          'Hora Fin': '',
-          'Nro Horas': '',
-          Tipo: '',
-          Curso: '',
-          Docente: '',
-        });
-      }
-    });
+      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(rows);
+      const workbook: XLSX.WorkBook = {
+        Sheets: { 'Reporte Aulas': worksheet },
+        SheetNames: ['Reporte Aulas'],
+      };
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(rows);
-    const workbook: XLSX.WorkBook = {
-      Sheets: { 'Reporte Aulas': worksheet },
-      SheetNames: ['Reporte Aulas'],
-    };
+      const excelBuffer: any = XLSX.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
 
-    const excelBuffer: any = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
+      const blob: Blob = new Blob([excelBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
 
-    const blob: Blob = new Blob([excelBuffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
+      FileSaver.saveAs(
+        blob,
+        `reporte-aulas-${format(new Date(), 'yyyy-MM-dd')}.xlsx`
+      );
 
-    FileSaver.saveAs(
-      blob,
-      `reporte-aulas-${format(new Date(), 'yyyy-MM-dd')}.xlsx`
-    );
+      // ✅ Cierra loader al finalizar
+      this.alertService.close();
+    } catch (err) {
+      console.error(err);
+      this.alertService.saveError('Ocurrió un error al generar el Excel.');
+      this.alertService.close();
+    }
   }
 
-  // Paginación
+  // 🔹 Paginación
   siguientePagina() {
     if (this.paginaActual < this.totalPaginas) this.paginaActual++;
   }
@@ -162,10 +186,9 @@ export class ReporteriaAulaComponent implements OnInit {
     this.location.back();
   }
 
-  // Filtro por texto
+  // 🔹 Filtro de búsqueda
   filtrarUsuarios() {
     const filtro = this.filtroBusqueda.toLowerCase();
-
     const pisoTexto: Record<string, string> = {
       '-1': 'Sótano',
       '0': 'Sótano',
@@ -192,11 +215,10 @@ export class ReporteriaAulaComponent implements OnInit {
       );
     });
 
-    // mantener coherencia de paginación
     this.paginaActual = 1;
   }
 
-  // Ordenamiento
+  // 🔹 Ordenamiento
   sortBy(column: string) {
     if (this.sortColumn === column) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
@@ -229,7 +251,7 @@ export class ReporteriaAulaComponent implements OnInit {
     return this.sortDirection === 'asc' ? 'rotate-180' : '';
   }
 
-  // Expandible (único)
+  // 🔹 Expandible (único)
   toggleExpandById(id: number) {
     this.expandedAulaId = this.expandedAulaId === id ? null : id;
   }

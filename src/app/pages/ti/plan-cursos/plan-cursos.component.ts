@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PlanCurso } from '../../../interfaces_2/Plan';
-import { AlertService } from '../../../services_2/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PlanCursoService } from '../../../services/plan-curso.service';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
   selector: 'app-plan-cursos',

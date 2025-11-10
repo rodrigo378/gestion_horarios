@@ -6,6 +6,7 @@ import { CalendarOptions } from '@fullcalendar/core';
 import esLocale from '@fullcalendar/core/locales/es';
 import { ActivatedRoute } from '@angular/router';
 import { AulaService } from '../../../services/aula.service';
+import { AlertService } from '../../../services/alert.service'; // 👈 agregado
 
 @Component({
   selector: 'app-calender-aula',
@@ -37,13 +38,14 @@ export class CalenderAulaComponent implements OnInit {
     height: 'auto',
     dayHeaderFormat: { weekday: 'long' },
     slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
-    events: [], // Acá vas a cargar los eventos del docente
-    hiddenDays: [0], // oculta domingo
+    events: [],
+    hiddenDays: [0],
   };
 
   constructor(
     private aulaService: AulaService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private alertService: AlertService // 👈 agregado
   ) {}
 
   ngOnInit(): void {
@@ -70,6 +72,11 @@ export class CalenderAulaComponent implements OnInit {
   }
 
   private cargarHorarioAula(aulaId: number): void {
+    // 🟢 Mostrar loader
+    setTimeout(() => {
+      this.alertService.showLoadingScreen('Cargando horario del aula...');
+    });
+
     const diasMap: Record<string, number> = {
       LUNES: 1,
       MARTES: 2,
@@ -81,56 +88,66 @@ export class CalenderAulaComponent implements OnInit {
       SABADO: 6,
     };
 
-    this.aulaService.getAula().subscribe((aulas) => {
-      const aula = aulas.find((a) => a.id === aulaId);
-      if (!aula) return;
+    this.aulaService.getAula().subscribe({
+      next: (aulas) => {
+        const aula = aulas.find((a) => a.id === aulaId);
+        if (!aula) {
+          this.alertService.saveError('No se encontró el aula seleccionada.');
+          this.alertService.close();
+          return;
+        }
 
-      // 🏷️ Nombre del aula en el encabezado
-      this.nombreAula = `Aula ${aula.c_codaula} - Pabellón ${
-        aula.pabellon
-      } - ${this.obtenerNombrePiso(aula.n_piso)}`;
+        // 🏷️ Nombre del aula en el encabezado
+        this.nombreAula = `Aula ${aula.c_codaula} - Pabellón ${
+          aula.pabellon
+        } - ${this.obtenerNombrePiso(aula.n_piso)}`;
 
-      const baseDate = new Date('2024-01-01'); // Semana base
-      const eventos = aula.horarios!.map((h) => {
-        // ✅ Mapeo del día (para ubicar en la semana)
-        const diaUpper = (h.dia || '').toUpperCase();
-        const diaOffset = diasMap[diaUpper] ?? 1;
+        const baseDate = new Date('2024-01-01');
+        const eventos = aula.horarios!.map((h) => {
+          const diaUpper = (h.dia || '').toUpperCase();
+          const diaOffset = diasMap[diaUpper] ?? 1;
 
-        // Calcular fecha base (lunes, martes, etc.)
-        const fechaInicio = new Date(baseDate);
-        fechaInicio.setDate(baseDate.getDate() + (diaOffset - 1));
-        const fechaBase = fechaInicio.toISOString().split('T')[0];
+          const fechaInicio = new Date(baseDate);
+          fechaInicio.setDate(baseDate.getDate() + (diaOffset - 1));
+          const fechaBase = fechaInicio.toISOString().split('T')[0];
 
-        // ✅ Color según tipo de clase o grupo
-        let backgroundColor = h.tipo === 'PRA' ? '#16a34a' : '#2563eb'; // verde / azul
-        let borderColor = backgroundColor;
+          let backgroundColor = h.tipo === 'PRA' ? '#16a34a' : '#2563eb';
+          let borderColor = backgroundColor;
 
-        const tipoPadre = h.curso?.grupos_padre?.[0]?.tipo;
-        if (tipoPadre === 0) backgroundColor = borderColor = '#facc15'; // amarillo transversal
-        if (tipoPadre === 1) backgroundColor = borderColor = '#9333ea'; // morado agrupado
+          const tipoPadre = h.curso?.grupos_padre?.[0]?.tipo;
+          if (tipoPadre === 0) backgroundColor = borderColor = '#facc15'; // transversal
+          if (tipoPadre === 1) backgroundColor = borderColor = '#9333ea'; // agrupado
 
-        // ✅ Construcción del evento
-        const seccion = h.curso?.turno?.c_grpcur
-          ? ` (Sec. ${h.curso.turno.c_grpcur})`
-          : '';
-        const docente = h.docente?.c_nomdoc
-          ? ` - ${h.docente.c_nomdoc}`
-          : ' - Sin docente';
+          const seccion = h.curso?.turno?.c_grpcur
+            ? ` (Sec. ${h.curso.turno.c_grpcur})`
+            : '';
+          const docente = h.docente?.c_nomdoc
+            ? ` - ${h.docente.c_nomdoc}`
+            : ' - Sin docente';
 
-        return {
-          title: `${h.curso?.plan?.c_nomcur || 'Curso'}${seccion}${docente}`,
-          start: `${fechaBase}T${h.h_inicio}`,
-          end: `${fechaBase}T${h.h_fin}`,
-          backgroundColor,
-          borderColor,
+          return {
+            title: `${h.curso?.plan?.c_nomcur || 'Curso'}${seccion}${docente}`,
+            start: `${fechaBase}T${h.h_inicio}`,
+            end: `${fechaBase}T${h.h_fin}`,
+            backgroundColor,
+            borderColor,
+          };
+        });
+
+        // ✅ Asigna eventos al calendario
+        this.calendarOptions = {
+          ...this.calendarOptions,
+          events: eventos,
         };
-      });
 
-      // ✅ Asigna los eventos al calendario
-      this.calendarOptions = {
-        ...this.calendarOptions,
-        events: eventos,
-      };
+        // 🔵 Cierra loader al terminar
+        this.alertService.close();
+      },
+      error: (error) => {
+        console.error('Error al obtener aulas:', error);
+        this.alertService.saveError('Error al cargar el horario del aula.');
+        this.alertService.close();
+      },
     });
   }
 }

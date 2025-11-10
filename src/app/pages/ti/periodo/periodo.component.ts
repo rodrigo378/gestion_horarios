@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { PeriodoService } from '../../../services_2/periodo.service';
+import { PeriodoService } from '../../../services/periodo.service';
 import { Periodo } from '../../../interfaces_2/turno';
-import { AlertService } from '../../../services_2/alert.service';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
   selector: 'app-periodo',
@@ -35,7 +35,10 @@ export class PeriodoComponent implements OnInit {
   actualizarPeriodo(n_codper: number, nuevaFecha: string): void {
     this.periodoService.updatePeriodo(n_codper, nuevaFecha).subscribe({
       next: () => {
-        this.alertService.success('Fecha actualizada correctamente');
+        this.alertService.success(
+          'Fecha actualizada correctamente',
+          'segundo parametro'
+        );
         this.obtenerPeriodos();
       },
       error: () => {
@@ -62,7 +65,10 @@ export class PeriodoComponent implements OnInit {
       )
       .subscribe({
         next: () => {
-          this.alertService.success('Periodo creado exitosamente');
+          this.alertService.success(
+            'Periodo creado exitosamente',
+            'segundo parametro'
+          );
           this.nuevoPeriodo = { n_codper: '', f_cierre: '' };
           this.obtenerPeriodos();
         },

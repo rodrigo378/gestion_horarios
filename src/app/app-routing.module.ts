@@ -19,12 +19,7 @@ const routes: Routes = [
         (m) => m.DashboardModule
       ),
   },
-  {
-    path: 'admin',
-    canActivate: [AuthGuard],
-    loadChildren: () =>
-      import('./pages/admin/admin.module').then((m) => m.AdminModule),
-  },
+
   {
     path: 'coa',
     canActivate: [AuthGuard],
@@ -37,12 +32,7 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/director/director.module').then((m) => m.DirectorModule),
   },
-  {
-    path: 'docente',
-    canActivate: [AuthGuard],
-    loadChildren: () =>
-      import('./pages/docente/docente.module').then((m) => m.DocenteModule),
-  },
+
   { path: '', component: NotFountComponent },
   { path: '**', component: NotFountComponent },
 ];

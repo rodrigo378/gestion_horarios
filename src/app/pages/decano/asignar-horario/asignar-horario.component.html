@@ -133,19 +133,14 @@
         📗 Plan 2025 ({{ count2025 }}) - Asignados
       </h3>
 
-      <!-- [ngClass]="{
-            'fc-event cursor-move': isDraggable(curso) && curso.grupos_hijos?.[0]?.tipo !== 0,
-            'opacity-60 cursor-not-allowed pointer-events-none':
-              !isDraggable(curso) || curso.grupos_hijos?.[0]?.tipo === 0
-          }" -->
       <div class="space-y-3" *ngIf="cursosPlan2025?.length; else no2025">
         <div
           *ngFor="let curso of cursosPlan2025"
           class="relative bg-white shadow-sm border border-slate-200 rounded-lg px-4 py-3"
           [ngClass]="{
-            'fc-event cursor-move': isDraggable(curso),
+            'fc-event cursor-move': isDraggable(curso) && curso.grupos_hijos?.[0]?.tipo !== 0,
             'opacity-60 cursor-not-allowed pointer-events-none':
-              !isDraggable(curso)
+              !isDraggable(curso) || curso.grupos_hijos?.[0]?.tipo === 0
           }"
           [attr.data-event]="isDraggable(curso) ? stringifyEvent(curso) : null"
           [attr.aria-disabled]="!isDraggable(curso)"

@@ -6,6 +6,7 @@ import { CalendarOptions } from '@fullcalendar/core';
 import esLocale from '@fullcalendar/core/locales/es';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DocenteService } from '../../../services/docente.service';
+import { AlertService } from '../../../services/alert.service';
 
 const diasMap: Record<string, number> = {
   LUNES: 1,
@@ -58,7 +59,6 @@ export class CalenderDocenteComponent implements OnInit {
         ? `<span style="color:#d1fae5;font-weight:600;">Aula ${evento.aula}</span>`
         : '<span style="opacity:0.8;">Sin asignar aula</span>';
 
-      // ✅ Tooltip completo
       info.el.setAttribute(
         'title',
         `${curso}\nSección: ${evento.c_grpcur || 'Sin sección'}\n${
@@ -66,7 +66,6 @@ export class CalenderDocenteComponent implements OnInit {
         }`
       );
 
-      // ✅ Contenido visual mejorado
       const el = info.el.querySelector('.fc-event-title');
       if (el) {
         el.innerHTML = `
@@ -81,7 +80,8 @@ export class CalenderDocenteComponent implements OnInit {
   constructor(
     private docenteService: DocenteService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private alertService: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -93,14 +93,18 @@ export class CalenderDocenteComponent implements OnInit {
   }
 
   private cargarHorarioDocente(docenteId: number): void {
-    this.docenteService
-      .obtenerDocentesreporteria(true, true, true)
-      .subscribe((docentes) => {
+    this.alertService.showLoadingScreen('Cargando horario del docente...');
+
+    this.docenteService.obtenerDocentesreporteria(true, true, true).subscribe({
+      next: (docentes) => {
         const docente = docentes.find((d) => d.id === docenteId);
-        if (!docente) return;
+        if (!docente) {
+          this.alertService.saveError('Docente no encontrado.');
+          this.alertService.close();
+          return;
+        }
 
         this.nombreDocente = docente.c_nomdoc;
-
         const baseDate = new Date('2024-01-01');
 
         const eventos = docente.horarios!.map((h) => {
@@ -131,7 +135,17 @@ export class CalenderDocenteComponent implements OnInit {
         });
 
         this.calendarOptions = { ...this.calendarOptions, events: eventos };
-      });
+
+        this.alertService.close();
+      },
+      error: (err) => {
+        console.error(err);
+        this.alertService.saveError(
+          'Ocurrió un error al cargar el horario del docente.'
+        );
+        this.alertService.close();
+      },
+    });
   }
 
   regresar() {

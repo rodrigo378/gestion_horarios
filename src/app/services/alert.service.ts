@@ -11,6 +11,17 @@ export class AlertService {
 
   constructor() {}
 
+  showLoadingScreen(message: string = 'Cargando datos...'): void {
+    Swal.fire({
+      title: message,
+      html: `<div style="font-size:15px;color:#4b5563;">Por favor, espera un momento.</div>`,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => Swal.showLoading(),
+      backdrop: true,
+    });
+  }
+
   // success(message: string = 'Se actualizó'): void {
   //   Swal.fire({
   //     toast: true,

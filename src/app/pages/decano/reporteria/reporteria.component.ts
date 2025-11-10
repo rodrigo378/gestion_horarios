@@ -6,9 +6,8 @@ import { format, toZonedTime } from 'date-fns-tz';
 import { Router } from '@angular/router';
 import { HR_Docente } from '../../../interfaces/hr/hr_docente';
 import { HR_Horario } from '../../../interfaces/hr/hr_horario';
-
 import { DocenteService } from '../../../services/docente.service';
-import { AlertService } from '../../../services_2/alert.service';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
   selector: 'app-reporteria',
@@ -40,9 +39,9 @@ export class ReporteriaComponent implements OnInit {
 
   constructor(
     private location: Location,
-    private alertService: AlertService,
     private docenteService: DocenteService,
-    private router: Router
+    private router: Router,
+    private alertService: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -50,6 +49,12 @@ export class ReporteriaComponent implements OnInit {
   }
 
   cargarDocentes() {
+    setTimeout(() => {
+      this.alertService.showLoadingScreen(
+        'Cargando información de docentes...'
+      );
+    });
+
     this.docenteService
       .obtenerDocentesreporteria(
         true,
@@ -65,8 +70,11 @@ export class ReporteriaComponent implements OnInit {
             expanded: false,
           }));
           this.usuariosFiltrados = [...this.docentes];
+          this.alertService.close();
         },
         error: (error) => {
+          this.alertService.close();
+
           console.error('Error al obtener docentes:', error);
         },
       });
@@ -74,7 +82,7 @@ export class ReporteriaComponent implements OnInit {
 
   crearDocente() {
     if (!this.nuevoDocente.c_nomdoc!.trim()) {
-      this.alertService.error('El nombre del docente es obligatorio');
+      // this.alertService.error('El nombre del docente es obligatorio');
       return;
     }
 
