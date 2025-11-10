@@ -80,7 +80,7 @@ export class AsignarHorarioComponent
   turno!: HR_Turno;
   aulas: HR_Aula[] = [];
 
-  boolTransversal: boolean = true;
+  boolTransversal: boolean = false;
 
   cursos!: HR_Curso[];
   cursosPlan2023: CursoCard[] = [];
