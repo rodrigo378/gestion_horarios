@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User } from '../../interfaces_2/User';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { environment } from '../../../environment/environment';
 
 @Component({
   selector: 'app-login',
@@ -12,6 +13,8 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrl: './login.component.css',
 })
 export class LoginComponent implements OnInit {
+  private apiUrl = `${environment.api}`;
+
   loginForm!: FormGroup;
   boolLogin: boolean = false;
   submitted = false;
@@ -44,10 +47,6 @@ export class LoginComponent implements OnInit {
     return this.loginForm.controls;
   }
 
-  btnClickGoogle() {
-    window.location.href = 'http://161.97.115.144:7001/auth/google';
-  }
-
   submit() {
     if (this.loginForm.invalid) {
       this.submitted = true;
@@ -71,11 +70,11 @@ export class LoginComponent implements OnInit {
   }
 
   submit_2() {
-    const apiUrl = 'https://mesa-api.uma.edu.pe';
+    // const apiUrl = 'https://mesa-api.uma.edu.pe';
     const returnTo = '/';
-    window.location.href = `${apiUrl}/auth/login?app=horario&returnTo=${encodeURIComponent(
-      returnTo
-    )}`;
+    window.location.href = `${
+      this.apiUrl
+    }/auth/login?app=horario&returnTo=${encodeURIComponent(returnTo)}`;
   }
 
   togglePassword() {

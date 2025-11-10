@@ -2,10 +2,13 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../environment/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthContextService {
-  private readonly API = `https://mesa-api.uma.edu.pe`;
+  // private readonly API = `https://mesa-api.uma.edu.pe`;
+  private API = `${environment.api}`;
+
   private _config = signal<any | null>(null);
   private _loaded = signal(false);
 

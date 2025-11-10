@@ -23,9 +23,11 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
-import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
-import { NzFormPatchModule } from 'ng-zorro-antd/core/form';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { AsignarHorarioComponent } from './asignar-horario/asignar-horario.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { NzGridModule } from 'ng-zorro-antd/grid';
+import { PipesModule } from '../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -34,8 +36,11 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
     PeriodoComponent,
     VerTurnoComponent,
     GenerarCursosComponent,
+    AsignarHorarioComponent,
   ],
   imports: [
+    PipesModule,
+
     CommonModule,
     FormsModule,
     TiRoutingModule,
@@ -56,6 +61,9 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 
     NzToolTipModule,
     NzPaginationModule,
+    FullCalendarModule,
+
+    NzGridModule,
   ],
 })
 export class TiModule {}

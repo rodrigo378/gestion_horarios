@@ -1,0 +1,91 @@
+/* 📌 Aumentar la altura de las franjas horarias normales */
+::ng-deep .fc-timegrid-slot {
+  height: 140px !important; /* Ajusta la altura de las filas normales */
+  min-height: 100px !important;
+}
+
+/* 📌 Ajustar el tamaño de las etiquetas de las horas (la cabezera de los dias practicamente) */
+::ng-deep .fc-timegrid-axis {
+  height: 30px !important;
+  line-height: 80px !important;
+}
+
+/* 📌 Hacer que los eventos ocupen toda la franja */
+::ng-deep .fc-timegrid-slot-frame {
+  height: 80px !important;
+}
+
+/* 📌 Ajustar el tamaño del texto de los eventos */
+::ng-deep .fc-event {
+  font-size: 20px !important;
+  line-height: 20px !important;
+}
+
+/* 📌 Personalizar el color del día actual (Eliminar amarillo) */
+::ng-deep .fc-day-today {
+  background: none !important;
+}
+
+/* 📌 Hacer que los eventos se vean más modernos */
+::ng-deep .fc-event {
+  border-radius: 6px !important;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2) !important;
+  font-weight: bold !important;
+  padding: 5px !important;
+}
+
+/* 📌 Mejorar la visibilidad de los títulos de los días */
+::ng-deep .fc-col-header-cell {
+  font-weight: bold !important;
+  font-size: 15px;
+}
+
+::ng-deep .fc-event-title {
+  font-size: 11px !important; /* o prueba con 12px */
+  font-weight: 500;
+  /* border: 1px solid red; */
+}
+
+[draggable="true"] {
+  user-select: none;
+}
+
+.curso-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+::ng-deep .docente-text {
+  font-size: 10px !important;
+  color: #ffffff !important;
+  opacity: 0.95;
+  text-align: left;
+  margin-top: 2px;
+  line-height: 1.2;
+  pointer-events: none;
+  z-index: 100 !important;
+  /* border: 1px solid white; */
+}
+
+::ng-deep .fc-event-title-container {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  z-index: 100 !important;
+}
+::ng-deep .fc-event-title-container {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 10px !important;
+  z-index: 100 !important;
+}
+
+::ng-deep .aula-text {
+  font-size: 11px !important;
+  color: white !important; /* gris claro para diferenciar del docente */
+  /* opacity: ; */
+  font-weight: 400;
+  margin-top: 1px !important;
+  /* line-height: 1.1 !important; */
+  pointer-events: none;
+  z-index: 100 !important;
+}

@@ -8,7 +8,6 @@ import { CalenderAulaComponent } from './calender-aula/calender-aula.component';
 import { CalenderDocenteComponent } from './calender-docente/calender-docente.component';
 import { ReporteriaComponent } from './reporteria/reporteria.component';
 import { ReporteriaAulaComponent } from './reporteria-aula/reporteria-aula.component';
-import { PisoPipe } from '../../piso.pipe';
 import { VerTurnosComponent } from './ver-turnos/ver-turnos.component';
 import { AsignarHorarioComponent } from './asignar-horario/asignar-horario.component';
 
@@ -31,6 +30,7 @@ import { NgxApexchartsModule } from 'ngx-apexcharts';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { AgruparCursosComponent } from './agrupar-cursos/agrupar-cursos.component';
 import { VerTransversalComponent } from './ver-transversal/ver-transversal.component';
+import { PipesModule } from '../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -38,13 +38,14 @@ import { VerTransversalComponent } from './ver-transversal/ver-transversal.compo
     CalenderDocenteComponent,
     ReporteriaComponent,
     ReporteriaAulaComponent,
-    PisoPipe,
     VerTurnosComponent,
     AsignarHorarioComponent,
     AgruparCursosComponent,
     VerTransversalComponent,
   ],
   imports: [
+    PipesModule,
+
     CommonModule,
     DecanoRoutingModule,
     FormsModule,

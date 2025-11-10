@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import en from '@angular/common/locales/en';
 import { AppComponent } from './app.component';
 import { CommonModule, registerLocaleData } from '@angular/common';
@@ -8,7 +8,6 @@ import { LoginComponent } from './pages/login/login.component';
 import { LayoutComponent } from './common/layout/layout.component';
 import { NotFountComponent } from './pages/not-fount/not-fount.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-
 import { TiModule } from './pages/ti/ti.module';
 import { DashboardModule } from './pages/dashboard/dashboard.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -21,7 +20,6 @@ import { RouterOutlet } from '@angular/router';
 import { DecanoModule } from './pages/decano/decano.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
-
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 

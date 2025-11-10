@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
-import { NotFountComponent } from './pages/not-fount/not-fount.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 
@@ -19,7 +18,6 @@ const routes: Routes = [
         (m) => m.DashboardModule
       ),
   },
-
   {
     path: 'coa',
     canActivate: [AuthGuard],
@@ -32,8 +30,8 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/director/director.module').then((m) => m.DirectorModule),
   },
-  { path: '', component: NotFountComponent, canActivate: [AuthGuard] },
-  { path: '**', component: NotFountComponent },
+  { path: '', redirectTo: 'coa/turno', pathMatch: 'full' },
+  { path: '**', redirectTo: 'coa/turno' },
 ];
 
 @NgModule({

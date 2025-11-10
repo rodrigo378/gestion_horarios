@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { TurnoService } from '../../../services/turno.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { HR_Turno } from '../../../interfaces/hr/hr_turno';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ver-turno',
@@ -63,7 +64,7 @@ export class VerTurnoComponent {
   especialidadesFiltradas: any = [];
 
   filtros = {
-    n_codper: '20252',
+    n_codper: '20261',
     c_codfac: '',
     c_codesp: '',
     c_codmod: '',
@@ -140,7 +141,7 @@ export class VerTurnoComponent {
     },
   ];
 
-  constructor(private turnoService: TurnoService) {}
+  constructor(private turnoService: TurnoService, private router: Router) {}
 
   ngOnInit(): void {
     this.getTurnos();
@@ -153,13 +154,22 @@ export class VerTurnoComponent {
   }
 
   getTurnos() {
-    this.turnoService.getTurnos(this.filtros).subscribe((data) => {
-      this.listOfData = data;
-      this.datosFiltrados = [...this.listOfData];
+    console.log('filtros => ', this.filtros);
 
-      this.updateEditCache();
+    this.turnoService.getTurnos(this.filtros).subscribe({
+      next: (data) => {
+        console.log('data => ', data);
+
+        this.listOfData = data;
+        this.datosFiltrados = [...this.listOfData];
+        this.updateEditCache();
+      },
+      error: (err: HttpErrorResponse) => {
+        console.log('Error al obtener turnos:', err);
+      },
     });
   }
+
   get total(): number {
     return this.datosFiltrados.length;
   }
@@ -168,38 +178,29 @@ export class VerTurnoComponent {
     switch (filtro) {
       case 'n_codper':
         this.filtros.n_codper = valor;
-        this.getTurnos();
-        console.log(this.filtros);
         break;
       case 'facultad':
         this.filtros.c_codfac = valor;
         this.especialidadesFiltradas = this.especialidades.filter(
           (item: any) => item.codfac === this.filtros.c_codfac
         );
-        this.getTurnos();
-        console.log(this.filtros);
         break;
       case 'especialidad':
         this.filtros.c_codesp = valor;
-        this.getTurnos();
-        console.log(this.filtros);
         break;
       case 'modalidad':
         this.filtros.c_codmod = valor;
-        this.getTurnos();
-        console.log(this.filtros);
         break;
       case 'ciclo':
         this.filtros.n_ciclo = valor;
-        this.getTurnos();
-        console.log(this.filtros);
         break;
       case 'estado':
         this.filtros.estado = valor;
-        this.getTurnos();
-        console.log(this.filtros);
         break;
     }
+
+    this.getTurnos();
+    console.log(this.filtros);
   }
 
   startEdit(id: number): void {
@@ -244,6 +245,11 @@ export class VerTurnoComponent {
     this.refreshCheckedStatus();
   }
 
+  clickAsignarHorario(id: number) {
+    const url = this.router.createUrlTree([`/ti/asignar/${id}`]).toString();
+    window.open(url, '_blank');
+  }
+
   updateEditCache(): void {
     this.listOfData.forEach((item) => {
       this.editCache[item.id] = {
@@ -254,7 +260,6 @@ export class VerTurnoComponent {
   }
 
   clickBloquearTodo() {
-    console.log('aca => ', this.setOfCheckedId);
     this.turnoService
       .bloquearTurnos(Array.from(this.setOfCheckedId))
       .subscribe({
@@ -269,7 +274,6 @@ export class VerTurnoComponent {
   }
 
   clickDesbloquearTodo() {
-    console.log('aca => ', this.setOfCheckedId);
     this.turnoService
       .desbloquearTurnos(Array.from(this.setOfCheckedId))
       .subscribe({

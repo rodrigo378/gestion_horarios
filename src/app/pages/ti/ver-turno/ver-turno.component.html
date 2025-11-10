@@ -31,9 +31,7 @@
             class="w-auto h-[30px]"
           >
             <nz-option nzValue="" nzLabel="Periodo"></nz-option>
-            <nz-option nzValue="20252" nzLabel="20252"></nz-option>
-            <nz-option nzValue="20251" nzLabel="20251"></nz-option>
-            <nz-option nzValue="20242" nzLabel="20242"></nz-option>
+            <nz-option nzValue="20261" nzLabel="20261"></nz-option>
           </nz-select>
 
           <nz-select
@@ -208,7 +206,16 @@
                 </span>
               </td>
 
-              <td class="text-slate-700">asignado</td>
+              <td>
+                <button
+                  type="button"
+                  (click)="clickAsignarHorario(data.id)"
+                  class="text-slate-700 hover:text-slate-900 transition-colors"
+                  title="Asignar horario"
+                >
+                  <i class="fa-solid fa-calendar-days fa-2x"></i>
+                </button>
+              </td>
               }
             </tr>
             }

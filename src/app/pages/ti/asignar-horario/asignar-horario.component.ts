@@ -5,8 +5,6 @@ import {
   AfterViewInit,
   ElementRef,
   OnDestroy,
-  inject,
-  effect,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TurnoService } from '../../../services/turno.service';
@@ -28,7 +26,6 @@ import { DocenteService } from '../../../services/docente.service';
 import { AulaService } from '../../../services/aula.service';
 import { HR_Aula } from '../../../interfaces/hr/hr_aula';
 import 'tippy.js/dist/tippy.css';
-import { AuthContextService } from '../../../services/auth-context.service';
 
 type FilaCursoPlan = HR_Plan_Estudio_Curso & { cursoGenerado: HR_Curso | null };
 
@@ -62,16 +59,6 @@ interface CursoCard {
 export class AsignarHorarioComponent
   implements OnInit, AfterViewInit, OnDestroy
 {
-  private ctx = inject(AuthContextService);
-
-  get user() {
-    return this.ctx.userConfig()?.user;
-  }
-
-  get hrEspecialidades() {
-    return this.ctx.hrConfig()?.especialidades as string[] | undefined;
-  }
-
   @ViewChild('fullcalendar') calendarComponent!: FullCalendarComponent;
   @ViewChild('externalEvents') externalEventsRef!: ElementRef<HTMLDivElement>;
   @ViewChild('selModalidad') selModalidadRef!: ElementRef<HTMLSelectElement>;
@@ -93,7 +80,7 @@ export class AsignarHorarioComponent
   turno!: HR_Turno;
   aulas: HR_Aula[] = [];
 
-  boolTransversal: boolean = false;
+  boolTransversal: boolean = true;
 
   cursos!: HR_Curso[];
   cursosPlan2023: CursoCard[] = [];
@@ -180,50 +167,7 @@ export class AsignarHorarioComponent
     private alertService: AlertService,
     private docenteService: DocenteService,
     private aulaService: AulaService
-  ) {
-    effect(() => {
-      const user = this.ctx.userConfig()?.user;
-      if (user) {
-        console.log('👤 Usuario actual:', user.email);
-
-        // 🟢 Lista de correos con permiso especial
-        const permitidos = [
-          'ludmilia.samaniego@uma.edu.pe',
-          'rodrigo.palomino@uma.edu.pe',
-        ];
-
-        // 🧠 Verifica si el correo está en la lista (sin importar mayúsculas/minúsculas)
-        const tienePermiso = permitidos.some(
-          (correo) => correo.toLowerCase() === user.email.toLowerCase()
-        );
-
-        if (tienePermiso) {
-          console.log('✅ Permiso activado para', user.email);
-          this.boolTransversal = true;
-        } else {
-          console.log('🚫 Sin permiso especial');
-        }
-      }
-    });
-  }
-
-  // ngOnInit(): void {
-  //   this.turno_id = Number(this.route.snapshot.paramMap.get('turno_id'));
-  //   window.addEventListener('beforeunload', this.beforeUnloadHandler);
-
-  //   this.alertService.showLoadingScreen('Cargando datos del turno...');
-
-  //   console.log('auth config:', this.hrEspecialidades);
-
-  //   // 2) suscríbete al observable del usuario
-  //   // this.ctx.user$?.subscribe((u) => {
-  //   //   this.userData = u;
-  //   //   console.log('👤 Usuario actual:', this.userData);
-  //   // });
-  //   this.getTurno();
-  //   this.getDocentes();
-  //   this.getAulas();
-  // }
+  ) {}
 
   ngOnInit(): void {
     this.turno_id = Number(this.route.snapshot.paramMap.get('turno_id'));
@@ -387,44 +331,16 @@ export class AsignarHorarioComponent
     if (this.guardando) return;
     this.lastDropRevert = null;
 
-    console.log('aca 1');
-
-    const grupos = arg.event.extendedProps?.['grupos_hijo'] ?? [];
-    console.log('grupos => ', grupos);
-
-    if (
-      !this.boolTransversal &&
-      Array.isArray(grupos) &&
-      grupos[0]?.tipo === 0
-    ) {
-      this.alertService.warn('Los cursos transversales no pueden editarse.');
-      return;
-    }
-
     arg.jsEvent?.preventDefault?.();
     arg.jsEvent?.stopPropagation?.();
 
     const e = arg.event;
-    console.log(
-      '🟣 [CLICK] Antes de capturar estado:',
-      e.extendedProps['n_horas_asignadas']
-    );
 
     this.estadoAnteriorEvento = {
       start: e.start ? new Date(e.start) : null,
       end: e.end ? new Date(e.end) : null,
       extendedProps: { ...e.extendedProps },
     };
-
-    console.log(
-      '🟢 [CLICK] Estado capturado ->',
-      this.estadoAnteriorEvento.extendedProps['n_horas_asignadas']
-    );
-
-    console.log(
-      '📦 Estado original capturado:',
-      this.estadoAnteriorEvento.extendedProps
-    );
 
     const ext = e.extendedProps || {};
     const start = new Date(e.start!);
@@ -907,16 +823,6 @@ export class AsignarHorarioComponent
       return;
     }
 
-    if (
-      !this.boolTransversal &&
-      this.cursoSeleccionado?.extendedProps?.grupos_hijo?.[0]?.tipo === 0
-    ) {
-      this.alertService.warn(
-        'No puedes crear horarios para cursos transversales.'
-      );
-      return;
-    }
-
     const disp = Number(this.cursoSeleccionado?.horasDisponibles ?? 0);
     let raw = Math.floor(Number(this.horasAsignadas ?? 1));
     if (raw < 1) raw = 1;
@@ -1281,22 +1187,6 @@ export class AsignarHorarioComponent
   actualizarEvento() {
     if (this.guardando || !this.eventoSeleccionado) return;
 
-    if (
-      !this.boolTransversal &&
-      this.eventoSeleccionado.extendedProps?.grupos_hijo?.[0]?.tipo === 0
-    ) {
-      this.alertService.warn(
-        'No puedes modificar horarios de cursos transversales.'
-      );
-      return;
-    }
-
-    console.log(
-      '🔵 [ACTUALIZAR] Antes de guardar snapshot ->',
-      this.eventoSeleccionado.extendedProps['n_horas_asignadas']
-    );
-
-    // 🧩 GUARDAR ESTADO ANTERIOR ANTES DE CAMBIAR NADA
     this.estadoAnteriorEvento = {
       start: this.eventoSeleccionado.start
         ? new Date(this.eventoSeleccionado.start)
@@ -1306,16 +1196,6 @@ export class AsignarHorarioComponent
         : null,
       extendedProps: { ...this.eventoSeleccionado.extendedProps },
     };
-
-    console.log(
-      '🟠 [ACTUALIZAR] Snapshot guardado con ->',
-      this.estadoAnteriorEvento.extendedProps['n_horas_asignadas']
-    );
-
-    console.log(
-      '📦 EstadoAnterior guardado antes de modificar:',
-      this.estadoAnteriorEvento.extendedProps?.['n_horas_asignadas']
-    );
 
     if (!this.modalidadSeleccionada) {
       this.alertService.warn('Selecciona una modalidad antes de actualizar');
@@ -1395,11 +1275,6 @@ export class AsignarHorarioComponent
       this.aulas.find((a) => a.id === this.aulaSeleccionada)?.c_codaula ?? ''
     );
 
-    console.log(
-      '🔴 [ACTUALIZAR] Justo antes de guardar evento ->',
-      this.eventoSeleccionado.extendedProps['n_horas_asignadas']
-    );
-
     this.guardarSoloEvento(this.eventoSeleccionado);
 
     this.refreshBadgesForEvent(this.eventoSeleccionado);
@@ -1411,16 +1286,6 @@ export class AsignarHorarioComponent
 
   eliminarEvento() {
     if (this.guardando || !this.eventoSeleccionado) return;
-
-    if (
-      !this.boolTransversal &&
-      this.eventoSeleccionado.extendedProps?.grupos_hijo?.[0]?.tipo === 0
-    ) {
-      this.alertService.warn(
-        'No puedes eliminar horarios de cursos transversales.'
-      );
-      return;
-    }
 
     const e = this.eventoSeleccionado;
     const horarioId = e.extendedProps?.['horario_id'];
@@ -1494,36 +1359,11 @@ export class AsignarHorarioComponent
   }
 
   private guardarSoloEvento(e: any) {
-    // 🧩 Guardamos un clon del estado actual antes de modificarlo
-    console.log(
-      '⚙️ [GUARDAR] Llega estadoAnteriorEvento con ->',
-      this.estadoAnteriorEvento?.extendedProps?.['n_horas_asignadas']
-    );
-    console.log(
-      '⚙️ [GUARDAR] Evento actual llega con ->',
-      e.extendedProps['n_horas_asignadas']
-    );
-
     const estadoAnterior = this.estadoAnteriorEvento || {
       start: e.start ? new Date(e.start) : null,
       end: e.end ? new Date(e.end) : null,
       extendedProps: { ...e.extendedProps },
     };
-
-    // 🪵 Log inicial para monitorear el estado antes del guardado
-    console.log('=== 🟢 INICIO GUARDAR EVENTO ===');
-    console.log('Evento ->', e.title);
-    console.log(
-      'Horas actuales antes del intento:',
-      e.extendedProps?.['n_horas_asignadas']
-    );
-    console.log(
-      'Horas restantes antes del intento:',
-      this.getHorasDisponibles(
-        e.extendedProps?.['codigo'],
-        e.extendedProps?.['tipo']
-      )
-    );
 
     const item = this.dtoFromEvent(e);
 
@@ -1555,28 +1395,13 @@ export class AsignarHorarioComponent
           this.guardandoUno = false;
           this.lastDropRevert = null;
           this.estadoAnteriorEvento = null;
-
-          console.log('=== ✅ GUARDADO EXITOSO ===');
         },
 
         error: (err: any) => {
           console.error('Error al guardar horario:', err);
-          console.log('=== 🔴 ERROR DE CONFLICTO DETECTADO ===');
-          console.log(
-            'Horas actuales del evento fallido:',
-            e.extendedProps?.['n_horas_asignadas']
-          );
-          console.log(
-            'Horas restantes antes de revertir:',
-            this.getHorasDisponibles(
-              e.extendedProps?.['codigo'],
-              e.extendedProps?.['tipo']
-            )
-          );
 
           if (err?.status === 409) console.log('⚠️ ACA CRUCE ⚠️');
 
-          // ⚙️ Si hay revert interno
           if (this.lastDropRevert) {
             try {
               this.lastDropRevert();
@@ -1585,15 +1410,12 @@ export class AsignarHorarioComponent
             }
           } else {
             const yaPersistido = !!e.extendedProps?.persisted;
-            console.log('yaPersistido => ', yaPersistido);
 
             if (yaPersistido) {
-              // 🔹 Guardar las horas que intentó asignar ANTES de revertir visualmente
               const horasIntentadas = Number(
                 e.extendedProps?.['n_horas_asignadas'] ?? 1
               );
 
-              // 🔙 Revertimos el evento a su estado anterior (día, hora, aula, docente, etc.)
               if (estadoAnterior.start) e.setStart(estadoAnterior.start);
               if (estadoAnterior.end) e.setEnd(estadoAnterior.end);
 
@@ -1612,11 +1434,6 @@ export class AsignarHorarioComponent
                 api.addEvent(eventData);
               }
 
-              console.log(
-                '🔁 Evento revertido y re-renderizado por conflicto.'
-              );
-
-              // ♻️ Revertir también las horasRestantes si hubo cambio previo
               try {
                 const codigo = estadoAnterior.extendedProps?.['codigo'];
                 const tipo = estadoAnterior.extendedProps?.['tipo'] ?? 'Teoría';
@@ -1625,31 +1442,9 @@ export class AsignarHorarioComponent
                 );
                 const delta = horasIntentadas - horasPrevias;
 
-                console.log(
-                  '🧩 [ERROR] estadoAnteriorEvento usado con ->',
-                  estadoAnterior.extendedProps['n_horas_asignadas']
-                );
-                console.log('Horas previas:', horasPrevias);
-                console.log(
-                  'Horas intentadas (antes del revert):',
-                  horasIntentadas
-                );
-                console.log('Delta calculado:', delta);
-
                 if (delta !== 0) {
-                  // this.aplicarDeltaHorasRestantes(codigo, tipo, delta * -1);
                   this.aplicarDeltaHorasRestantes(codigo, tipo, delta);
-
-                  console.log(
-                    '♻️ HorasRestantes revertidas. Delta aplicado:',
-                    delta * -1
-                  );
                 }
-
-                console.log(
-                  'Horas restantes después del revert:',
-                  this.getHorasDisponibles(codigo, tipo)
-                );
               } catch (err) {
                 console.warn(
                   'No se pudo revertir las horas restantes tras conflicto:',
@@ -1684,17 +1479,6 @@ export class AsignarHorarioComponent
           } else {
             this.alertService.saveError(msg);
           }
-
-          // 🪵 Estado final tras error
-          console.log('=== 🔚 FIN ERROR GUARDADO ===');
-          console.log(
-            'Horas restantes finales:',
-            this.getHorasDisponibles(
-              e.extendedProps?.['codigo'],
-              e.extendedProps?.['tipo']
-            )
-          );
-          console.log('============================');
         },
       });
   }
@@ -1955,7 +1739,6 @@ export class AsignarHorarioComponent
   abrirModalDesdeCard(curso: CursoCard, ev?: MouseEvent) {
     if (ev) ev.stopPropagation();
     if (this.guardando) return;
-    console.log('aca');
 
     if (this.boolTransversal && curso.grupos_hijos?.[0]?.tipo === 0) {
       this.alertService.warn('Los cursos transversales están bloqueados.');
@@ -2021,7 +1804,6 @@ export class AsignarHorarioComponent
   }
 
   getTipoGrupo(curso: any): number | null {
-    // Busca el primer registro de grupo válido
     if (Array.isArray(curso.grupos_hijos) && curso.grupos_hijos.length > 0) {
       const grupo = curso.grupos_hijos.find(
         (g: any) => g.tipo === 0 || g.tipo === 1
