@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthContextService {
-  private readonly API = `http://localhost:4000`;
+  private readonly API = `https://mesa-api.uma.edu.pe`;
   private _config = signal<any | null>(null);
   private _loaded = signal(false);
 
