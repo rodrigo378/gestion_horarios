@@ -32,8 +32,7 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/director/director.module').then((m) => m.DirectorModule),
   },
-
-  { path: '', component: NotFountComponent },
+  { path: '', component: NotFountComponent, canActivate: [AuthGuard] },
   { path: '**', component: NotFountComponent },
 ];
 
