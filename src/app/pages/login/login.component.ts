@@ -71,7 +71,7 @@ export class LoginComponent implements OnInit {
   }
 
   submit_2() {
-    const apiUrl = 'http://localhost:4000';
+    const apiUrl = 'https://mesa-api.uma.edu.pe';
     const returnTo = '/';
     window.location.href = `${apiUrl}/auth/login?app=horario&returnTo=${encodeURIComponent(
       returnTo
