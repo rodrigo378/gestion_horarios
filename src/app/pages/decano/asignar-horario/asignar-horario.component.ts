@@ -190,6 +190,7 @@ export class AsignarHorarioComponent
         const permitidos = [
           'ludmilia.samaniego@uma.edu.pe',
           'rodrigo.palomino@uma.edu.pe',
+          'carlos.nicho@uma.edu.pe',
         ];
 
         // 🧠 Verifica si el correo está en la lista (sin importar mayúsculas/minúsculas)
