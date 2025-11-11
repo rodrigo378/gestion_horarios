@@ -89,18 +89,6 @@
               [nzLabel]="i"
             ></nz-option>
           </nz-select>
-
-          <!-- Estado -->
-          <nz-select
-            [(ngModel)]="filtros.estado"
-            (ngModelChange)="onChangeFacultad('estado', $event)"
-            class="w-auto h-[38px] rounded-xl"
-          >
-            <nz-option nzValue="" nzLabel="Estado"></nz-option>
-            <nz-option nzValue="0" nzLabel="No asignado"></nz-option>
-            <nz-option nzValue="1" nzLabel="Pendiente"></nz-option>
-            <nz-option nzValue="2" nzLabel="Asignado"></nz-option>
-          </nz-select>
         </div>
 
         <!-- Botón Crear Turno -->
@@ -151,24 +139,6 @@
               <td class="text-slate-700">{{ data.c_grpcur }}</td>
               <td class="text-slate-700">{{ data.n_ciclo }}</td>
               <td class="text-slate-700">{{ data.c_nommod }}</td>
-              <td>
-                <span
-                  [ngClass]="{
-                    'text-green-900 bg-green-500/20': data.estado === 2,
-                    'text-yellow-700 bg-yellow-500/20': data.estado === 1,
-                    'text-slate-600 bg-slate-200/60': data.estado === 0
-                  }"
-                  class="px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-sm"
-                >
-                  {{
-                    data.estado === 2
-                      ? "asignado"
-                      : data.estado === 0
-                      ? "no asignado"
-                      : "pendiente"
-                  }}
-                </span>
-              </td>
               <td>
                 <button
                   type="button"

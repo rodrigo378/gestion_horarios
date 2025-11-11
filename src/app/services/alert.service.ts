@@ -284,7 +284,7 @@ export class AlertService {
   error(message: string, title: string = 'Oops...!') {
     Swal.fire({
       title: title,
-      text: message,
+      html: message, // <--- acepta HTML
       icon: 'error',
       confirmButtonText: 'OK',
     });

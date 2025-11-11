@@ -301,11 +301,50 @@ export class AgruparCursosComponent {
     this.cursoService.deleteTransversal(padre_id).subscribe({
       next: (res: any) => {
         this.getCursos();
-        this.alertService.success('Exito', 'Se borro este grupo correctamente');
+        this.alertService.success('Éxito', 'Se eliminó el grupo correctamente');
       },
       error: (err: HttpErrorResponse) => {
-        console.log(err);
-        this.alertService.error(`${err.error.errores}`);
+        const data = err.error;
+        let mensajeHTML = `
+        <div style="text-align:left; font-size:14px;">
+          <p style="margin-bottom:8px; font-weight:500; color:#e11d48;">
+            ${data.mensaje}
+          </p>
+      `;
+
+        // Si hay conflictos, los mostramos de forma detallada
+        if (data.conflictos && Array.isArray(data.conflictos)) {
+          mensajeHTML += `
+          <div style="border:1px solid #f3f4f6; border-radius:8px; background:#f9fafb; padding:12px; max-height:220px; overflow-y:auto;">
+            ${data.conflictos
+              .map(
+                (c: any) => `
+                  <div style="padding:8px 10px; border-bottom:1px solid #e5e7eb;">
+                    <div style="font-weight:600; color:#111827; font-size:14px;">
+                      📘 ${c.nombre_curso} <span style="color:#6b7280;">(${c.grupo})</span>
+                    </div>
+                    <div style="margin-top:4px; color:#374151;">
+                      <a href="/coa/asignar/${c.turno_id}" target="_blank" style="color:#2563eb; text-decoration:none; font-weight:500;">
+                        🔗 Ver turno ${c.turno_id} (Click para abrir calendario)
+                      </a>
+                    </div>
+                    <div style="margin-top:2px; color:#6b7280; font-size:13px;">
+                      📅 <strong>${c.dia}</strong> — ⏰ ${c.hora_inicio} a ${c.hora_fin}
+                    </div>
+                  </div>
+                `
+              )
+              .join('')}
+          </div>
+        `;
+        }
+
+        mensajeHTML += `</div>`;
+
+        this.alertService.error(
+          mensajeHTML,
+          '⛔ No se puede eliminar el grupo'
+        );
       },
     });
   }

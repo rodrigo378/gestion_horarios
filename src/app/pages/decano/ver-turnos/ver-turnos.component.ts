@@ -76,11 +76,7 @@ export class VerTurnosComponent implements OnInit {
         a.c_nommod.localeCompare(b.c_nommod),
       nzWidth: 'auto',
     },
-    {
-      title: 'Estado',
-      compare: (a: HR_Turno, b: HR_Turno) => a.estado - b.estado,
-      nzWidth: '10%',
-    },
+
     { title: 'Acción', compare: false, nzWidth: 'auto' },
   ];
 
@@ -104,7 +100,6 @@ export class VerTurnosComponent implements OnInit {
     c_codesp: '',
     c_codmod: '',
     n_ciclo: '',
-    estado: '',
     c_grpcur: '',
   };
 
@@ -253,9 +248,6 @@ export class VerTurnosComponent implements OnInit {
         if (this.filtros.c_codesp && this.filtros.c_codesp.trim() !== '') {
           this.getTurnos();
         }
-        break;
-      case 'estado':
-        this.filtros.estado = valor;
         break;
     }
   }
