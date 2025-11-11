@@ -18,11 +18,15 @@ export class TurnoService {
   }
 
   getTurno(id: number): Observable<HR_Turno> {
-    return this.http.get<HR_Turno>(`${this.apiUrl}/${id}`);
+    return this.http.get<HR_Turno>(`${this.apiUrl}/${id}`, {
+      withCredentials: true,
+    });
   }
 
   getCursosPlanTurno(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/plan/cursos/${id}`);
+    return this.http.get<any>(`${this.apiUrl}/plan/cursos/${id}`, {
+      withCredentials: true,
+    });
   }
 
   generarCurso(curso: Partial<HR_Curso>) {
@@ -32,15 +36,21 @@ export class TurnoService {
   }
 
   deleteCurso(curso_id: number) {
-    return this.http.delete(`${this.apiUrl}/delete/curso/${curso_id}`);
+    return this.http.delete(`${this.apiUrl}/delete/curso/${curso_id}`, {
+      withCredentials: true,
+    });
   }
 
   bloquearTurnos(turnos_id: number[]) {
-    return this.http.post(`${this.apiUrl}/bloquear`, turnos_id);
+    return this.http.post(`${this.apiUrl}/bloquear`, turnos_id, {
+      withCredentials: true,
+    });
   }
 
   desbloquearTurnos(turnos_id: number[]) {
-    return this.http.post(`${this.apiUrl}/desbloquear`, turnos_id);
+    return this.http.post(`${this.apiUrl}/desbloquear`, turnos_id, {
+      withCredentials: true,
+    });
   }
 
   getTurnos(filtros: any = {}): Observable<HR_Turno[]> {
