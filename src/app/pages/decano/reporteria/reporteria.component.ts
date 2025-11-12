@@ -1,8 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
-import { format, toZonedTime } from 'date-fns-tz';
 import { Router } from '@angular/router';
 import { HR_Docente } from '../../../interfaces/hr/hr_docente';
 import { HR_Horario } from '../../../interfaces/hr/hr_horario';
@@ -21,7 +17,6 @@ export class ReporteriaComponent implements OnInit {
   docentes: HR_Docente[] = [];
   usuariosFiltrados: HR_Docente[] = [];
 
-  // 👇 Tabla configurada con columnas dinámicas y sorting
   listOfColumn = [
     {
       title: 'ID',
