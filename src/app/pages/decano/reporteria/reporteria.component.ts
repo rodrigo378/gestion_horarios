@@ -13,32 +13,56 @@ import { AlertService } from '../../../services/alert.service';
   selector: 'app-reporteria',
   standalone: false,
   templateUrl: './reporteria.component.html',
-  styleUrl: './reporteria.component.css',
+  styleUrls: ['./reporteria.component.css'],
 })
 export class ReporteriaComponent implements OnInit {
   itemsPorPagina = 10;
-  paginaActual = 1;
-  usuariosFiltrados: HR_Docente[] = [];
+  filtroBusqueda = '';
   docentes: HR_Docente[] = [];
-  mostrarModal = false;
-  sortColumn: string = '';
-  sortDirection: 'asc' | 'desc' = 'asc';
-  nuevoDocente: Partial<HR_Docente> = {
-    c_dnidoc: '',
-    c_codfac: '',
-    nom_fac: '',
-    c_nomdoc: '',
-    h_min: 0,
-    h_max: 0,
-    tipo: 0,
-  };
-  selectFacultad: string = '';
-  selectEspecialidad: string = '';
+  usuariosFiltrados: HR_Docente[] = [];
 
-  filtroBusqueda: string = '';
+  // 👇 Tabla configurada con columnas dinámicas y sorting
+  listOfColumn = [
+    {
+      title: 'ID',
+      nzWidth: '70px',
+      compare: (a: HR_Docente, b: HR_Docente) => a.id - b.id,
+    },
+    {
+      title: 'Docente',
+      nzWidth: '200px',
+      compare: (a: HR_Docente, b: HR_Docente) =>
+        a.c_nomdoc.localeCompare(b.c_nomdoc),
+    },
+    {
+      title: 'H. Mín',
+      nzWidth: '100px',
+      compare: (a: HR_Docente, b: HR_Docente) => a.h_min - b.h_min,
+    },
+    {
+      title: 'H. Máx',
+      nzWidth: '100px',
+      compare: (a: HR_Docente, b: HR_Docente) => a.h_max - b.h_max,
+    },
+    {
+      title: 'H. Académicas',
+      nzWidth: '120px',
+      compare: (a: HR_Docente, b: HR_Docente) =>
+        this.sumarHoras(a.horarios || []) - this.sumarHoras(b.horarios || []),
+    },
+    {
+      title: 'Tipo',
+      nzWidth: '140px',
+      compare: (a: HR_Docente, b: HR_Docente) => a.tipo - b.tipo,
+    },
+    {
+      title: 'Acciones',
+      nzWidth: '130px',
+      compare: null,
+    },
+  ];
 
   constructor(
-    private location: Location,
     private docenteService: DocenteService,
     private router: Router,
     private alertService: AlertService
@@ -49,83 +73,37 @@ export class ReporteriaComponent implements OnInit {
   }
 
   cargarDocentes() {
-    setTimeout(() => {
-      this.alertService.showLoadingScreen(
-        'Cargando información de docentes...'
-      );
-    });
+    this.alertService.showLoadingScreen('Cargando información de docentes...');
 
     this.docenteService
-      .obtenerDocentesreporteria(
-        true,
-        true,
-        true,
-        this.selectFacultad,
-        this.selectEspecialidad
-      )
+      .obtenerDocentesreporteria(true, true, true, '', '')
       .subscribe({
         next: (data: any[]) => {
-          this.docentes = data.map((docente) => ({
-            ...docente,
-            expanded: false,
-          }));
+          this.docentes = data.map((d) => ({ ...d, expanded: false }));
           this.usuariosFiltrados = [...this.docentes];
           this.alertService.close();
         },
-        error: (error) => {
+        error: (err) => {
+          console.error(err);
           this.alertService.close();
-
-          console.error('Error al obtener docentes:', error);
         },
       });
   }
 
-  crearDocente() {
-    if (!this.nuevoDocente.c_nomdoc!.trim()) {
-      // this.alertService.error('El nombre del docente es obligatorio');
-      return;
-    }
-
-    this.nuevoDocente.nom_fac = this.nombreFacultad(
-      this.nuevoDocente.c_codfac!
-    );
-
-    this.mostrarModal = false;
+  filtrarUsuarios() {
+    const f = this.filtroBusqueda.trim().toLowerCase();
+    this.usuariosFiltrados = !f
+      ? [...this.docentes]
+      : this.docentes.filter(
+          (d) =>
+            d.c_nomdoc?.toLowerCase().includes(f) ||
+            d.h_min?.toString().includes(f) ||
+            d.h_max?.toString().includes(f)
+        );
   }
 
-  abrirModalCrearDocente() {
-    this.nuevoDocente = {
-      c_dnidoc: '',
-      c_codfac: 'E',
-      nom_fac: 'INGENIERÍA Y NEGOCIOS',
-      c_nomdoc: '',
-      h_min: 1,
-      h_max: 8,
-      tipo: 0,
-    };
-    this.mostrarModal = true;
-  }
-
-  cerrarModal() {
-    this.mostrarModal = false;
-  }
-
-  getHorariosPorFacultad(docente: HR_Docente): { [key: string]: HR_Horario[] } {
-    const agrupado: { [key: string]: HR_Horario[] } = {};
-
-    if (!docente.horarios || docente.horarios.length === 0) return agrupado;
-
-    docente.horarios.forEach((h) => {
-      const codfac = h.curso?.plan?.c_codfac || docente.c_codfac || 'N/A';
-
-      if (!agrupado[codfac]) {
-        agrupado[codfac] = [];
-      }
-
-      agrupado[codfac].push(h);
-    });
-
-    return agrupado;
+  toggleExpand(docente: HR_Docente) {
+    docente.expanded = !docente.expanded;
   }
 
   nombreFacultad(cod: string): string {
@@ -140,205 +118,79 @@ export class ReporteriaComponent implements OnInit {
   }
 
   sumarHoras(horarios: HR_Horario[]): number {
-    return horarios.reduce((acc, h) => acc + (h.n_horas || 0), 0);
-  }
-
-  siguientePagina() {
-    if (this.paginaActual < this.totalPaginas) {
-      this.paginaActual++;
-    }
-  }
-
-  anteriorPagina() {
-    if (this.paginaActual > 1) {
-      this.paginaActual--;
-    }
-  }
-
-  get totalPaginas() {
-    return Math.ceil(this.usuariosFiltrados.length / this.itemsPorPagina);
-  }
-
-  get usuariosPaginados() {
-    const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
-    return this.usuariosFiltrados.slice(inicio, inicio + this.itemsPorPagina);
-  }
-
-  cancel() {
-    this.location.back();
-  }
-
-  toggleExpand(docente: HR_Docente) {
-    docente.expanded = !docente.expanded;
-  }
-
-  filtrarUsuarios() {
-    const filtro = this.filtroBusqueda.trim().toLowerCase();
-
-    if (!filtro) {
-      this.usuariosFiltrados = [...this.docentes]; // mostrar todo si está vacío
-      return;
-    }
-
-    this.usuariosFiltrados = this.docentes.filter((docente) => {
-      const nombre = docente.c_nomdoc?.toLowerCase() || '';
-      // const categoria = docente.categoria?.toLowerCase() || '';
-      const hMin = docente.h_min?.toString() || '';
-      const hMax = docente.h_max?.toString() || '';
-      const hTotal = docente.h_total?.toString() || '';
-
-      return (
-        nombre.includes(filtro) ||
-        // categoria.includes(filtro) ||
-        hMin.includes(filtro) ||
-        hMax.includes(filtro) ||
-        hTotal.includes(filtro)
-      );
-    });
-
-    this.paginaActual = 1; // Reinicia paginación
-  }
-
-  exportarExcel(): void {
-    const rows: any[] = [];
-    const zonaHoraria = 'America/Lima';
-
-    this.usuariosFiltrados.forEach((docente) => {
-      const horarios = docente.horarios || [];
-      const asignado = horarios.length;
-
-      horarios.forEach((h, index) => {
-        const cursoPadre = h.curso?.grupos_padre?.[0];
-        const tipoCursoPadre = cursoPadre
-          ? cursoPadre.tipo === 0
-            ? 'Transversal'
-            : cursoPadre.tipo === 1
-            ? 'Agrupado'
-            : 'Otro'
-          : '';
-
-        const shortname = cursoPadre?.shortname || '';
-
-        const horaInicio = h.h_inicio
-          ? format(toZonedTime(new Date(h.h_inicio), zonaHoraria), 'HH:mm')
-          : '';
-
-        const horaFin = h.h_fin
-          ? format(toZonedTime(new Date(h.h_fin), zonaHoraria), 'HH:mm')
-          : '';
-
-        const cursosUnicos = new Set(
-          horarios.map((h) => h.curso?.plan?.c_codcur)
-        ).size;
-        rows.push({
-          Docente: index === 0 ? docente.c_nomdoc : '',
-          'H. Min': index === 0 ? docente.h_min : '',
-          'H. Max': index === 0 ? docente.h_max : '',
-          'H. Académicas': index === 0 ? docente.h_total : '',
-          Tipo:
-            index === 0
-              ? docente.tipo === 0
-                ? 'Tiempo Completo'
-                : 'Tiempo Parcial'
-              : '',
-          'Horarios Asignaciones': index === 0 ? asignado : '',
-          'Cursos Asignados': index === 0 ? cursosUnicos : '',
-          Día: h.dia,
-          'Hora Inicio': horaInicio,
-          'Hora Fin': horaFin,
-          'Nro Horas': h.n_horas,
-          Curso: h.curso?.plan?.c_nomcur || 'error_1',
-          Ciclo: h.curso?.plan?.n_ciclo || 'error_2',
-          Facultad: this.nombreFacultad(h.curso?.plan?.c_codfac || 'error_3'),
-          'Tipo Curso': tipoCursoPadre,
-          'Shortname Curso': shortname,
-        });
-      });
-
-      // Si no tiene horarios, aún se agrega una fila básica
-      if (horarios.length === 0) {
-        rows.push({
-          Docente: docente.c_nomdoc,
-          'H. Min': docente.h_min,
-          'H. Max': docente.h_max,
-          'H. Académicas': docente.h_total,
-          Tipo: docente.tipo === 0 ? 'Tiempo Completo' : 'Tiempo Parcial',
-          Asignado: 0,
-          Día: '',
-          'Hora Inicio': '',
-          'Hora Fin': '',
-          'Nro Horas': '',
-          Curso: '',
-          Ciclo: '',
-          Facultad: '',
-          'Tipo Curso': '',
-          'Shortname Curso': '',
-        });
+    if (!horarios || horarios.length === 0) return 0;
+    const sesiones = new Set<string>();
+    let total = 0;
+    for (const h of horarios) {
+      if (!h.dia || !h.h_inicio || !h.h_fin) continue;
+      const clave = `${h.dia}-${h.h_inicio}-${h.h_fin}`;
+      if (!sesiones.has(clave)) {
+        sesiones.add(clave);
+        total += h.n_horas || 0;
       }
-    });
-
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(rows);
-    const workbook: XLSX.WorkBook = {
-      Sheets: { 'Reporte Docentes': worksheet },
-      SheetNames: ['Reporte Docentes'],
-    };
-
-    const excelBuffer: any = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-
-    const blob: Blob = new Blob([excelBuffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-
-    FileSaver.saveAs(
-      blob,
-      `reporte-docentes-${format(new Date(), 'yyyy-MM-dd')}.xlsx`
-    );
-  }
-
-  cambiarItemsPorPagina(valor: number) {
-    this.itemsPorPagina = valor;
-    this.paginaActual = 1;
-  }
-
-  sortBy(column: string) {
-    if (this.sortColumn === column) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = column;
-      this.sortDirection = 'asc';
     }
-
-    this.sortData();
+    return total;
   }
 
-  sortData() {
-    this.usuariosFiltrados.sort((a, b) => {
-      const valA = (a as any)[this.sortColumn];
-      const valB = (b as any)[this.sortColumn];
+  agruparHorariosVisual(horarios: HR_Horario[]) {
+    if (!horarios || horarios.length === 0) return [];
 
-      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
-      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
-      return 0;
+    // Agrupa por la misma sesión: día + hora inicio + hora fin
+    const mapa = new Map<string, HR_Horario[]>();
+    horarios.forEach((h) => {
+      const key = `${h.dia}||${h.h_inicio}||${h.h_fin}`;
+      if (!mapa.has(key)) mapa.set(key, []);
+      mapa.get(key)!.push(h);
+    });
+
+    const uniq = <T>(arr: (T | null | undefined)[]) =>
+      Array.from(new Set(arr.filter(Boolean) as T[]));
+
+    return Array.from(mapa.values()).map((grupo) => {
+      const base = grupo[0];
+
+      const c_codfac = uniq(grupo.map((g) => g.curso?.plan?.c_codfac)).join(
+        ', '
+      );
+      const c_codesp = uniq(grupo.map((g) => g.curso?.plan?.c_codesp)).join(
+        ', '
+      );
+      const c_codcur = uniq(grupo.map((g) => g.curso?.plan?.c_codcur)).join(
+        ', '
+      );
+      const c_nomcur = uniq(grupo.map((g) => g.curso?.plan?.c_nomcur)).join(
+        ' / '
+      );
+      const c_grpcur = uniq(grupo.map((g) => g.curso?.turno?.c_grpcur)).join(
+        ', '
+      );
+      const modalidad = uniq(grupo.map((g) => g.modalidad)).join(', ');
+      const aula = uniq(grupo.map((g) => g.aula?.c_codaula)).join(', ');
+
+      // Como la clave del grupo ya es el mismo bloque horario, basta 1 cadena
+      const horariosTxt = `${base.dia} (${base.h_inicio} - ${base.h_fin})`;
+
+      // Para esta agrupación (misma sesión) basta tomar n_horas de la base
+      const n_horas = base?.n_horas ?? 0;
+
+      return {
+        ...base,
+        c_codfac,
+        c_codesp,
+        c_codcur,
+        c_nomcur,
+        c_grpcur,
+        modalidad,
+        aula,
+        horarios: horariosTxt,
+        n_horas,
+      };
     });
   }
 
-  getSortIconClass(column: string): string {
-    if (this.sortColumn !== column) return '';
-
-    return this.sortDirection === 'asc' ? 'rotate-180' : '';
-  }
-
-  clickCalendarioDocente(docente_id: number) {
-    const currentPrefix = this.router.url.split('/')[1];
-    const url = `/${currentPrefix}/calendario_docente?id=${docente_id}`;
-
+  clickCalendarioDocente(id: number) {
+    const prefix = this.router.url.split('/')[1];
+    const url = `/${prefix}/calendario_docente?id=${id}`;
     window.open(url, '_blank');
-  }
-
-  aplicarFiltros() {
-    this.cargarDocentes();
   }
 }
