@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PeriodoService } from '../../../services/periodo.service';
-import { Periodo } from '../../../interfaces_2/turno';
 import { AlertService } from '../../../services/alert.service';
+import { HR_Periodo } from '../../../interfaces/hr/hr_periodo';
 
 @Component({
   selector: 'app-periodo',
@@ -10,7 +10,7 @@ import { AlertService } from '../../../services/alert.service';
   styleUrl: './periodo.component.css',
 })
 export class PeriodoComponent implements OnInit {
-  periodos: Periodo[] = [];
+  periodos: HR_Periodo[] = [];
 
   constructor(
     private periodoService: PeriodoService,

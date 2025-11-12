@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { User } from '../../interfaces_2/User';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../../environment/environment';
 
@@ -23,7 +20,6 @@ export class LoginComponent implements OnInit {
   currentYear: number = new Date().getFullYear();
 
   constructor(
-    private authService: AuthService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router
@@ -45,28 +41,6 @@ export class LoginComponent implements OnInit {
 
   get form() {
     return this.loginForm.controls;
-  }
-
-  submit() {
-    if (this.loginForm.invalid) {
-      this.submitted = true;
-
-      return;
-    }
-
-    const user: Partial<User> = {
-      email: this.loginForm.get('email')?.value,
-      password: this.loginForm.get('password')?.value,
-    };
-
-    this.authService.login(user).subscribe({
-      next: (res: any) => {
-        this.router.navigate(['dashboard/welcome']);
-      },
-      error: (e: HttpErrorResponse) => {
-        this.boolLogin = true;
-      },
-    });
   }
 
   submit_2() {

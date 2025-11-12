@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { PlanCurso } from '../../../interfaces_2/Plan';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PlanCursoService } from '../../../services/plan-curso.service';
 import { AlertService } from '../../../services/alert.service';
+import { HR_Plan_Estudio_Curso } from '../../../interfaces/hr/hr_plan_estudio_curso';
 
 @Component({
   selector: 'app-plan-cursos',
@@ -11,79 +11,86 @@ import { AlertService } from '../../../services/alert.service';
   styleUrl: './plan-cursos.component.css',
 })
 export class PlanCursosComponent implements OnInit {
-  editCache: { [key: string]: { edit: boolean; data: PlanCurso } } = {};
-  listOfData: PlanCurso[] = [];
+  editCache: { [key: string]: { edit: boolean; data: HR_Plan_Estudio_Curso } } =
+    {};
+  listOfData: HR_Plan_Estudio_Curso[] = [];
   searchValue: string = '';
-  datosFiltrados: PlanCurso[] = [];
+  datosFiltrados: HR_Plan_Estudio_Curso[] = [];
 
   listOfColumn = [
     // {
     //   title: 'id',
     //   nzWidth: '20%',
-    //   compare: (a: PlanCurso, b: PlanCurso) => a.id - b.id,
+    //   compare: (a: HR_Plan_Estudio_Curso, b: HR_Plan_Estudio_Curso) => a.id - b.id,
     //   priority: false,
     // },
     {
       title: 'Facultad',
-      compare: (a: PlanCurso, b: PlanCurso) =>
+      compare: (a: HR_Plan_Estudio_Curso, b: HR_Plan_Estudio_Curso) =>
         a.c_codfac.localeCompare(b.c_codfac),
       priority: false,
       nzWidth: '7%',
     },
     {
       title: 'Especialidad',
-      compare: (a: PlanCurso, b: PlanCurso) =>
+      compare: (a: HR_Plan_Estudio_Curso, b: HR_Plan_Estudio_Curso) =>
         a.c_codesp.localeCompare(b.c_codesp),
       priority: 3,
       nzWidth: '8%',
     },
     {
       title: 'Modalidad',
-      compare: (a: PlanCurso, b: PlanCurso) => a.c_codmod - b.c_codmod,
+      compare: (a: HR_Plan_Estudio_Curso, b: HR_Plan_Estudio_Curso) =>
+        a.c_codmod - b.c_codmod,
       priority: 2,
       nzWidth: '7%',
     },
     {
       title: 'Codigo',
-      compare: (a: PlanCurso, b: PlanCurso) =>
+      compare: (a: HR_Plan_Estudio_Curso, b: HR_Plan_Estudio_Curso) =>
         a.c_codcur.localeCompare(b.c_codcur),
       priority: 1,
       nzWidth: '8%',
     },
     {
       title: 'Nombre',
-      compare: (a: PlanCurso, b: PlanCurso) =>
+      compare: (a: HR_Plan_Estudio_Curso, b: HR_Plan_Estudio_Curso) =>
         a.c_nomcur.localeCompare(b.c_nomcur),
       priority: 0,
       nzWidth: '25%',
     },
     {
       title: 'Tipo',
-      compare: (a: PlanCurso, b: PlanCurso) => a.c_area.localeCompare(b.c_area),
+      compare: (a: HR_Plan_Estudio_Curso, b: HR_Plan_Estudio_Curso) =>
+        a.c_area.localeCompare(b.c_area),
       priority: 0,
       nzWidth: '8%',
     },
     {
       title: 'Teoria',
-      compare: (a: PlanCurso, b: PlanCurso) => a.n_ht - b.n_ht,
+      compare: (a: HR_Plan_Estudio_Curso, b: HR_Plan_Estudio_Curso) =>
+        a.n_ht - b.n_ht,
       priority: 1,
       nzWidth: '7%',
     },
     {
       title: 'Practica',
-      compare: (a: PlanCurso, b: PlanCurso) => a.n_hp - b.n_hp,
+      compare: (a: HR_Plan_Estudio_Curso, b: HR_Plan_Estudio_Curso) =>
+        a.n_hp - b.n_hp,
       priority: 1,
       nzWidth: '7%',
     },
     {
       title: 'UnaPlus',
-      compare: (a: PlanCurso, b: PlanCurso) => a.c_curup - b.c_curup,
+      compare: (a: HR_Plan_Estudio_Curso, b: HR_Plan_Estudio_Curso) =>
+        a.c_curup - b.c_curup,
       priority: 1,
       nzWidth: '7%',
     },
     {
       title: 'Acciones',
-      compare: (a: PlanCurso, b: PlanCurso) => a.c_curup - b.c_curup,
+      compare: (a: HR_Plan_Estudio_Curso, b: HR_Plan_Estudio_Curso) =>
+        a.c_curup - b.c_curup,
       priority: 1,
       nzWidth: '10%',
     },

@@ -647,6 +647,8 @@ export class AsignarHorarioComponent
 
   getDocentes() {
     this.docenteService.getDocentes().subscribe((data) => {
+      console.log('data => ', data);
+
       this.docentesFiltrados = [...data];
     });
   }
@@ -1252,19 +1254,21 @@ export class AsignarHorarioComponent
   }
 
   filtrarDocentesBusquedaGeneral() {
-    const termino = this.busquedaDocente?.toLowerCase().trim() || '';
+    const termino = (this.busquedaDocente || '').toLowerCase().trim();
 
     if (!termino) {
-      this.docentesFiltrados = this.selectedDocente;
+      this.resultadosBusqueda = [...this.docentesFiltrados];
+      return;
+    }
+
+    if (!Array.isArray(this.docentesFiltrados)) {
       this.resultadosBusqueda = [];
       return;
     }
 
-    this.docentesFiltrados = this.selectedDocente.filter((d: any) =>
-      d.c_nomdoc.toLowerCase().includes(termino)
+    this.resultadosBusqueda = this.docentesFiltrados.filter((d: any) =>
+      (d.c_nomdoc || '').toLowerCase().includes(termino)
     );
-
-    this.resultadosBusqueda = this.docentesFiltrados;
   }
 
   seleccionarDocenteDesdeBusqueda(doc: any) {

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Periodo } from '../interfaces_2/turno';
+import { HR_Periodo } from '../interfaces/hr/hr_periodo';
 
 @Injectable({
   providedIn: 'root',
@@ -12,8 +12,8 @@ export class PeriodoService {
 
   constructor(private http: HttpClient) {}
 
-  getPeriodos(): Observable<Periodo[]> {
-    return this.http.get<Periodo[]>(this.apiUrl);
+  getPeriodos(): Observable<HR_Periodo[]> {
+    return this.http.get<HR_Periodo[]>(this.apiUrl);
   }
 
   createPeriodo(n_codper: number, f_cierre: string) {
