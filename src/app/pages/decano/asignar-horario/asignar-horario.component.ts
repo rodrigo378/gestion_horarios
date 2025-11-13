@@ -388,8 +388,6 @@ export class AsignarHorarioComponent
     if (this.guardando) return;
     this.lastDropRevert = null;
 
-    console.log('aca 1');
-
     const grupos = arg.event.extendedProps?.['grupos_hijo'] ?? [];
     console.log('grupos => ', grupos);
 
@@ -1960,7 +1958,6 @@ export class AsignarHorarioComponent
   abrirModalDesdeCard(curso: CursoCard, ev?: MouseEvent) {
     if (ev) ev.stopPropagation();
     if (this.guardando) return;
-    console.log('aca');
 
     if (this.boolTransversal && curso.grupos_hijos?.[0]?.tipo === 0) {
       this.alertService.warn('Los cursos transversales están bloqueados.');

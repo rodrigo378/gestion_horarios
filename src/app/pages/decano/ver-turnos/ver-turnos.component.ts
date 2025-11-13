@@ -187,10 +187,7 @@ export class VerTurnosComponent implements OnInit {
   }
 
   inicializarFormulario() {
-    console.log('aca');
-
     const facultadDefault = this.facultadUnica ?? '';
-    console.log('facultadDefault => ', facultadDefault);
 
     this.formularioHorario = this.fb.group({
       c_codfac: [
