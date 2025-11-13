@@ -68,6 +68,6 @@ export class TurnoService {
   }
 
   generarReporte() {
-    return this.http.get(`${this.apiUrl}/reporte`);
+    return this.http.get(`${this.apiUrl}/reporte`, { withCredentials: true });
   }
 }
