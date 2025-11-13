@@ -66,4 +66,8 @@ export class TurnoService {
 
     return this.http.get<HR_Turno[]>(this.apiUrl, { params });
   }
+
+  generarReporte() {
+    return this.http.get(`${this.apiUrl}/reporte`);
+  }
 }

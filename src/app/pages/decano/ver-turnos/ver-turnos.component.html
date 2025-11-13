@@ -34,7 +34,7 @@
             ></nz-option>
           </nz-select>
 
-          <!-- Facultad (solo visible si el usuario tiene más de una) -->
+          <!-- Facultad -->
           <nz-select
             [(ngModel)]="filtros.c_codfac"
             (ngModelChange)="onChangeFacultad('facultad', $event)"
@@ -46,7 +46,7 @@
             <nz-option nzValue="E" nzLabel="INGENIERÍA Y NEGOCIOS"></nz-option>
           </nz-select>
 
-          <!-- Especialidades filtradas -->
+          <!-- Especialidad -->
           <nz-select
             [(ngModel)]="filtros.c_codesp"
             (ngModelChange)="onChangeFacultad('especialidad', $event)"
@@ -91,8 +91,18 @@
           </nz-select>
         </div>
 
-        <!-- Botón Crear Turno -->
-        <div>
+        <!-- 🔥 BOTONES -->
+        <div class="flex items-center gap-3">
+          <!-- Botón Generar Reporte -->
+          <button
+            (click)="generarReporte()"
+            class="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-800 hover:from-emerald-700 hover:to-emerald-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"
+          >
+            <i class="fa-solid fa-file-lines"></i>
+            Generar Reporte
+          </button>
+
+          <!-- Botón Crear Turno -->
           <button
             (click)="mostrarModalCrear = true"
             class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-all duration-300"

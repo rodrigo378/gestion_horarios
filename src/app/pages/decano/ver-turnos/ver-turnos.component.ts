@@ -6,6 +6,8 @@ import { HR_Turno } from '../../../interfaces/hr/hr_turno';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../../services/alert.service';
+import FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-ver-turnos',
@@ -457,5 +459,43 @@ export class VerTurnosComponent implements OnInit {
     } else {
       this.seccionesSugeridas = [];
     }
+  }
+
+  // generarReporte() {
+  //   this.turnoService.generarReporte().subscribe((data) => {
+  //     console.log('data =>', data);
+  //   });
+  // }
+
+  generarReporte() {
+    this.alertService.showLoadingScreen('Generando reporte...');
+
+    this.turnoService.generarReporte().subscribe((data) => {
+      const fecha = new Date().toISOString().slice(0, 10);
+
+      // Asegurar que sea un array
+      const dataArray = Array.isArray(data) ? data : [data];
+
+      // Convertir JSON → Excel
+      const worksheet = XLSX.utils.json_to_sheet(dataArray);
+
+      const workbook = {
+        Sheets: { Reporte: worksheet },
+        SheetNames: ['Reporte'],
+      };
+
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
+
+      const blob = new Blob([excelBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+      });
+
+      FileSaver.saveAs(blob, `ReporteTurnos_${fecha}.xlsx`);
+
+      this.alertService.close();
+    });
   }
 }
