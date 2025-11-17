@@ -36,9 +36,16 @@ export class VerTransversalComponent {
     },
     { nomesp: 'ADMINISTRACIÓN Y MARKETING', codesp: 'E2', codfac: 'E' },
     { nomesp: 'CONTABILIDAD Y FINANZAS', codesp: 'E3', codfac: 'E' },
+
+    {
+      nomesp: 'ADMINISTRACIÓN Y NEGOCIOS INTERNACIONALES',
+      codesp: 'E4',
+      codfac: 'E',
+    },
+
     { nomesp: 'INGENIERÍA INDUSTRIAL', codesp: 'E5', codfac: 'E' },
     { nomesp: 'INGENIERÍA DE IA', codesp: 'E6', codfac: 'E' },
-    { nomesp: 'INGENIERÍA DE SISTEMAS', codesp: 'E7', codfac: 'E' },
+
     { nomesp: 'ENFERMERÍA', codesp: 'S1', codfac: 'S' },
     { nomesp: 'FARMACIA Y BIOQUÍMICA', codesp: 'S2', codfac: 'S' },
     { nomesp: 'NUTRICIÓN Y DIETÉTICA', codesp: 'S3', codfac: 'S' },
