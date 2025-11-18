@@ -78,6 +78,7 @@ export class AsignarHorarioComponent
 
   private lastDropRevert: (() => void) | null = null;
   private estadoAnteriorEvento: any = null;
+  private snapshotCursos: { [codcur: string]: any } = {};
 
   genVisible = false;
   genLoading = false;
@@ -982,6 +983,28 @@ export class AsignarHorarioComponent
 
     this.guardarSoloEvento(nuevoEvento);
 
+    // ⭐ GUARDAR SNAPSHOT ANTES DE RESTAR HORAS
+    const codigoSnap = this.cursoSeleccionado.extendedProps.codigo;
+    const tipoSnap = this.cursoSeleccionado.extendedProps.tipo;
+
+    const encontrarCurso = (arr: CursoCard[]) =>
+      arr.find(
+        (c) =>
+          c.c_codcur === codigoSnap &&
+          ((tipoSnap === 'Teoría' && c.tipo === 'teoria') ||
+            (tipoSnap === 'Práctica' && c.tipo === 'practica'))
+      );
+
+    const itemSnap =
+      encontrarCurso(this.cursosPlan2023) ||
+      encontrarCurso(this.cursosPlan2025);
+
+    if (itemSnap) {
+      this.snapshotCursos[codigoSnap] = {
+        horasRestantes: itemSnap.horasRestantes,
+      };
+    }
+
     this.restarHorasDisponibles(
       this.cursoSeleccionado.extendedProps.codigo,
       this.cursoSeleccionado.extendedProps.tipo,
@@ -1498,35 +1521,12 @@ export class AsignarHorarioComponent
 
   private guardarSoloEvento(e: any) {
     // 🧩 Guardamos un clon del estado actual antes de modificarlo
-    console.log(
-      '⚙️ [GUARDAR] Llega estadoAnteriorEvento con ->',
-      this.estadoAnteriorEvento?.extendedProps?.['n_horas_asignadas']
-    );
-    console.log(
-      '⚙️ [GUARDAR] Evento actual llega con ->',
-      e.extendedProps['n_horas_asignadas']
-    );
 
     const estadoAnterior = this.estadoAnteriorEvento || {
       start: e.start ? new Date(e.start) : null,
       end: e.end ? new Date(e.end) : null,
       extendedProps: { ...e.extendedProps },
     };
-
-    // 🪵 Log inicial para monitorear el estado antes del guardado
-    console.log('=== 🟢 INICIO GUARDAR EVENTO ===');
-    console.log('Evento ->', e.title);
-    console.log(
-      'Horas actuales antes del intento:',
-      e.extendedProps?.['n_horas_asignadas']
-    );
-    console.log(
-      'Horas restantes antes del intento:',
-      this.getHorasDisponibles(
-        e.extendedProps?.['codigo'],
-        e.extendedProps?.['tipo']
-      )
-    );
 
     const item = this.dtoFromEvent(e);
 
@@ -1626,33 +1626,21 @@ export class AsignarHorarioComponent
                 const horasPrevias = Number(
                   estadoAnterior.extendedProps?.['n_horas_asignadas'] ?? 1
                 );
-                const delta = horasIntentadas - horasPrevias;
 
-                console.log(
-                  '🧩 [ERROR] estadoAnteriorEvento usado con ->',
-                  estadoAnterior.extendedProps['n_horas_asignadas']
-                );
-                console.log('Horas previas:', horasPrevias);
-                console.log(
-                  'Horas intentadas (antes del revert):',
-                  horasIntentadas
-                );
-                console.log('Delta calculado:', delta);
-
-                if (delta !== 0) {
-                  // this.aplicarDeltaHorasRestantes(codigo, tipo, delta * -1);
-                  this.aplicarDeltaHorasRestantes(codigo, tipo, delta);
-
-                  console.log(
-                    '♻️ HorasRestantes revertidas. Delta aplicado:',
-                    delta * -1
-                  );
+                const snap = this.snapshotCursos[codigo];
+                if (snap) {
+                  const updater = (arr: CursoCard[]) => {
+                    const item = arr.find(
+                      (c) =>
+                        c.c_codcur === codigo &&
+                        ((tipo === 'Teoría' && c.tipo === 'teoria') ||
+                          (tipo === 'Práctica' && c.tipo === 'practica'))
+                    );
+                    if (item) item.horasRestantes = snap.horasRestantes;
+                  };
+                  updater(this.cursosPlan2023);
+                  updater(this.cursosPlan2025);
                 }
-
-                console.log(
-                  'Horas restantes después del revert:',
-                  this.getHorasDisponibles(codigo, tipo)
-                );
               } catch (err) {
                 console.warn(
                   'No se pudo revertir las horas restantes tras conflicto:',

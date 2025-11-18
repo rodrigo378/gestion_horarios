@@ -105,7 +105,7 @@ export class VerTurnosComponent implements OnInit {
     c_grpcur: '',
   };
 
-  periodos = [{ n_codper: 20261 }];
+  periodos = [{ n_codper: 20251 }, { n_codper: 20261 }];
   ciclos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   modalidades = [
