@@ -5,6 +5,16 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { HR_Turno } from '../interfaces/hr/hr_turno';
 import { HR_Curso } from '../interfaces/hr/hr_curso';
 
+export interface ComparacionTurnoPeriodo {
+  turno: HR_Turno;
+
+  estadoGeneralCursos: string;
+  estadoGeneralDocentes: string;
+  estadoGeneralHorarios: string;
+
+  estadoGeneral?: string; // calculado en el front
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -65,6 +75,21 @@ export class TurnoService {
     });
 
     return this.http.get<HR_Turno[]>(this.apiUrl, { params });
+  }
+
+  comparacionPorTurnoId(turno_id: number) {
+    return this.http.get(`${this.apiUrl}/comparacion/turno/${turno_id}`, {
+      withCredentials: true,
+    });
+  }
+
+  comparacionPorPeriodo(
+    n_codper: number
+  ): Observable<ComparacionTurnoPeriodo[]> {
+    return this.http.get<ComparacionTurnoPeriodo[]>(
+      `${this.apiUrl}/comparacion/periodo/${n_codper}`,
+      { withCredentials: true }
+    );
   }
 
   generarReporte() {

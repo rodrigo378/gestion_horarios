@@ -28,6 +28,8 @@ import { AsignarHorarioComponent } from './asignar-horario/asignar-horario.compo
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { PipesModule } from '../../pipes/pipes.module';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzTabsModule } from 'ng-zorro-antd/tabs';
 
 @NgModule({
   declarations: [
@@ -64,6 +66,8 @@ import { PipesModule } from '../../pipes/pipes.module';
     FullCalendarModule,
 
     NzGridModule,
+    NzSpinModule,
+    NzTabsModule,
   ],
 })
 export class TiModule {}

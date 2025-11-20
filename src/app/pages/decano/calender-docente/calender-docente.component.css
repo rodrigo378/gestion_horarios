@@ -1,6 +1,6 @@
 /* 📌 Aumentar la altura de las franjas horarias normales */
 ::ng-deep .fc-timegrid-slot {
-  height: 130px !important; /* Mantiene altura actual */
+  height: 130px !important;
   min-height: 100px !important;
 }
 
@@ -59,4 +59,26 @@
   opacity: 0.5;
   pointer-events: none;
   filter: grayscale(100%);
+}
+
+/* ====================================================================================== */
+.print-mode .fc-timegrid-slot {
+  height: 60px !important; /* filas más grandes */
+}
+
+.print-mode .fc-timegrid-slot-label {
+  font-size: 14px !important;
+}
+
+.print-mode .fc-event {
+  padding: 6px !important;
+  font-size: 12px !important;
+}
+
+.print-mode .fc-scrollgrid {
+  overflow: visible !important;
+}
+
+.print-mode .fc {
+  overflow: visible !important;
 }

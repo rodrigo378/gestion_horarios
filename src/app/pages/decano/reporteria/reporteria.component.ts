@@ -70,19 +70,17 @@ export class ReporteriaComponent implements OnInit {
   cargarDocentes() {
     this.alertService.showLoadingScreen('Cargando información de docentes...');
 
-    this.docenteService
-      .obtenerDocentesreporteria(true, true, true, '', '')
-      .subscribe({
-        next: (data: any[]) => {
-          this.docentes = data.map((d) => ({ ...d, expanded: false }));
-          this.usuariosFiltrados = [...this.docentes];
-          this.alertService.close();
-        },
-        error: (err) => {
-          console.error(err);
-          this.alertService.close();
-        },
-      });
+    this.docenteService.getDocentes(true, true, true).subscribe({
+      next: (data: any[]) => {
+        this.docentes = data.map((d) => ({ ...d, expanded: false }));
+        this.usuariosFiltrados = [...this.docentes];
+        this.alertService.close();
+      },
+      error: (err) => {
+        console.error(err);
+        this.alertService.close();
+      },
+    });
   }
 
   filtrarUsuarios() {

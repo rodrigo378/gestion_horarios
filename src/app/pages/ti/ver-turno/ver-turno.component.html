@@ -1,11 +1,11 @@
 <!-- component -->
 <div class="max-w-[100%] mx-auto">
-  <!-- PANEL PRINCIPAL (mismo look & feel del componente de Docentes) -->
+  <!-- PANEL PRINCIPAL -->
   <div
     class="relative flex flex-col w-full h-full text-slate-700 bg-white rounded-2xl shadow-md ring-1 ring-slate-200/70 px-8 sm:px-12 py-6 sm:py-8 bg-clip-border"
   >
     <div class="relative overflow-hidden text-slate-700 bg-white rounded-2xl">
-      <!-- Header: título + acciones -->
+      <!-- Header -->
       <div
         class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5 gap-3"
       >
@@ -13,17 +13,12 @@
           <h3 class="text-2xl font-semibold text-slate-900">Lista Turno</h3>
           <p class="text-slate-500">Lista de todos los turnos:</p>
         </div>
-
-        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-          <!-- Acciones (dejadas intencionalmente vacías, conservando layout) -->
-        </div>
       </div>
 
-      <!-- Filtros + botones -->
+      <!-- Filtros -->
       <div
         class="flex flex-col sm:flex-row justify-between items-center gap-4 p-3 bg-slate-50/60 rounded-xl ring-1 ring-slate-200/70"
       >
-        <!-- Filtros -->
         <div class="flex flex-wrap gap-2 items-center">
           <nz-select
             [(ngModel)]="filtros.n_codper"
@@ -51,11 +46,10 @@
             class="w-[300px] h-[30px]"
           >
             <nz-option nzValue="" nzLabel="Especialidad"></nz-option>
-            @for (especialidad of especialidadesFiltradas; track
-            especialidad.codesp) {
+            @for (esp of especialidadesFiltradas; track esp.codesp) {
             <nz-option
-              nzValue="{{ especialidad.codesp }}"
-              nzLabel="{{ especialidad.codesp }} - {{ especialidad.nomesp }}"
+              nzValue="{{ esp.codesp }}"
+              nzLabel="{{ esp.codesp }} - {{ esp.nomesp }}"
             ></nz-option>
             }
           </nz-select>
@@ -96,41 +90,52 @@
           </nz-select>
         </div>
 
-        <!-- Botones -->
+        <!-- botones -->
         <div class="flex gap-2">
-          <button
+          <!-- <button
             (click)="clickBloquearTodo()"
             class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700 transition"
           >
             Blockear Turnos
-          </button>
+          </button> -->
+
           <button
+            class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700 transition"
+          >
+            Blockear Turnos
+          </button>
+
+          <!-- <button
             (click)="clickDesbloquearTodo()"
             class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-emerald-700 transition"
           >
-            Deslockear Turnos
+            Desbloquear Turnos
+          </button> -->
+
+          <button
+            class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-emerald-700 transition"
+          >
+            Desbloquear Turnos
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- SECCIÓN CON TABLA (mismo “borde interno” que en Docentes) -->
+  <!-- TABLA -->
   <div class="mt-5 bg-white rounded-xl shadow-sm ring-1 ring-slate-200/70 p-6">
     <div class="w-full overflow-x-auto rounded-xl">
       <div class="min-w-[1000px]">
         <nz-table
           #editRowTable
-          #sortTable
           [nzData]="datosFiltrados"
           [nzPageSize]="pageSize"
           [nzPageIndex]="pageIndex"
           [nzTotal]="datosFiltrados.length"
-          (nzPageSizeChange)="onPageSizeChange($event)"
+          (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
           [nzShowSizeChanger]="true"
-          nzTableLayout="fixed"
-          (nzCurrentPageDataChange)="listOfCurrentPageData = $event"
           [nzPageSizeOptions]="[5, 10, 20, 50, total]"
+          nzTableLayout="fixed"
         >
           <thead class="bg-slate-50">
             <tr class="text-slate-900">
@@ -141,13 +146,9 @@
                 (nzCheckedChange)="onAllChecked($event)"
                 class="font-semibold"
               ></th>
+
               @for (column of listOfColumn; track column) {
-              <th
-                [nzWidth]="column.nzWidth"
-                [nzSortFn]="column.compare"
-                [nzSortPriority]="column.priority"
-                class="font-semibold"
-              >
+              <th [nzWidth]="column.nzWidth" class="font-semibold">
                 {{ column.title }}
               </th>
               }
@@ -157,67 +158,60 @@
           <tbody class="divide-y divide-slate-100">
             @for (data of editRowTable.data; track data) {
             <tr class="hover:bg-slate-50 transition-colors">
-              @if (!editCache[data.id].edit) {
               <td
-                [nzChecked]="setOfCheckedId.has(data.id)"
-                (nzCheckedChange)="onItemChecked(data.id, $event)"
+                [nzChecked]="setOfCheckedId.has(data.turno.id)"
+                (nzCheckedChange)="onItemChecked(data.turno.id, $event)"
               ></td>
 
-              <td class="text-slate-700">{{ data.n_codper }}</td>
-              <td class="text-slate-700">{{ data.n_codpla }}</td>
-              <td class="text-slate-700">{{ data.c_codfac }}</td>
-              <td class="text-slate-700">{{ data.c_codesp }}</td>
-              <td class="text-slate-700">{{ data.c_grpcur }}</td>
-              <td class="text-slate-700">{{ data.n_ciclo }}</td>
-              <td class="text-slate-700">{{ data.c_nommod }}</td>
+              <td>{{ data.turno.n_codper }}</td>
+              <td>{{ data.turno.n_codpla }}</td>
+              <td>{{ data.turno.c_codfac }}</td>
+              <td>{{ data.turno.c_codesp }}</td>
+              <td>{{ data.turno.c_grpcur }}</td>
+              <td>{{ data.turno.n_ciclo }}</td>
+              <td>{{ data.turno.c_nommod }}</td>
 
+              <!-- ESTADO GENERAL -->
               <td>
                 <span
-                  [ngClass]="{
-                    'bg-emerald-100 text-emerald-700 ring-emerald-600/20':
-                      data.estado === 2,
-                    'bg-yellow-100 text-yellow-700 ring-yellow-600/20':
-                      data.estado === 1,
-                    'bg-slate-100 text-slate-600 ring-slate-400/20':
-                      data.estado === 0
-                  }"
                   class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset uppercase"
+                  [ngClass]="getEstadoColor(getEstadoGeneral(data))"
                 >
-                  {{
-                    data.estado === 2
-                      ? "asignado"
-                      : data.estado === 0
-                      ? "no asignado"
-                      : "pendiente"
-                  }}
+                  {{ getEstadoGeneral(data) }}
                 </span>
               </td>
 
               <td>
                 <span
+                  class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset uppercase"
                   [ngClass]="{
                     'bg-emerald-100 text-emerald-700 ring-emerald-600/20':
-                      data.subido_sigu === true,
+                      data.turno.subido_sigu === true,
                     'bg-slate-100 text-slate-600 ring-slate-400/20':
-                      data.subido_sigu === false
+                      data.turno.subido_sigu === false
                   }"
-                  class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset uppercase"
                 >
-                  {{ data.subido_sigu === true ? "true" : "false" }}
+                  {{ data.turno.subido_sigu ? "true" : "false" }}
                 </span>
               </td>
 
               <td>
                 <button
                   type="button"
-                  (click)="clickAsignarHorario(data.id)"
+                  (click)="clickAsignarHorario(data.turno.id)"
                   class="text-slate-700 hover:text-slate-900 transition-colors"
-                  title="Asignar horario"
                 >
                   <i class="fa-solid fa-calendar-days fa-2x"></i>
                 </button>
+
+                <button
+                  type="button"
+                  (click)="clickCompararSigu(data.turno)"
+                  class="ml-3 text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                  <i class="fa-solid fa-code-compare fa-xl"></i>
+                </button>
               </td>
-              }
             </tr>
             }
           </tbody>
@@ -226,3 +220,272 @@
     </div>
   </div>
 </div>
+
+<!-- MODAL -->
+<nz-modal
+  [(nzVisible)]="modalComparacionVisible"
+  nzWidth="90%"
+  nzTitle="Comparación vs SIGU"
+  [nzFooter]="modalFooter"
+  (nzOnCancel)="closeModal()"
+>
+  <ng-container *nzModalContent>
+    <!-- LOADER -->
+    <div *ngIf="loadingComparacion" class="p-6 text-center text-slate-600">
+      <nz-spin nzSimple></nz-spin>
+      <p class="mt-3 text-sm">Procesando...</p>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div *ngIf="!loadingComparacion">
+      <!-- ==================== RESUMEN ==================== -->
+      <div class="bg-slate-50 p-4 rounded-lg mb-5 ring-1 ring-slate-200">
+        <h3 class="font-semibold text-lg text-slate-900 mb-2">Resumen</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <p>
+            <strong>Cursos:</strong>
+            {{ comparacion?.resumen?.estadoGeneralCursos }}
+          </p>
+          <p>
+            <strong>Docentes:</strong>
+            {{ comparacion?.resumen?.estadoGeneralDocentes }}
+          </p>
+          <p>
+            <strong>Horarios:</strong>
+            {{ comparacion?.resumen?.estadoGeneralHorarios }}
+          </p>
+        </div>
+      </div>
+
+      <!-- ================= TABS ================= -->
+      <nz-tabset nzType="card">
+        <!-- === CURSOS === -->
+        <nz-tab nzTitle="Cursos">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- PANEL COMPARACIÓN -->
+            <div
+              class="bg-white rounded-lg p-4 ring-1 ring-slate-200 shadow-sm"
+            >
+              <h4 class="font-semibold text-slate-800 mb-3">
+                Comparación HR vs SIGU
+              </h4>
+
+              <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                <div class="font-bold">HR</div>
+                <div class="font-bold">SIGU</div>
+
+                <ng-container *ngFor="let cod of cursosTodos">
+                  <div
+                    class="p-1 rounded"
+                    [ngClass]="{
+                      'bg-green-100 text-green-700': isCursoSoloHr(cod),
+                      'bg-blue-100 text-blue-700': isCursoCoincide(cod)
+                    }"
+                  >
+                    {{ cod }} - {{ getCursoNombreHr(cod) }}
+                  </div>
+
+                  <div
+                    class="p-1 rounded"
+                    [ngClass]="{
+                      'bg-red-100 text-red-700': isCursoSoloSigu(cod),
+                      'bg-blue-100 text-blue-700': isCursoCoincide(cod)
+                    }"
+                  >
+                    {{ getCursoNombreSigu(cod) }}
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+
+            <!-- SQL -->
+            <div class="space-y-5">
+              <div class="p-3 rounded-lg ring-1 ring-yellow-300 bg-yellow-50">
+                <h4 class="font-semibold mb-2">SQL para insertar</h4>
+                <pre class="text-xs bg-white p-2 rounded-lg overflow-auto h-40"
+                  >{{ comparacion?.cursos?.insertCursosSigu | json }}
+</pre
+                >
+                <button
+                  class="mt-2 px-3 py-1 bg-blue-600 text-white text-xs rounded-lg"
+                  (click)="copiar(comparacion?.cursos?.insertCursosSigu)"
+                >
+                  Copiar
+                </button>
+              </div>
+
+              <div class="p-3 rounded-lg ring-1 ring-red-300 bg-red-50">
+                <h4 class="font-semibold mb-2">SQL para eliminar</h4>
+                <pre class="text-xs bg-white p-2 rounded-lg overflow-auto h-40"
+                  >{{ comparacion?.cursos?.deleteCursosSigu | json }}
+</pre
+                >
+                <button
+                  class="mt-2 px-3 py-1 bg-blue-600 text-white text-xs rounded-lg"
+                  (click)="copiar(comparacion?.cursos?.deleteCursosSigu)"
+                >
+                  Copiar
+                </button>
+              </div>
+            </div>
+          </div>
+        </nz-tab>
+
+        <!-- === DOCENTES === -->
+        <nz-tab nzTitle="Docentes">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div
+              class="bg-white rounded-lg p-4 ring-1 ring-slate-200 shadow-sm"
+            >
+              <h4 class="font-semibold text-slate-800 mb-3">
+                Comparación HR vs SIGU
+              </h4>
+
+              <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                <div class="font-bold">HR</div>
+                <div class="font-bold">SIGU</div>
+
+                <ng-container *ngFor="let dni of docentesTodos">
+                  <div
+                    class="p-1 rounded"
+                    [ngClass]="{
+                      'bg-green-100 text-green-700': isDocenteSoloHr(dni),
+                      'bg-blue-100 text-blue-700': isDocenteCoincide(dni)
+                    }"
+                  >
+                    {{ dni }}
+                    <br />
+                    <span class="text-[10px] text-slate-500">
+                      {{ getNombreDocenteHr(dni) }}
+                    </span>
+                  </div>
+
+                  <div
+                    class="p-1 rounded"
+                    [ngClass]="{
+                      'bg-red-100 text-red-700': isDocenteSoloSigu(dni),
+                      'bg-blue-100 text-blue-700': isDocenteCoincide(dni)
+                    }"
+                  >
+                    {{ getNombreDocenteSigu(dni) }}
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+
+            <div class="space-y-5">
+              <div class="p-3 rounded-lg ring-1 ring-yellow-300 bg-yellow-50">
+                <h4 class="font-semibold mb-2">SQL para insertar</h4>
+                <pre class="text-xs bg-white p-2 rounded-lg overflow-auto h-40"
+                  >{{ comparacion?.docentes?.insertDocentesSigu | json }}
+</pre
+                >
+                <button
+                  class="mt-2 px-3 py-1 bg-blue-600 text-white text-xs rounded-lg"
+                  (click)="copiar(comparacion?.docentes?.insertDocentesSigu)"
+                >
+                  Copiar
+                </button>
+              </div>
+
+              <div class="p-3 rounded-lg ring-1 ring-red-300 bg-red-50">
+                <h4 class="font-semibold mb-2">SQL para eliminar</h4>
+                <pre class="text-xs bg-white p-2 rounded-lg overflow-auto h-40"
+                  >{{ comparacion?.docentes?.deleteDocentesSigu | json }}
+</pre
+                >
+                <button
+                  class="mt-2 px-3 py-1 bg-blue-600 text-white text-xs rounded-lg"
+                  (click)="copiar(comparacion?.docentes?.deleteDocentesSigu)"
+                >
+                  Copiar
+                </button>
+              </div>
+            </div>
+          </div>
+        </nz-tab>
+
+        <!-- === HORARIOS === -->
+        <nz-tab nzTitle="Horarios">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div
+              class="bg-white rounded-lg p-4 ring-1 ring-slate-200 shadow-sm"
+            >
+              <h4 class="font-semibold text-slate-800 mb-3">
+                Comparación HR vs SIGU
+              </h4>
+
+              <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                <div class="font-bold">HR</div>
+                <div class="font-bold">SIGU</div>
+
+                <ng-container *ngFor="let h of comparacion?.horarios?.soloEnHr">
+                  <div class="p-1 bg-green-100 text-green-700 rounded">
+                    {{ h }}
+                  </div>
+                  <div class="p-1 bg-red-100 text-red-700 rounded">—</div>
+                </ng-container>
+
+                <ng-container
+                  *ngFor="let s of comparacion?.horarios?.soloEnSigu"
+                >
+                  <div class="p-1 bg-red-100 text-red-700 rounded">—</div>
+                  <div class="p-1 bg-red-100 text-red-700 rounded">{{ s }}</div>
+                </ng-container>
+
+                <ng-container *ngFor="let eq of comparacion?.horarios?.iguales">
+                  <div class="p-1 bg-blue-100 text-blue-700 rounded">
+                    {{ eq }}
+                  </div>
+                  <div class="p-1 bg-blue-100 text-blue-700 rounded">
+                    {{ eq }}
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+
+            <div class="space-y-5">
+              <div class="p-3 rounded-lg ring-1 ring-yellow-300 bg-yellow-50">
+                <h4 class="font-semibold mb-2">SQL para insertar</h4>
+                <pre class="text-xs bg-white p-2 rounded-lg overflow-auto h-40"
+                  >{{ comparacion?.horarios?.insertHorariosSigu | json }}
+</pre
+                >
+                <button
+                  class="mt-2 px-3 py-1 bg-blue-600 text-white text-xs rounded-lg"
+                  (click)="copiar(comparacion?.horarios?.insertHorariosSigu)"
+                >
+                  Copiar
+                </button>
+              </div>
+
+              <div class="p-3 rounded-lg ring-1 ring-red-300 bg-red-50">
+                <h4 class="font-semibold mb-2">SQL para eliminar</h4>
+                <pre class="text-xs bg-white p-2 rounded-lg overflow-auto h-40"
+                  >{{ comparacion?.horarios?.deleteHorariosSigu | json }}
+</pre
+                >
+                <button
+                  class="mt-2 px-3 py-1 bg-blue-600 text-white text-xs rounded-lg"
+                  (click)="copiar(comparacion?.horarios?.deleteHorariosSigu)"
+                >
+                  Copiar
+                </button>
+              </div>
+            </div>
+          </div>
+        </nz-tab>
+      </nz-tabset>
+    </div>
+  </ng-container>
+
+  <!-- FOOTER -->
+  <ng-template #modalFooter>
+    <button nz-button nzType="default" (click)="closeModal()">Cerrar</button>
+
+    <button nz-button nzType="default" (click)="reloadComparacion()">
+      <i class="fa-solid fa-rotate-right mr-1"></i>
+      Recargar
+    </button>
+  </ng-template>
+</nz-modal>
