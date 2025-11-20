@@ -52,7 +52,7 @@ export class ReporteriaComponent implements OnInit {
     },
     {
       title: 'Acciones',
-      nzWidth: '130px',
+      nzWidth: '140px',
       compare: null,
     },
   ];
