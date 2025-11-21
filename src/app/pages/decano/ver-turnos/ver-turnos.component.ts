@@ -448,13 +448,11 @@ export class VerTurnosComponent implements OnInit {
   onBuscarSeccion(value: string): void {
     value = value.toUpperCase().trim();
 
-    // Vacío → sin sugerencias
     if (!value) {
       this.seccionesSugeridas = [];
       return;
     }
 
-    // Acepta 1 o 2 letras seguidas opcionalmente por 0–2 números
     const match = value.match(/^([A-Z]{1,2})(\d{0,2})$/);
 
     if (!match) {
@@ -462,37 +460,26 @@ export class VerTurnosComponent implements OnInit {
       return;
     }
 
-    const letras = match[1]; // 1–2 letras
-    const numeros = match[2] || ''; // números escritos
+    const letras = match[1]; //
+    const numeros = match[2] || '';
 
     let sugerencias: string[] = [];
 
-    // Si solo escribió letras → generar L1...L9
     if (numeros === '') {
       sugerencias = Array.from({ length: 9 }, (_, i) => `${letras}${i + 1}`);
-    }
-    // Si escribió letras + número(s)
-    else {
+    } else {
       const numeroBase = parseInt(numeros, 10);
 
-      // Si el número ingresado no es 1 a 9, no mostrar nada
       if (isNaN(numeroBase) || numeroBase < 1 || numeroBase > 9) {
         this.seccionesSugeridas = [];
         return;
       }
 
-      // Generar siempre letras + 1…9
       sugerencias = Array.from({ length: 9 }, (_, i) => `${letras}${i + 1}`);
     }
 
     this.seccionesSugeridas = sugerencias;
   }
-
-  // generarReporte() {
-  //   this.turnoService.generarReporte().subscribe((data) => {
-  //     console.log('data =>', data);
-  //   });
-  // }
 
   generarReporte() {
     this.alertService.showLoadingScreen('Generando reporte...');
@@ -500,10 +487,8 @@ export class VerTurnosComponent implements OnInit {
     this.turnoService.generarReporte().subscribe((data) => {
       const fecha = new Date().toISOString().slice(0, 10);
 
-      // Asegurar que sea un array
       const dataArray = Array.isArray(data) ? data : [data];
 
-      // Convertir JSON → Excel
       const worksheet = XLSX.utils.json_to_sheet(dataArray);
 
       const workbook = {

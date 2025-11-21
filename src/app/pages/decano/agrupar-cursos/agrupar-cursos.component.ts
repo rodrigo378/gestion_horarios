@@ -281,8 +281,8 @@ export class AgruparCursosComponent {
           this.alertService.success('Exito', 'Se creo grupo correctamente');
         },
         error: (err: HttpErrorResponse) => {
-          console.log(err);
-          this.alertService.error(`${err.error.errores}`);
+          console.log('err => ', err.error.message);
+          this.alertService.error(`${err.error.message}`);
         },
       });
   }

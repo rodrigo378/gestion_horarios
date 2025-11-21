@@ -185,8 +185,6 @@ export class AsignarHorarioComponent
     effect(() => {
       const user = this.ctx.userConfig()?.user;
       if (user) {
-        console.log('👤 Usuario actual:', user.email);
-
         // 🟢 Lista de correos con permiso especial
         const permitidos = [
           'ludmilia.samaniego@uma.edu.pe',
@@ -200,7 +198,6 @@ export class AsignarHorarioComponent
         );
 
         if (tienePermiso) {
-          console.log('✅ Permiso activado para', user.email);
           this.boolTransversal = true;
         } else {
           console.log('🚫 Sin permiso especial');
@@ -208,24 +205,6 @@ export class AsignarHorarioComponent
       }
     });
   }
-
-  // ngOnInit(): void {
-  //   this.turno_id = Number(this.route.snapshot.paramMap.get('turno_id'));
-  //   window.addEventListener('beforeunload', this.beforeUnloadHandler);
-
-  //   this.alertService.showLoadingScreen('Cargando datos del turno...');
-
-  //   console.log('auth config:', this.hrEspecialidades);
-
-  //   // 2) suscríbete al observable del usuario
-  //   // this.ctx.user$?.subscribe((u) => {
-  //   //   this.userData = u;
-  //   //   console.log('👤 Usuario actual:', this.userData);
-  //   // });
-  //   this.getTurno();
-  //   this.getDocentes();
-  //   this.getAulas();
-  // }
 
   ngOnInit(): void {
     this.turno_id = Number(this.route.snapshot.paramMap.get('turno_id'));
@@ -390,7 +369,6 @@ export class AsignarHorarioComponent
     this.lastDropRevert = null;
 
     const grupos = arg.event.extendedProps?.['grupos_hijo'] ?? [];
-    console.log('grupos => ', grupos);
 
     if (
       !this.boolTransversal &&
@@ -405,26 +383,12 @@ export class AsignarHorarioComponent
     arg.jsEvent?.stopPropagation?.();
 
     const e = arg.event;
-    console.log(
-      '🟣 [CLICK] Antes de capturar estado:',
-      e.extendedProps['n_horas_asignadas']
-    );
 
     this.estadoAnteriorEvento = {
       start: e.start ? new Date(e.start) : null,
       end: e.end ? new Date(e.end) : null,
       extendedProps: { ...e.extendedProps },
     };
-
-    console.log(
-      '🟢 [CLICK] Estado capturado ->',
-      this.estadoAnteriorEvento.extendedProps['n_horas_asignadas']
-    );
-
-    console.log(
-      '📦 Estado original capturado:',
-      this.estadoAnteriorEvento.extendedProps
-    );
 
     const ext = e.extendedProps || {};
     const start = new Date(e.start!);
@@ -646,8 +610,6 @@ export class AsignarHorarioComponent
 
   getDocentes() {
     this.docenteService.getDocentes().subscribe((data) => {
-      console.log('data => ', data);
-
       this.docentesFiltrados = [...data];
     });
   }
@@ -1317,11 +1279,6 @@ export class AsignarHorarioComponent
       return;
     }
 
-    console.log(
-      '🔵 [ACTUALIZAR] Antes de guardar snapshot ->',
-      this.eventoSeleccionado.extendedProps['n_horas_asignadas']
-    );
-
     // 🧩 GUARDAR ESTADO ANTERIOR ANTES DE CAMBIAR NADA
     this.estadoAnteriorEvento = {
       start: this.eventoSeleccionado.start
@@ -1558,24 +1515,10 @@ export class AsignarHorarioComponent
           this.guardandoUno = false;
           this.lastDropRevert = null;
           this.estadoAnteriorEvento = null;
-
-          console.log('=== ✅ GUARDADO EXITOSO ===');
         },
 
         error: (err: any) => {
           console.error('Error al guardar horario:', err);
-          console.log('=== 🔴 ERROR DE CONFLICTO DETECTADO ===');
-          console.log(
-            'Horas actuales del evento fallido:',
-            e.extendedProps?.['n_horas_asignadas']
-          );
-          console.log(
-            'Horas restantes antes de revertir:',
-            this.getHorasDisponibles(
-              e.extendedProps?.['codigo'],
-              e.extendedProps?.['tipo']
-            )
-          );
 
           if (err?.status === 409) console.log('⚠️ ACA CRUCE ⚠️');
 
@@ -1588,7 +1531,6 @@ export class AsignarHorarioComponent
             }
           } else {
             const yaPersistido = !!e.extendedProps?.persisted;
-            console.log('yaPersistido => ', yaPersistido);
 
             if (yaPersistido) {
               // 🔹 Guardar las horas que intentó asignar ANTES de revertir visualmente
@@ -1615,17 +1557,10 @@ export class AsignarHorarioComponent
                 api.addEvent(eventData);
               }
 
-              console.log(
-                '🔁 Evento revertido y re-renderizado por conflicto.'
-              );
-
               // ♻️ Revertir también las horasRestantes si hubo cambio previo
               try {
                 const codigo = estadoAnterior.extendedProps?.['codigo'];
                 const tipo = estadoAnterior.extendedProps?.['tipo'] ?? 'Teoría';
-                const horasPrevias = Number(
-                  estadoAnterior.extendedProps?.['n_horas_asignadas'] ?? 1
-                );
 
                 const snap = this.snapshotCursos[codigo];
                 if (snap) {
@@ -1675,17 +1610,6 @@ export class AsignarHorarioComponent
           } else {
             this.alertService.saveError(msg);
           }
-
-          // 🪵 Estado final tras error
-          console.log('=== 🔚 FIN ERROR GUARDADO ===');
-          console.log(
-            'Horas restantes finales:',
-            this.getHorasDisponibles(
-              e.extendedProps?.['codigo'],
-              e.extendedProps?.['tipo']
-            )
-          );
-          console.log('============================');
         },
       });
   }
