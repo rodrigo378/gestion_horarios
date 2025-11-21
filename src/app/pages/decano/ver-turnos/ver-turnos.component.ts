@@ -446,16 +446,46 @@ export class VerTurnosComponent implements OnInit {
   }
 
   onBuscarSeccion(value: string): void {
-    const letra = value.toUpperCase().charAt(0);
+    value = value.toUpperCase().trim();
 
-    if (/^[A-Z]$/.test(letra)) {
-      this.seccionesSugeridas = Array.from(
-        { length: 9 },
-        (_, i) => `${letra}${i + 1}`
-      );
-    } else {
+    // Vacío → sin sugerencias
+    if (!value) {
       this.seccionesSugeridas = [];
+      return;
     }
+
+    // Acepta 1 o 2 letras seguidas opcionalmente por 0–2 números
+    const match = value.match(/^([A-Z]{1,2})(\d{0,2})$/);
+
+    if (!match) {
+      this.seccionesSugeridas = [];
+      return;
+    }
+
+    const letras = match[1]; // 1–2 letras
+    const numeros = match[2] || ''; // números escritos
+
+    let sugerencias: string[] = [];
+
+    // Si solo escribió letras → generar L1...L9
+    if (numeros === '') {
+      sugerencias = Array.from({ length: 9 }, (_, i) => `${letras}${i + 1}`);
+    }
+    // Si escribió letras + número(s)
+    else {
+      const numeroBase = parseInt(numeros, 10);
+
+      // Si el número ingresado no es 1 a 9, no mostrar nada
+      if (isNaN(numeroBase) || numeroBase < 1 || numeroBase > 9) {
+        this.seccionesSugeridas = [];
+        return;
+      }
+
+      // Generar siempre letras + 1…9
+      sugerencias = Array.from({ length: 9 }, (_, i) => `${letras}${i + 1}`);
+    }
+
+    this.seccionesSugeridas = sugerencias;
   }
 
   // generarReporte() {
