@@ -395,7 +395,9 @@ export class AsignarHorarioComponent
 
     this.modalAnchorWeekStart = this.getWeekStart(start);
 
-    const horas50 = Math.max(1, Number(ext['n_horas_asignadas'] ?? 1));
+    const rawHoras = Number(ext['n_horas_asignadas']);
+    const horas50 = !isNaN(rawHoras) && rawHoras > 0 ? rawHoras : 0.5;
+
     const codigo = ext['codigo'];
     const tipo = ext['tipo'];
     const maxParaEdicion = this.getHorasMaximasParaEdicion(
@@ -547,7 +549,8 @@ export class AsignarHorarioComponent
 
     const e = arg.event;
     const ext = e.extendedProps || {};
-    const horas50 = Math.max(1, Number(ext['n_horas_asignadas'] ?? 1));
+    const rawHoras = Number(ext['n_horas_asignadas']);
+    const horas50 = !isNaN(rawHoras) && rawHoras > 0 ? rawHoras : 0.5;
     const nuevoStart = new Date(e.start!);
 
     this.modalAnchorWeekStart = this.getWeekStart(nuevoStart);
@@ -691,8 +694,9 @@ export class AsignarHorarioComponent
   }
 
   public normalizeHorasInput() {
-    const v = Math.floor(Number(this.horasAsignadas ?? 1));
-    this.horasAsignadas = Math.max(1, v || 1);
+    let v = Number(this.horasAsignadas);
+    if (isNaN(v) || v <= 0) v = 0.5;
+    this.horasAsignadas = v;
   }
 
   stringifyEvent(curso: CursoCard): string {
@@ -882,9 +886,8 @@ export class AsignarHorarioComponent
     }
 
     const disp = Number(this.cursoSeleccionado?.horasDisponibles ?? 0);
-    let raw = Math.floor(Number(this.horasAsignadas ?? 1));
-    if (raw < 1) raw = 1;
-
+    let raw = Number(this.horasAsignadas);
+    if (isNaN(raw) || raw <= 0) raw = 0.5;
     if (raw > disp) {
       this.alertService.warn(
         `No puedes asignar ${raw} hora(s). Solo quedan ${disp}.`
@@ -903,6 +906,7 @@ export class AsignarHorarioComponent
     );
     const end = new Date(start);
     end.setMinutes(end.getMinutes() + aAsignar * 50);
+    // end.setMinutes(end.getMinutes() + aAsignar * 50);
 
     if (this.haySolape(start, end)) {
       this.alertService.warn('Ya existe un curso asignado en ese horario');
@@ -1312,8 +1316,8 @@ export class AsignarHorarioComponent
       'Teoría') as 'Teoría' | 'Práctica';
     const maxEdicion = this.getHorasMaximasParaEdicion(codigo, tipo, oldHoras);
 
-    let rawNew = Math.floor(Number(this.horasAsignadas ?? 1));
-    if (rawNew < 1) rawNew = 1;
+    let rawNew = Number(this.horasAsignadas);
+    if (isNaN(rawNew) || rawNew <= 0) rawNew = 0.5;
 
     if (rawNew > maxEdicion) {
       this.alertService.warn(
@@ -1672,7 +1676,7 @@ export class AsignarHorarioComponent
     asignadasEvento: number
   ): number {
     return Math.max(
-      1,
+      0.5,
       this.getHorasDisponibles(codigo, tipo) + (asignadasEvento || 0)
     );
   }
@@ -1698,10 +1702,12 @@ export class AsignarHorarioComponent
   }
 
   private getHorasAsignadasDeEventoSel(): number {
-    return Math.max(
-      1,
-      Number(this.eventoSeleccionado?.extendedProps?.['n_horas_asignadas'] ?? 1)
+    const raw = Number(
+      this.eventoSeleccionado?.extendedProps?.['n_horas_asignadas']
     );
+
+    // Si viene mal, por defecto 0.5
+    return !isNaN(raw) && raw > 0 ? raw : 0.5;
   }
 
   abrirGenerarCursosModal() {
