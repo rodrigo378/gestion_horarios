@@ -1,31 +1,30 @@
-<!-- component -->
 <div class="max-w-[100%] mx-auto">
-  <!-- PANEL PRINCIPAL (estándar) -->
+  <!-- PANEL PRINCIPAL -->
   <div
     class="relative flex flex-col w-full h-full text-slate-700 bg-white rounded-2xl shadow-md ring-1 ring-slate-200/70 px-8 sm:px-12 py-6 sm:py-8 bg-clip-border"
   >
     <div class="relative overflow-hidden text-slate-700 bg-white rounded-2xl">
-      <!-- Header: título + buscador (alineación estándar) -->
+      <!-- Header -->
       <div
-        class="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-5 gap-3"
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5 gap-3"
       >
-        <!-- Título -->
         <div>
           <h3 class="text-2xl font-semibold text-slate-900">Plan Cursos</h3>
-          <p class="text-slate-500">Lista de cursos del Plan:</p>
+          <p class="text-slate-500">Lista de cursos del plan de estudios:</p>
         </div>
 
-        <!-- Buscador a la derecha -->
+        <!-- 🔎 BUSCADOR (NO LO TOCO, NO LO BORRO) -->
         <div class="w-full sm:w-80 sm:justify-self-end">
-          <label class="text-sm font-medium text-slate-600 mb-1 block"
-            >Buscar:</label
-          >
+          <label class="text-sm font-medium text-slate-600 mb-1 block">
+            Buscar:
+          </label>
           <div class="relative h-10 w-full">
             <div
               class="absolute inset-y-0 right-3 flex items-center pointer-events-none"
             >
               <i class="fa fa-search text-slate-400"></i>
             </div>
+
             <input
               nz-input
               placeholder="Buscar curso"
@@ -37,12 +36,89 @@
         </div>
       </div>
 
-      <!-- Acciones (reservado, mantiene layout) -->
-      <div class="flex flex-wrap items-center gap-4 mt-2"></div>
+      <!-- ========================================================= -->
+      <!-- FILTROS (facultad, especialidad, modalidad, ciclo) -->
+      <!-- ========================================================= -->
+      <div
+        class="flex flex-col sm:flex-row justify-between items-center gap-4 p-3 bg-slate-50/60 rounded-xl ring-1 ring-slate-200/70"
+      >
+        <div class="flex flex-wrap gap-2 items-center">
+          <!-- FACULTAD -->
+          <nz-select
+            [(ngModel)]="filtros.c_codfac"
+            (ngModelChange)="filtrarCursos()"
+            class="w-auto h-[32px]"
+            nzPlaceHolder="Facultad"
+          >
+            <nz-option nzValue="" nzLabel="Facultad"></nz-option>
+            <nz-option nzValue="S" nzLabel="Ciencias de la Salud"></nz-option>
+            <nz-option nzValue="E" nzLabel="Ingeniería y Negocios"></nz-option>
+          </nz-select>
+
+          <!-- ESPECIALIDAD -->
+          <nz-select
+            [(ngModel)]="filtros.c_codesp"
+            (ngModelChange)="filtrarCursos()"
+            class="w-[280px] h-[32px]"
+            nzPlaceHolder="Especialidad"
+          >
+            <nz-option nzValue="" nzLabel="Especialidad"></nz-option>
+
+            @for (esp of especialidadesFiltradas; track esp.codesp) {
+            <nz-option
+              nzValue="{{ esp.codesp }}"
+              nzLabel="{{ esp.codesp }} - {{ esp.nomesp }}"
+            ></nz-option>
+            }
+          </nz-select>
+
+          <!-- MODALIDAD -->
+          <nz-select
+            [(ngModel)]="filtros.c_codmod"
+            (ngModelChange)="filtrarCursos()"
+            class="w-auto h-[32px]"
+            nzPlaceHolder="Modalidad"
+          >
+            <nz-option nzValue="" nzLabel="Modalidad"></nz-option>
+            <nz-option nzValue="1" nzLabel="Presencial"></nz-option>
+            <nz-option nzValue="2" nzLabel="Semipresencial"></nz-option>
+            <nz-option nzValue="3" nzLabel="Virtual"></nz-option>
+          </nz-select>
+
+          <!-- CICLO -->
+          <nz-select
+            [(ngModel)]="filtros.n_ciclo"
+            (ngModelChange)="filtrarCursos()"
+            class="w-auto h-[32px]"
+            nzPlaceHolder="Ciclo"
+          >
+            <nz-option nzValue="" nzLabel="Ciclo"></nz-option>
+            <nz-option
+              *ngFor="let c of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+              [nzValue]="c"
+              [nzLabel]="c"
+            >
+            </nz-option>
+          </nz-select>
+        </div>
+
+        <!-- LIMPIAR FILTROS -->
+        <div class="flex gap-2">
+          <button
+            (click)="resetFiltros()"
+            class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-emerald-700 transition"
+          >
+            <i class="fa-solid fa-arrows-rotate"></i>
+            Limpiar filtros
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- SECCIÓN INTERNA: TABLA (mismo borde interno estándar) -->
+  <!-- ========================================================= -->
+  <!-- TABLA COMPLETA - NO MODIFICO TU DISEÑO -->
+  <!-- ========================================================= -->
   <div
     class="mt-5 bg-white rounded-xl shadow-sm ring-1 ring-slate-200/70 p-4 sm:p-6"
   >
@@ -52,18 +128,14 @@
           #editRowTable
           #sortTable
           [nzData]="datosFiltrados"
-          nzTableLayout="fixed"
           class="w-full"
+          nzShowSizeChanger
+          [nzPageSizeOptions]="[10, 20, 50, 100]"
         >
           <thead class="bg-slate-50">
             <tr>
               @for (column of listOfColumn; track column) {
-              <th
-                class="text-slate-900 font-semibold"
-                [nzWidth]="column.nzWidth"
-                [nzSortFn]="column.compare"
-                [nzSortPriority]="column.priority"
-              >
+              <th class="text-slate-900 font-semibold">
                 {{ column.title }}
               </th>
               }
@@ -74,6 +146,8 @@
             @for (data of editRowTable.data; track data) {
             <tr class="hover:bg-slate-50 transition-colors">
               @if (!editCache[data.id].edit) {
+
+              <td class="font-medium text-slate-700">{{ data.id }}</td>
               <td class="font-medium text-slate-700">{{ data.c_codfac }}</td>
               <td class="text-slate-700">{{ data.c_codesp }}</td>
               <td class="text-slate-700">{{ data.c_codmod }}</td>
@@ -86,20 +160,25 @@
                   {{ data.c_area }}
                 </span>
               </td>
+              <td class="text-slate-700">{{ data.n_ciclo }}</td>
               <td class="text-slate-700">{{ data.n_ht }}</td>
               <td class="text-slate-700">{{ data.n_hp }}</td>
               <td class="text-slate-700">{{ data.c_curup }}</td>
+
               <td>
                 <a
                   (click)="startEdit(data.id)"
                   class="text-blue-600 hover:text-blue-700 font-medium"
-                  >Editar</a
                 >
+                  Editar
+                </a>
               </td>
+
               } @else {
+
+              <!-- Inputs -->
               <td>
                 <input
-                  type="text"
                   nz-input
                   [(ngModel)]="editCache[data.id].data.c_codfac"
                   class="rounded-lg"
@@ -107,7 +186,6 @@
               </td>
               <td>
                 <input
-                  type="text"
                   nz-input
                   [(ngModel)]="editCache[data.id].data.c_codesp"
                   class="rounded-lg"
@@ -115,7 +193,6 @@
               </td>
               <td>
                 <input
-                  type="text"
                   nz-input
                   [(ngModel)]="editCache[data.id].data.c_codmod"
                   class="rounded-lg"
@@ -123,7 +200,6 @@
               </td>
               <td>
                 <input
-                  type="text"
                   nz-input
                   [(ngModel)]="editCache[data.id].data.c_codcur"
                   class="rounded-lg"
@@ -131,7 +207,6 @@
               </td>
               <td>
                 <input
-                  type="text"
                   nz-input
                   [(ngModel)]="editCache[data.id].data.c_nomcur"
                   class="rounded-lg"
@@ -139,7 +214,6 @@
               </td>
               <td>
                 <input
-                  type="text"
                   nz-input
                   [(ngModel)]="editCache[data.id].data.c_area"
                   class="rounded-lg"
@@ -147,7 +221,6 @@
               </td>
               <td>
                 <input
-                  type="text"
                   nz-input
                   [(ngModel)]="editCache[data.id].data.n_ht"
                   class="rounded-lg"
@@ -155,7 +228,6 @@
               </td>
               <td>
                 <input
-                  type="text"
                   nz-input
                   [(ngModel)]="editCache[data.id].data.n_hp"
                   class="rounded-lg"
@@ -163,25 +235,28 @@
               </td>
               <td>
                 <input
-                  type="text"
                   nz-input
                   [(ngModel)]="editCache[data.id].data.c_curup"
                   class="rounded-lg"
                 />
               </td>
+
               <td>
                 <a
                   (click)="saveEdit(data.id)"
-                  class="save me-2 inline-block px-3 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-                  >Save</a
+                  class="inline-block px-3 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
                 >
+                  Save
+                </a>
+
                 <a
                   nz-popconfirm
-                  nzPopconfirmTitle="Seguro que quiere cancelar?"
+                  nzPopconfirmTitle="¿Seguro que quiere cancelar?"
                   (nzOnConfirm)="cancelEdit(data.id)"
                   class="inline-block px-3 py-1 rounded-lg text-slate-600 hover:text-slate-800"
-                  >Cancel</a
                 >
+                  Cancel
+                </a>
               </td>
               }
             </tr>

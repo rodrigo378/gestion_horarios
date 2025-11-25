@@ -14,10 +14,19 @@ export interface HR_Turno {
   c_codmod: number;
   c_nommod: string;
   n_ciclo: number;
-  estado: number;
+  estado: string;
   subido_sigu: boolean;
 
   periodo?: HR_Periodo;
   cursos?: HR_Curso[];
   horarios?: HR_Horario[];
+
+  _count: {
+    cursos: number;
+  };
+
+  cursosGenerados: number;
+  cursosConHorario: number;
+  cursosSinHorario: number;
+  // estadoColor: string;
 }

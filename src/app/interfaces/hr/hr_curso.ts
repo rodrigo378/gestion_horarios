@@ -16,4 +16,8 @@ export interface HR_Curso {
   horarios?: HR_Horario[];
   grupos_hijo?: HR_Grupo_Sincro[];
   grupos_padre?: HR_Grupo_Sincro[];
+
+  _count?: {
+    horarios: number;
+  };
 }

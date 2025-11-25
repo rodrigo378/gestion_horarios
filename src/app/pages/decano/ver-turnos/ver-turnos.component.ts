@@ -73,6 +73,38 @@ export class VerTurnosComponent implements OnInit {
       nzWidth: 'auto',
     },
     {
+      title: 'Cursos Generados',
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.cursosGenerados - b.cursosGenerados,
+      nzWidth: 'auto',
+    },
+    {
+      title: 'Con Horario',
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.cursosConHorario - b.cursosConHorario,
+      nzWidth: 'auto',
+    },
+    {
+      title: 'Sin Horario',
+      compare: (a: HR_Turno, b: HR_Turno) =>
+        a.cursosSinHorario - b.cursosSinHorario,
+      nzWidth: 'auto',
+    },
+    {
+      title: 'Estado',
+      compare: (a: HR_Turno, b: HR_Turno) => {
+        const orden: any = {
+          'sin-cursos': 0,
+          'sin-horarios': 1,
+          incompleto: 2,
+          completo: 3,
+        };
+
+        return orden[a.estado] - orden[b.estado];
+      },
+      nzWidth: 'auto',
+    },
+    {
       title: 'Modalidad',
       compare: (a: HR_Turno, b: HR_Turno) =>
         a.c_nommod.localeCompare(b.c_nommod),
@@ -205,7 +237,38 @@ export class VerTurnosComponent implements OnInit {
 
   getTurnos() {
     this.turnoService.getTurnos(this.filtros).subscribe((data) => {
-      this.listOfData = data;
+      this.listOfData = data.map((t) => {
+        const cursos = t.cursos || [];
+
+        const cursosGenerados = t._count?.cursos ?? cursos.length;
+        const cursosConHorario = cursos.filter(
+          (c) => (c._count?.horarios || 0) > 0
+        ).length;
+        const cursosSinHorario = cursosGenerados - cursosConHorario;
+
+        // ⭐ ESTADOS DEFINIDOS
+        let estado = 'sin-cursos'; // 1️⃣ Sin cursos generados
+
+        if (cursosGenerados > 0 && cursosConHorario === 0) {
+          estado = 'sin-horarios'; // 2️⃣ Cursos generados pero sin horarios
+        } else if (cursosConHorario > 0 && cursosConHorario < cursosGenerados) {
+          estado = 'incompleto'; // 3️⃣ Algunos cursos con horario
+        } else if (
+          cursosConHorario === cursosGenerados &&
+          cursosGenerados > 0
+        ) {
+          estado = 'completo'; // 4️⃣ Todos los cursos con horarios
+        }
+
+        return {
+          ...t,
+          cursosGenerados,
+          cursosConHorario,
+          cursosSinHorario,
+          estado,
+        };
+      });
+
       this.datosFiltrados = [...this.listOfData];
       this.updateEditCache();
       this.aplicarPaginacion(true);

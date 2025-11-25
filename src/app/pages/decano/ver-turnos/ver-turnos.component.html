@@ -147,7 +147,25 @@
               <td class="text-slate-700">{{ data.c_codesp }}</td>
               <td class="text-slate-700">{{ data.c_grpcur }}</td>
               <td class="text-slate-700">{{ data.n_ciclo }}</td>
+              <td class="text-slate-700">{{ data.cursosGenerados }}</td>
+              <td class="text-slate-700">{{ data.cursosConHorario }}</td>
+              <td class="text-slate-700">{{ data.cursosSinHorario }}</td>
+              <td>
+                <span
+                  class="inline-flex items-center whitespace-nowrap px-2 py-1 rounded-full text-xs font-semibold"
+                  [ngClass]="{
+                    'bg-gray-400 text-white': data.estado === 'sin-cursos',
+                    'bg-orange-500 text-white': data.estado === 'sin-horarios',
+                    'bg-yellow-500 text-black': data.estado === 'incompleto',
+                    'bg-green-600 text-white': data.estado === 'completo'
+                  }"
+                >
+                  {{ data.estado.replace("-", " ") }}
+                </span>
+              </td>
+
               <td class="text-slate-700">{{ data.c_nommod }}</td>
+
               <td>
                 <button
                   type="button"
