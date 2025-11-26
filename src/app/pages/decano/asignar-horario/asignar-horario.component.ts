@@ -369,13 +369,14 @@ export class AsignarHorarioComponent
     this.lastDropRevert = null;
 
     const grupos = arg.event.extendedProps?.['grupos_hijo'] ?? [];
+    const area = arg.event.extendedProps?.['c_nom_cur_area'] ?? null;
 
     if (
       !this.boolTransversal &&
-      Array.isArray(grupos) &&
-      grupos[0]?.tipo === 0
+      ((Array.isArray(grupos) && grupos[0]?.tipo === 0) ||
+        area === 'ESTUDIOS GENERALES')
     ) {
-      this.alertService.warn('Los cursos transversales no pueden editarse.');
+      this.alertService.warn('Este curso está bloqueado (Estudios Generales).');
       return;
     }
 
@@ -629,6 +630,7 @@ export class AsignarHorarioComponent
       EF: 'ESPECIFICA',
       FG: 'FORMACIÓN GENERAL',
       PP: 'PRÁCTICAS PRE-PROFESIONALES ',
+      EG: 'ESTUDIOS GENERALES',
     };
     const modalidadMap = (c_codmod: number): string =>
       c_codmod === 1
@@ -712,6 +714,7 @@ export class AsignarHorarioComponent
         n_horas: 1,
         h_umaPlus: curso.tipo === 'teoria' ? curso.h_umaPlus ?? 0 : 0,
         grupos_hijo: curso.grupos_hijos ?? [],
+        c_nom_cur_area: curso.c_nom_cur_area, // ⭐ AÑADIDO
       },
     });
   }
@@ -834,6 +837,15 @@ export class AsignarHorarioComponent
 
   private openAsignacionModal(dragData: any, dropDate: Date) {
     if (this.guardando) return;
+
+    const area = dragData?.extendedProps?.['c_nom_cur_area'];
+
+    if (!this.boolTransversal && area === 'ESTUDIOS GENERALES') {
+      this.alertService.warn(
+        'Los cursos de Estudios Generales no pueden asignarse.'
+      );
+      return;
+    }
 
     const horasDisp = this.getHorasDisponibles(
       dragData?.extendedProps?.codigo,
@@ -1273,13 +1285,14 @@ export class AsignarHorarioComponent
   actualizarEvento() {
     if (this.guardando || !this.eventoSeleccionado) return;
 
+    const ext = this.eventoSeleccionado.extendedProps;
+    const area = ext?.['c_nom_cur_area'] ?? null;
+
     if (
       !this.boolTransversal &&
-      this.eventoSeleccionado.extendedProps?.grupos_hijo?.[0]?.tipo === 0
+      (ext?.grupos_hijo?.[0]?.tipo === 0 || area === 'ESTUDIOS GENERALES')
     ) {
-      this.alertService.warn(
-        'No puedes modificar horarios de cursos transversales.'
-      );
+      this.alertService.warn('Este curso está bloqueado (Estudios Generales).');
       return;
     }
 
@@ -1399,13 +1412,14 @@ export class AsignarHorarioComponent
   eliminarEvento() {
     if (this.guardando || !this.eventoSeleccionado) return;
 
+    const ext = this.eventoSeleccionado.extendedProps;
+    const area = ext?.['c_nom_cur_area'] ?? null;
+
     if (
       !this.boolTransversal &&
-      this.eventoSeleccionado.extendedProps?.grupos_hijo?.[0]?.tipo === 0
+      (ext?.grupos_hijo?.[0]?.tipo === 0 || area === 'ESTUDIOS GENERALES')
     ) {
-      this.alertService.warn(
-        'No puedes eliminar horarios de cursos transversales.'
-      );
+      this.alertService.warn('Este curso está bloqueado (Estudios Generales).');
       return;
     }
 
@@ -1651,6 +1665,9 @@ export class AsignarHorarioComponent
   }
 
   isDraggable(curso: CursoCard): boolean {
+    if (!this.boolTransversal && curso.c_nom_cur_area === 'ESTUDIOS GENERALES')
+      return false;
+
     return Number(curso.horasRestantes ?? 0) > 0 && !this.guardando;
   }
 
@@ -1877,8 +1894,12 @@ export class AsignarHorarioComponent
     if (ev) ev.stopPropagation();
     if (this.guardando) return;
 
-    if (this.boolTransversal && curso.grupos_hijos?.[0]?.tipo === 0) {
-      this.alertService.warn('Los cursos transversales están bloqueados.');
+    if (
+      !this.boolTransversal &&
+      (curso.grupos_hijos?.[0]?.tipo === 0 ||
+        curso.c_nom_cur_area === 'ESTUDIOS GENERALES')
+    ) {
+      this.alertService.warn('Este curso está bloqueado (Estudios Generales).');
       return;
     }
 
@@ -1908,6 +1929,7 @@ export class AsignarHorarioComponent
         n_horas: 1,
         h_umaPlus: curso.tipo === 'teoria' ? curso.h_umaPlus ?? 0 : 0,
         grupos_hijo: curso.grupos_hijos ?? [],
+        c_nom_cur_area: curso.c_nom_cur_area, // ⭐ AGREGAR ESTO
       },
     };
 
