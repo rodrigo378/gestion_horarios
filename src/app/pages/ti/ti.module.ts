@@ -30,6 +30,7 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { PipesModule } from '../../pipes/pipes.module';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
+import { ContadorComponent } from './contador/contador.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { NzTabsModule } from 'ng-zorro-antd/tabs';
     VerTurnoComponent,
     GenerarCursosComponent,
     AsignarHorarioComponent,
+    ContadorComponent,
   ],
   imports: [
     PipesModule,

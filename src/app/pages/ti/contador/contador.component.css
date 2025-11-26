@@ -1,0 +1,35 @@
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.search-box {
+  width: 280px;
+}
+
+.tabla-redondeada {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+nz-table table {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.search-box {
+  width: 280px;
+}
+
+.tabla-redondeada {
+  border-radius: 10px;
+  overflow: hidden;
+}

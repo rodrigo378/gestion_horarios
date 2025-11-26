@@ -6,6 +6,7 @@ import { PlanCursosComponent } from './plan-cursos/plan-cursos.component';
 import { VerTurnoComponent } from './ver-turno/ver-turno.component';
 import { GenerarCursosComponent } from './generar-cursos/generar-cursos.component';
 import { AsignarHorarioComponent } from './asignar-horario/asignar-horario.component';
+import { ContadorComponent } from './contador/contador.component';
 
 const routes: Routes = [
   {
@@ -17,6 +18,7 @@ const routes: Routes = [
       { path: 'turno', component: VerTurnoComponent },
       { path: 'generar/:turno_id', component: GenerarCursosComponent },
       { path: 'asignar/:turno_id', component: AsignarHorarioComponent },
+      { path: 'generar', component: ContadorComponent },
     ],
   },
 ];
