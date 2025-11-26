@@ -5,6 +5,7 @@ import {
 } from '../../../services/turno.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
   selector: 'app-ver-turno',
@@ -69,22 +70,38 @@ export class VerTurnoComponent {
     { title: 'Accion', nzWidth: 'auto' },
   ];
 
-  constructor(private turnoService: TurnoService, private router: Router) {}
+  constructor(
+    private turnoService: TurnoService,
+    private router: Router,
+    private alertService: AlertService
+  ) {}
 
   ngOnInit(): void {
+    // Mostrar loader al iniciar
+    this.alertService.showLoadingScreen('Cargando turnos...');
     this.getTurnos();
   }
 
+  // ===========================
+  // CARGA PRINCIPAL
+  // ===========================
   getTurnos() {
-    this.turnoService
-      .comparacionPorPeriodo(Number(this.filtros.n_codper))
-      .subscribe({
-        next: (data) => {
-          this.listOfData = data;
-          this.datosFiltrados = [...this.listOfData];
-        },
-        error: (err: HttpErrorResponse) => console.log(err),
-      });
+    const periodo = Number(this.filtros.n_codper || 0);
+
+    this.turnoService.comparacionPorPeriodo(periodo).subscribe({
+      next: (data) => {
+        this.listOfData = data;
+        this.aplicarFiltros();
+
+        // cerrar loader
+        this.alertService.close();
+      },
+      error: (err: HttpErrorResponse) => {
+        console.log(err);
+        this.alertService.close();
+        this.alertService.error('Error al cargar los turnos');
+      },
+    });
   }
 
   get total(): number {
@@ -96,34 +113,94 @@ export class VerTurnoComponent {
     this.pageIndex = 1;
   }
 
+  // ===========================
+  // CAMBIO DE FILTROS (SELECTS)
+  // ===========================
   onChangeFacultad(filtro: string, valor: string) {
     switch (filtro) {
       case 'n_codper':
         this.filtros.n_codper = valor;
-        break;
+
+        // recargar desde backend
+        this.alertService.showLoadingScreen('Cargando turnos...');
+        this.getTurnos();
+        return;
+
       case 'facultad':
         this.filtros.c_codfac = valor;
         this.especialidadesFiltradas = this.especialidades.filter(
           (item) => item.codfac === valor
         );
+        this.filtros.c_codesp = '';
         break;
+
       case 'especialidad':
         this.filtros.c_codesp = valor;
         break;
+
       case 'modalidad':
         this.filtros.c_codmod = valor;
         break;
+
       case 'ciclo':
         this.filtros.n_ciclo = valor;
         break;
+
       case 'estado':
         this.filtros.estado = valor;
         break;
     }
-    this.getTurnos();
+
+    this.aplicarFiltros();
   }
 
+  // ===========================
+  // APLICAR FILTROS EN MEMORIA
+  // ===========================
+  private aplicarFiltros(): void {
+    this.datosFiltrados = this.listOfData.filter((item) => {
+      const t = item.turno;
+
+      const coincidePeriodo = this.filtros.n_codper
+        ? String(t.n_codper) === this.filtros.n_codper
+        : true;
+
+      const coincideFacultad = this.filtros.c_codfac
+        ? t.c_codfac === this.filtros.c_codfac
+        : true;
+
+      const coincideEspecialidad = this.filtros.c_codesp
+        ? t.c_codesp === this.filtros.c_codesp
+        : true;
+
+      const coincideModalidad = this.filtros.c_codmod
+        ? String(t.c_codmod) === String(this.filtros.c_codmod)
+        : true;
+
+      const coincideCiclo = this.filtros.n_ciclo
+        ? Number(t.n_ciclo) === Number(this.filtros.n_ciclo)
+        : true;
+
+      const coincideEstado = this.filtros.estado
+        ? String(t.estado) === String(this.filtros.estado)
+        : true;
+
+      return (
+        coincidePeriodo &&
+        coincideFacultad &&
+        coincideEspecialidad &&
+        coincideModalidad &&
+        coincideCiclo &&
+        coincideEstado
+      );
+    });
+
+    this.pageIndex = 1;
+  }
+
+  // ===========================
   // SELECCIÓN
+  // ===========================
   onItemChecked(id: number, checked: boolean): void {
     checked ? this.setOfCheckedId.add(id) : this.setOfCheckedId.delete(id);
   }
@@ -138,7 +215,9 @@ export class VerTurnoComponent {
     this.listOfCurrentPageData = list;
   }
 
+  // ===========================
   // ACCIONES
+  // ===========================
   clickAsignarHorario(id: number) {
     window.open(`/ti/asignar/${id}`, '_blank');
   }
