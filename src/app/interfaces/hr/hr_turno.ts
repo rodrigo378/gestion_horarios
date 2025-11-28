@@ -16,6 +16,7 @@ export interface HR_Turno {
   n_ciclo: number;
   estado: string;
   subido_sigu: boolean;
+  requiere_reexportacion: boolean;
 
   periodo?: HR_Periodo;
   cursos?: HR_Curso[];

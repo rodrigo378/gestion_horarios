@@ -441,8 +441,17 @@ export class VerTurnosComponent implements OnInit {
     });
   }
 
-  clickAsignarHorario(id: number) {
-    const url = this.router.createUrlTree([`/coa/asignar/${id}`]).toString();
+  clickAsignarHorario(data: HR_Turno) {
+    if (data.requiere_reexportacion) {
+      this.alertService.saveError(
+        'Este turno está en proceso de exportación. (BLOQUEADO)'
+      );
+      return;
+    }
+
+    const url = this.router
+      .createUrlTree([`/coa/asignar/${data.id}`])
+      .toString();
     window.open(url, '_blank');
   }
 
