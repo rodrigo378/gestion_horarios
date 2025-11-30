@@ -39,7 +39,7 @@
   #externalEvents
   id="external-events"
   class="bg-white shadow-lg border p-5 rounded-xl mt-5"
-  [class.pointer-events-none]="guardando"
+  [class.pointer-events-none]="guardando || bloqueoTotal"
   [class.opacity-60]="guardando"
 >
   <h2
@@ -435,7 +435,7 @@
   #fullcalendar
   [options]="calendarOptions"
   class="mt-5 shadow-lg bg-white p-5 rounded-lg border border-gray-200"
-  [class.pointer-events-none]="guardando"
+  [class.pointer-events-none]="guardando || bloqueoTotal"
   [class.opacity-60]="guardando"
 ></full-calendar>
 

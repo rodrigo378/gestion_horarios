@@ -442,13 +442,17 @@ export class VerTurnosComponent implements OnInit {
   }
 
   clickAsignarHorario(data: HR_Turno) {
-    if (data.requiere_reexportacion) {
+    const tienePermisoDocente = data.permiso_docente === true;
+
+    // 🔒 Si está en reexportación y NO tiene permiso docente → bloquear
+    if (data.requiere_reexportacion && !tienePermisoDocente) {
       this.alertService.saveError(
         'Este turno está en proceso de exportación. (BLOQUEADO)'
       );
       return;
     }
 
+    // 🔓 Si tiene permiso docente o no está en reexportación → permitir
     const url = this.router
       .createUrlTree([`/coa/asignar/${data.id}`])
       .toString();
