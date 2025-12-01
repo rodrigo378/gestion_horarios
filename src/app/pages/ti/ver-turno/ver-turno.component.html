@@ -79,14 +79,16 @@
           </nz-select>
 
           <nz-select
-            [(ngModel)]="filtros.estado"
-            (ngModelChange)="onChangeFacultad('estado', $event)"
+            [(ngModel)]="filtros.exportacion"
+            (ngModelChange)="aplicarFiltros()"
             class="w-auto h-[30px]"
           >
-            <nz-option nzValue="" nzLabel="Estado"></nz-option>
-            <nz-option nzValue="0" nzLabel="No asignado"></nz-option>
-            <nz-option nzValue="1" nzLabel="Pendiente"></nz-option>
-            <nz-option nzValue="2" nzLabel="Asignado"></nz-option>
+            <nz-option nzValue="" nzLabel="Exportación"></nz-option>
+            <nz-option nzValue="exportado" nzLabel="Exportado"></nz-option>
+            <nz-option
+              nzValue="sin_exportar"
+              nzLabel="Sin exportar"
+            ></nz-option>
           </nz-select>
         </div>
 
@@ -169,6 +171,7 @@
               <td>{{ data.turno.c_codesp }}</td>
               <td>{{ data.turno.c_grpcur }}</td>
               <td>{{ data.turno.n_ciclo }}</td>
+              <td>{{ data.turno.requiere_reexportacion }}</td>
               <td>{{ data.turno.c_nommod }}</td>
 
               <!-- ESTADO GENERAL -->

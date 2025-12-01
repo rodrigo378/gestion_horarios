@@ -39,6 +39,11 @@ export class VerTurnoComponent {
     },
     { nomesp: 'ADMINISTRACIÓN Y MARKETING', codesp: 'E2', codfac: 'E' },
     { nomesp: 'CONTABILIDAD Y FINANZAS', codesp: 'E3', codfac: 'E' },
+    {
+      nomesp: 'ADMINISTRACIÓN Y NEGOCIOS INTERNACIONALES',
+      codesp: 'E4',
+      codfac: 'E',
+    },
     { nomesp: 'INGENIERÍA INDUSTRIAL', codesp: 'E5', codfac: 'E' },
     { nomesp: 'INGENIERÍA DE SISTEMAS', codesp: 'E7', codfac: 'E' },
     { nomesp: 'ENFERMERÍA', codesp: 'S1', codfac: 'S' },
@@ -55,6 +60,7 @@ export class VerTurnoComponent {
     n_ciclo: '',
     estado: '',
     c_grpcur: '',
+    exportacion: '',
   };
 
   listOfColumn = [
@@ -64,6 +70,7 @@ export class VerTurnoComponent {
     { title: 'Especialidad', nzWidth: 'auto' },
     { title: 'Seccion', nzWidth: 'auto' },
     { title: 'Ciclo', nzWidth: 'auto' },
+    { title: 'Exportado', nzWidth: 'auto' },
     { title: 'Modalidad', nzWidth: '10%' },
     { title: 'Estado General', nzWidth: 'auto' },
     { title: 'Bloqueado', nzWidth: '10%' },
@@ -157,7 +164,7 @@ export class VerTurnoComponent {
   // ===========================
   // APLICAR FILTROS EN MEMORIA
   // ===========================
-  private aplicarFiltros(): void {
+  aplicarFiltros(): void {
     this.datosFiltrados = this.listOfData.filter((item) => {
       const t = item.turno;
 
@@ -181,9 +188,14 @@ export class VerTurnoComponent {
         ? Number(t.n_ciclo) === Number(this.filtros.n_ciclo)
         : true;
 
-      const coincideEstado = this.filtros.estado
-        ? String(t.estado) === String(this.filtros.estado)
-        : true;
+      const coincideExportacion =
+        this.filtros.exportacion === ''
+          ? true
+          : this.filtros.exportacion === 'exportado'
+          ? t.requiere_reexportacion === true
+          : this.filtros.exportacion === 'sin_exportar'
+          ? t.requiere_reexportacion === false
+          : false;
 
       return (
         coincidePeriodo &&
@@ -191,7 +203,7 @@ export class VerTurnoComponent {
         coincideEspecialidad &&
         coincideModalidad &&
         coincideCiclo &&
-        coincideEstado
+        coincideExportacion
       );
     });
 
