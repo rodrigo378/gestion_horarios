@@ -95,6 +95,9 @@ export class AsignarHorarioComponent
   aulas: HR_Aula[] = [];
 
   boolTransversal: boolean = false;
+  bloqueoTotal: boolean = false;
+  permitirSoloDocente: boolean = false;
+  soloActualizarDocente: boolean = true;
 
   cursos!: HR_Curso[];
   cursosPlan2023: CursoCard[] = [];
@@ -365,6 +368,31 @@ export class AsignarHorarioComponent
   }
 
   onEventClick(arg: any) {
+    if (this.bloqueoTotal) {
+      this.alertService.warn(
+        'Este turno fue exportado al SIGU y no puede modificarse.'
+      );
+      return;
+    }
+
+    if (this.permitirSoloDocente) {
+      // 🟨 Solo permitir actualizar docente
+      // Deshabilitar campos
+      this.modalidadSeleccionada = arg.event.extendedProps.modalidad;
+      this.diaSeleccionado = this.mapDayIndexToName(arg.event.start.getDay());
+      this.horaInicio = this.toLocalHHmm(arg.event.start);
+
+      this.horasAsignadas = arg.event.extendedProps['n_horas_asignadas'];
+
+      // deshabilitar campos
+      this.soloActualizarDocente = true;
+
+      // mostrar aviso
+      this.alertService.warn(
+        'Este turno está exportado. Solo puedes actualizar el docente.'
+      );
+    }
+
     if (this.guardando) return;
     this.lastDropRevert = null;
 
@@ -473,7 +501,8 @@ export class AsignarHorarioComponent
     const n_horas = Number(e.extendedProps?.['n_horas_asignadas'] ?? 1);
     const tipoTxt = String(e.extendedProps?.['tipo'] ?? 'Teoría');
     const curso_id = Number(e.extendedProps?.['curso_id'] ?? 0);
-    const modalidad = e.extendedProps?.['modalidad'] ?? null;
+    const modalidad = (e.extendedProps?.['modalidad'] || '').toLowerCase();
+
     const aula_id = Number(e.extendedProps?.['aula_id'] ?? 0) || null;
     const docente_id = Number(e.extendedProps?.['docente_id'] ?? 0) || null;
 
@@ -546,6 +575,28 @@ export class AsignarHorarioComponent
   }
 
   onEventDrop(arg: any) {
+    // 🚫 BLOQUEO TOTAL → revertir inmediatamente
+    if (this.bloqueoTotal) {
+      this.alertService.warn(
+        'Este turno fue exportado al SIGU y no puede modificarse.'
+      );
+      arg.revert();
+      return;
+    }
+
+    // 🚫 SOLO DOCENTE → tampoco se permite mover el horario
+    if (this.permitirSoloDocente) {
+      this.alertService.warn(
+        'Este turno está exportado. Solo puedes actualizar el docente.'
+      );
+      arg.revert();
+      return;
+    }
+
+    if (this.guardando) {
+      arg.revert();
+      return;
+    }
     this.lastDropRevert = () => arg.revert();
 
     const e = arg.event;
@@ -597,6 +648,24 @@ export class AsignarHorarioComponent
     this.turnoService.getTurno(this.turno_id).subscribe((data) => {
       this.turno = data;
       this.cursos = (data as any)?.cursos ?? [];
+
+      // ⭐ Control de bloqueo por exportación
+      this.bloqueoTotal = false;
+      this.permitirSoloDocente = false;
+
+      if (this.turno.requiere_reexportacion) {
+        if (this.turno.permiso_docente) {
+          this.permitirSoloDocente = true;
+          this.alertService.warn(
+            'Este turno está exportado. Solo puedes actualizar el docente.'
+          );
+        } else {
+          this.bloqueoTotal = true;
+          this.alertService.warn(
+            'Este turno fue exportado al SIGU y no puede modificarse.'
+          );
+        }
+      }
 
       const transformados = this.transformarCursos(this.cursos);
       this.cursosPlan2023 = transformados.filter((c) => c.n_codper === 2023);
@@ -822,6 +891,15 @@ export class AsignarHorarioComponent
   }
 
   onEventReceive(info: any) {
+    if (this.bloqueoTotal || this.permitirSoloDocente) {
+      this.alertService.warn(
+        this.bloqueoTotal
+          ? 'Este turno fue exportado al SIGU y no puede modificarse.'
+          : 'Este turno está exportado. Solo puedes actualizar el docente.'
+      );
+      info.event.remove();
+      return;
+    }
     if (this.guardando) {
       info.event.remove();
       return;
@@ -946,7 +1024,8 @@ export class AsignarHorarioComponent
       borderColor: color,
       extendedProps: {
         ...this.cursoSeleccionado.extendedProps,
-        modalidad: this.modalidadSeleccionada,
+        modalidad: (this.modalidadSeleccionada || '').toLowerCase(),
+
         aula_id: this.aulaSeleccionada ?? 0,
         docente_id: this.selectedDocente?.id ?? 0,
         docente_nombre: this.selectedDocente?.c_nomdoc ?? '',
@@ -994,6 +1073,13 @@ export class AsignarHorarioComponent
   }
 
   async confirmarEliminarTodosLosHorarios() {
+    if (this.bloqueoTotal || this.permitirSoloDocente) {
+      this.alertService.warn(
+        'No se puede eliminar horarios de un turno exportado.'
+      );
+      return;
+    }
+
     if (this.guardando) return;
 
     const ok = await this.alertService.confirmDeleteAll();
@@ -1283,6 +1369,29 @@ export class AsignarHorarioComponent
   }
 
   actualizarEvento() {
+    if (this.bloqueoTotal) {
+      this.alertService.warn(
+        'Este turno fue exportado al SIGU y no puede modificarse.'
+      );
+      return;
+    }
+
+    if (this.permitirSoloDocente) {
+      // ⚠️ Solo actualizar docente
+      this.eventoSeleccionado.setExtendedProp(
+        'docente_id',
+        this.selectedDocente?.id ?? 0
+      );
+      this.eventoSeleccionado.setExtendedProp(
+        'docente_nombre',
+        this.selectedDocente?.c_nomdoc ?? ''
+      );
+
+      this.guardarSoloEvento(this.eventoSeleccionado);
+      this.modalHorasActivo = false;
+      return;
+    }
+
     if (this.guardando || !this.eventoSeleccionado) return;
 
     const ext = this.eventoSeleccionado.extendedProps;
@@ -1365,7 +1474,7 @@ export class AsignarHorarioComponent
     this.eventoSeleccionado.setEnd(end);
     this.eventoSeleccionado.setExtendedProp(
       'modalidad',
-      this.modalidadSeleccionada ?? null
+      (this.modalidadSeleccionada || '').toLowerCase()
     );
     this.eventoSeleccionado.setExtendedProp(
       'aula_id',
@@ -1410,6 +1519,15 @@ export class AsignarHorarioComponent
   }
 
   eliminarEvento() {
+    if (this.bloqueoTotal || this.permitirSoloDocente) {
+      this.alertService.warn(
+        this.bloqueoTotal
+          ? 'Este turno fue exportado al SIGU y no puede modificarse.'
+          : 'Este turno está exportado. Solo puedes actualizar el docente.'
+      );
+      return;
+    }
+
     if (this.guardando || !this.eventoSeleccionado) return;
 
     const ext = this.eventoSeleccionado.extendedProps;
@@ -1728,6 +1846,12 @@ export class AsignarHorarioComponent
   }
 
   abrirGenerarCursosModal() {
+    if (this.bloqueoTotal || this.permitirSoloDocente) {
+      this.alertService.warn(
+        'Este turno fue exportado. No se pueden generar cursos.'
+      );
+      return;
+    }
     if (this.guardando) return;
     this.genVisible = true;
     this.cargarGenerables();
@@ -1892,6 +2016,21 @@ export class AsignarHorarioComponent
 
   abrirModalDesdeCard(curso: CursoCard, ev?: MouseEvent) {
     if (ev) ev.stopPropagation();
+
+    if (this.bloqueoTotal) {
+      this.alertService.warn(
+        'Este turno fue exportado al SIGU y no puede modificarse.'
+      );
+      return;
+    }
+
+    if (this.permitirSoloDocente) {
+      this.alertService.warn(
+        'Este turno está exportado. Solo puedes actualizar el docente.'
+      );
+      return;
+    }
+
     if (this.guardando) return;
 
     if (

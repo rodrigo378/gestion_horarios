@@ -17,6 +17,7 @@ export interface HR_Turno {
   estado: string;
   subido_sigu: boolean;
   requiere_reexportacion: boolean;
+  permiso_docente: boolean;
 
   periodo?: HR_Periodo;
   cursos?: HR_Curso[];

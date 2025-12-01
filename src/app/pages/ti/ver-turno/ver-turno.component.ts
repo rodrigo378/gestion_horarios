@@ -49,6 +49,10 @@ export class VerTurnoComponent {
     { nomesp: 'ENFERMERÍA', codesp: 'S1', codfac: 'S' },
     { nomesp: 'FARMACIA Y BIOQUÍMICA', codesp: 'S2', codfac: 'S' },
     { nomesp: 'NUTRICIÓN Y DIETÉTICA', codesp: 'S3', codfac: 'S' },
+    { nomesp: 'PSICOLOGÍA', codesp: 'S4', codfac: 'S' },
+    { nomesp: 'TM TERAPIA FÍSICA Y REHAB', codesp: 'S5', codfac: 'S' },
+    { nomesp: 'TM LAB. CLÍNICO Y ANAT. PAT', codesp: 'S6', codfac: 'S' },
+    { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
   ];
   especialidadesFiltradas: any[] = [];
 
