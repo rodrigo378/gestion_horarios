@@ -31,6 +31,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { AgruparCursosComponent } from './agrupar-cursos/agrupar-cursos.component';
 import { VerTransversalComponent } from './ver-transversal/ver-transversal.component';
 import { PipesModule } from '../../pipes/pipes.module';
+import { CursoComponent } from './curso/curso.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { PipesModule } from '../../pipes/pipes.module';
     AsignarHorarioComponent,
     AgruparCursosComponent,
     VerTransversalComponent,
+    CursoComponent,
   ],
   imports: [
     PipesModule,

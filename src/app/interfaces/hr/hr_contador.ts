@@ -16,8 +16,8 @@ export interface ContadorResultBase {
   total_grupos: number;
   secciones: string;
   total_vacantes_max: number | string;
-  total_vacantes_tot: number | string;
-  total_vacantes_matriculados: number | string;
+  total_vacantes_tot: number;
+  total_vacantes_matriculados: number;
   n_ciclo: string;
   c_codmod: string;
   n_codpla: string;

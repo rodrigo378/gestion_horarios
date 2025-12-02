@@ -27,6 +27,45 @@
         />
       </div>
     </div>
+    <!-- Filtros -->
+    <div
+      class="flex flex-col sm:flex-row justify-between items-center gap-4 p-3 bg-slate-50/60 rounded-xl ring-1 ring-slate-200/70 mb-4"
+    >
+      <div class="flex flex-wrap gap-2 items-center">
+        <!-- FILTRO POR CICLO -->
+        <nz-select
+          [(ngModel)]="filtros.n_ciclo"
+          (ngModelChange)="onChangeFiltro('n_ciclo', $event)"
+          class="w-auto h-[30px] min-w-[80px]"
+        >
+          <nz-option nzValue="" nzLabel="Todos los ciclos"></nz-option>
+          <nz-option
+            *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+            [nzValue]="i"
+            [nzLabel]="'Ciclo ' + i"
+          ></nz-option>
+        </nz-select>
+
+        <!-- FILTRO POR ESTADO DEL CONTADOR -->
+        <nz-select
+          [(ngModel)]="filtros.estado"
+          (ngModelChange)="onChangeFiltro('estado', $event)"
+          class="w-auto h-[30px] min-w-[140px]"
+        >
+          <nz-option nzValue="" nzLabel="Todos los estados"></nz-option>
+          <nz-option nzValue="activo" nzLabel="Con contador"></nz-option>
+          <nz-option nzValue="sin_contador" nzLabel="Sin contador"></nz-option>
+        </nz-select>
+      </div>
+
+      <!-- BOTÓN EXPORTAR (ya lo tenías, lo mantienes) -->
+      <button
+        class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
+        (click)="exportarExcel()"
+      >
+        Exportar Excel
+      </button>
+    </div>
 
     <!-- TABLA CON SCROLL X -->
     <div class="w-full overflow-x-auto rounded-xl">
@@ -37,23 +76,20 @@
           nzBordered
           nzSize="small"
           nzShowSizeChanger
-          [nzPageSizeOptions]="[10, 20, 50, 100]"
+          [nzPageSizeOptions]="[10, 20, 50, 100, 9999]"
           class="rounded-xl overflow-hidden min-w-[1200px] block"
         >
           <thead class="bg-slate-50">
             <tr>
-              <th>CourseID (SIGU)</th>
-              <th>Curso</th>
-              <th>Código</th>
-              <th>Especialidad</th>
-              <th>Secciones</th>
-              <th>Vacantes Totales</th>
-              <th>Matriculados</th>
-              <th>Estado</th>
-              <th>Límite</th>
-              <th>Ejecutado</th>
-              <th>Fecha Ejecución</th>
-              <th>Acción</th>
+              @for (column of listOfColumn; track column) {
+              <th
+                class="text-slate-900 font-semibold"
+                [nzSortFn]="column.compare"
+                [nzSortPriority]="column.priority"
+              >
+                {{ column.title }}
+              </th>
+              }
             </tr>
           </thead>
 

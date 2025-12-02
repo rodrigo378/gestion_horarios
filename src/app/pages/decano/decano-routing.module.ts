@@ -10,9 +10,7 @@ import { VerTurnosComponent } from './ver-turnos/ver-turnos.component';
 import { AsignarHorarioComponent } from './asignar-horario/asignar-horario.component';
 import { AgruparCursosComponent } from './agrupar-cursos/agrupar-cursos.component';
 import { VerTransversalComponent } from './ver-transversal/ver-transversal.component';
-// import { AgruparCursosComponent } from './agrupar-cursos/agrupar-cursos.component';
-// import { AsignarHorarioComponent } from './asignar-horario/asignar-horario.component';
-// import { AsignarhorarioComponent } from './asignar-horario-antiguo/asignarhorario.component';
+import { CursoComponent } from './curso/curso.component';
 
 const routes: Routes = [
   {
@@ -33,6 +31,7 @@ const routes: Routes = [
 
       // { path: 'calender_turno', component: CalenderDirectorComponent },
       { path: 'calendario_docente', component: CalenderDocenteComponent },
+      { path: 'cursos', component: CursoComponent },
     ],
   },
 ];
