@@ -84,8 +84,8 @@ export class CursoService {
     });
   }
 
-  getReporteAgrupados() {
-    return this.http.get(`${this.apiUrl}/reporte/agrupados`, {
+  getReporteAgrupados(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/reporte/agrupados`, {
       withCredentials: true,
     });
   }

@@ -741,7 +741,51 @@ export class VerTurnosComponent implements OnInit {
 
   reporteAgrupados() {
     this.cursoService.getReporteAgrupados().subscribe((data) => {
-      console.log('data => ', data);
+      if (!data || data.length === 0) {
+        this.alertService.error('No hay datos para exportar.');
+        return;
+      }
+
+      // Construcción del reporte
+      const reporte = data.map((item: any) => ({
+        course_id: item.course_id,
+        c_codfac: item.c_codfac,
+        c_codesp: item.c_codesp,
+        codigo_curso: item.c_codcur,
+        nombre_curso: item.c_nomcur,
+        grupo_seccion: item.c_grpcur,
+        n_codper: item.n_codper,
+        c_codmod: item.c_codmod,
+        n_codpla: item.n_codpla,
+        n_ciclo: item.n_ciclo,
+        orden: item.orden,
+      }));
+
+      // Crear hoja
+      const worksheet = XLSX.utils.json_to_sheet(reporte);
+
+      // Ajustar columnas automáticamente
+      worksheet['!cols'] = Object.keys(reporte[0]).map((key) => ({
+        wch:
+          Math.max(
+            key.length,
+            ...reporte.map((r: any) => String(r[key]).length)
+          ) + 2,
+      }));
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte Agrupados');
+
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
+
+      const blob = new Blob([excelBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      saveAs(blob, `reporte_agrupados_${new Date().getTime()}.xlsx`);
     });
   }
 }
