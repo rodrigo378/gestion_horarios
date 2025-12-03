@@ -8,6 +8,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../../services/alert.service';
 import FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
+import { ContadorService } from '../../../services/contador.service';
+import { saveAs } from 'file-saver';
+import { CursoService } from '../../../services/curso.service';
 
 @Component({
   selector: 'app-ver-turnos',
@@ -18,6 +21,8 @@ import * as XLSX from 'xlsx';
 export class VerTurnosComponent implements OnInit {
   private ctx = inject(AuthContextService);
   isSaving = false;
+  boolTransversal: boolean = false;
+  contadorFiltrado: any[] = [];
 
   get isLoaded() {
     return this.ctx.isLoaded();
@@ -185,14 +190,37 @@ export class VerTurnosComponent implements OnInit {
     private turnoService: TurnoService,
     private router: Router,
     private fb: FormBuilder,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private contadorService: ContadorService,
+    private cursoService: CursoService
   ) {
     // 🟢 Loader global al cargar la vista
     this.alertService.showLoadingScreen('Cargando información...');
 
     effect(() => {
+      const user = this.ctx.userConfig()?.user;
       if (this.isLoaded) {
         // 🔵 Cierra loader cuando todo esté listo
+
+        if (user) {
+          const permitidos = [
+            'rodrigo.palomino@uma.edu.pe',
+            'sistemas@uma.edu.pe',
+            'luz.carbajal@uma.edu.pe',
+            'mabel.huaman@uma.edu.pe',
+          ];
+
+          const tienePermiso = permitidos.some(
+            (correo) => correo.toLowerCase() === user.email.toLowerCase()
+          );
+
+          if (tienePermiso) {
+            this.boolTransversal = true;
+          } else {
+            console.log('🚫 Sin permiso especial');
+          }
+        }
+
         this.alertService.close();
 
         this.recalcularEspecialidadesVisibles();
@@ -584,6 +612,136 @@ export class VerTurnosComponent implements OnInit {
       FileSaver.saveAs(blob, `ReporteTurnos_${fecha}.xlsx`);
 
       this.alertService.close();
+    });
+  }
+
+  exportarExcel() {
+    this.contadorService.getContador().subscribe((data) => {
+      this.contadorFiltrado = data;
+      if (!this.contadorFiltrado.length) {
+        this.alertService.error('No hay datos para exportar.');
+        return;
+      }
+
+      const data1 = this.contadorFiltrado.map((item) => ({
+        CourseID_SIGU: item.courseid_temp,
+        Curso: item.c_nomcur,
+        Codigo: item.c_codcur,
+        Especialidad: item.c_codesp,
+        Secciones: item.secciones,
+        Vacantes_Totales: item.total_vacantes_tot,
+        Matriculados: item.total_vacantes_matriculados,
+        Estado: item.courseId ? 'Activo' : 'Sin contador',
+        Limite: item.courseId ? item.limite : '-',
+        Ejecutado: item.courseId ? (item.ejecutado ? 'Sí' : 'No') : '-',
+        Fecha_Ejecucion: item.courseId
+          ? new Date(item.ejecutado_at || '').toLocaleString()
+          : '-',
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(data1);
+      const workbook = XLSX.utils.book_new();
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Contadores');
+
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
+
+      const blob = new Blob([excelBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      saveAs(blob, `contadores_${new Date().getTime()}.xlsx`);
+    });
+  }
+
+  reporteCurso() {
+    // 1) Obtener total de registros
+    this.cursoService
+      .getCurso(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        0,
+        1
+      )
+      .subscribe((respPrimera: any) => {
+        const total = respPrimera.total + 1;
+
+        // 2) Traer absolutamente todos los registros
+        this.cursoService
+          .getCurso(
+            undefined, // c_codmod
+            undefined, // n_codper
+            undefined, // periodo
+            undefined, // c_codfac
+            undefined, // c_codesp
+            undefined, // c_codcur
+            undefined, // n_ciclo
+            undefined, // turno_id
+            undefined, // filtroBusqueda
+            0, // skip
+            total // take -> TRAE TODO
+          )
+          .subscribe((resp: any) => {
+            const cursos = resp.data;
+
+            if (!cursos || cursos.length === 0) {
+              this.alertService.error('No hay datos para exportar.');
+              return;
+            }
+
+            const reporte = cursos.map((item: any) => ({
+              n_codper: item.turno?.n_codper,
+              c_codfac: item.turno?.c_codfac,
+              c_codesp: item.turno?.c_codesp,
+              nomfac: item.turno?.nom_fac,
+              nomesp: item.turno?.nomesp,
+              ciclo: item.plan?.n_ciclo,
+              codigo_curso: item.plan?.c_codcur,
+              nombre_curso: item.plan?.c_nomcur,
+              grupo_seccion: item.turno?.c_grpcur,
+              vacantes: item.c_alu,
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(reporte);
+
+            worksheet['!cols'] = Object.keys(reporte[0]).map((key) => ({
+              wch:
+                Math.max(
+                  key.length,
+                  ...reporte.map((r: any) => String(r[key]).length)
+                ) + 2,
+            }));
+
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte Cursos');
+
+            const excelBuffer = XLSX.write(workbook, {
+              bookType: 'xlsx',
+              type: 'array',
+            });
+
+            const blob = new Blob([excelBuffer], {
+              type: 'application/vnd.openxmlformats-officedocument-spreadsheetml.sheet',
+            });
+
+            saveAs(blob, `reporte_cursos_${new Date().getTime()}.xlsx`);
+          });
+      });
+  }
+
+  reporteAgrupados() {
+    this.cursoService.getReporteAgrupados().subscribe((data) => {
+      console.log('data => ', data);
     });
   }
 }

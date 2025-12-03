@@ -83,4 +83,10 @@ export class CursoService {
       withCredentials: true,
     });
   }
+
+  getReporteAgrupados() {
+    return this.http.get(`${this.apiUrl}/reporte/agrupados`, {
+      withCredentials: true,
+    });
+  }
 }
