@@ -658,7 +658,9 @@ export class VerTurnosComponent implements OnInit {
   }
 
   reporteCurso() {
-    // 1) Obtener total de registros
+    this.alertService.showLoadingScreen('Generando reporte...');
+
+    // 1) Obtener total
     this.cursoService
       .getCurso(
         undefined,
@@ -674,28 +676,29 @@ export class VerTurnosComponent implements OnInit {
         1
       )
       .subscribe((respPrimera: any) => {
-        const total = respPrimera.total + 1;
+        const total = respPrimera.total;
 
-        // 2) Traer absolutamente todos los registros
+        // 2) Traer todos los registros
         this.cursoService
           .getCurso(
-            undefined, // c_codmod
-            undefined, // n_codper
-            undefined, // periodo
-            undefined, // c_codfac
-            undefined, // c_codesp
-            undefined, // c_codcur
-            undefined, // n_ciclo
-            undefined, // turno_id
-            undefined, // filtroBusqueda
-            0, // skip
-            total // take -> TRAE TODO
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            0,
+            total
           )
           .subscribe((resp: any) => {
             const cursos = resp.data;
 
             if (!cursos || cursos.length === 0) {
               this.alertService.error('No hay datos para exportar.');
+              this.alertService.close();
               return;
             }
 
@@ -714,13 +717,10 @@ export class VerTurnosComponent implements OnInit {
 
             const worksheet = XLSX.utils.json_to_sheet(reporte);
 
-            worksheet['!cols'] = Object.keys(reporte[0]).map((key) => ({
-              wch:
-                Math.max(
-                  key.length,
-                  ...reporte.map((r: any) => String(r[key]).length)
-                ) + 2,
-            }));
+            // 👉 Columnas fijas (NO automáticas)
+            worksheet['!cols'] = new Array(Object.keys(reporte[0]).length).fill(
+              { wch: 20 }
+            );
 
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte Cursos');
@@ -731,22 +731,25 @@ export class VerTurnosComponent implements OnInit {
             });
 
             const blob = new Blob([excelBuffer], {
-              type: 'application/vnd.openxmlformats-officedocument-spreadsheetml.sheet',
+              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             });
 
             saveAs(blob, `reporte_cursos_${new Date().getTime()}.xlsx`);
+            this.alertService.close();
           });
       });
   }
 
   reporteAgrupados() {
-    this.cursoService.getReporteAgrupados().subscribe((data) => {
+    this.alertService.showLoadingScreen('Generando reporte...');
+
+    this.cursoService.getReporteAgrupados().subscribe((data: any[]) => {
       if (!data || data.length === 0) {
         this.alertService.error('No hay datos para exportar.');
+        this.alertService.close();
         return;
       }
 
-      // Construcción del reporte
       const reporte = data.map((item: any) => ({
         course_id: item.course_id,
         c_codfac: item.c_codfac,
@@ -761,17 +764,12 @@ export class VerTurnosComponent implements OnInit {
         orden: item.orden,
       }));
 
-      // Crear hoja
       const worksheet = XLSX.utils.json_to_sheet(reporte);
 
-      // Ajustar columnas automáticamente
-      worksheet['!cols'] = Object.keys(reporte[0]).map((key) => ({
-        wch:
-          Math.max(
-            key.length,
-            ...reporte.map((r: any) => String(r[key]).length)
-          ) + 2,
-      }));
+      // 👉 Columnas fijas
+      worksheet['!cols'] = new Array(Object.keys(reporte[0]).length).fill({
+        wch: 20,
+      });
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte Agrupados');
@@ -786,6 +784,7 @@ export class VerTurnosComponent implements OnInit {
       });
 
       saveAs(blob, `reporte_agrupados_${new Date().getTime()}.xlsx`);
+      this.alertService.close();
     });
   }
 }
