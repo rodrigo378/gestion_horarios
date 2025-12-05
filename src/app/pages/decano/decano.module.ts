@@ -32,6 +32,7 @@ import { AgruparCursosComponent } from './agrupar-cursos/agrupar-cursos.componen
 import { VerTransversalComponent } from './ver-transversal/ver-transversal.component';
 import { PipesModule } from '../../pipes/pipes.module';
 import { CursoComponent } from './curso/curso.component';
+import { ContadorComponent } from './contador/contador.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { CursoComponent } from './curso/curso.component';
     AgruparCursosComponent,
     VerTransversalComponent,
     CursoComponent,
+    ContadorComponent,
   ],
   imports: [
     PipesModule,

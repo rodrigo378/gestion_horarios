@@ -32,20 +32,6 @@
       class="flex flex-col sm:flex-row justify-between items-center gap-4 p-3 bg-slate-50/60 rounded-xl ring-1 ring-slate-200/70 mb-4"
     >
       <div class="flex flex-wrap gap-2 items-center">
-        <!-- FILTRO POR CICLO -->
-        <nz-select
-          [(ngModel)]="filtros.n_ciclo"
-          (ngModelChange)="onChangeFiltro('n_ciclo', $event)"
-          class="w-auto h-[30px] min-w-[80px]"
-        >
-          <nz-option nzValue="" nzLabel="Todos los ciclos"></nz-option>
-          <nz-option
-            *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-            [nzValue]="i"
-            [nzLabel]="'Ciclo ' + i"
-          ></nz-option>
-        </nz-select>
-
         <!-- FILTRO POR ESTADO DEL CONTADOR -->
         <nz-select
           [(ngModel)]="filtros.estado"
@@ -136,26 +122,6 @@
                     ? (item.ejecutado_at | date : "dd/MM/yyyy HH:mm")
                     : "-"
                 }}
-              </td>
-
-              <td>
-                <ng-container *ngIf="item.courseId; else crearBtn">
-                  <button
-                    class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 transition"
-                    (click)="openEditar(item)"
-                  >
-                    Editar
-                  </button>
-                </ng-container>
-
-                <ng-template #crearBtn>
-                  <button
-                    class="px-3 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
-                    (click)="openCrear(item)"
-                  >
-                    Crear
-                  </button>
-                </ng-template>
               </td>
             </tr>
           </tbody>

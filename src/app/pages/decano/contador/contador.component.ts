@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { ContadorService } from '../../../services/contador.service';
+import { Component } from '@angular/core';
 import { ContadorResult } from '../../../interfaces/hr/hr_contador';
+import { ContadorService } from '../../../services/contador.service';
 import { AlertService } from '../../../services/alert.service';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
@@ -11,7 +11,7 @@ import { saveAs } from 'file-saver';
   templateUrl: './contador.component.html',
   styleUrl: './contador.component.css',
 })
-export class ContadorComponent implements OnInit {
+export class ContadorComponent {
   contador: ContadorResult[] = [];
   contadorFiltrado: ContadorResult[] = [];
   search = '';
@@ -132,12 +132,6 @@ export class ContadorComponent implements OnInit {
         };
         return getFechaNum(a) - getFechaNum(b);
       },
-      priority: false,
-    },
-    {
-      title: 'Acción',
-      // SIN compare - esta columna no es ordenable
-      compare: false,
       priority: false,
     },
   ];

@@ -11,6 +11,7 @@ import { AsignarHorarioComponent } from './asignar-horario/asignar-horario.compo
 import { AgruparCursosComponent } from './agrupar-cursos/agrupar-cursos.component';
 import { VerTransversalComponent } from './ver-transversal/ver-transversal.component';
 import { CursoComponent } from './curso/curso.component';
+import { ContadorComponent } from './contador/contador.component';
 
 const routes: Routes = [
   {
@@ -32,6 +33,7 @@ const routes: Routes = [
       // { path: 'calender_turno', component: CalenderDirectorComponent },
       { path: 'calendario_docente', component: CalenderDocenteComponent },
       { path: 'cursos', component: CursoComponent },
+      { path: 'contador', component: ContadorComponent },
     ],
   },
 ];
