@@ -164,11 +164,14 @@ export class VerTurnosComponent implements OnInit {
       codesp: 'E4',
       codfac: 'E',
     },
+    { nomesp: 'DERECHO', codesp: 'E9', codfac: 'E' },
     // E	E4	ADMINISTRACIÓN Y NEGOCIOS INTERNACIONALES
 
     { nomesp: 'INGENIERÍA INDUSTRIAL', codesp: 'E5', codfac: 'E' },
     { nomesp: 'INGENIERÍA DE IA', codesp: 'E6', codfac: 'E' },
     { nomesp: 'INGENIERÍA DE SISTEMAS', codesp: 'E7', codfac: 'E' },
+    { nomesp: 'INGENIERÍA DE SISTEMAS', codesp: 'E7', codfac: 'E' },
+
     { nomesp: 'ENFERMERÍA', codesp: 'S1', codfac: 'S' },
     { nomesp: 'FARMACIA Y BIOQUÍMICA', codesp: 'S2', codfac: 'S' },
     { nomesp: 'NUTRICIÓN Y DIETÉTICA', codesp: 'S3', codfac: 'S' },
