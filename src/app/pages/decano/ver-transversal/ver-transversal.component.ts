@@ -45,6 +45,7 @@ export class VerTransversalComponent {
 
     { nomesp: 'INGENIERÍA INDUSTRIAL', codesp: 'E5', codfac: 'E' },
     { nomesp: 'INGENIERÍA DE IA', codesp: 'E6', codfac: 'E' },
+    { nomesp: 'DERECHO', codesp: 'E9', codfac: 'E' },
 
     { nomesp: 'ENFERMERÍA', codesp: 'S1', codfac: 'S' },
     { nomesp: 'FARMACIA Y BIOQUÍMICA', codesp: 'S2', codfac: 'S' },
