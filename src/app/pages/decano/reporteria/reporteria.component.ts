@@ -4,6 +4,8 @@ import { HR_Docente } from '../../../interfaces/hr/hr_docente';
 import { HR_Horario } from '../../../interfaces/hr/hr_horario';
 import { DocenteService } from '../../../services/docente.service';
 import { AlertService } from '../../../services/alert.service';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-reporteria',
@@ -185,5 +187,33 @@ export class ReporteriaComponent implements OnInit {
     const prefix = this.router.url.split('/')[1];
     const url = `/${prefix}/calendario_docente?id=${id}`;
     window.open(url, '_blank');
+  }
+  exportarExcel(): void {
+    const data = this.usuariosFiltrados.map((docente) => {
+      const horasDictadas = this.sumarHoras(docente.horarios || []);
+
+      return {
+        DNI: docente.c_dnidoc,
+        Docente: docente.c_nomdoc,
+        'Horas dictadas': horasDictadas,
+      };
+    });
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Reporte Docentes': worksheet },
+      SheetNames: ['Reporte Docentes'],
+    };
+
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+    });
+
+    saveAs(blob, 'Reporte_Horas_Docentes.xlsx');
   }
 }
