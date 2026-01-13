@@ -31,6 +31,7 @@ import { PipesModule } from '../../pipes/pipes.module';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { ContadorComponent } from './contador/contador.component';
+import { VacantesComponent } from './vacantes/vacantes.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { ContadorComponent } from './contador/contador.component';
     GenerarCursosComponent,
     AsignarHorarioComponent,
     ContadorComponent,
+    VacantesComponent,
   ],
   imports: [
     PipesModule,

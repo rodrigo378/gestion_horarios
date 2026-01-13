@@ -1,0 +1,207 @@
+<!-- CONTENEDOR PRINCIPAL -->
+<div class="max-w-[100%] mx-auto">
+  <!-- PANEL -->
+  <div
+    class="relative flex flex-col w-full bg-white rounded-2xl shadow-md ring-1 ring-slate-200 px-8 py-6"
+  >
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3"
+    >
+      <div>
+        <h3 class="text-2xl font-semibold text-slate-900">Vacantes SIGU</h3>
+        <p class="text-slate-500">
+          Consulta de vacantes por curso, especialidad y modalidad.
+        </p>
+      </div>
+
+      <!-- BUSCADOR -->
+      <div class="w-full sm:w-80">
+        <input
+          nz-input
+          placeholder="Buscar por código de curso (c_codcur)..."
+          [(ngModel)]="searchCodCur"
+          (ngModelChange)="applyFilters(true)"
+          class="rounded-xl"
+        />
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div
+      class="flex flex-col sm:flex-row justify-between items-center gap-4 p-3 bg-slate-50/60 rounded-xl ring-1 ring-slate-200/70 mb-4"
+    >
+      <div class="flex flex-wrap gap-2 items-center">
+        <!-- FILTRO POR ESPECIALIDAD -->
+        <nz-select
+          nzAllowClear
+          nzPlaceHolder="Especialidad"
+          [(ngModel)]="selectedEspecialidad"
+          (ngModelChange)="applyFilters(true)"
+          class="w-auto h-[30px] min-w-[160px]"
+        >
+          <nz-option nzValue="" nzLabel="Todas"></nz-option>
+          <nz-option
+            *ngFor="let e of especialidades"
+            [nzValue]="e"
+            [nzLabel]="e"
+          ></nz-option>
+        </nz-select>
+
+        <!-- FILTRO POR CICLO (solo si existe data) -->
+        <nz-select
+          nzAllowClear
+          nzPlaceHolder="Ciclo"
+          [(ngModel)]="selectedCiclo"
+          (ngModelChange)="applyFilters(true)"
+          class="w-auto h-[30px] min-w-[120px]"
+          [nzDisabled]="ciclos.length === 0"
+        >
+          <nz-option nzValue="" nzLabel="Todos"></nz-option>
+          <nz-option
+            *ngFor="let c of ciclos"
+            [nzValue]="c"
+            [nzLabel]="'Ciclo ' + c"
+          ></nz-option>
+        </nz-select>
+
+        <!-- FILTRO POR MODALIDAD -->
+        <nz-select
+          nzAllowClear
+          nzPlaceHolder="Modalidad"
+          [(ngModel)]="selectedModalidad"
+          (ngModelChange)="applyFilters(true)"
+          class="w-auto h-[30px] min-w-[140px]"
+        >
+          <nz-option nzValue="" nzLabel="Todas"></nz-option>
+          <nz-option
+            *ngFor="let m of modalidades"
+            [nzValue]="m"
+            [nzLabel]="m"
+          ></nz-option>
+        </nz-select>
+      </div>
+
+      <div class="flex gap-2">
+        <button
+          class="px-4 py-2 bg-slate-200 rounded-xl hover:bg-slate-300 transition"
+          (click)="clearFilters()"
+        >
+          Limpiar
+        </button>
+
+        <!-- (opcional) export -->
+        <button
+          class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
+        >
+          Exportar Excel
+        </button>
+      </div>
+    </div>
+
+    <!-- TABLA CON SCROLL X -->
+    <!-- TABLA CON SCROLL X (SOLO 1 SCROLL) -->
+    <div class="w-full overflow-x-auto rounded-xl">
+      <div class="min-w-[1200px] px-4">
+        <nz-table
+          #tbl
+          [nzData]="filteredVacantes"
+          [nzLoading]="loading"
+          nzBordered
+          nzSize="small"
+          nzShowSizeChanger
+          [nzPageSizeOptions]="[10, 20, 50, 100, 9999]"
+          class="rounded-xl overflow-hidden min-w-[1200px] block"
+        >
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="text-slate-900 font-semibold">Periodo</th>
+              <th class="text-slate-900 font-semibold">Fac</th>
+              <th class="text-slate-900 font-semibold">Esp</th>
+              <th class="text-slate-900 font-semibold">Código</th>
+              <th class="text-slate-900 font-semibold">Nombre</th>
+              <th class="text-slate-900 font-semibold">Grupo</th>
+              <th class="text-slate-900 font-semibold">Modalidad</th>
+              <th class="text-slate-900 font-semibold">Vac. Tot</th>
+              <th class="text-slate-900 font-semibold">Vac. Max</th>
+              <th class="text-slate-900 font-semibold">Matric.</th>
+              <th class="text-slate-900 font-semibold">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y">
+            <tr *ngFor="let v of tbl.data" class="hover:bg-slate-50">
+              <td>{{ v.n_codper }}</td>
+              <td>{{ v.c_codfac }}</td>
+              <td>{{ v.c_codesp }}</td>
+              <td class="font-semibold text-slate-900">{{ v.c_codcur }}</td>
+              <td>{{ v.c_nomcur }}</td>
+              <td>{{ v.c_grpcur }}</td>
+              <td>
+                <nz-tag nzColor="blue">{{ v.c_codmod }}</nz-tag>
+              </td>
+              <!-- <td>{{ v.n_vactot }}</td>
+              <td>{{ v.n_vacmax }}</td> -->
+              <td>
+                <ng-container *ngIf="editId === getRowId(v); else viewTot">
+                  <input
+                    nz-input
+                    type="number"
+                    class="w-[110px]"
+                    [(ngModel)]="editCache[getRowId(v)].n_vactot"
+                    (ngModelChange)="onChangeVacantes(v, $event)"
+                  />
+                </ng-container>
+                <ng-template #viewTot>
+                  {{ v.n_vactot }}
+                </ng-template>
+              </td>
+
+              <td>
+                <ng-container *ngIf="editId === getRowId(v); else viewMax">
+                  <input
+                    nz-input
+                    type="number"
+                    class="w-[110px]"
+                    [(ngModel)]="editCache[getRowId(v)].n_vacmax"
+                    (ngModelChange)="onChangeVacantes(v, $event)"
+                  />
+                </ng-container>
+                <ng-template #viewMax>
+                  {{ v.n_vacmax }}
+                </ng-template>
+              </td>
+
+              <td>{{ v.n_vacmat }}</td>
+              <td>
+                <ng-container *ngIf="editId === getRowId(v); else accionesView">
+                  <button
+                    class="px-3 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition mr-2"
+                    (click)="saveEdit(v)"
+                  >
+                    Guardar
+                  </button>
+
+                  <button
+                    class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 transition"
+                    (click)="cancelEdit(v)"
+                  >
+                    Cancelar
+                  </button>
+                </ng-container>
+
+                <ng-template #accionesView>
+                  <button
+                    class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 transition"
+                    (click)="startEdit(v)"
+                  >
+                    Editar
+                  </button>
+                </ng-template>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </div>
+  </div>
+</div>
