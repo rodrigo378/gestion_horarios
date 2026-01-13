@@ -1,5 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SiguService } from '../../../services/sigu.service';
+import { JobService, JobResponse } from '../../../services/job.service';
+import { NzMessageService } from 'ng-zorro-antd/message';
+
+import {
+  Subscription,
+  interval,
+  switchMap,
+  takeWhile,
+  catchError,
+  of,
+} from 'rxjs';
 
 interface Vacante {
   n_codper: number;
@@ -16,8 +27,7 @@ interface Vacante {
   n_vacmax: number;
   n_vacmat: number;
 
-  // si existe en tu API:
-  n_ciclo?: number; // ciclo
+  n_ciclo?: number;
 }
 
 @Component({
@@ -26,7 +36,7 @@ interface Vacante {
   templateUrl: './vacantes.component.html',
   styleUrl: './vacantes.component.css',
 })
-export class VacantesComponent implements OnInit {
+export class VacantesComponent implements OnInit, OnDestroy {
   loading = false;
 
   // data
@@ -45,15 +55,36 @@ export class VacantesComponent implements OnInit {
   selectedModalidad: string | null = null;
   selectedCiclo: number | null = null;
 
-  // options (se llenan desde la data)
+  // options
   especialidades: string[] = [];
   modalidades: string[] = [];
   ciclos: number[] = [];
 
-  constructor(private siguServices: SiguService) {}
+  // ---- edición ----
+  editId: string | null = null;
+  editCache: Record<string, Vacante> = {};
+
+  // ---- JOB / polling ----
+  private jobPollingSub?: Subscription;
+
+  savingJobId: string | null = null;
+  savingRowId: string | null = null;
+
+  // snapshot para revertir si falla
+  beforeSaveSnapshot: Record<string, Vacante> = {};
+
+  constructor(
+    private siguServices: SiguService,
+    private jobService: JobService,
+    private msg: NzMessageService
+  ) {}
 
   ngOnInit(): void {
     this.getVacantes();
+  }
+
+  ngOnDestroy(): void {
+    this.jobPollingSub?.unsubscribe();
   }
 
   getVacantes() {
@@ -61,15 +92,9 @@ export class VacantesComponent implements OnInit {
 
     this.siguServices.getVacantes().subscribe({
       next: (data: any) => {
-        // tu API trae data cruda: aquí la guardamos y listo
         this.allVacantes = Array.isArray(data) ? (data as Vacante[]) : [];
-
-        // construir combos (especialidad, modalidad, ciclo si existe)
         this.buildFilterOptions();
-
-        // aplicar filtros + paginar en frontend
         this.applyFilters(true);
-
         this.loading = false;
       },
       error: (err) => {
@@ -99,7 +124,6 @@ export class VacantesComponent implements OnInit {
     this.ciclos = Array.from(cicloSet).sort((a, b) => a - b);
   }
 
-  // se llama cuando cambias buscador/filtros
   applyFilters(resetPage = false) {
     if (resetPage) this.pageIndex = 1;
 
@@ -110,12 +134,10 @@ export class VacantesComponent implements OnInit {
       const cod = (v.c_codcur || '').toUpperCase();
       const nom = (v.c_nomcur || '').toUpperCase();
 
-      // buscador por código y nombre (soporta múltiples palabras)
       const matchSearch = terms.length
         ? terms.every((t) => cod.includes(t) || nom.includes(t))
         : true;
 
-      // filtros
       const matchEsp = this.selectedEspecialidad
         ? v.c_codesp === this.selectedEspecialidad
         : true;
@@ -161,18 +183,13 @@ export class VacantesComponent implements OnInit {
     this.applyFilters(true);
   }
 
-  // helper: vacantes disponibles
   disponibles(v: Vacante): number {
-    // si tu lógica real es distinta, ajusta aquí
     return (v.n_vacmax ?? 0) - (v.n_vacmat ?? 0);
   }
 
-  // ---- edición ----
-  editId: string | null = null;
-  editCache: Record<string, Vacante> = {};
+  // ============ helpers ============
 
   getRowId(v: Vacante): string {
-    // clave compuesta (única)
     return [
       v.n_codper,
       v.c_codfac,
@@ -184,15 +201,24 @@ export class VacantesComponent implements OnInit {
     ].join('|');
   }
 
+  isRowBusy(v: Vacante): boolean {
+    return this.loading && this.savingRowId === this.getRowId(v);
+  }
+
+  // ============ edición ============
+
   startEdit(v: Vacante) {
+    if (this.loading) return;
+
     const id = this.getRowId(v);
     this.editId = id;
-    // clonar para no tocar la tabla hasta guardar
     this.editCache[id] = { ...v };
   }
 
   cancelEdit(v: Vacante) {
     const id = this.getRowId(v);
+    if (this.isRowBusy(v)) return;
+
     delete this.editCache[id];
     this.editId = null;
   }
@@ -203,33 +229,41 @@ export class VacantesComponent implements OnInit {
     if (!row) return;
 
     const val = Number(value) || 0;
-
-    // ambos siempre iguales
     row.n_vactot = val;
     row.n_vacmax = val;
   }
+
+  // ============ Guardar con polling ============
 
   saveEdit(v: Vacante) {
     const id = this.getRowId(v);
     const row = this.editCache[id];
     if (!row) return;
+    if (this.loading) return;
 
-    // 1) Actualiza el array local con lo editado
+    // 1) Snapshot del original (para revertir si falla)
+    const original = this.allVacantes.find((x) => this.getRowId(x) === id);
+    if (original) this.beforeSaveSnapshot[id] = { ...original };
+
+    // 2) Optimistic UI (se ve el cambio, pero NO confirmas éxito aún)
     const idx = this.allVacantes.findIndex((x) => this.getRowId(x) === id);
     if (idx !== -1) {
       this.allVacantes[idx] = { ...this.allVacantes[idx], ...row };
     }
-
-    // 2) Refresca UI
     this.applyFilters(false);
 
-    // 3) Imprime WHERE con el row actualizado (sin hardcode)
-    this.printWhere(row);
+    // 3) Cierra edición
+    delete this.editCache[id];
+    this.editId = null;
 
-    // 4) Envía a la API con el row actualizado (NO con v)
+    // 4) Loader + lock fila
+    this.loading = true;
+    this.savingRowId = id;
+
+    // 5) enqueue al backend (Nest)
     this.siguServices
       .updateVacante({
-        n_codper: 20261,
+        n_codper: 20261, // aquí tu periodo fijo (si aplica)
         c_codfac: row.c_codfac,
         c_codcur: row.c_codcur,
         c_grpcur: row.c_grpcur,
@@ -240,18 +274,124 @@ export class VacantesComponent implements OnInit {
         n_vacmax: row.n_vacmax,
       })
       .subscribe({
-        next: (res) => console.log('Actualizado', res),
-        error: (err) => console.error(err),
-      });
+        next: (res: any) => {
+          const jobId = res?.jobId ? String(res.jobId) : null;
 
-    // 5) Cierra edición
-    delete this.editCache[id];
-    this.editId = null;
+          if (!jobId) {
+            this.onJobFailed(id, 'No se recibió jobId del backend.');
+            return;
+          }
+
+          this.savingJobId = jobId;
+          this.startPollingJob(jobId, id);
+        },
+        error: (err) => {
+          console.error(err);
+          this.onJobFailed(id, 'Error al encolar el job.');
+        },
+      });
   }
 
+  private startPollingJob(jobId: string, rowId: string) {
+    // corta polling anterior
+    this.jobPollingSub?.unsubscribe();
+
+    const startedAt = Date.now();
+    const TIMEOUT_MS = 30_000; // 30s
+
+    // mensaje fijo (sin duración)
+    this.msg.loading('Procesando actualización...', { nzDuration: 0 });
+
+    this.jobPollingSub = interval(2000)
+      .pipe(
+        switchMap(() =>
+          this.jobService.getJobById(jobId).pipe(
+            catchError((err) => {
+              console.error('Job status error =>', err);
+              return of(null as unknown as JobResponse);
+            })
+          )
+        ),
+        // seguimos mientras no sea completed/failed; el true hace que emita el último estado también
+        takeWhile((job) => {
+          if (!job) return true;
+          return job.state !== 'completed' && job.state !== 'failed';
+        }, true)
+      )
+      .subscribe((job) => {
+        // timeout manual
+        const elapsed = Date.now() - startedAt;
+        if (elapsed > TIMEOUT_MS) {
+          this.msg.remove();
+          this.loading = false;
+          this.savingJobId = null;
+          this.savingRowId = null;
+          this.msg.warning(
+            'Sigue procesándose en segundo plano. Refresca en unos segundos.'
+          );
+          this.jobPollingSub?.unsubscribe();
+          return;
+        }
+
+        if (!job) return;
+
+        if (job.state === 'completed') {
+          this.msg.remove();
+          this.loading = false;
+          this.savingJobId = null;
+          this.savingRowId = null;
+
+          const affected = job?.returnvalue?.affectedRows ?? 0;
+          if (affected <= 0) {
+            this.onJobFailed(
+              rowId,
+              'El worker terminó pero no afectó filas (affectedRows=0).'
+            );
+            this.jobPollingSub?.unsubscribe();
+            return;
+          }
+
+          // ya fue confirmado
+          delete this.beforeSaveSnapshot[rowId];
+          this.msg.success('Actualizado correctamente ✅');
+          this.jobPollingSub?.unsubscribe();
+          return;
+        }
+
+        if (job.state === 'failed') {
+          this.msg.remove();
+          const reason = job.failedReason || 'Job failed';
+          this.onJobFailed(rowId, reason);
+          this.jobPollingSub?.unsubscribe();
+          return;
+        }
+      });
+  }
+
+  private onJobFailed(rowId: string, reason: string) {
+    this.loading = false;
+    this.savingJobId = null;
+    this.savingRowId = null;
+
+    // Revertir en UI usando snapshot
+    const snapshot = this.beforeSaveSnapshot[rowId];
+    if (snapshot) {
+      const idx = this.allVacantes.findIndex((x) => this.getRowId(x) === rowId);
+      if (idx !== -1) this.allVacantes[idx] = { ...snapshot };
+      delete this.beforeSaveSnapshot[rowId];
+      this.applyFilters(false);
+    } else {
+      // si no hay snapshot, puedes refrescar (opcional)
+      // this.getVacantes();
+    }
+
+    this.msg.error(`Falló la actualización ❌ (${reason})`);
+  }
+
+  // solo debug
   printWhere(v: Vacante) {
     const where = `
-      n_codper = 20252
+      n_codper = ${v.n_codper}
       AND c_codfac = '${v.c_codfac}'
       AND c_codcur = '${v.c_codcur}'
       AND c_grpcur = '${v.c_grpcur}'

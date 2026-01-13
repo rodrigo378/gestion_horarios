@@ -22,6 +22,7 @@
           [(ngModel)]="searchCodCur"
           (ngModelChange)="applyFilters(true)"
           class="rounded-xl"
+          [disabled]="loading"
         />
       </div>
     </div>
@@ -38,6 +39,7 @@
           [(ngModel)]="selectedEspecialidad"
           (ngModelChange)="applyFilters(true)"
           class="w-auto h-[30px] min-w-[160px]"
+          [nzDisabled]="loading"
         >
           <nz-option nzValue="" nzLabel="Todas"></nz-option>
           <nz-option
@@ -47,14 +49,14 @@
           ></nz-option>
         </nz-select>
 
-        <!-- FILTRO POR CICLO (solo si existe data) -->
+        <!-- FILTRO POR CICLO -->
         <nz-select
           nzAllowClear
           nzPlaceHolder="Ciclo"
           [(ngModel)]="selectedCiclo"
           (ngModelChange)="applyFilters(true)"
           class="w-auto h-[30px] min-w-[120px]"
-          [nzDisabled]="ciclos.length === 0"
+          [nzDisabled]="ciclos.length === 0 || loading"
         >
           <nz-option nzValue="" nzLabel="Todos"></nz-option>
           <nz-option
@@ -71,6 +73,7 @@
           [(ngModel)]="selectedModalidad"
           (ngModelChange)="applyFilters(true)"
           class="w-auto h-[30px] min-w-[140px]"
+          [nzDisabled]="loading"
         >
           <nz-option nzValue="" nzLabel="Todas"></nz-option>
           <nz-option
@@ -85,13 +88,14 @@
         <button
           class="px-4 py-2 bg-slate-200 rounded-xl hover:bg-slate-300 transition"
           (click)="clearFilters()"
+          [disabled]="loading"
         >
           Limpiar
         </button>
 
-        <!-- (opcional) export -->
         <button
           class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
+          [disabled]="loading"
         >
           Exportar Excel
         </button>
@@ -99,7 +103,6 @@
     </div>
 
     <!-- TABLA CON SCROLL X -->
-    <!-- TABLA CON SCROLL X (SOLO 1 SCROLL) -->
     <div class="w-full overflow-x-auto rounded-xl">
       <div class="min-w-[1200px] px-4">
         <nz-table
@@ -136,11 +139,12 @@
               <td class="font-semibold text-slate-900">{{ v.c_codcur }}</td>
               <td>{{ v.c_nomcur }}</td>
               <td>{{ v.c_grpcur }}</td>
+
               <td>
                 <nz-tag nzColor="blue">{{ v.c_codmod }}</nz-tag>
               </td>
-              <!-- <td>{{ v.n_vactot }}</td>
-              <td>{{ v.n_vacmax }}</td> -->
+
+              <!-- Vac. Tot -->
               <td>
                 <ng-container *ngIf="editId === getRowId(v); else viewTot">
                   <input
@@ -149,6 +153,7 @@
                     class="w-[110px]"
                     [(ngModel)]="editCache[getRowId(v)].n_vactot"
                     (ngModelChange)="onChangeVacantes(v, $event)"
+                    [disabled]="isRowBusy(v)"
                   />
                 </ng-container>
                 <ng-template #viewTot>
@@ -156,6 +161,7 @@
                 </ng-template>
               </td>
 
+              <!-- Vac. Max -->
               <td>
                 <ng-container *ngIf="editId === getRowId(v); else viewMax">
                   <input
@@ -164,6 +170,7 @@
                     class="w-[110px]"
                     [(ngModel)]="editCache[getRowId(v)].n_vacmax"
                     (ngModelChange)="onChangeVacantes(v, $event)"
+                    [disabled]="isRowBusy(v)"
                   />
                 </ng-container>
                 <ng-template #viewMax>
@@ -172,11 +179,13 @@
               </td>
 
               <td>{{ v.n_vacmat }}</td>
+
               <td>
                 <ng-container *ngIf="editId === getRowId(v); else accionesView">
                   <button
                     class="px-3 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition mr-2"
                     (click)="saveEdit(v)"
+                    [disabled]="isRowBusy(v)"
                   >
                     Guardar
                   </button>
@@ -184,15 +193,25 @@
                   <button
                     class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 transition"
                     (click)="cancelEdit(v)"
+                    [disabled]="isRowBusy(v)"
                   >
                     Cancelar
                   </button>
+
+                  <!-- Badge opcional si está procesando -->
+                  <span
+                    *ngIf="isRowBusy(v)"
+                    class="ml-2 text-xs text-slate-500"
+                  >
+                    Procesando...
+                  </span>
                 </ng-container>
 
                 <ng-template #accionesView>
                   <button
                     class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 transition"
                     (click)="startEdit(v)"
+                    [disabled]="loading"
                   >
                     Editar
                   </button>
