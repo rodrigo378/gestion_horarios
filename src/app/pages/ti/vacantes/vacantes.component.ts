@@ -229,7 +229,7 @@ export class VacantesComponent implements OnInit {
     // 4) Envía a la API con el row actualizado (NO con v)
     this.siguServices
       .updateVacante({
-        n_codper: row.n_codper,
+        n_codper: 20261,
         c_codfac: row.c_codfac,
         c_codcur: row.c_codcur,
         c_grpcur: row.c_grpcur,
