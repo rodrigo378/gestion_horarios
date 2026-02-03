@@ -49,7 +49,7 @@ export class GenerarCursosComponent implements OnInit {
     private route: ActivatedRoute,
     private turnoService: TurnoService,
     private modal: NzModalService,
-    private message: NzMessageService
+    private message: NzMessageService,
   ) {}
 
   ngOnInit(): void {
@@ -98,7 +98,7 @@ export class GenerarCursosComponent implements OnInit {
   onQueryParamsChange(params: NzTableQueryParams): void {
     const sorters = params.sort ?? [];
     const current = sorters.find(
-      (s) => s.value === 'ascend' || s.value === 'descend'
+      (s) => s.value === 'ascend' || s.value === 'descend',
     );
     if (current) {
       this.onSort(current.key as keyof FilaCursoPlan, current.value);
@@ -119,7 +119,7 @@ export class GenerarCursosComponent implements OnInit {
       data = data.filter(
         (d) =>
           d.c_nomcur?.toLowerCase().includes(texto) ||
-          d.c_codcur?.toLowerCase().includes(texto)
+          d.c_codcur?.toLowerCase().includes(texto),
       );
     }
 
@@ -161,7 +161,7 @@ export class GenerarCursosComponent implements OnInit {
   private sortData<T extends Record<string, any>>(
     data: T[],
     key: keyof T,
-    dir: 'ascend' | 'descend'
+    dir: 'ascend' | 'descend',
   ): T[] {
     const factor = dir === 'ascend' ? 1 : -1;
     return data.sort((a, b) => {
@@ -186,7 +186,7 @@ export class GenerarCursosComponent implements OnInit {
 
   // --- Modal generar ---
   showModal(
-    curso: HR_Plan_Estudio_Curso & { cursoGenerado?: HR_Curso | null }
+    curso: HR_Plan_Estudio_Curso & { cursoGenerado?: HR_Curso | null },
   ): void {
     if (curso.cursoGenerado) return;
     this.cursoSeleccionado = curso;
@@ -243,7 +243,7 @@ export class GenerarCursosComponent implements OnInit {
     setTimeout(() => {
       this.loading = false;
       this.message.info(
-        'Implementa turnoService.eliminarCurso(id) para completar la acción.'
+        'Implementa turnoService.eliminarCurso(id) para completar la acción.',
       );
     }, 400);
   }

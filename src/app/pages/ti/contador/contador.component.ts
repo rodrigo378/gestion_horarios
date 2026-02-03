@@ -186,10 +186,10 @@ export class ContadorComponent implements OnInit {
         this.filtros.estado === ''
           ? true
           : this.filtros.estado === 'activo'
-          ? !!item.courseId
-          : this.filtros.estado === 'sin_contador'
-          ? !item.courseId
-          : true;
+            ? !!item.courseId
+            : this.filtros.estado === 'sin_contador'
+              ? !item.courseId
+              : true;
 
       return coincideCiclo && coincideEstado;
     });
@@ -212,7 +212,7 @@ export class ContadorComponent implements OnInit {
 
   constructor(
     private contadorService: ContadorService,
-    private alertService: AlertService
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -239,13 +239,17 @@ export class ContadorComponent implements OnInit {
   }
 
   filtrar() {
-    const term = this.search.toLowerCase().trim();
-    this.contadorFiltrado = this.contador.filter(
-      (item) =>
-        item.courseid_temp.toLowerCase().includes(term) ||
-        item.c_nomcur.toLowerCase().includes(term) ||
-        item.c_codcur.toLowerCase().includes(term)
-    );
+    const term = (this.search ?? '').toLowerCase().trim();
+
+    this.contadorFiltrado = this.contador.filter((item) => {
+      const courseid = String(item.courseid_temp ?? '').toLowerCase();
+      const curso = String(item.c_nomcur ?? '').toLowerCase();
+      const codigo = String(item.c_codcur ?? '').toLowerCase();
+
+      return (
+        courseid.includes(term) || curso.includes(term) || codigo.includes(term)
+      );
+    });
   }
 
   // -----------------------
@@ -272,7 +276,7 @@ export class ContadorComponent implements OnInit {
           this.alertService.close();
           this.alertService.success(
             'Contador creado correctamente.',
-            '¡Éxito!'
+            '¡Éxito!',
           );
           this.getContador();
           this.closeModal();
@@ -305,7 +309,7 @@ export class ContadorComponent implements OnInit {
           this.alertService.close();
           this.alertService.success(
             'Límite actualizado correctamente.',
-            '¡Éxito!'
+            '¡Éxito!',
           );
           this.getContador();
           this.closeModal();
