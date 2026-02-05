@@ -195,7 +195,7 @@ export class VerTurnosComponent implements OnInit {
     private fb: FormBuilder,
     private alertService: AlertService,
     private contadorService: ContadorService,
-    private cursoService: CursoService
+    private cursoService: CursoService,
   ) {
     // 🟢 Loader global al cargar la vista
     this.alertService.showLoadingScreen('Cargando información...');
@@ -214,7 +214,7 @@ export class VerTurnosComponent implements OnInit {
           ];
 
           const tienePermiso = permitidos.some(
-            (correo) => correo.toLowerCase() === user.email.toLowerCase()
+            (correo) => correo.toLowerCase() === user.email.toLowerCase(),
           );
 
           if (tienePermiso) {
@@ -273,7 +273,7 @@ export class VerTurnosComponent implements OnInit {
 
         const cursosGenerados = t._count?.cursos ?? cursos.length;
         const cursosConHorario = cursos.filter(
-          (c) => (c._count?.horarios || 0) > 0
+          (c) => (c._count?.horarios || 0) > 0,
         ).length;
         const cursosSinHorario = cursosGenerados - cursosConHorario;
 
@@ -386,7 +386,7 @@ export class VerTurnosComponent implements OnInit {
     if (
       this.filtros.c_codesp &&
       !this.especialidadesFiltradas.some(
-        (e) => e.codesp === this.filtros.c_codesp
+        (e) => e.codesp === this.filtros.c_codesp,
       )
     ) {
       this.filtros.c_codesp = '';
@@ -397,12 +397,12 @@ export class VerTurnosComponent implements OnInit {
     const codfac = this.formularioHorario.get('c_codfac')?.value;
     const permitidas = this.hrEspecialidades || [];
     this.especialidadesFiltradas = this.especialidades.filter(
-      (esp) => esp.codfac === codfac && permitidas.includes(esp.codesp)
+      (esp) => esp.codfac === codfac && permitidas.includes(esp.codesp),
     );
 
     const actual = this.formularioHorario.get('c_codesp')?.value;
     const existe = this.especialidadesFiltradas.some(
-      (e) => e.codesp === actual
+      (e) => e.codesp === actual,
     );
     if (!existe) this.formularioHorario.get('c_codesp')?.setValue('');
   }
@@ -413,7 +413,7 @@ export class VerTurnosComponent implements OnInit {
       console.warn('Formulario incompleto');
 
       this.alertService.saveError(
-        'Completa todos los campos requeridos antes de guardar.'
+        'Completa todos los campos requeridos antes de guardar.',
       );
       return;
     }
@@ -427,14 +427,14 @@ export class VerTurnosComponent implements OnInit {
         : 'FACULTAD DE CIENCIAS DE LA SALUD';
 
     const especialidadSeleccionada = this.especialidades.find(
-      (e) => e.codesp === form.c_codesp
+      (e) => e.codesp === form.c_codesp,
     );
     const nomesp = especialidadSeleccionada
       ? especialidadSeleccionada.nomesp
       : 'SIN ESPECIALIDAD';
 
     const modalidadSeleccionada = this.modalidades.find(
-      (m) => m.value === form.c_codmod
+      (m) => m.value === form.c_codmod,
     );
     const c_nommod = modalidadSeleccionada
       ? modalidadSeleccionada.label.toUpperCase()
@@ -473,15 +473,15 @@ export class VerTurnosComponent implements OnInit {
   }
 
   clickAsignarHorario(data: HR_Turno) {
-    const tienePermisoDocente = data.permiso_docente === true;
+    // const tienePermisoDocente = data.permiso_docente === true;
 
-    // 🔒 Si está en reexportación y NO tiene permiso docente → bloquear
-    if (data.requiere_reexportacion && !tienePermisoDocente) {
-      this.alertService.saveError(
-        'Este turno está en proceso de exportación. (BLOQUEADO)'
-      );
-      return;
-    }
+    // // 🔒 Si está en reexportación y NO tiene permiso docente → bloquear
+    // if (data.requiere_reexportacion && !tienePermisoDocente) {
+    //   this.alertService.saveError(
+    //     'Este turno está en proceso de exportación. (BLOQUEADO)',
+    //   );
+    //   return;
+    // }
 
     // 🔓 Si tiene permiso docente o no está en reexportación → permitir
     const url = this.router
@@ -493,7 +493,7 @@ export class VerTurnosComponent implements OnInit {
   private clampPagina(): void {
     this.totalPaginas = Math.max(
       1,
-      Math.ceil(this.datosFiltrados.length / this.itemsPorPagina)
+      Math.ceil(this.datosFiltrados.length / this.itemsPorPagina),
     );
     if (this.paginaActual > this.totalPaginas)
       this.paginaActual = this.totalPaginas;
@@ -676,7 +676,7 @@ export class VerTurnosComponent implements OnInit {
         undefined,
         undefined,
         0,
-        1
+        1,
       )
       .subscribe((respPrimera: any) => {
         const total = respPrimera.total;
@@ -694,7 +694,7 @@ export class VerTurnosComponent implements OnInit {
             undefined,
             undefined,
             0,
-            total
+            total,
           )
           .subscribe((resp: any) => {
             const cursos = resp.data;
@@ -722,7 +722,7 @@ export class VerTurnosComponent implements OnInit {
 
             // 👉 Columnas fijas (NO automáticas)
             worksheet['!cols'] = new Array(Object.keys(reporte[0]).length).fill(
-              { wch: 20 }
+              { wch: 20 },
             );
 
             const workbook = XLSX.utils.book_new();
