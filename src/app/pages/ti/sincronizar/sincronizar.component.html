@@ -1,0 +1,142 @@
+<div class="max-w-[100%] mx-auto">
+  <div
+    class="relative flex flex-col w-full bg-white rounded-2xl shadow-md ring-1 ring-slate-200 px-8 py-6"
+  >
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3"
+    >
+      <div>
+        <h3 class="text-2xl font-semibold text-slate-900">Sincronizar</h3>
+        <p class="text-slate-500">
+          Control de límites, ejecución y vinculación SIGU.
+        </p>
+      </div>
+
+      <div class="w-full sm:w-80">
+        <input
+          type="text"
+          placeholder="Buscar por CourseID, Curso o Código..."
+          [(ngModel)]="search"
+          (ngModelChange)="filtrar()"
+          class="w-full px-3 py-2 rounded-xl ring-1 ring-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
+      </div>
+    </div>
+
+    <div
+      class="flex flex-col sm:flex-row justify-between items-center gap-4 p-3 bg-slate-50/60 rounded-xl ring-1 ring-slate-200/70 mb-4"
+    >
+      <div></div>
+
+      <div class="flex gap-2">
+        <button
+          class="px-4 py-2 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition"
+          (click)="sincronizarSeleccionados()"
+        >
+          Sincronizar
+        </button>
+
+        <button
+          class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
+          (click)="exportarExcel()"
+        >
+          Exportar Excel
+        </button>
+      </div>
+    </div>
+
+    <div class="w-full overflow-x-auto rounded-xl">
+      <div class="min-w-[1400px] overflow-x-auto px-4">
+        <table
+          class="w-full min-w-[1200px] border border-slate-200 rounded-xl overflow-hidden"
+        >
+          <thead class="bg-slate-50">
+            <tr class="text-left">
+              <th
+                class="p-3 w-[90px] text-center font-semibold text-slate-900 border-b border-slate-200"
+              >
+                <input
+                  type="checkbox"
+                  [checked]="allChecked"
+                  [indeterminate]="indeterminate"
+                  (change)="onToggleAll($event)"
+                />
+              </th>
+
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                courseid
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                Curso
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                Código
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                Especialidad
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                Secciones
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                Vacantes Totales
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                Matriculados
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                Ciclo
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              *ngFor="let item of contadorFiltrado"
+              class="hover:bg-slate-50 border-b border-slate-200"
+            >
+              <td class="p-3 text-center">
+                <input
+                  type="checkbox"
+                  [checked]="isSelected(item.courseid_temp)"
+                  (change)="onToggleOne(item.courseid_temp, $event)"
+                />
+              </td>
+
+              <td class="p-3">{{ item.courseid_temp }}</td>
+              <td class="p-3">
+                <div
+                  class="max-w-[260px] whitespace-normal break-words leading-5"
+                >
+                  {{ item.c_nomcur }}
+                </div>
+              </td>
+              <td class="p-3">{{ item.c_codcur }}</td>
+              <td class="p-3">{{ item.c_codesp }}</td>
+              <td class="p-3">{{ item.secciones }}</td>
+              <td class="p-3">{{ item.total_vacantes_tot }}</td>
+              <td class="p-3">{{ item.total_vacantes_matriculados }}</td>
+              <td class="p-3">{{ item.n_ciclo }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

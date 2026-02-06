@@ -21,6 +21,38 @@ export class AlertService {
       backdrop: true,
     });
   }
+  showSyncing(message: string = 'Sincronizando...'): void {
+    Swal.fire({
+      title: message,
+      html: `<div style="font-size:15px;color:#4b5563;">Por favor, espera mientras se sincroniza.</div>`,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => Swal.showLoading(),
+      backdrop: true,
+    });
+  }
+
+  syncSuccess(): void {
+    Swal.fire({
+      icon: 'success',
+      title: 'Sincronización completada',
+      text: 'Los cursos fueron sincronizados correctamente.',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#16a34a',
+    });
+  }
+
+  syncError(msg?: string): void {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al sincronizar',
+      text:
+        msg ??
+        'Ocurrió un error durante la sincronización. Intenta nuevamente.',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#dc2626',
+    });
+  }
 
   // success(message: string = 'Se actualizó'): void {
   //   Swal.fire({
@@ -233,7 +265,7 @@ export class AlertService {
   // ==========================
   warn(
     title: string = 'Atención',
-    text: string = 'Revisa la información ingresada.'
+    text: string = 'Revisa la información ingresada.',
   ): void {
     Swal.fire({
       icon: 'warning',
@@ -259,7 +291,7 @@ export class AlertService {
   }
 
   createTurnoError(
-    message: string = 'Ocurrió un error al registrar el turno.'
+    message: string = 'Ocurrió un error al registrar el turno.',
   ): void {
     Swal.fire({
       icon: 'error',
@@ -309,7 +341,7 @@ export class AlertService {
 
   confirm(
     message: string,
-    title: string = 'Confirmar acción'
+    title: string = 'Confirmar acción',
   ): Promise<boolean> {
     return Swal.fire({
       title: title,
@@ -327,7 +359,7 @@ export class AlertService {
   toastSuccess(
     message: string = 'Acción completada correctamente',
     icon: 'success' | 'info' | 'warning' | 'error' = 'success',
-    duration: number = 2500
+    duration: number = 2500,
   ): void {
     Swal.fire({
       toast: true,
@@ -342,8 +374,8 @@ export class AlertService {
         icon === 'error'
           ? '#dc2626'
           : icon === 'warning'
-          ? '#f59e0b'
-          : '#16a34a',
+            ? '#f59e0b'
+            : '#16a34a',
     });
   }
 }

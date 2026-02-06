@@ -82,13 +82,13 @@
           <thead class="bg-slate-50">
             <tr>
               @for (column of listOfColumn; track column) {
-              <th
-                class="text-slate-900 font-semibold"
-                [nzSortFn]="column.compare"
-                [nzSortPriority]="column.priority"
-              >
-                {{ column.title }}
-              </th>
+                <th
+                  class="text-slate-900 font-semibold"
+                  [nzSortFn]="column.compare"
+                  [nzSortPriority]="column.priority"
+                >
+                  {{ column.title }}
+                </th>
               }
             </tr>
           </thead>
@@ -133,7 +133,7 @@
               <td>
                 {{
                   item.courseId
-                    ? (item.ejecutado_at | date : "dd/MM/yyyy HH:mm")
+                    ? (item.ejecutado_at | date: "dd/MM/yyyy HH:mm")
                     : "-"
                 }}
               </td>

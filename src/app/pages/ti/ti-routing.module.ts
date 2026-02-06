@@ -8,6 +8,7 @@ import { GenerarCursosComponent } from './generar-cursos/generar-cursos.componen
 import { AsignarHorarioComponent } from './asignar-horario/asignar-horario.component';
 import { ContadorComponent } from './contador/contador.component';
 import { VacantesComponent } from './vacantes/vacantes.component';
+import { SincronizarComponent } from './sincronizar/sincronizar.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,7 @@ const routes: Routes = [
       { path: 'asignar/:turno_id', component: AsignarHorarioComponent },
       { path: 'generar', component: ContadorComponent },
       { path: 'vacantes', component: VacantesComponent },
+      { path: 'sinc', component: SincronizarComponent },
     ],
   },
 ];

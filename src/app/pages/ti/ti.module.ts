@@ -32,6 +32,8 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { ContadorComponent } from './contador/contador.component';
 import { VacantesComponent } from './vacantes/vacantes.component';
+import { SincronizarComponent } from './sincronizar/sincronizar.component';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 
 @NgModule({
   declarations: [
@@ -43,6 +45,7 @@ import { VacantesComponent } from './vacantes/vacantes.component';
     AsignarHorarioComponent,
     ContadorComponent,
     VacantesComponent,
+    SincronizarComponent,
   ],
   imports: [
     PipesModule,
@@ -72,6 +75,7 @@ import { VacantesComponent } from './vacantes/vacantes.component';
     NzGridModule,
     NzSpinModule,
     NzTabsModule,
+    NzCheckboxModule,
   ],
 })
 export class TiModule {}
