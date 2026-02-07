@@ -50,9 +50,7 @@ export class SincronizarComponent implements OnInit {
 
   getContador() {
     this.contadorService.getContador().subscribe((data) => {
-      this.contador = (data ?? []).filter(
-        (a) => a.courseId && Number(a.courseId) > 0,
-      );
+      this.contador = data;
       this.contadorFiltrado = this.contador;
       this.updateCheckStatus();
     });
