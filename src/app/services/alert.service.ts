@@ -10,6 +10,14 @@ export class AlertService {
   public loading$ = this.loadingSubject.asObservable();
 
   constructor() {}
+  syncResults(html: string) {
+    Swal.fire({
+      icon: 'success',
+      title: 'Sincronización finalizada',
+      html,
+      confirmButtonText: 'OK',
+    });
+  }
 
   showLoadingScreen(message: string = 'Cargando datos...'): void {
     Swal.fire({

@@ -2,6 +2,7 @@
   <div
     class="relative flex flex-col w-full bg-white rounded-2xl shadow-md ring-1 ring-slate-200 px-8 py-6"
   >
+    <!-- Header + Search -->
     <div
       class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3"
     >
@@ -23,21 +24,57 @@
       </div>
     </div>
 
+    <!-- Toolbar: filtros + botones (RESPONSIVE) -->
     <div
-      class="flex flex-col sm:flex-row justify-between items-center gap-4 p-3 bg-slate-50/60 rounded-xl ring-1 ring-slate-200/70 mb-4"
+      class="flex flex-col gap-3 p-3 bg-slate-50/60 rounded-xl ring-1 ring-slate-200/70 mb-4"
     >
-      <div></div>
+      <!-- Filtros -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <!-- Facultad -->
+        <select
+          [(ngModel)]="selectedFacultad"
+          (ngModelChange)="onFacultadChange()"
+          class="w-full px-3 py-2 rounded-xl ring-1 ring-slate-200 bg-white"
+        >
+          <option *ngFor="let f of facultades" [value]="f.value">
+            {{ f.label }}
+          </option>
+        </select>
 
-      <div class="flex gap-2">
+        <!-- Especialidad -->
+        <select
+          [(ngModel)]="selectedEspecialidad"
+          (ngModelChange)="onEspecialidadChange()"
+          class="w-full px-3 py-2 rounded-xl ring-1 ring-slate-200 bg-white"
+        >
+          <option value="">Todas las especialidades</option>
+          <option *ngFor="let e of especialidadesFiltradas" [value]="e.codesp">
+            {{ e.codesp }} - {{ e.nomesp }}
+          </option>
+        </select>
+
+        <!-- Ciclo -->
+        <select
+          [(ngModel)]="selectedCiclo"
+          (ngModelChange)="onCicloChange()"
+          class="w-full px-3 py-2 rounded-xl ring-1 ring-slate-200 bg-white"
+        >
+          <option value="">Todos los ciclos</option>
+          <option *ngFor="let c of ciclos" [value]="c">Ciclo {{ c }}</option>
+        </select>
+      </div>
+
+      <!-- Botones -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:flex sm:justify-end">
         <button
-          class="px-4 py-2 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition"
+          class="w-full sm:w-auto px-4 py-2 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition"
           (click)="sincronizarSeleccionados()"
         >
           Sincronizar
         </button>
 
         <button
-          class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
+          class="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
           (click)="exportarExcel()"
         >
           Exportar Excel
@@ -45,6 +82,7 @@
       </div>
     </div>
 
+    <!-- Tabla -->
     <div class="w-full overflow-x-auto rounded-xl">
       <div class="min-w-[1400px] overflow-x-auto px-4">
         <table
@@ -77,6 +115,11 @@
                 class="p-3 font-semibold text-slate-900 border-b border-slate-200"
               >
                 Código
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                Facultad
               </th>
               <th
                 class="p-3 font-semibold text-slate-900 border-b border-slate-200"
@@ -120,6 +163,7 @@
               </td>
 
               <td class="p-3">{{ item.courseid_temp }}</td>
+
               <td class="p-3">
                 <div
                   class="max-w-[260px] whitespace-normal break-words leading-5"
@@ -127,7 +171,9 @@
                   {{ item.c_nomcur }}
                 </div>
               </td>
+
               <td class="p-3">{{ item.c_codcur }}</td>
+              <td class="p-3">{{ item.c_codfac }}</td>
               <td class="p-3">{{ item.c_codesp }}</td>
               <td class="p-3">{{ item.secciones }}</td>
               <td class="p-3">{{ item.total_vacantes_tot }}</td>

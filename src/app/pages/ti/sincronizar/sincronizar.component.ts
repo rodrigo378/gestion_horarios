@@ -22,6 +22,62 @@ export class SincronizarComponent implements OnInit {
   allChecked = false;
   indeterminate = false;
 
+  selectedFacultad: string = '';
+  selectedEspecialidad: string = '';
+  selectedCiclo: string = '';
+
+  facultades = [
+    { label: 'Todas', value: '' },
+    { label: 'Ciencias de la Salud (S)', value: 'S' },
+    { label: 'Ingeniería y Negocios (E)', value: 'E' },
+  ];
+
+  ciclos = Array.from({ length: 10 }, (_, i) => String(i + 1));
+
+  especialidades: { nomesp: string; codesp: string; codfac: string }[] = [
+    {
+      nomesp: 'ADMINISTRACIÓN DE NEGOCIOS INTERNACIONALES',
+      codesp: 'E1',
+      codfac: 'E',
+    },
+    { nomesp: 'ADMINISTRACIÓN Y MARKETING', codesp: 'E2', codfac: 'E' },
+    { nomesp: 'CONTABILIDAD Y FINANZAS', codesp: 'E3', codfac: 'E' },
+    {
+      nomesp: 'ADMINISTRACIÓN Y NEGOCIOS INTERNACIONALES',
+      codesp: 'E4',
+      codfac: 'E',
+    },
+    { nomesp: 'DERECHO', codesp: 'E9', codfac: 'E' },
+
+    { nomesp: 'INGENIERÍA INDUSTRIAL', codesp: 'E5', codfac: 'E' },
+    { nomesp: 'INGENIERÍA DE IA', codesp: 'E6', codfac: 'E' },
+    { nomesp: 'INGENIERÍA DE SISTEMAS', codesp: 'E7', codfac: 'E' },
+    { nomesp: 'INGENIERÍA DE SISTEMAS', codesp: 'E7', codfac: 'E' },
+
+    { nomesp: 'ENFERMERÍA', codesp: 'S1', codfac: 'S' },
+    { nomesp: 'FARMACIA Y BIOQUÍMICA', codesp: 'S2', codfac: 'S' },
+    { nomesp: 'NUTRICIÓN Y DIETÉTICA', codesp: 'S3', codfac: 'S' },
+    { nomesp: 'PSICOLOGÍA', codesp: 'S4', codfac: 'S' },
+    { nomesp: 'TM TERAPIA FÍSICA Y REHAB', codesp: 'S5', codfac: 'S' },
+    { nomesp: 'TM LAB. CLÍNICO Y ANAT. PAT', codesp: 'S6', codfac: 'S' },
+    { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
+  ];
+
+  get especialidadesFiltradas() {
+    const fac = this.selectedFacultad;
+    const list = fac
+      ? this.especialidades.filter((e) => e.codfac === fac)
+      : this.especialidades;
+
+    const seen = new Set<string>();
+    return list.filter((e) => {
+      const k = `${e.codfac}-${e.codesp}`;
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+  }
+
   listOfColumn = [
     { title: 'courseid' },
     { title: 'Curso' },
@@ -51,12 +107,28 @@ export class SincronizarComponent implements OnInit {
   getContador() {
     this.contadorService.getContador().subscribe((data) => {
       this.contador = data;
-      this.contadorFiltrado = this.contador;
-      this.updateCheckStatus();
+      this.aplicarFiltros();
     });
   }
 
   filtrar() {
+    this.aplicarFiltros();
+  }
+
+  onFacultadChange() {
+    this.selectedEspecialidad = '';
+    this.aplicarFiltros();
+  }
+
+  onEspecialidadChange() {
+    this.aplicarFiltros();
+  }
+
+  onCicloChange() {
+    this.aplicarFiltros();
+  }
+
+  aplicarFiltros() {
     const term = (this.search ?? '').toLowerCase().trim();
 
     this.contadorFiltrado = this.contador.filter((item) => {
@@ -64,9 +136,39 @@ export class SincronizarComponent implements OnInit {
       const curso = String(item.c_nomcur ?? '').toLowerCase();
       const codigo = String(item.c_codcur ?? '').toLowerCase();
 
-      return (
-        courseid.includes(term) || curso.includes(term) || codigo.includes(term)
-      );
+      const pasaTexto =
+        !term ||
+        courseid.includes(term) ||
+        curso.includes(term) ||
+        codigo.includes(term);
+
+      const facRaw = String(item.c_codfac ?? '').trim();
+      const espRaw = String(item.c_codesp ?? '').trim();
+      const cicloRaw = String(item.n_ciclo ?? '').trim();
+
+      // soporta valores tipo: "S1,S2,S3"  o  "S1 | S2"  o  "S1;S2"
+      const facList = facRaw
+        .split(/[,\|;]+/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const espList = espRaw
+        .split(/[,\|;]+/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const cicloList = cicloRaw
+        .split(/[,\|;]+/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+      const pasaFac =
+        !this.selectedFacultad || facList.includes(this.selectedFacultad);
+      const pasaEsp =
+        !this.selectedEspecialidad ||
+        espList.includes(this.selectedEspecialidad);
+      const pasaCiclo =
+        !this.selectedCiclo || cicloList.includes(this.selectedCiclo);
+
+      return pasaTexto && pasaFac && pasaEsp && pasaCiclo;
     });
 
     this.updateCheckStatus();
@@ -88,7 +190,7 @@ export class SincronizarComponent implements OnInit {
 
   private getVisibleIds(): number[] {
     return this.contadorFiltrado
-      .map((x) => this.toNumber(x.courseid_temp))
+      .map((x) => this.toNumber((x as any).courseid_temp))
       .filter(Boolean);
   }
 
@@ -118,6 +220,16 @@ export class SincronizarComponent implements OnInit {
     this.indeterminate = checkedCount > 0 && checkedCount < ids.length;
   }
 
+  onToggleAll(e: Event) {
+    const checked = (e.target as HTMLInputElement)?.checked ?? false;
+    this.toggleAll(checked);
+  }
+
+  onToggleOne(courseidTemp: any, e: Event) {
+    const checked = (e.target as HTMLInputElement)?.checked ?? false;
+    this.toggleSelection(courseidTemp, checked);
+  }
+
   sincronizarSeleccionados() {
     const ids = Array.from(this.selectedCourseIds);
 
@@ -128,14 +240,70 @@ export class SincronizarComponent implements OnInit {
 
     this.alertService.showSyncing('Sincronizando cursos...');
 
-    this.sincService.sincronizarBatch(ids).subscribe({
-      next: (res) => {
-        this.alertService.close(); // cierra loading
-        this.alertService.syncSuccess();
+    this.sincService.sincronizarBatch(ids).subscribe(
+      (res: any) => {
+        this.alertService.close();
+
+        const arr = Array.isArray(res) ? res : [];
+
+        const exitos = arr.filter((x) => x?.ok === true && x?.data);
+        const fallos = arr.filter((x) => x?.ok === false);
+
+        const totals = exitos.reduce(
+          (acc, x) => {
+            const d = x.data ?? {};
+            acc.alumnosMatriculados += Number(d.nuevo ?? 0);
+            acc.alumnosBorrados += Number(d.borrar ?? 0);
+            acc.docentesMatriculados += Number(d.nuevoDocentes ?? 0);
+            acc.docentesBorrados += Number(d.borrarDocentes ?? 0);
+            return acc;
+          },
+          {
+            alumnosMatriculados: 0,
+            alumnosBorrados: 0,
+            docentesMatriculados: 0,
+            docentesBorrados: 0,
+          },
+        );
+
+        const fallosHtml =
+          fallos.length > 0
+            ? `
+          <div style="text-align:left;margin-top:10px;">
+            <b>Cursos con error (${fallos.length})</b>
+            <ul style="margin:6px 0 0 18px;">
+              ${fallos
+                .map(
+                  (f) =>
+                    `<li><b>${f.courseid}</b>: ${String(
+                      f.error ?? 'Error desconocido',
+                    )}</li>`,
+                )
+                .join('')}
+            </ul>
+          </div>
+        `
+            : `<div style="margin-top:10px;"><b>Sin errores ✅</b></div>`;
+
+        const html = `
+      <div style="text-align:left;">
+        <div><b>Alumnos</b></div>
+        <div>Matriculados: <b>${totals.alumnosMatriculados}</b></div>
+        <div>Borrados: <b>${totals.alumnosBorrados}</b></div>
+
+        <div style="margin-top:10px;"><b>Docentes</b></div>
+        <div>Matriculados: <b>${totals.docentesMatriculados}</b></div>
+        <div>Borrados: <b>${totals.docentesBorrados}</b></div>
+
+        ${fallosHtml}
+      </div>
+    `;
+
+        this.alertService.syncResults(html);
         console.log('Sincronizado:', res, 'ids:', ids);
       },
-      error: (err) => {
-        this.alertService.close(); // cierra loading
+      (err) => {
+        this.alertService.close();
         const msg =
           err?.error?.message ||
           err?.message ||
@@ -143,7 +311,7 @@ export class SincronizarComponent implements OnInit {
         this.alertService.syncError(msg);
         console.error('Error sync:', err);
       },
-    });
+    );
   }
 
   exportarExcel() {
@@ -156,6 +324,7 @@ export class SincronizarComponent implements OnInit {
       CourseID_SIGU: item.courseid_temp,
       Curso: item.c_nomcur,
       Codigo: item.c_codcur,
+      Facultad: item.c_codfac,
       Especialidad: item.c_codesp,
       Secciones: item.secciones,
       Vacantes_Totales: item.total_vacantes_tot,
@@ -177,14 +346,5 @@ export class SincronizarComponent implements OnInit {
     });
 
     saveAs(blob, `contadores_${new Date().getTime()}.xlsx`);
-  }
-  onToggleAll(e: Event) {
-    const checked = (e.target as HTMLInputElement)?.checked ?? false;
-    this.toggleAll(checked);
-  }
-
-  onToggleOne(courseidTemp: any, e: Event) {
-    const checked = (e.target as HTMLInputElement)?.checked ?? false;
-    this.toggleSelection(courseidTemp, checked);
   }
 }
