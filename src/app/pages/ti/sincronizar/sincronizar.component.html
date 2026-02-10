@@ -24,12 +24,23 @@
       </div>
     </div>
 
-    <!-- Toolbar: filtros + botones (RESPONSIVE) -->
+    <!-- Toolbar -->
     <div
       class="flex flex-col gap-3 p-3 bg-slate-50/60 rounded-xl ring-1 ring-slate-200/70 mb-4"
     >
       <!-- Filtros -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+        <!-- Periodo -->
+        <select
+          [(ngModel)]="selectedPeriodo"
+          (ngModelChange)="onPeriodoChange()"
+          class="w-full px-3 py-2 rounded-xl ring-1 ring-slate-200 bg-white"
+        >
+          <option *ngFor="let p of periodos" [ngValue]="p.value">
+            {{ p.label }}
+          </option>
+        </select>
+
         <!-- Facultad -->
         <select
           [(ngModel)]="selectedFacultad"
@@ -41,11 +52,12 @@
           </option>
         </select>
 
-        <!-- Especialidad -->
+        <!-- Especialidad (deshabilitado hasta escoger facultad) -->
         <select
           [(ngModel)]="selectedEspecialidad"
           (ngModelChange)="onEspecialidadChange()"
-          class="w-full px-3 py-2 rounded-xl ring-1 ring-slate-200 bg-white"
+          [disabled]="!selectedFacultad"
+          class="w-full px-3 py-2 rounded-xl ring-1 ring-slate-200 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <option value="">Todas las especialidades</option>
           <option *ngFor="let e of especialidadesFiltradas" [value]="e.codesp">
@@ -179,6 +191,12 @@
               <td class="p-3">{{ item.total_vacantes_tot }}</td>
               <td class="p-3">{{ item.total_vacantes_matriculados }}</td>
               <td class="p-3">{{ item.n_ciclo }}</td>
+            </tr>
+
+            <tr *ngIf="contadorFiltrado.length === 0">
+              <td colspan="10" class="p-6 text-center text-slate-500">
+                No hay resultados con los filtros seleccionados.
+              </td>
             </tr>
           </tbody>
         </table>

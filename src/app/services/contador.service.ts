@@ -11,8 +11,8 @@ export class ContadorService {
   private apiUrl = `${environment.api}/hr/contador`;
   constructor(private http: HttpClient) {}
 
-  getContador(): Observable<ContadorResult[]> {
-    return this.http.get<ContadorResult[]>(this.apiUrl);
+  getContador(n_codper: number): Observable<ContadorResult[]> {
+    return this.http.get<ContadorResult[]>(`${this.apiUrl}/${n_codper}`);
   }
 
   createContador(payload: { courseId: number; limite: number }) {

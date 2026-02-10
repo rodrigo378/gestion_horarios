@@ -180,10 +180,10 @@ export class ContadorComponent {
         this.filtros.estado === ''
           ? true
           : this.filtros.estado === 'activo'
-          ? !!item.courseId
-          : this.filtros.estado === 'sin_contador'
-          ? !item.courseId
-          : true;
+            ? !!item.courseId
+            : this.filtros.estado === 'sin_contador'
+              ? !item.courseId
+              : true;
 
       return coincideCiclo && coincideEstado;
     });
@@ -206,7 +206,7 @@ export class ContadorComponent {
 
   constructor(
     private contadorService: ContadorService,
-    private alertService: AlertService
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -220,7 +220,7 @@ export class ContadorComponent {
   //   });
   // }
   getContador() {
-    this.contadorService.getContador().subscribe((data) => {
+    this.contadorService.getContador(20261).subscribe((data) => {
       this.contador = data;
       this.contadorFiltrado = data;
 
@@ -238,7 +238,7 @@ export class ContadorComponent {
       (item) =>
         item.courseid_temp.toLowerCase().includes(term) ||
         item.c_nomcur.toLowerCase().includes(term) ||
-        item.c_codcur.toLowerCase().includes(term)
+        item.c_codcur.toLowerCase().includes(term),
     );
   }
 
@@ -266,7 +266,7 @@ export class ContadorComponent {
           this.alertService.close();
           this.alertService.success(
             'Contador creado correctamente.',
-            '¡Éxito!'
+            '¡Éxito!',
           );
           this.getContador();
           this.closeModal();
@@ -299,7 +299,7 @@ export class ContadorComponent {
           this.alertService.close();
           this.alertService.success(
             'Límite actualizado correctamente.',
-            '¡Éxito!'
+            '¡Éxito!',
           );
           this.getContador();
           this.closeModal();

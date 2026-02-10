@@ -619,7 +619,7 @@ export class VerTurnosComponent implements OnInit {
   }
 
   exportarExcel() {
-    this.contadorService.getContador().subscribe((data) => {
+    this.contadorService.getContador(20261).subscribe((data) => {
       this.contadorFiltrado = data;
       if (!this.contadorFiltrado.length) {
         this.alertService.error('No hay datos para exportar.');
