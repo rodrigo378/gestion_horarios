@@ -15,14 +15,14 @@
       </div>
 
       <!-- BOTÓN EXPORTAR EXCEL -->
-      <button
+      <!-- <button
         type="button"
         (click)="exportarExcel()"
         class="h-9 px-4 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition inline-flex items-center gap-2"
       >
         <i class="fa-solid fa-file-excel"></i>
         Exportar Excel
-      </button>
+      </button> -->
     </div>
 
     <!-- FILTROS -->
@@ -63,130 +63,140 @@
           <thead class="bg-slate-50">
             <tr>
               @for (column of listOfColumn; track column) {
-
-              <th
-                class="text-slate-900 font-semibold"
-                [nzWidth]="column.nzWidth"
-                [nzSortFn]="column.compare"
-              >
-                {{ column.title }}
-              </th>
+                <th
+                  class="text-slate-900 font-semibold"
+                  [nzWidth]="column.nzWidth"
+                  [nzSortFn]="column.compare"
+                >
+                  {{ column.title }}
+                </th>
               }
             </tr>
           </thead>
 
           <tbody class="divide-y divide-slate-100">
             @for (docente of sortTable.data; track docente) {
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td>{{ docente.id }}</td>
+                <td>{{ docente.c_nomdoc }}</td>
+                <td>{{ docente.h_min }}</td>
+                <td>{{ docente.h_max }}</td>
+                <td>{{ sumarHoras(docente.horarios || []) || 0 }}</td>
 
-            <tr class="hover:bg-slate-50 transition-colors">
-              <td>{{ docente.id }}</td>
-              <td>{{ docente.c_nomdoc }}</td>
-              <td>{{ docente.h_min }}</td>
-              <td>{{ docente.h_max }}</td>
-              <td>{{ sumarHoras(docente.horarios || []) || 0 }}</td>
-
-              <td>
-                <span
-                  [ngClass]="{
-                    'bg-blue-100 text-blue-700 ring-blue-600/20':
-                      docente.tipo === 0,
-                    'bg-emerald-100 text-emerald-700 ring-emerald-600/20':
-                      docente.tipo === 1
-                  }"
-                  class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset"
-                >
-                  {{
-                    docente.tipo === 0 ? "Tiempo Completo" : "Tiempo Parcial"
-                  }}
-                </span>
-              </td>
-
-              <!-- ACCIONES -->
-              <td class="flex items-center justify-start gap-1">
-                <!-- Ver más -->
-                <button
-                  nz-button
-                  nzType="link"
-                  (click)="toggleExpand(docente)"
-                  class="font-medium text-blue-600 inline-flex items-center"
-                >
-                  {{ docente.expanded ? "▼ Ocultar" : "▶ Ver más" }}
+                <td>
                   <span
-                    class="bg-blue-100 text-blue-800 text-xs font-semibold ml-2 px-2 py-0.5 rounded"
+                    [ngClass]="{
+                      'bg-blue-100 text-blue-700 ring-blue-600/20':
+                        docente.tipo === 0,
+                      'bg-emerald-100 text-emerald-700 ring-emerald-600/20':
+                        docente.tipo === 1,
+                    }"
+                    class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset"
                   >
-                    {{ docente.horarios?.length || 0 }}
+                    {{
+                      docente.tipo === 0 ? "Tiempo Completo" : "Tiempo Parcial"
+                    }}
                   </span>
-                </button>
+                </td>
 
-                <!-- Calendario -->
-                <button
-                  type="button"
-                  (click)="clickCalendarioDocente(docente.id)"
-                  class="text-slate-700 hover:text-slate-900 transition-colors inline-flex items-center"
-                  title="Ver calendario del docente"
-                >
-                  <i class="fa-solid fa-calendar-days fa-xl"></i>
-                </button>
-              </td>
-            </tr>
-
-            <!-- EXPANDIBLE DETALLE -->
-            @if (docente.expanded) {
-            <tr>
-              <td colspan="7" class="bg-slate-50 px-6 py-4 border-t border-b">
-                <p
-                  class="text-base font-semibold text-slate-800 underline mb-3"
-                >
-                  🗓️ Horarios Asignados:
-                </p>
-
-                <div *ngIf="docente.horarios?.length; else sinHorarios">
-                  <ul class="space-y-1">
-                    <li
-                      *ngFor="
-                        let h of agruparHorariosVisual(docente.horarios || [])
-                      "
-                      class="text-sm text-slate-700 px-3 py-1 rounded border border-slate-200 bg-white shadow-sm"
+                <!-- ACCIONES -->
+                <td class="flex items-center justify-start gap-1">
+                  <!-- Ver más -->
+                  <button
+                    nz-button
+                    nzType="link"
+                    (click)="toggleExpand(docente)"
+                    class="font-medium text-blue-600 inline-flex items-center"
+                  >
+                    {{ docente.expanded ? "▼ Ocultar" : "▶ Ver más" }}
+                    <span
+                      class="bg-blue-100 text-blue-800 text-xs font-semibold ml-2 px-2 py-0.5 rounded"
                     >
-                      <span class="font-medium text-slate-900">Facultad:</span>
-                      {{ h.c_codfac || "—" }} |
-                      <span class="font-medium text-slate-900"
-                        >Especialidad:</span
-                      >
-                      {{ h.c_codesp || "—" }} |
-                      <span class="font-medium text-slate-900">Curso:</span>
-                      {{ h.c_codcur || "—" }} - {{ h.c_nomcur || "—" }} |
-                      <span class="font-medium text-slate-900">Grupo:</span>
-                      {{ h.c_grpcur || "—" }} |
-                      <span class="font-medium text-slate-900">Horario:</span>
-                      {{ h.horarios || "—" }} |
-                      <span class="font-medium text-slate-900">Modalidad:</span>
-                      {{
-                        h.modalidad == "pre"
-                          ? "Presencial"
-                          : h.modalidad == "vir"
-                          ? "Virtual"
-                          : h.modalidad || "—"
-                      }}
-                      |
-                      <span class="font-medium text-slate-900">Aula:</span>
-                      {{ h.aula || "—" }} |
-                      <span class="font-medium text-slate-900"
-                        >Total horas:</span
-                      >
-                      {{ h.n_horas || 0 }}
-                    </li>
-                  </ul>
-                </div>
+                      {{ docente.horarios?.length || 0 }}
+                    </span>
+                  </button>
 
-                <ng-template #sinHorarios>
-                  <p class="italic text-slate-500 text-sm">
-                    No tiene horarios asignados.
-                  </p>
-                </ng-template>
-              </td>
-            </tr>
-            } }
+                  <!-- Calendario -->
+                  <button
+                    type="button"
+                    (click)="clickCalendarioDocente(docente.id)"
+                    class="text-slate-700 hover:text-slate-900 transition-colors inline-flex items-center"
+                    title="Ver calendario del docente"
+                  >
+                    <i class="fa-solid fa-calendar-days fa-xl"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- EXPANDIBLE DETALLE -->
+              @if (docente.expanded) {
+                <tr>
+                  <td
+                    colspan="7"
+                    class="bg-slate-50 px-6 py-4 border-t border-b"
+                  >
+                    <p
+                      class="text-base font-semibold text-slate-800 underline mb-3"
+                    >
+                      🗓️ Horarios Asignados:
+                    </p>
+
+                    <div *ngIf="docente.horarios?.length; else sinHorarios">
+                      <ul class="space-y-1">
+                        <li
+                          *ngFor="
+                            let h of agruparHorariosVisual(
+                              docente.horarios || []
+                            )
+                          "
+                          class="text-sm text-slate-700 px-3 py-1 rounded border border-slate-200 bg-white shadow-sm"
+                        >
+                          <span class="font-medium text-slate-900"
+                            >Facultad:</span
+                          >
+                          {{ h.c_codfac || "—" }} |
+                          <span class="font-medium text-slate-900"
+                            >Especialidad:</span
+                          >
+                          {{ h.c_codesp || "—" }} |
+                          <span class="font-medium text-slate-900">Curso:</span>
+                          {{ h.c_codcur || "—" }} - {{ h.c_nomcur || "—" }} |
+                          <span class="font-medium text-slate-900">Grupo:</span>
+                          {{ h.c_grpcur || "—" }} |
+                          <span class="font-medium text-slate-900"
+                            >Horario:</span
+                          >
+                          {{ h.horarios || "—" }} |
+                          <span class="font-medium text-slate-900"
+                            >Modalidad:</span
+                          >
+                          {{
+                            h.modalidad == "pre"
+                              ? "Presencial"
+                              : h.modalidad == "vir"
+                                ? "Virtual"
+                                : h.modalidad || "—"
+                          }}
+                          |
+                          <span class="font-medium text-slate-900">Aula:</span>
+                          {{ h.aula || "—" }} |
+                          <span class="font-medium text-slate-900"
+                            >Total horas:</span
+                          >
+                          {{ h.n_horas || 0 }}
+                        </li>
+                      </ul>
+                    </div>
+
+                    <ng-template #sinHorarios>
+                      <p class="italic text-slate-500 text-sm">
+                        No tiene horarios asignados.
+                      </p>
+                    </ng-template>
+                  </td>
+                </tr>
+              }
+            }
           </tbody>
         </nz-table>
       </div>

@@ -34,6 +34,7 @@ import { ContadorComponent } from './contador/contador.component';
 import { VacantesComponent } from './vacantes/vacantes.component';
 import { SincronizarComponent } from './sincronizar/sincronizar.component';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { CrearMoodleComponent } from './crear-moodle/crear-moodle.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
     ContadorComponent,
     VacantesComponent,
     SincronizarComponent,
+    CrearMoodleComponent,
   ],
   imports: [
     PipesModule,

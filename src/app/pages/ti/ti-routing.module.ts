@@ -7,8 +7,8 @@ import { VerTurnoComponent } from './ver-turno/ver-turno.component';
 import { GenerarCursosComponent } from './generar-cursos/generar-cursos.component';
 import { AsignarHorarioComponent } from './asignar-horario/asignar-horario.component';
 import { ContadorComponent } from './contador/contador.component';
-import { VacantesComponent } from './vacantes/vacantes.component';
 import { SincronizarComponent } from './sincronizar/sincronizar.component';
+import { CrearMoodleComponent } from './crear-moodle/crear-moodle.component';
 
 const routes: Routes = [
   {
@@ -21,7 +21,7 @@ const routes: Routes = [
       { path: 'generar/:turno_id', component: GenerarCursosComponent },
       { path: 'asignar/:turno_id', component: AsignarHorarioComponent },
       { path: 'generar', component: ContadorComponent },
-      { path: 'vacantes', component: VacantesComponent },
+      { path: 'vacantes', component: CrearMoodleComponent },
       { path: 'sinc', component: SincronizarComponent },
     ],
   },

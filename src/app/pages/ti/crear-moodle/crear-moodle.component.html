@@ -1,0 +1,450 @@
+<!-- src/app/pages/ti/crear-moodle/crear-moodle.component.html -->
+<div class="max-w-[100%] mx-auto">
+  <div
+    class="relative flex flex-col w-full bg-white rounded-2xl shadow-md ring-1 ring-slate-200 px-8 py-6"
+  >
+    <!-- Header + Search -->
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3"
+    >
+      <div>
+        <h3 class="text-2xl font-semibold text-slate-900">Crear Moodle</h3>
+        <p class="text-slate-500">
+          Selecciona courseid negativos y asigna una plantilla
+          (origin_courseid). categoryid destino: 1083.
+        </p>
+      </div>
+
+      <div class="w-full sm:w-80">
+        <input
+          type="text"
+          placeholder="Buscar por CourseID, Curso o Código..."
+          [(ngModel)]="search"
+          (ngModelChange)="filtrar()"
+          class="w-full px-3 py-2 rounded-xl ring-1 ring-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
+      </div>
+    </div>
+
+    <!-- Toolbar filtros -->
+    <div
+      class="flex flex-col gap-3 p-3 bg-slate-50/60 rounded-xl ring-1 ring-slate-200/70 mb-4"
+    >
+      <div class="grid grid-cols-1 sm:grid-cols-6 gap-2">
+        <!-- Periodo -->
+        <select
+          [(ngModel)]="selectedPeriodo"
+          (ngModelChange)="onPeriodoChange()"
+          class="w-full px-3 py-2 rounded-xl ring-1 ring-slate-200 bg-white"
+        >
+          <option *ngFor="let p of periodos" [ngValue]="p.value">
+            {{ p.label }}
+          </option>
+        </select>
+
+        <!-- Facultad -->
+        <select
+          [(ngModel)]="selectedFacultad"
+          (ngModelChange)="onFacultadChange()"
+          class="w-full px-3 py-2 rounded-xl ring-1 ring-slate-200 bg-white"
+        >
+          <option *ngFor="let f of facultades" [value]="f.value">
+            {{ f.label }}
+          </option>
+        </select>
+
+        <!-- Especialidad -->
+        <select
+          [(ngModel)]="selectedEspecialidad"
+          (ngModelChange)="onEspecialidadChange()"
+          [disabled]="!selectedFacultad"
+          class="w-full px-3 py-2 rounded-xl ring-1 ring-slate-200 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <option value="">Todas las especialidades</option>
+          <option *ngFor="let e of especialidadesFiltradas" [value]="e.codesp">
+            {{ e.codesp }} - {{ e.nomesp }}
+          </option>
+        </select>
+
+        <!-- Ciclo -->
+        <select
+          [(ngModel)]="selectedCiclo"
+          (ngModelChange)="onCicloChange()"
+          class="w-full px-3 py-2 rounded-xl ring-1 ring-slate-200 bg-white"
+        >
+          <option value="">Todos los ciclos</option>
+          <option *ngFor="let c of ciclos" [value]="c">Ciclo {{ c }}</option>
+        </select>
+
+        <!-- Solo negativos -->
+        <label
+          class="flex items-center gap-2 px-3 py-2 rounded-xl ring-1 ring-slate-200 bg-white cursor-pointer select-none"
+        >
+          <input
+            type="checkbox"
+            [(ngModel)]="showOnlyNegativos"
+            (ngModelChange)="onToggleSoloNegativos()"
+          />
+          <span class="text-slate-700 text-sm">Solo courseid negativos</span>
+        </label>
+
+        <!-- ✅ Permitir positivos (modo prueba) -->
+        <label
+          class="flex items-center gap-2 px-3 py-2 rounded-xl ring-1 ring-amber-200 bg-amber-50 cursor-pointer select-none"
+        >
+          <input
+            type="checkbox"
+            [(ngModel)]="permitirPositivos"
+            (ngModelChange)="onTogglePermitirPositivos()"
+          />
+          <span class="text-amber-800 text-sm font-semibold">
+            Permitir positivos (modo prueba)
+          </span>
+        </label>
+      </div>
+
+      <!-- Wizard steps -->
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-1"
+      >
+        <div class="flex items-center gap-2">
+          <div
+            class="px-3 py-1 rounded-full text-sm"
+            [class]="
+              step === 1
+                ? 'bg-blue-600 text-white'
+                : 'bg-slate-200 text-slate-700'
+            "
+          >
+            Paso 1: Seleccionar
+          </div>
+          <div
+            class="px-3 py-1 rounded-full text-sm"
+            [class]="
+              step === 2
+                ? 'bg-blue-600 text-white'
+                : 'bg-slate-200 text-slate-700'
+            "
+          >
+            Paso 2: Plantillas
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 justify-end">
+          <span class="text-slate-600 text-sm">
+            Seleccionados: <b>{{ selectedIds.size }}</b>
+          </span>
+
+          <button
+            *ngIf="step === 1"
+            class="px-4 py-2 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition"
+            (click)="goStep2()"
+          >
+            Siguiente
+          </button>
+
+          <button
+            *ngIf="step === 2"
+            class="px-4 py-2 bg-slate-200 text-slate-800 rounded-xl hover:bg-slate-300 transition"
+            (click)="backStep1()"
+          >
+            Volver
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1 -->
+    <div *ngIf="step === 1" class="w-full overflow-x-auto rounded-xl">
+      <div class="min-w-[1100px] overflow-x-auto px-4">
+        <table
+          class="w-full min-w-[1000px] border border-slate-200 rounded-xl overflow-hidden"
+        >
+          <thead class="bg-slate-50">
+            <tr class="text-left">
+              <th
+                class="p-3 w-[70px] text-center font-semibold text-slate-900 border-b border-slate-200"
+              >
+                <input
+                  type="checkbox"
+                  [checked]="allChecked"
+                  [indeterminate]="indeterminate"
+                  (change)="onToggleAll($event)"
+                />
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                courseid
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                Curso
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                Código
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                Facultad
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                Especialidad
+              </th>
+              <th
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+              >
+                Ciclo
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              *ngFor="let item of contadorFiltrado"
+              class="hover:bg-slate-50 border-b border-slate-200"
+            >
+              <td class="p-3 text-center">
+                <input
+                  type="checkbox"
+                  [checked]="isSelected(item.__id)"
+                  [disabled]="item.__id >= 0 && !permitirPositivos"
+                  (change)="onToggleOne(item.__id, $event)"
+                />
+              </td>
+              <td class="p-3">
+                <span
+                  class="font-medium"
+                  [class]="item.__isNeg ? 'text-slate-900' : 'text-slate-400'"
+                >
+                  {{ item.courseid_temp }}
+                </span>
+                <span *ngIf="!item.__isNeg" class="ml-2 text-xs text-slate-400"
+                  >(no aplica)</span
+                >
+              </td>
+
+              <td class="p-3">
+                <div
+                  class="max-w-[420px] whitespace-normal break-words leading-5"
+                  [class]="item.__isNeg ? 'text-slate-900' : 'text-slate-400'"
+                >
+                  {{ item.c_nomcur }}
+                </div>
+              </td>
+
+              <td
+                class="p-3"
+                [class]="item.__isNeg ? 'text-slate-900' : 'text-slate-400'"
+              >
+                {{ item.c_codcur }}
+              </td>
+              <td
+                class="p-3"
+                [class]="item.__isNeg ? 'text-slate-900' : 'text-slate-400'"
+              >
+                {{ item.c_codfac }}
+              </td>
+              <td
+                class="p-3"
+                [class]="item.__isNeg ? 'text-slate-900' : 'text-slate-400'"
+              >
+                {{ item.c_codesp }}
+              </td>
+              <td
+                class="p-3"
+                [class]="item.__isNeg ? 'text-slate-900' : 'text-slate-400'"
+              >
+                {{ item.n_ciclo }}
+              </td>
+            </tr>
+
+            <tr *ngIf="contadorFiltrado.length === 0">
+              <td colspan="7" class="p-6 text-center text-slate-500">
+                No hay resultados con los filtros seleccionados.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div *ngIf="step === 2" class="flex flex-col gap-4">
+      <!-- Plantilla por defecto -->
+      <div class="px-4">
+        <div class="p-3 bg-slate-50/60 rounded-xl ring-1 ring-slate-200/70">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2">
+                <div class="text-slate-900 font-semibold">
+                  Plantilla por defecto
+                </div>
+
+                <span
+                  *ngIf="isLoadingPlantillas"
+                  class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700"
+                >
+                  Cargando...
+                </span>
+
+                <span
+                  *ngIf="!isLoadingPlantillas && plantillas.length"
+                  class="text-xs px-2 py-1 rounded-full bg-slate-200 text-slate-700"
+                >
+                  {{ plantillas.length }} plantillas
+                </span>
+              </div>
+
+              <nz-select
+                nzShowSearch
+                nzPlaceHolder="Buscar plantilla..."
+                [(ngModel)]="plantillaDefault"
+                class="w-full"
+                [nzDisabled]="isLoadingPlantillas || !plantillas.length"
+              >
+                <nz-option
+                  *ngFor="let p of plantillas"
+                  [nzValue]="p.id"
+                  [nzLabel]="p.label"
+                ></nz-option>
+              </nz-select>
+
+              <div *ngIf="plantillasError" class="text-xs text-rose-600 mt-1">
+                {{ plantillasError }}
+              </div>
+
+              <div class="text-xs text-slate-500 mt-1">
+                Destino (categoryid): <b>1083</b>
+              </div>
+            </div>
+
+            <button
+              class="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              (click)="aplicarPlantillaDefault()"
+              [disabled]="isLoadingPlantillas || !plantillas.length"
+            >
+              Aplicar a seleccionados
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla seleccionados + plantilla por fila -->
+      <div class="w-full overflow-x-auto rounded-xl">
+        <div class="min-w-[1100px] overflow-x-auto px-4">
+          <table
+            class="w-full min-w-[1000px] border border-slate-200 rounded-xl overflow-hidden"
+          >
+            <thead class="bg-slate-50">
+              <tr class="text-left">
+                <th
+                  class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+                >
+                  negative_courseid
+                </th>
+                <th
+                  class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+                >
+                  Curso
+                </th>
+                <th
+                  class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+                >
+                  origin_courseid (plantilla)
+                </th>
+                <th
+                  class="p-3 w-[140px] text-center font-semibold text-slate-900 border-b border-slate-200"
+                >
+                  Estado
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr
+                *ngFor="let item of selectedItems"
+                class="hover:bg-slate-50 border-b border-slate-200"
+              >
+                <td class="p-3 font-medium text-slate-900">
+                  {{ item.courseid_temp }}
+                </td>
+
+                <td class="p-3">
+                  <div
+                    class="max-w-[520px] whitespace-normal break-words leading-5 text-slate-900"
+                  >
+                    {{ item.c_nomcur }}
+                  </div>
+                  <div class="text-xs text-slate-500 mt-1">
+                    {{ item.c_codfac }} / {{ item.c_codesp }} - Ciclo
+                    {{ item.n_ciclo }}
+                  </div>
+                </td>
+
+                <td class="p-3">
+                  <nz-select
+                    nzShowSearch
+                    nzPlaceHolder="Buscar plantilla..."
+                    [ngModel]="plantillaDe(item.__id)"
+                    (ngModelChange)="setPlantilla(item.__id, $event)"
+                    class="w-full"
+                    [nzDisabled]="isLoadingPlantillas || !plantillas.length"
+                  >
+                    <nz-option
+                      *ngFor="let p of plantillas"
+                      [nzValue]="p.id"
+                      [nzLabel]="p.label"
+                    ></nz-option>
+                  </nz-select>
+                </td>
+
+                <td class="p-3 text-center">
+                  <span
+                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold"
+                    [class]="badgeClass(item.__id)"
+                  >
+                    {{ labelEstado(item.__id) }}
+                  </span>
+                </td>
+              </tr>
+
+              <tr *ngIf="selectedItems.length === 0">
+                <td colspan="4" class="p-6 text-center text-slate-500">
+                  No hay seleccionados. Regresa al Paso 1.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-4 pb-1">
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+        >
+          <div class="text-slate-600 text-sm">
+            Listos: <b>{{ readyCount }}</b> / <b>{{ selectedItems.length }}</b>
+          </div>
+
+          <button
+            class="w-full sm:w-auto px-5 py-2 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            (click)="generar()"
+            [disabled]="
+              isLoadingPlantillas || !plantillas.length || !selectedItems.length
+            "
+          >
+            Crear (masivo)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

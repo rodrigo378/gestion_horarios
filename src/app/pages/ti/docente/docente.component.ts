@@ -1,8 +1,32 @@
+// docente.component.ts
 import { Component, OnInit } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
-import { HR_Docente } from '../../../interfaces/hr/hr_docente';
-import { DocenteService } from '../../../services/docente.service';
-import { AlertService } from '../../../services/alert.service';
+import { SincronizarService } from '../../../services/sincronizar.service';
+
+type Estado = 'BIEN' | 'MAL' | 'SIN_MARCACIONES';
+
+type DocenteInfo = {
+  c_dni: string;
+  c_nombres: string;
+  c_apepat: string;
+  c_apemat: string;
+};
+
+type ComparacionDocente = {
+  docente: DocenteInfo;
+  estado: Estado;
+  resumen: {
+    sesionesHorario: number;
+    marcaciones: number;
+    iguales: number;
+    noDeberianEstar: number;
+    faltanEnMarcacion: number;
+  };
+  detalle: {
+    iguales: any[];
+    noDeberianEstar: any[];
+    faltanEnMarcacion: any[];
+  };
+};
 
 @Component({
   selector: 'app-docente',
@@ -11,149 +35,71 @@ import { AlertService } from '../../../services/alert.service';
   styleUrl: './docente.component.css',
 })
 export class DocenteComponent implements OnInit {
-  editCache: { [key: string]: { edit: boolean; data: HR_Docente } } = {};
-  listOfData: HR_Docente[] = [];
-  searchValue: string = '';
-  datosFiltrados: HR_Docente[] = [];
-  selectedFacultadFilter: '' | 'S' | 'E' = '';
+  loading = false;
 
-  listOfColumn = [
-    {
-      title: 'id',
-      nzWidth: '20%',
-      compare: (a: HR_Docente, b: HR_Docente) => a.id - b.id,
-      priority: false,
-    },
-    {
-      title: 'dni',
-      compare: (a: HR_Docente, b: HR_Docente) =>
-        a.c_dnidoc.localeCompare(b.c_dnidoc),
-      priority: false,
-    },
-    {
-      title: 'Nombre',
-      compare: (a: HR_Docente, b: HR_Docente) =>
-        a.c_nomdoc.localeCompare(b.c_nomdoc),
-      priority: 3,
-    },
-    {
-      title: 'Facultad',
-      compare: (a: HR_Docente, b: HR_Docente) =>
-        a.c_codfac.localeCompare(b.c_codfac),
-      priority: 3,
-    },
-    {
-      title: 'H. Min',
-      compare: (a: HR_Docente, b: HR_Docente) => a.h_min - b.h_min,
-      priority: 2,
-    },
-    {
-      title: 'H. Max',
-      compare: (a: HR_Docente, b: HR_Docente) => a.h_max - b.h_max,
-      priority: 1,
-    },
-    {
-      title: 'H. Asignadas',
-      compare: (a: HR_Docente, b: HR_Docente) => a.h_total - b.h_total,
-      priority: 1,
-    },
-    {
-      title: 'Tipo',
-      compare: (a: HR_Docente, b: HR_Docente) => a.tipo - b.tipo,
-      priority: 1,
-    },
-    {
-      title: 'Accion',
-      compare: (a: HR_Docente, b: HR_Docente) => a.tipo - b.tipo,
-      priority: 1,
-    },
-  ];
+  data: ComparacionDocente[] = [];
+  view: ComparacionDocente[] = [];
 
-  constructor(
-    private docenteService: DocenteService,
-    private alertService: AlertService
-  ) {}
+  // filtros
+  search = '';
+  estado: 'TODOS' | Estado = 'TODOS';
+
+  // modal
+  isModalVisible = false;
+  selected: ComparacionDocente | null = null;
+
+  constructor(private sinc: SincronizarService) {}
 
   ngOnInit(): void {
-    console.log('ti/docente');
-
-    this.getDocente();
-    this.updateEditCache();
+    this.fetch();
   }
 
-  getDocente() {
-    this.docenteService.getDocentes().subscribe((data) => {
-      this.listOfData = data;
-      this.datosFiltrados = [...this.listOfData];
-      this.updateEditCache();
-      this.aplicarFiltros();
-    });
-  }
-
-  buscar(): void {
-    this.aplicarFiltros();
-  }
-
-  onChangeFacultad(value: '' | 'S' | 'E') {
-    this.selectedFacultadFilter = value;
-    this.aplicarFiltros();
-  }
-
-  private aplicarFiltros() {
-    const filtroTxt = (this.searchValue ?? '').trim().toLowerCase();
-    const fac = this.selectedFacultadFilter;
-
-    this.datosFiltrados = this.listOfData.filter((item) => {
-      const matchTexto =
-        !filtroTxt ||
-        item.c_nomdoc.toLowerCase().includes(filtroTxt) ||
-        item.c_dnidoc.includes(filtroTxt);
-
-      const matchFac = !fac || item.c_codfac === fac;
-
-      return matchTexto && matchFac;
-    });
-  }
-
-  startEdit(id: number): void {
-    this.editCache[id].edit = true;
-  }
-
-  cancelEdit(id: number): void {
-    const index = this.listOfData.findIndex((item) => item.id === id);
-    this.editCache[id] = {
-      data: { ...this.listOfData[index] },
-      edit: false,
-    };
-  }
-
-  saveEdit(id: number): void {
-    this.alertService.iniciarSolicitud();
-    const index = this.listOfData.findIndex((item) => item.id === id);
-
-    this.docenteService.updateDocente(this.editCache[id].data).subscribe({
+  fetch(): void {
+    this.loading = true;
+    this.sinc.comparacionDocentes().subscribe({
       next: (res: any) => {
-        Object.assign(this.listOfData[index], this.editCache[id].data);
-        console.log('res => ', res);
-        this.alertService.finalizarSolicitud();
+        this.data = Array.isArray(res) ? (res as ComparacionDocente[]) : [];
+        this.applyFilters();
+        this.loading = false;
       },
-      error: (er: HttpErrorResponse) => {
-        console.log('error => ', er);
-        this.alertService.finalizarSolicitud();
-      },
+      error: () => (this.loading = false),
     });
-
-    console.log('new data => ', this.editCache[id].data);
-
-    this.editCache[id].edit = false;
   }
 
-  updateEditCache(): void {
-    this.listOfData.forEach((item) => {
-      this.editCache[item.id] = {
-        edit: false,
-        data: { ...item },
-      };
+  applyFilters(): void {
+    const q = this.search.trim().toLowerCase();
+
+    this.view = this.data.filter((x) => {
+      const nombre =
+        `${x.docente.c_nombres} ${x.docente.c_apepat} ${x.docente.c_apemat}`.toLowerCase();
+      const dni = x.docente.c_dni.toLowerCase();
+      const matchText = !q || nombre.includes(q) || dni.includes(q);
+
+      const matchEstado = this.estado === 'TODOS' || x.estado === this.estado;
+
+      return matchText && matchEstado;
     });
+  }
+
+  onSearchChange(): void {
+    this.applyFilters();
+  }
+
+  onEstadoChange(): void {
+    this.applyFilters();
+  }
+
+  openDetail(row: ComparacionDocente): void {
+    this.selected = row;
+    this.isModalVisible = true;
+  }
+
+  closeModal(): void {
+    this.isModalVisible = false;
+    this.selected = null;
+  }
+
+  nombreCompleto(d: DocenteInfo): string {
+    return `${d.c_nombres} ${d.c_apepat} ${d.c_apemat}`.trim();
   }
 }
