@@ -1,1 +1,303 @@
-<p>asistencia works!</p>
+<!-- asistencia.component.html (COMPLETO / ACTUALIZADO + BIENVENIDA) -->
+
+<div class="topbar">
+  <div class="title">GESTIÓN ACADÉMICA - ASISTENCIA DE ALUMNOS</div>
+</div>
+
+<div class="page">
+  <!-- ✅ bienvenida docente -->
+  <div class="welcome" *ngIf="docenteNombreCompleto">
+    <div class="welcome-title">
+      Bienvenido(a), <span class="tag">Docente</span>
+    </div>
+
+    <div class="welcome-name">
+      {{ docenteNombreCompleto }}
+    </div>
+
+    <div class="welcome-sub text-[18px]">
+      Aquí registrarás la asistencia de los curso de practica
+    </div>
+  </div>
+
+  <!-- filtros -->
+  <div class="filters">
+    <div class="f-item">
+      <label>Seleccionar Modalidad:</label>
+      <select [(ngModel)]="modalidadSel" class="control">
+        <option *ngFor="let m of modalidades" [ngValue]="m">{{ m }}</option>
+      </select>
+    </div>
+
+    <div class="f-item">
+      <label>Seleccionar Periodo:</label>
+      <select [(ngModel)]="periodoSel" class="control">
+        <option *ngFor="let p of periodos" [ngValue]="p">{{ p }}</option>
+      </select>
+    </div>
+
+    <div class="f-item btn-wrap">
+      <button class="btn btn-primary" (click)="verCursos()">Ver Cursos</button>
+    </div>
+  </div>
+
+  <!-- tabla cursos -->
+  <div class="card" *ngIf="cursosVisible">
+    <div class="card-title">Carga Académica - Asistencia</div>
+
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Cod Curso</th>
+            <th>Nombre</th>
+            <th>Plan</th>
+            <th>Sede</th>
+            <th>Espec</th>
+            <th>Ciclo</th>
+            <th>Sección</th>
+            <th style="width: 320px">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngIf="loadingCursos">
+            <td colspan="8" class="muted">Cargando...</td>
+          </tr>
+
+          <tr *ngFor="let c of cursos">
+            <td class="nowrap">{{ c.codCurso }}</td>
+            <td class="td-name">{{ c.nombre }}</td>
+            <td class="nowrap">{{ c.plan }}</td>
+            <td class="nowrap">{{ c.sede }}</td>
+            <td class="nowrap">{{ c.espec }}</td>
+            <td class="nowrap">{{ c.ciclo }}</td>
+            <td class="nowrap">{{ c.seccion }}</td>
+
+            <td class="actions">
+              <button class="btn btn-blue" (click)="abrirModalAsistencia(c)">
+                Registrar Asistencia
+              </button>
+              <button class="btn btn-green" disabled>Plantilla</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" *ngIf="modalOpen" (click)="onOverlayClick($event)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">{{ modalTitle }}</div>
+        <button class="icon-btn" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- cabecera -->
+        <div class="form-grid">
+          <div class="full">
+            <label>Nombre de Curso</label>
+            <input class="control" [value]="cursoSel?.nombre || ''" disabled />
+          </div>
+
+          <div>
+            <label>Código de Curso</label>
+            <input
+              class="control"
+              [value]="cursoSel?.codCurso || ''"
+              disabled
+            />
+          </div>
+
+          <div>
+            <label>Sección</label>
+            <input
+              class="control"
+              [value]="(cursoSel?.seccion || '').split(',')[0] || ''"
+              disabled
+            />
+          </div>
+
+          <div>
+            <label>Plan</label>
+            <input class="control" [value]="cursoSel?.plan || ''" disabled />
+          </div>
+
+          <div>
+            <label>Periodo</label>
+            <input class="control" [value]="periodoSel" disabled />
+          </div>
+
+          <!-- ✅ SE PUEDE CAMBIAR FECHA -->
+          <div>
+            <label>
+              Fecha <span class="req">*</span>
+              <!-- <span class="muted" *ngIf="fechaServidor">
+                Hoy: {{ fechaServidor }}
+              </span> -->
+            </label>
+
+            <input
+              class="control"
+              [class.has-registro]="fechaTieneRegistro"
+              type="date"
+              [(ngModel)]="fechaSel"
+              (ngModelChange)="onFechaChange()"
+            />
+          </div>
+
+          <!-- ✅ HORARIOS AGRUPADOS -->
+          <div class="full" *ngIf="horariosVisible.length > 0">
+            <div class="horario-box">
+              <div class="horario-title">
+                Horarios del curso (solo los de tu DNI):
+                <strong>{{ docenteDni }}</strong>
+              </div>
+
+              <div class="horario-sub">
+                Secciones habilitadas (según fecha seleccionada):
+                <strong>{{ seccionesHabilitadasHoyTexto || "—" }}</strong>
+              </div>
+
+              <div class="table-wrap">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th style="width: 120px">Sección</th>
+                      <th style="width: 120px">Día</th>
+                      <th style="width: 160px">Hora</th>
+                      <th style="width: 80px">Tipo</th>
+                      <th>Docente</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr *ngFor="let h of horariosVisible">
+                      <td class="nowrap">{{ h.c_grpcur }}</td>
+                      <td class="nowrap">{{ h.diaTexto }}</td>
+                      <td class="nowrap">
+                        {{ h.hora_inicio }} - {{ h.hora_fin }}
+                      </td>
+                      <td class="nowrap">{{ h.c_tipo }}</td>
+                      <td class="td-name">{{ h.docente }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="muted horario-note">
+                Nota: Si en el mismo día/hora aparecen M1 y M2 juntos, se
+                muestran en una sola línea (M1, M2).
+              </div>
+            </div>
+          </div>
+
+          <div class="full">
+            <label>Indicador de Logro / Tema <span class="req">*</span></label>
+            <input
+              class="control"
+              [(ngModel)]="indicador"
+              placeholder="Escribe el tema..."
+            />
+          </div>
+        </div>
+
+        <!-- header tabla -->
+        <div class="table-head">
+          <div class="left">
+            <span>Buscar:</span>
+            <input
+              class="control control-sm"
+              [(ngModel)]="buscarTexto"
+              placeholder="Código, estudiante o sección..."
+            />
+          </div>
+
+          <div class="right checkall">
+            <input
+              type="checkbox"
+              [checked]="checkAll"
+              [indeterminate]="indeterminate"
+              (change)="onToggleAll($event)"
+            />
+            <span>Seleccionar todo</span>
+          </div>
+        </div>
+
+        <!-- tabla estudiantes -->
+        <div class="table-wrap">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th style="width: 48px">#</th>
+                <th style="width: 110px">Código</th>
+                <th style="width: 110px">Curso</th>
+                <th style="width: 80px">Sec</th>
+                <th style="width: 80px">Esp</th>
+                <th>Estudiante</th>
+                <th style="width: 240px">Asistencia</th>
+                <th style="width: 60px; text-align: center"></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr
+                *ngFor="let e of estudiantesFiltrados; let i = index"
+                class="row-click"
+                [class.row-active]="e.checked"
+                (click)="toggleRowByClick(e, $event)"
+              >
+                <td class="nowrap">{{ i + 1 }}</td>
+                <td class="nowrap">{{ e.codigo }}</td>
+                <td class="nowrap">{{ e.curso }}</td>
+                <td class="nowrap">{{ e.sec }}</td>
+                <td class="nowrap">{{ e.esp }}</td>
+
+                <td class="td-student nowrap">{{ e.estudiante }}</td>
+
+                <td (click)="$event.stopPropagation()">
+                  <ng-container *ngIf="e.checked; else emptyState">
+                    <select
+                      class="control control-sm select-small"
+                      [(ngModel)]="e.estado"
+                    >
+                      <option [ngValue]="null">Seleccionar...</option>
+                      <option
+                        *ngFor="let s of estadosAsistencia"
+                        [ngValue]="s.value"
+                      >
+                        {{ s.label }}
+                      </option>
+                    </select>
+                  </ng-container>
+
+                  <ng-template #emptyState>
+                    <span class="muted">—</span>
+                  </ng-template>
+                </td>
+
+                <td class="center" (click)="$event.stopPropagation()">
+                  <input
+                    type="checkbox"
+                    [checked]="e.checked"
+                    (click)="$event.stopPropagation()"
+                    (change)="onToggleRowCheckbox(e, $event)"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-primary" (click)="guardarAsistencia()">
+            Guardar
+          </button>
+          <button class="btn" (click)="cerrarModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

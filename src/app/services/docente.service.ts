@@ -17,7 +17,7 @@ export class DocenteService {
     curso?: boolean,
     aula?: boolean,
     c_codfac?: string,
-    c_codesp?: string
+    c_codesp?: string,
   ): Observable<HR_Docente[]> {
     let params = new HttpParams();
 
@@ -54,5 +54,54 @@ export class DocenteService {
     return this.http.put(`${this.apiUrl}/${docente.id}`, docente, {
       withCredentials: true,
     });
+  }
+
+  verificarDocente() {
+    return this.http.get(`${this.apiUrl}/verificar`, {
+      withCredentials: true,
+      observe: 'response', // ✅ para leer headers
+    });
+  }
+
+  // Obtener cursos del docente (sin tipos ni DTO)
+  getCursosDocentes(c_dnidoc: string, n_codper: number, c_codmod: number) {
+    return this.http.post(
+      `${this.apiUrl}/cursos`,
+      { c_dnidoc, n_codper, c_codmod },
+      { withCredentials: true },
+    );
+  }
+
+  // Obtener matriculados por courseid (sin tipos)
+  matriculados(courseid: number) {
+    return this.http.post(
+      `${this.apiUrl}/matriculados`,
+      { courseid },
+      { withCredentials: true },
+    );
+  }
+  // Obtener fechas de asistencia por courseid
+  getFechasAsistencia(courseid: number) {
+    return this.http.post(
+      `${this.apiUrl}/asistencias/fechas`,
+      { courseid },
+      { withCredentials: true },
+    );
+  }
+
+  getHorarios(courseid: number) {
+    return this.http.post(
+      `${this.apiUrl}/asistencias/horarios`,
+      { courseid },
+      { withCredentials: true },
+    );
+  }
+  // Obtener detalle de asistencias por ids_asistencias[]
+  getDetalleAsistencias(ids_asistencias: number[]) {
+    return this.http.post(
+      `${this.apiUrl}/asistencias/detalle`,
+      { ids_asistencias },
+      { withCredentials: true },
+    );
   }
 }

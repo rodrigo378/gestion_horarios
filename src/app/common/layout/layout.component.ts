@@ -4,6 +4,8 @@ import { NavigationEnd, Router } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { IamMenuModule, IamMenuService } from '../../services/iam_menu.service';
 import { AlertService } from '../../services/alert.service';
+import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environment/environment';
 
 @Component({
   selector: 'app-layout',
@@ -22,13 +24,15 @@ export class LayoutComponent implements OnInit {
 
   modules: IamMenuModule[] = [];
   loadingMenu = false;
+  private apiUrl = `${environment.api}`;
 
   private routerSubscription!: Subscription;
 
   constructor(
     private router: Router,
     private iamMenu: IamMenuService,
-    public alertService: AlertService
+    public alertService: AlertService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -45,7 +49,7 @@ export class LayoutComponent implements OnInit {
       next: (mods) => {
         // ordena módulos por "order" y los deja listos para pintar
         this.modules = [...mods].sort(
-          (a, b) => (a.order ?? 99999) - (b.order ?? 99999)
+          (a, b) => (a.order ?? 99999) - (b.order ?? 99999),
         );
       },
       error: (err) => {
@@ -219,12 +223,19 @@ export class LayoutComponent implements OnInit {
   }
 
   logout() {
-    fetch(`localhost/core/auth/logout`, {
-      method: 'POST',
-      credentials: 'include',
-    }).finally(() => (window.location.href = '/login'));
-  }
+    const url = `${environment.api}/auth/logout`; // ajusta si tu ruta es distinta
 
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+
+    // para que las cookies viajen
+    form.enctype = 'application/x-www-form-urlencoded';
+
+    document.body.appendChild(form);
+    form.submit();
+    form.remove();
+  }
   /** trackBy performance */
   trackByKey(_: number, obj: any) {
     return obj?.key || obj?.path || obj?.label || _;
