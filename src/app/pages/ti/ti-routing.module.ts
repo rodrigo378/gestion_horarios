@@ -20,7 +20,7 @@ const routes: Routes = [
       { path: 'turno', component: VerTurnoComponent },
       { path: 'generar/:turno_id', component: GenerarCursosComponent },
       { path: 'asignar/:turno_id', component: AsignarHorarioComponent },
-      { path: 'generar', component: ContadorComponent },
+      { path: 'contador', component: ContadorComponent },
       { path: 'vacantes', component: CrearMoodleComponent },
       { path: 'sinc', component: SincronizarComponent },
     ],

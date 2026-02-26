@@ -15,7 +15,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     loadChildren: () =>
       import('./pages/dashboard/dashboard.module').then(
-        (m) => m.DashboardModule
+        (m) => m.DashboardModule,
       ),
   },
   {
@@ -29,6 +29,12 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     loadChildren: () =>
       import('./pages/director/director.module').then((m) => m.DirectorModule),
+  },
+  {
+    path: 'doc',
+    canActivate: [AuthGuard],
+    loadChildren: () =>
+      import('./pages/docente/docente.module').then((m) => m.DocenteModule),
   },
   { path: '', redirectTo: 'coa/turno', pathMatch: 'full' },
   { path: '**', redirectTo: 'coa/turno' },
