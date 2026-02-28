@@ -1,8 +1,10 @@
-// asistencia.component.ts (COMPLETO / ACTUALIZADO + BIENVENIDA + HORARIOS AGRUPADOS + OCULTAR POR SECCIÓN)
+// asistencia.component.ts (COMPLETO / ACTUALIZADO + BIENVENIDA + HORARIOS AGRUPADOS + OCULTAR POR SECCIÓN + GUARDAR BACKEND)
 
 import { Component } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { AlertService } from '../../../services/alert.service';
 import { DocenteService } from '../../../services/docente.service';
+import { SiguService } from '../../../services/sigu.service';
 
 type Modalidad = 'PRESENCIAL' | 'SEMIPRESENCIAL' | 'VIRTUAL';
 type EstadoAsistencia = 'ASISTIO' | 'TARDANZA';
@@ -26,7 +28,6 @@ interface EstudianteRow {
   estudiante: string;
   checked: boolean;
   estado?: EstadoAsistencia | null;
-  // locked ya no se usa (ahora se oculta)
 }
 
 interface HorarioRow {
@@ -43,6 +44,7 @@ interface HorarioRow {
 interface HorarioView extends HorarioRow {
   diaTexto: string;
 }
+type AsisHeader = { id_asistencia: number; c_tema: string; c_grpcur: string };
 
 @Component({
   selector: 'app-asistencia',
@@ -90,10 +92,10 @@ export class AsistenciaComponent {
     { label: 'ASISTIÓ', value: 'ASISTIO' },
     { label: 'TARDANZA', value: 'TARDANZA' },
   ];
-
+  detalleDbMap = new Map<number, Set<number>>();
   // fechas registradas
   fechasLoading = false;
-  fechasMap = new Map<string, number[]>();
+  fechasMap = new Map<string, AsisHeader[]>();
   fechaTieneRegistro = false;
 
   // courseid activo
@@ -113,6 +115,7 @@ export class AsistenciaComponent {
   constructor(
     private alert: AlertService,
     private docenteService: DocenteService,
+    private siguService: SiguService,
   ) {}
 
   private getCodMod(): number {
@@ -151,6 +154,18 @@ export class AsistenciaComponent {
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const dd = String(now.getDate()).padStart(2, '0');
     return `${now.getFullYear()}-${mm}-${dd}`;
+  }
+
+  private nowHHmmss(): string {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
+    return `${hh}:${mm}:${ss}`;
+  }
+
+  private toDbEstado(s: EstadoAsistencia): 'A' | 'T' {
+    return s === 'TARDANZA' ? 'T' : 'A';
   }
 
   // 0 domingo..6 sábado => 1 lunes..7 domingo
@@ -359,14 +374,33 @@ export class AsistenciaComponent {
   }
 
   private aplicarFechaSeleccionada() {
-    const ids = this.fechasMap.get(this.fechaSel) || [];
-    this.fechaTieneRegistro = ids.length > 0;
+    const headers = this.fechasMap.get(this.fechaSel) || [];
+    this.fechaTieneRegistro = headers.length > 0;
+
+    // 👇 sección que estás trabajando (primera del curso)
+    const c_grpcur = String(this.cursoSel?.seccion || '')
+      .split(',')[0]
+      .trim();
+
+    // ✅ auto-llenar tema si existe para esa fecha y esa sección
+    const headerDeMiSeccion = headers.find((h) => h.c_grpcur === c_grpcur);
+
+    if (headerDeMiSeccion?.c_tema) {
+      this.indicador = headerDeMiSeccion.c_tema;
+    } else {
+      // si no hay tema guardado para esa sección, no lo borres si ya estaba escribiendo
+      // (si quieres forzar limpiar, descomenta)
+      // this.indicador = '';
+    }
+
+    // ids para detalle (puede venir 1 o varios, depende si manejas M1/M2)
+    const ids = headers.map((h) => h.id_asistencia);
 
     if (ids.length > 0) {
       this.cargarDetalleAsistencias(ids);
     } else {
       // limpiar checks si no hay registro en esa fecha
-      for (const e of this.estudiantes) {
+      for (const e of this.estudiantes as any[]) {
         (e as any)._visible = (e as any)._visible !== false; // mantener visibilidad
         e.checked = false;
         e.estado = null;
@@ -409,7 +443,6 @@ export class AsistenciaComponent {
         const list = Array.isArray(data) ? data : [];
         const dni = (this.docenteDni || '').trim();
 
-        // normalizar + filtrar por docente logueado
         const rows = list
           .map((x: any) => ({
             c_grpcur: String(x?.c_grpcur ?? '').trim(),
@@ -441,7 +474,7 @@ export class AsistenciaComponent {
         }
         this.horariosDocente = Array.from(uniqMap.values());
 
-        // ✅ AGRUPAR para mostrar M1, M2 en una sola línea si coincide
+        // agrupar M1, M2
         const group = new Map<
           string,
           { base: HorarioRow; secciones: Set<string> }
@@ -489,7 +522,6 @@ export class AsistenciaComponent {
     this.seccionesHabilitadasHoyTexto = arr.join(', ');
   }
 
-  // ✅ ahora NO bloquea, OCULTA (setea _visible)
   private aplicarBloqueoPorDia() {
     if (
       !this.seccionesHabilitadasHoy ||
@@ -528,13 +560,21 @@ export class AsistenciaComponent {
         this.fechasLoading = false;
 
         const list = Array.isArray(data) ? data : [];
+
         for (const x of list) {
           const date = this.isoToYYYYMMDD(x?.d_fecha);
           const id = Number(x?.id_asistencia);
+          const tema = String(x?.c_tema ?? '').trim();
+          const grp = String(x?.c_grpcur ?? '').trim();
+
           if (!date || !Number.isFinite(id)) continue;
 
           if (!this.fechasMap.has(date)) this.fechasMap.set(date, []);
-          this.fechasMap.get(date)!.push(id);
+          this.fechasMap.get(date)!.push({
+            id_asistencia: id,
+            c_tema: tema,
+            c_grpcur: grp,
+          });
         }
 
         this.aplicarFechaSeleccionada();
@@ -551,18 +591,32 @@ export class AsistenciaComponent {
       next: (data: any) => {
         const list = Array.isArray(data) ? data : [];
 
-        const map = new Map<string, EstadoAsistencia>();
+        // ✅ reconstruir cache por id_asistencia
+        this.detalleDbMap.clear();
+
+        // map codigo -> estado (para marcar UI)
+        const mapEstado = new Map<string, EstadoAsistencia>();
+
         for (const x of list) {
-          const cod = String(x?.c_codalu ?? '').trim();
+          const id = Number(x?.id_asistencia);
+          const codStr = String(x?.c_codalu ?? '').trim();
+          const cod = Number(codStr);
           const est = String(x?.c_estado ?? '')
             .trim()
             .toUpperCase();
-          if (!cod) continue;
 
-          if (est === 'T') map.set(cod, 'TARDANZA');
-          else if (est === 'A') map.set(cod, 'ASISTIO');
+          if (Number.isFinite(id) && Number.isFinite(cod)) {
+            if (!this.detalleDbMap.has(id))
+              this.detalleDbMap.set(id, new Set());
+            this.detalleDbMap.get(id)!.add(cod);
+          }
+
+          if (!codStr) continue;
+          if (est === 'T') mapEstado.set(codStr, 'TARDANZA');
+          else if (est === 'A') mapEstado.set(codStr, 'ASISTIO');
         }
 
+        // aplicar a UI
         for (const e of this.estudiantes as any[]) {
           if (e._visible === false) {
             e.checked = false;
@@ -570,7 +624,7 @@ export class AsistenciaComponent {
             continue;
           }
 
-          const st = map.get(String(e.codigo));
+          const st = mapEstado.get(String(e.codigo));
           if (st) {
             e.checked = true;
             e.estado = st;
@@ -586,7 +640,6 @@ export class AsistenciaComponent {
         this.alert.warning('No se pudo cargar detalle de asistencia', 'Error'),
     });
   }
-
   cerrarModal() {
     this.modalOpen = false;
     this.cursoSel = null;
@@ -598,11 +651,10 @@ export class AsistenciaComponent {
     if (target.classList.contains('modal-overlay')) this.cerrarModal();
   }
 
-  // ✅ filtro + OCULTAR por _visible
   get estudiantesFiltrados(): EstudianteRow[] {
     const q = (this.buscarTexto || '').trim().toLowerCase();
 
-    let base = this.estudiantes.filter((e: any) => e._visible !== false);
+    const base = this.estudiantes.filter((e: any) => e._visible !== false);
 
     if (!q) return base;
 
@@ -654,7 +706,12 @@ export class AsistenciaComponent {
     this.indeterminate = checkedCount > 0 && checkedCount < list.length;
   }
 
-  guardarAsistencia() {
+  // ✅ GUARDAR EN BACKEND (tb_asis_alum -> tb_asis_alum_det)
+  // ✅ GUARDAR EN BACKEND (tb_asis_alum -> tb_asis_alum_det)
+  // - Si ya existe cabecera (tb_asis_alum) para la fecha+sección => reusar id_asistencia
+  // - Si no existe => crear cabecera y usar id nuevo
+  // - Para evitar choque en detalle cuando ya existía => delete por PK y reinsert
+  async guardarAsistencia() {
     const errores: string[] = [];
 
     if (!this.indicador.trim())
@@ -689,27 +746,150 @@ export class AsistenciaComponent {
       );
     }
 
+    const n_codper = this.periodoToCodper(this.periodoSel);
+    const c_codmod = this.getCodMod();
+
+    if (!n_codper) errores.push('• Periodo inválido.');
+    if (!this.cursoSel?.codCurso) errores.push('• Curso inválido.');
+    if (!this.cursoSel?.seccion) errores.push('• Sección inválida.');
+    if (!this.cursoSel?.espec) errores.push('• Especialidad inválida.');
+    if (!this.cursoSel?.plan) errores.push('• Plan inválido.');
+    if (!this.docenteDni) errores.push('• DNI docente no encontrado.');
+
     if (errores.length) {
       this.alert.warning(errores.join('\n'), 'No se puede guardar');
       return;
     }
 
-    const payload = {
-      modalidad: this.modalidadSel,
-      periodo: this.periodoSel,
-      curso: this.cursoSel,
-      fecha: this.fechaSel,
-      indicador: this.indicador,
-      asistencia: marcados.map((e) => ({ codigo: e.codigo, estado: e.estado })),
+    // sección actual (la que estás trabajando)
+    const c_grpcur = String(this.cursoSel?.seccion || '')
+      .split(',')[0]
+      .trim();
+
+    // ✅ 0) Ver si ya existe cabecera en esta fecha para esta sección
+    const headersHoy = this.fechasMap.get(this.fechaSel) || [];
+    const existente = headersHoy.find(
+      (h) => String(h.c_grpcur).trim() === c_grpcur,
+    );
+
+    const payloadCabecera = {
+      n_codper,
+      c_codmod,
+      c_codfac: 'S', // Ajusta si tu data trae facultad real
+      c_codesp: String(this.cursoSel?.espec || '').trim(),
+      c_codcur: String(this.cursoSel?.codCurso || '').trim(),
+      c_grpcur,
+      c_dnidoc: String(this.docenteDni).trim(),
+      d_fecha: this.fechaSel,
+      d_fecha_registro: this.fechaSel,
+      c_tema: this.indicador.trim(),
+      n_codpla: Number(this.cursoSel?.plan),
+      c_user_upd: 'FRONT',
+      d_fecha_upd: `${this.fechaSel} ${this.nowHHmmss()}`,
     };
 
-    console.log('GUARDAR ASISTENCIA =>', payload);
+    try {
+      // ✅ 1) Obtener id_asistencia (reusar si existe, crear si no)
+      let id_asistencia: number | null = existente?.id_asistencia ?? null;
 
-    this.alert.success(
-      'Asistencia guardada',
-      'La asistencia fue registrada correctamente.',
-    );
-    this.cerrarModal();
+      if (!id_asistencia) {
+        const r1 = await firstValueFrom(
+          this.siguService.tbAsisAlumCreate(payloadCabecera, { wait: true }),
+        );
+
+        id_asistencia = r1?.result?.id_asistencia ?? null;
+
+        if (!id_asistencia || id_asistencia <= 0) {
+          this.alert.warning(
+            'No se obtuvo id_asistencia',
+            'No se pudo registrar (cabecera)',
+          );
+          return;
+        }
+      }
+
+      // ✅ 2) Preparar detalle (marcados)
+      const items = marcados.map((e) => ({
+        id_asistencia: id_asistencia as number,
+        c_codalu: Number(e.codigo),
+        c_estado: this.toDbEstado(e.estado as EstadoAsistencia),
+        seguir: `${this.fechaSel} ${this.nowHHmmss()}`,
+      }));
+
+      // ✅ 2.5) Borrar los desmarcados que ya existían en BD
+      // (solo si tenemos cache; si no existe, no borra nada)
+      const existedSet =
+        (this as any).detalleDbMap?.get?.(id_asistencia) instanceof Set
+          ? ((this as any).detalleDbMap.get(id_asistencia) as Set<number>)
+          : new Set<number>();
+
+      const markedSet = new Set<number>(items.map((x) => x.c_codalu));
+
+      const toDelete: number[] = [];
+      for (const cod of existedSet) {
+        if (!markedSet.has(cod)) toDelete.push(cod);
+      }
+
+      for (const c_codalu of toDelete) {
+        try {
+          await firstValueFrom(
+            this.siguService.tbAsisAlumDetDelete(
+              { id_asistencia, c_codalu },
+              { wait: true },
+            ),
+          );
+        } catch {
+          // ignore
+        }
+      }
+
+      // ✅ 3) Insert/Update de marcados:
+      // - intentamos insert-many
+      // - si choca por PK => delete marcados + reinsert
+      try {
+        await firstValueFrom(
+          this.siguService.tbAsisAlumDetCreateMany({ items }, { wait: true }),
+        );
+      } catch (errInsert) {
+        // delete por PK (id_asistencia, c_codalu) de los marcados
+        for (const it of items) {
+          try {
+            await firstValueFrom(
+              this.siguService.tbAsisAlumDetDelete(
+                { id_asistencia: it.id_asistencia, c_codalu: it.c_codalu },
+                { wait: true },
+              ),
+            );
+          } catch {
+            // ignore
+          }
+        }
+
+        // reintento insert-many
+        await firstValueFrom(
+          this.siguService.tbAsisAlumDetCreateMany({ items }, { wait: true }),
+        );
+      }
+
+      this.alert.success(
+        'Asistencia guardada',
+        existente
+          ? `Actualizada correctamente (ID: ${id_asistencia}).`
+          : `Registrada correctamente (ID: ${id_asistencia}).`,
+      );
+
+      // refrescar fechas (tema/ids) + (recomiendo refrescar detalle cache después)
+      if (this.courseidActivo) {
+        this.cargarFechasRegistradas(this.courseidActivo);
+        // opcional: recargar detalle para refrescar cache inmediatamente
+        // this.cargarDetalleAsistencias([id_asistencia]);
+      }
+
+      this.cerrarModal();
+    } catch (err) {
+      console.error('guardarAsistencia error =>', err);
+      this.alert.warning('Ocurrió un error al guardar', 'Intenta nuevamente');
+    }
   }
 
   onToggleAll(ev: Event) {
