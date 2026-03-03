@@ -1,11 +1,8 @@
-<!-- asistencia.component.html (COMPLETO / ACTUALIZADO + BIENVENIDA) -->
-
 <div class="topbar">
   <div class="title">GESTIÓN ACADÉMICA - ASISTENCIA DE ALUMNOS</div>
 </div>
 
 <div class="page">
-  <!-- ✅ bienvenida docente -->
   <div class="welcome" *ngIf="docenteNombreCompleto">
     <div class="welcome-title">
       Bienvenido(a), <span class="tag">Docente</span>
@@ -20,7 +17,6 @@
     </div>
   </div>
 
-  <!-- filtros -->
   <div class="filters">
     <div class="f-item">
       <label>Seleccionar Modalidad:</label>
@@ -41,7 +37,6 @@
     </div>
   </div>
 
-  <!-- tabla cursos -->
   <div class="card" *ngIf="cursosVisible">
     <div class="card-title">Carga Académica - Asistencia</div>
 
@@ -85,7 +80,6 @@
     </div>
   </div>
 
-  <!-- MODAL -->
   <div class="modal-overlay" *ngIf="modalOpen" (click)="onOverlayClick($event)">
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
@@ -94,7 +88,6 @@
       </div>
 
       <div class="modal-body">
-        <!-- cabecera -->
         <div class="form-grid">
           <div class="full">
             <label>Nombre de Curso</label>
@@ -129,7 +122,6 @@
             <input class="control" [value]="periodoSel" disabled />
           </div>
 
-          <!-- ✅ SE PUEDE CAMBIAR FECHA -->
           <div>
             <label> Fecha <span class="req">*</span> </label>
 
@@ -142,7 +134,6 @@
             />
           </div>
 
-          <!-- ✅ HORARIOS AGRUPADOS -->
           <div class="full" *ngIf="horariosVisible.length > 0">
             <div class="horario-box">
               <div class="horario-title">
@@ -198,7 +189,6 @@
           </div>
         </div>
 
-        <!-- header tabla -->
         <div class="table-head">
           <div class="left">
             <span>Buscar:</span>
@@ -220,7 +210,6 @@
           </div>
         </div>
 
-        <!-- tabla estudiantes -->
         <div class="table-wrap">
           <table class="table table-sm">
             <thead>
