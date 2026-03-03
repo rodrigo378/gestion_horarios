@@ -386,4 +386,16 @@ export class AlertService {
             : '#16a34a',
     });
   }
+
+  // AlertService
+  showSavingAsistencia(): void {
+    Swal.fire({
+      title: 'Guardando asistencia...',
+      html: `<div style="font-size:15px;color:#4b5563;">Por favor, espera mientras se registra la asistencia.</div>`,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => Swal.showLoading(),
+      backdrop: true,
+    });
+  }
 }

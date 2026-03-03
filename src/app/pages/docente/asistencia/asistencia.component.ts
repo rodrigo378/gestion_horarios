@@ -718,14 +718,12 @@ export class AsistenciaComponent {
       errores.push('• Indicador de Logro / Tema es obligatorio.');
     if (!this.fechaSel) errores.push('• Fecha es obligatoria.');
 
-    // validar contra "hoy servidor" SOLO al guardar
     if (this.fechaServidor && this.fechaSel !== this.fechaServidor) {
       errores.push(
         `• No puedes registrar asistencia en una fecha distinta a HOY (Servidor: ${this.fechaServidor}).`,
       );
     }
 
-    // debe existir horario en la fecha seleccionada
     if (
       !this.seccionesHabilitadasHoy ||
       this.seccionesHabilitadasHoy.size === 0
@@ -761,12 +759,15 @@ export class AsistenciaComponent {
       return;
     }
 
-    // sección actual (la que estás trabajando)
+    // ✅ ABRIR LOADER (recién aquí, cuando ya pasó validación)
+    this.alert.showSavingAsistencia?.(); // si lo creaste
+    // o: this.alert.showLoadingScreen('Guardando asistencia...');
+
+    // sección actual
     const c_grpcur = String(this.cursoSel?.seccion || '')
       .split(',')[0]
       .trim();
 
-    // ✅ 0) Ver si ya existe cabecera en esta fecha para esta sección
     const headersHoy = this.fechasMap.get(this.fechaSel) || [];
     const existente = headersHoy.find(
       (h) => String(h.c_grpcur).trim() === c_grpcur,
@@ -775,7 +776,7 @@ export class AsistenciaComponent {
     const payloadCabecera = {
       n_codper,
       c_codmod,
-      c_codfac: 'S', // Ajusta si tu data trae facultad real
+      c_codfac: 'S',
       c_codesp: String(this.cursoSel?.espec || '').trim(),
       c_codcur: String(this.cursoSel?.codCurso || '').trim(),
       c_grpcur,
@@ -789,7 +790,6 @@ export class AsistenciaComponent {
     };
 
     try {
-      // ✅ 1) Obtener id_asistencia (reusar si existe, crear si no)
       let id_asistencia: number | null = existente?.id_asistencia ?? null;
 
       if (!id_asistencia) {
@@ -808,27 +808,22 @@ export class AsistenciaComponent {
         }
       }
 
-      // ✅ 2) Preparar detalle (marcados)
       const items = marcados.map((e) => ({
         id_asistencia: id_asistencia as number,
         c_codalu: Number(e.codigo),
-        c_estado: this.toDbEstado(e.estado as EstadoAsistencia),
+        c_estado: this.toDbEstado(e.estado as any),
         seguir: `${this.fechaSel} ${this.nowHHmmss()}`,
       }));
 
-      // ✅ 2.5) Borrar los desmarcados que ya existían en BD
-      // (solo si tenemos cache; si no existe, no borra nada)
       const existedSet =
-        (this as any).detalleDbMap?.get?.(id_asistencia) instanceof Set
-          ? ((this as any).detalleDbMap.get(id_asistencia) as Set<number>)
+        this.detalleDbMap?.get?.(id_asistencia) instanceof Set
+          ? (this.detalleDbMap.get(id_asistencia) as Set<number>)
           : new Set<number>();
 
       const markedSet = new Set<number>(items.map((x) => x.c_codalu));
 
       const toDelete: number[] = [];
-      for (const cod of existedSet) {
-        if (!markedSet.has(cod)) toDelete.push(cod);
-      }
+      for (const cod of existedSet) if (!markedSet.has(cod)) toDelete.push(cod);
 
       for (const c_codalu of toDelete) {
         try {
@@ -838,20 +833,14 @@ export class AsistenciaComponent {
               { wait: true },
             ),
           );
-        } catch {
-          // ignore
-        }
+        } catch {}
       }
 
-      // ✅ 3) Insert/Update de marcados:
-      // - intentamos insert-many
-      // - si choca por PK => delete marcados + reinsert
       try {
         await firstValueFrom(
           this.siguService.tbAsisAlumDetCreateMany({ items }, { wait: true }),
         );
-      } catch (errInsert) {
-        // delete por PK (id_asistencia, c_codalu) de los marcados
+      } catch {
         for (const it of items) {
           try {
             await firstValueFrom(
@@ -860,16 +849,16 @@ export class AsistenciaComponent {
                 { wait: true },
               ),
             );
-          } catch {
-            // ignore
-          }
+          } catch {}
         }
 
-        // reintento insert-many
         await firstValueFrom(
           this.siguService.tbAsisAlumDetCreateMany({ items }, { wait: true }),
         );
       }
+
+      // ✅ CERRAR LOADER antes de mostrar success (para que no se pisen)
+      this.alert.close();
 
       this.alert.success(
         'Asistencia guardada',
@@ -878,17 +867,20 @@ export class AsistenciaComponent {
           : `Registrada correctamente (ID: ${id_asistencia}).`,
       );
 
-      // refrescar fechas (tema/ids) + (recomiendo refrescar detalle cache después)
       if (this.courseidActivo) {
         this.cargarFechasRegistradas(this.courseidActivo);
-        // opcional: recargar detalle para refrescar cache inmediatamente
-        // this.cargarDetalleAsistencias([id_asistencia]);
       }
 
-      this.cerrarModal();
+      // this.cerrarModal();
     } catch (err) {
       console.error('guardarAsistencia error =>', err);
+
+      // ✅ CERRAR LOADER antes del warning/error
+      this.alert.close();
       this.alert.warning('Ocurrió un error al guardar', 'Intenta nuevamente');
+    } finally {
+      // ✅ backup: por si en algún flujo no se cerró arriba
+      this.alert.close();
     }
   }
 
