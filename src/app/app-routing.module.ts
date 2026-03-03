@@ -36,8 +36,8 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/docente/docente.module').then((m) => m.DocenteModule),
   },
-  { path: '', redirectTo: 'coa/turno', pathMatch: 'full' },
-  { path: '**', redirectTo: 'coa/turno' },
+  // { path: '', redirectTo: 'coa/turno', pathMatch: 'full' },
+  // { path: '**', redirectTo: 'coa/turno' },
 ];
 
 @NgModule({
