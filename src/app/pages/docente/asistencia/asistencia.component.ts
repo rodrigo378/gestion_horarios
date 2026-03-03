@@ -349,19 +349,96 @@ export class AsistenciaComponent {
     const headers = this.fechasMap.get(this.fechaSel) || [];
     this.fechaTieneRegistro = headers.length > 0;
 
-    const c_grpcur = String(this.cursoSel?.seccion || '')
-      .split(',')[0]
-      .trim();
+    // ✅ secciones que realmente están habilitadas hoy por horario
+    const seccionesHoy = Array.from(this.seccionesHabilitadasHoy || [])
+      .map((x) => String(x).trim())
+      .filter(Boolean);
 
-    const headerDeMiSeccion = headers.find((h) => h.c_grpcur === c_grpcur);
+    console.log('[FECHA] fechaSel=', this.fechaSel);
+    console.log('[FECHA] headersHoy=', headers);
+    console.log('[FECHA] seccionesHoy(habilitadas)=', seccionesHoy);
 
-    if (headerDeMiSeccion?.c_tema) {
-      this.indicador = headerDeMiSeccion.c_tema;
+    // ✅ si no hay secciones habilitadas hoy, no intentamos setear tema
+    if (!seccionesHoy.length) {
+      console.log(
+        '[FECHA] No hay secciones habilitadas hoy => no se setea tema',
+      );
+
+      const ids = headers.map((h) => h.id_asistencia);
+      if (ids.length > 0) {
+        this.cargarDetalleAsistencias(ids);
+      } else {
+        for (const e of this.estudiantes as any[]) {
+          (e as any)._visible = (e as any)._visible !== false;
+          e.checked = false;
+          e.estado = null;
+        }
+        this.refreshCheckState();
+      }
+      return;
+    }
+
+    // ✅ si hay 1 sección habilitada, usamos esa (M2, por ejemplo)
+    if (seccionesHoy.length === 1) {
+      const sec = seccionesHoy[0];
+      const headerDeEsaSeccion = headers.find(
+        (h) => String(h.c_grpcur).trim() === sec,
+      );
+
+      console.log('[FECHA] Sección única =>', sec);
+      console.log('[FECHA] Header encontrado =>', headerDeEsaSeccion);
+
+      if (headerDeEsaSeccion?.c_tema) {
+        this.indicador = headerDeEsaSeccion.c_tema;
+        console.log('[FECHA] indicador seteado =>', this.indicador);
+      }
+
+      const ids = headers.map((h) => h.id_asistencia);
+      if (ids.length > 0) {
+        this.cargarDetalleAsistencias(ids);
+      } else {
+        for (const e of this.estudiantes as any[]) {
+          (e as any)._visible = (e as any)._visible !== false;
+          e.checked = false;
+          e.estado = null;
+        }
+        this.refreshCheckState();
+      }
+      return;
+    }
+
+    // ✅ si hay varias secciones habilitadas hoy (ej: M1 y M2)
+    // buscamos temas para esas secciones y decidimos si autocompletar o no
+    const headersDeMisSecciones = headers.filter((h) =>
+      seccionesHoy.includes(String(h.c_grpcur).trim()),
+    );
+
+    console.log('[FECHA] headersDeMisSecciones =>', headersDeMisSecciones);
+
+    const temas = Array.from(
+      new Set(
+        headersDeMisSecciones
+          .map((h) => String(h.c_tema ?? '').trim())
+          .filter(Boolean),
+      ),
+    );
+
+    console.log('[FECHA] temas únicos detectados =>', temas);
+
+    // ✅ si todos comparten el mismo tema => lo seteamos
+    if (temas.length === 1) {
+      this.indicador = temas[0];
+      console.log('[FECHA] indicador seteado (tema único) =>', this.indicador);
+    } else if (temas.length > 1) {
+      // ✅ temas distintos: no pisamos el input del docente
+      console.log(
+        '[FECHA] Hay temas distintos por sección => no se auto-setea indicador',
+      );
     } else {
+      console.log('[FECHA] No hay tema encontrado para secciones habilitadas');
     }
 
     const ids = headers.map((h) => h.id_asistencia);
-
     if (ids.length > 0) {
       this.cargarDetalleAsistencias(ids);
     } else {
@@ -378,19 +455,47 @@ export class AsistenciaComponent {
     this.docenteService.matriculados(courseid).subscribe({
       next: (data: any) => {
         const list = Array.isArray(data) ? data : [];
-        this.estudiantes = list.map((m: any) => ({
-          codigo: String(m?.c_codalu ?? ''),
-          curso: String(m?.CodigoCurso ?? this.cursoSel?.codCurso ?? ''),
-          sec: String(m?.SeccionCurso ?? ''),
-          esp: String(m?.Especialidad ?? ''),
-          estudiante:
-            `${m?.paterno ?? ''} ${m?.materno ?? ''}, ${m?.nombres ?? ''}`
-              .replace(/\s+/g, ' ')
-              .trim(),
-          checked: false,
-          estado: null,
-        }));
 
+        // ✅ LOG 1: muestra 10 primeros tal como llegan del backend
+        console.log(
+          '[MAT] RAW (10 primeros):',
+          list.slice(0, 10).map((m: any) => ({
+            c_codalu: m?.c_codalu,
+            SeccionCurso: m?.SeccionCurso,
+            CodigoCurso: m?.CodigoCurso,
+            Especialidad: m?.Especialidad,
+          })),
+        );
+
+        this.estudiantes = list.map((m: any) => {
+          const secRaw = String(m?.SeccionCurso ?? '');
+
+          // ✅ LOG 2 (opcional): por alumno (puede ser mucho en consola)
+          // console.log('[MAT] alumno =>', m?.c_codalu, 'secRaw=', JSON.stringify(secRaw));
+
+          return {
+            codigo: String(m?.c_codalu ?? ''),
+            curso: String(m?.CodigoCurso ?? this.cursoSel?.codCurso ?? ''),
+            sec: secRaw,
+            esp: String(m?.Especialidad ?? ''),
+            estudiante:
+              `${m?.paterno ?? ''} ${m?.materno ?? ''}, ${m?.nombres ?? ''}`
+                .replace(/\s+/g, ' ')
+                .trim(),
+            checked: false,
+            estado: null,
+          };
+        });
+
+        // ✅ LOG 3: resumen por sección (conteo)
+        const resumen: Record<string, number> = {};
+        for (const e of this.estudiantes) {
+          const k = String((e as any).sec ?? '').trim() || '(VACIO)';
+          resumen[k] = (resumen[k] ?? 0) + 1;
+        }
+        console.log('[MAT] RESUMEN secciones:', resumen);
+
+        // por defecto visibles hasta que se calcule
         for (const e of this.estudiantes as any[]) e._visible = true;
 
         this.aplicarBloqueoPorDia();
@@ -407,6 +512,10 @@ export class AsistenciaComponent {
         const list = Array.isArray(data) ? data : [];
         const dni = (this.docenteDni || '').trim();
 
+        console.log('[HOR] RAW count=', list.length);
+        console.log('[HOR] docenteDni=', dni);
+        console.log('[HOR] fechaSel (antes ensure)=', this.fechaSel);
+
         const rows = list
           .map((x: any) => ({
             c_grpcur: String(x?.c_grpcur ?? '').trim(),
@@ -420,6 +529,18 @@ export class AsistenciaComponent {
           }))
           .filter((h: HorarioRow) => h.c_grpcur && Number.isFinite(h.n_numdia))
           .filter((h: HorarioRow) => h.c_dnidoc === dni);
+
+        console.log('[HOR] rows (filtrados por dni) count=', rows.length);
+        console.log(
+          '[HOR] rows sample(10)=',
+          rows.slice(0, 10).map((r) => ({
+            c_grpcur: r.c_grpcur,
+            n_numdia: r.n_numdia,
+            hora_inicio: r.hora_inicio,
+            hora_fin: r.hora_fin,
+            c_tipo: r.c_tipo,
+          })),
+        );
 
         if (!rows.length) {
           this.alert.warning(
@@ -464,8 +585,20 @@ export class AsistenciaComponent {
             return String(a.c_grpcur).localeCompare(String(b.c_grpcur));
           });
 
+        // ✅ IMPORTANTE: aquí garantizamos que fechaSel exista antes de calcular habilitadas
+        this.ensureFechaHoy();
+
+        // ✅ recalcular habilitadas con horarios ya cargados
         this.calcularSeccionesHabilitadasHoy();
+
+        console.log(
+          '[HOR] seccionesHabilitadasHoy =>',
+          Array.from(this.seccionesHabilitadasHoy || []),
+        );
+
+        // ✅ aplicar bloqueo y luego reintentar setear tema/fecha
         this.aplicarBloqueoPorDia();
+        this.aplicarFechaSeleccionada();
       },
       error: () => this.alert.warning('No se pudo cargar horarios', 'Error'),
     });
@@ -672,12 +805,14 @@ export class AsistenciaComponent {
       errores.push('• Indicador de Logro / Tema es obligatorio.');
     if (!this.fechaSel) errores.push('• Fecha es obligatoria.');
 
+    // validar contra "hoy servidor" SOLO al guardar
     if (this.fechaServidor && this.fechaSel !== this.fechaServidor) {
       errores.push(
         `• No puedes registrar asistencia en una fecha distinta a HOY (Servidor: ${this.fechaServidor}).`,
       );
     }
 
+    // debe existir horario en la fecha seleccionada
     if (
       !this.seccionesHabilitadasHoy ||
       this.seccionesHabilitadasHoy.size === 0
@@ -708,121 +843,192 @@ export class AsistenciaComponent {
     if (!this.cursoSel?.plan) errores.push('• Plan inválido.');
     if (!this.docenteDni) errores.push('• DNI docente no encontrado.');
 
+    // ✅ LOG A: qué sección trae cada marcado (lo más importante)
+    console.log(
+      '[SAVE] MARCADOS =>',
+      marcados.map((e) => ({
+        codigo: e.codigo,
+        sec: (e as any).sec,
+        sec_json: JSON.stringify((e as any).sec),
+      })),
+    );
+
+    // ✅ agrupar los marcados por sección REAL del alumno (e.sec)
+    const porSeccion = new Map<string, EstudianteRow[]>();
+    for (const e of marcados) {
+      const sec = String((e as any).sec || '').trim();
+      if (!sec) continue;
+      if (!porSeccion.has(sec)) porSeccion.set(sec, []);
+      porSeccion.get(sec)!.push(e);
+    }
+
+    if (porSeccion.size === 0) {
+      errores.push(
+        '• No se pudo determinar la sección de los estudiantes seleccionados.',
+      );
+    }
+
+    // ✅ LOG B: keys (secciones) que se van a guardar
+    console.log('[SAVE] SECCIONES detectadas:', Array.from(porSeccion.keys()));
+
+    // ✅ LOG C: secciones habilitadas por horario del día
+    console.log(
+      '[SAVE] SECCIONES habilitadas HOY:',
+      Array.from(this.seccionesHabilitadasHoy || []),
+    );
+
+    // ✅ validar que cada sección seleccionada esté habilitada por horario del día
+    for (const sec of porSeccion.keys()) {
+      if (!this.seccionesHabilitadasHoy.has(sec)) {
+        errores.push(
+          `• No tienes horario para la sección ${sec} en la fecha seleccionada.`,
+        );
+      }
+    }
+
     if (errores.length) {
       this.alert.warning(errores.join('\n'), 'No se puede guardar');
       return;
     }
 
+    // ✅ LOADER
     this.alert.showSavingAsistencia?.();
 
-    const c_grpcur = String(this.cursoSel?.seccion || '')
-      .split(',')[0]
-      .trim();
-
-    const headersHoy = this.fechasMap.get(this.fechaSel) || [];
-    const existente = headersHoy.find(
-      (h) => String(h.c_grpcur).trim() === c_grpcur,
-    );
-
-    const payloadCabecera = {
-      n_codper,
-      c_codmod,
-      c_codfac: 'S',
-      c_codesp: String(this.cursoSel?.espec || '').trim(),
-      c_codcur: String(this.cursoSel?.codCurso || '').trim(),
-      c_grpcur,
-      c_dnidoc: String(this.docenteDni).trim(),
-      d_fecha: this.fechaSel,
-      d_fecha_registro: this.fechaSel,
-      c_tema: this.indicador.trim(),
-      n_codpla: Number(this.cursoSel?.plan),
-      c_user_upd: 'FRONT',
-      d_fecha_upd: `${this.fechaSel} ${this.nowHHmmss()}`,
-    };
-
     try {
-      let id_asistencia: number | null = existente?.id_asistencia ?? null;
+      // headers de la fecha seleccionada (puede tener varias secciones)
+      const headersHoy = this.fechasMap.get(this.fechaSel) || [];
 
-      if (!id_asistencia) {
-        const r1 = await firstValueFrom(
-          this.siguService.tbAsisAlumCreate(payloadCabecera, { wait: true }),
+      for (const [c_grpcur, alumnos] of porSeccion.entries()) {
+        // ✅ LOG D: sección actual del loop y alumnos
+        console.log(
+          '[SAVE] LOOP sección:',
+          c_grpcur,
+          'alumnos:',
+          alumnos.length,
         );
 
-        id_asistencia = r1?.result?.id_asistencia ?? null;
+        // ✅ 0) Ver si ya existe cabecera para esta fecha + esta sección
+        const existente = headersHoy.find(
+          (h) => String(h.c_grpcur).trim() === String(c_grpcur).trim(),
+        );
 
-        if (!id_asistencia || id_asistencia <= 0) {
-          this.alert.warning(
-            'No se obtuvo id_asistencia',
-            'No se pudo registrar (cabecera)',
+        const payloadCabecera = {
+          n_codper,
+          c_codmod,
+          c_codfac: 'S', // Ajusta si tu data trae facultad real
+          c_codesp: String(this.cursoSel?.espec || '').trim(),
+          c_codcur: String(this.cursoSel?.codCurso || '').trim(),
+          c_grpcur: String(c_grpcur).trim(), // ✅ sección real (M1/M2/etc.)
+          c_dnidoc: String(this.docenteDni).trim(),
+          d_fecha: this.fechaSel,
+          d_fecha_registro: this.fechaSel,
+          c_tema: this.indicador.trim(),
+          n_codpla: Number(this.cursoSel?.plan),
+          c_user_upd: 'FRONT',
+          d_fecha_upd: `${this.fechaSel} ${this.nowHHmmss()}`,
+        };
+
+        // ✅ LOG E: payload real que se enviará
+        console.log('[SAVE] payloadCabecera =>', payloadCabecera);
+
+        // ✅ 1) Obtener id_asistencia (reusar si existe, crear si no)
+        let id_asistencia: number | null = existente?.id_asistencia ?? null;
+
+        if (!id_asistencia) {
+          const r1 = await firstValueFrom(
+            this.siguService.tbAsisAlumCreate(payloadCabecera, { wait: true }),
           );
-          return;
+
+          id_asistencia = r1?.result?.id_asistencia ?? null;
+
+          if (!id_asistencia || id_asistencia <= 0) {
+            throw new Error(
+              `No se obtuvo id_asistencia para sección ${c_grpcur}`,
+            );
+          }
         }
-      }
 
-      const items = marcados.map((e) => ({
-        id_asistencia: id_asistencia as number,
-        c_codalu: Number(e.codigo),
-        c_estado: this.toDbEstado(e.estado as any),
-        seguir: `${this.fechaSel} ${this.nowHHmmss()}`,
-      }));
+        // ✅ 2) Preparar detalle SOLO de esta sección
+        const items = alumnos.map((e) => ({
+          id_asistencia: id_asistencia as number,
+          c_codalu: Number(e.codigo),
+          c_estado: this.toDbEstado(e.estado as EstadoAsistencia),
+          seguir: `${this.fechaSel} ${this.nowHHmmss()}`,
+        }));
 
-      const existedSet =
-        this.detalleDbMap?.get?.(id_asistencia) instanceof Set
-          ? (this.detalleDbMap.get(id_asistencia) as Set<number>)
-          : new Set<number>();
+        // ✅ LOG F: muestra primeros 10 items del detalle
+        console.log('[SAVE] DET items (10):', items.slice(0, 10));
 
-      const markedSet = new Set<number>(items.map((x) => x.c_codalu));
+        // ✅ 2.5) Borrar desmarcados que ya existían en BD (por esta cabecera)
+        const existedSet =
+          this.detalleDbMap?.get?.(id_asistencia) instanceof Set
+            ? (this.detalleDbMap.get(id_asistencia) as Set<number>)
+            : new Set<number>();
 
-      const toDelete: number[] = [];
-      for (const cod of existedSet) if (!markedSet.has(cod)) toDelete.push(cod);
+        const markedSet = new Set<number>(items.map((x) => x.c_codalu));
 
-      for (const c_codalu of toDelete) {
-        try {
-          await firstValueFrom(
-            this.siguService.tbAsisAlumDetDelete(
-              { id_asistencia, c_codalu },
-              { wait: true },
-            ),
-          );
-        } catch {}
-      }
+        const toDelete: number[] = [];
+        for (const cod of existedSet) {
+          if (!markedSet.has(cod)) toDelete.push(cod);
+        }
 
-      try {
-        await firstValueFrom(
-          this.siguService.tbAsisAlumDetCreateMany({ items }, { wait: true }),
-        );
-      } catch {
-        for (const it of items) {
+        // ✅ LOG G: qué se borrará
+        console.log('[SAVE] toDelete =>', toDelete);
+
+        for (const c_codalu of toDelete) {
           try {
             await firstValueFrom(
               this.siguService.tbAsisAlumDetDelete(
-                { id_asistencia: it.id_asistencia, c_codalu: it.c_codalu },
+                { id_asistencia, c_codalu },
                 { wait: true },
               ),
             );
-          } catch {}
+          } catch {
+            // ignore
+          }
         }
 
-        await firstValueFrom(
-          this.siguService.tbAsisAlumDetCreateMany({ items }, { wait: true }),
-        );
+        // ✅ 3) Insert/Update de marcados:
+        // - intentamos insert-many
+        // - si choca por PK => delete marcados + reinsert
+        try {
+          await firstValueFrom(
+            this.siguService.tbAsisAlumDetCreateMany({ items }, { wait: true }),
+          );
+        } catch {
+          for (const it of items) {
+            try {
+              await firstValueFrom(
+                this.siguService.tbAsisAlumDetDelete(
+                  { id_asistencia: it.id_asistencia, c_codalu: it.c_codalu },
+                  { wait: true },
+                ),
+              );
+            } catch {
+              // ignore
+            }
+          }
+
+          await firstValueFrom(
+            this.siguService.tbAsisAlumDetCreateMany({ items }, { wait: true }),
+          );
+        }
       }
 
       this.alert.close();
 
       this.alert.success(
         'Asistencia guardada',
-        existente
-          ? `Actualizada correctamente (ID: ${id_asistencia}).`
-          : `Registrada correctamente (ID: ${id_asistencia}).`,
+        `Se registró/actualizó correctamente para ${porSeccion.size} sección(es).`,
       );
 
       if (this.courseidActivo) {
         this.cargarFechasRegistradas(this.courseidActivo);
       }
+
+      this.cerrarModal();
     } catch (err) {
       console.error('guardarAsistencia error =>', err);
-
       this.alert.close();
       this.alert.warning('Ocurrió un error al guardar', 'Intenta nuevamente');
     } finally {
