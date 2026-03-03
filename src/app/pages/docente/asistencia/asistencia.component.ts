@@ -1,5 +1,3 @@
-// asistencia.component.ts (COMPLETO / ACTUALIZADO + BIENVENIDA + HORARIOS AGRUPADOS + OCULTAR POR SECCIÓN + GUARDAR BACKEND)
-
 import { Component } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AlertService } from '../../../services/alert.service';
@@ -32,7 +30,7 @@ interface EstudianteRow {
 
 interface HorarioRow {
   c_grpcur: string;
-  n_numdia: number; // 1 lunes ... 7 domingo
+  n_numdia: number;
   c_dnidoc: string;
   docente?: string;
   dia?: string;
@@ -53,38 +51,30 @@ type AsisHeader = { id_asistencia: number; c_tema: string; c_grpcur: string };
   styleUrl: './asistencia.component.css',
 })
 export class AsistenciaComponent {
-  // filtros
   modalidades: Modalidad[] = ['PRESENCIAL', 'SEMIPRESENCIAL', 'VIRTUAL'];
   periodos: string[] = ['2026-1'];
 
   modalidadSel: Modalidad = 'SEMIPRESENCIAL';
   periodoSel: string = '2026-1';
 
-  // cursos
   cursosVisible = false;
   loadingCursos = false;
   cursos: CursoRow[] = [];
 
-  // modal
   modalOpen = false;
   modalTitle = 'Asistencia Estudiantes';
   cursoSel: CursoRow | null = null;
 
-  // cabecera modal
   fechaSel: string = '';
   indicador = '';
 
-  // hoy del servidor (fallback local si no hay endpoint)
-  fechaServidor: string = ''; // YYYY-MM-DD
+  fechaServidor: string = '';
 
-  // ✅ bienvenida
   docenteNombreCompleto: string = '';
 
-  // estudiantes
   estudiantes: EstudianteRow[] = [];
   buscarTexto = '';
 
-  // check all
   checkAll = false;
   indeterminate = false;
 
@@ -93,22 +83,18 @@ export class AsistenciaComponent {
     { label: 'TARDANZA', value: 'TARDANZA' },
   ];
   detalleDbMap = new Map<number, Set<number>>();
-  // fechas registradas
+
   fechasLoading = false;
   fechasMap = new Map<string, AsisHeader[]>();
   fechaTieneRegistro = false;
 
-  // courseid activo
   courseidActivo: number | null = null;
 
-  // docente logueado
   docenteDni: string = '';
 
-  // horarios
   horariosDocente: HorarioRow[] = [];
   horariosVisible: HorarioView[] = [];
 
-  // secciones habilitadas en la fecha seleccionada
   seccionesHabilitadasHoy = new Set<string>();
   seccionesHabilitadasHoyTexto = '';
 
@@ -168,7 +154,6 @@ export class AsistenciaComponent {
     return s === 'TARDANZA' ? 'T' : 'A';
   }
 
-  // 0 domingo..6 sábado => 1 lunes..7 domingo
   private yyyymmddToNumDia(fecha: string): number {
     if (!fecha) return 0;
     const d = new Date(`${fecha}T00:00:00`);
@@ -197,13 +182,11 @@ export class AsistenciaComponent {
     }
   }
 
-  // DNI: soporta respuesta normal o HttpResponse (body)
   private extractDni(res: any): string {
     const dni = String(res?.body?.dni ?? res?.dni ?? '').trim();
     return /^\d{8}$/.test(dni) ? dni : '';
   }
 
-  // ✅ setea DNI + nombre completo para bienvenida
   private setDocenteInfo(res: any) {
     const data = res?.body ?? res;
 
@@ -239,9 +222,6 @@ export class AsistenciaComponent {
     this.seccionesHabilitadasHoyTexto = '';
   }
 
-  // ======================
-  // Ver cursos
-  // ======================
   verCursos() {
     this.cursosVisible = true;
     this.loadingCursos = true;
@@ -266,7 +246,6 @@ export class AsistenciaComponent {
           return;
         }
 
-        // ✅ guardar dni + nombre para bienvenida
         this.setDocenteInfo(res);
 
         this.docenteService
@@ -310,9 +289,6 @@ export class AsistenciaComponent {
     });
   }
 
-  // ======================
-  // Abrir modal
-  // ======================
   abrirModalAsistencia(curso: CursoRow) {
     this.cursoSel = curso;
     this.modalOpen = true;
@@ -329,10 +305,8 @@ export class AsistenciaComponent {
     }
     this.courseidActivo = courseid;
 
-    // fallback: si no tienes endpoint de fecha servidor, usamos hoy local
     this.fechaServidor = this.hoyLocalYYYYMMDD();
 
-    // si ya tenemos DNI de verCursos, evitamos re-verificar
     if (this.docenteDni) {
       this.ensureFechaHoy();
       this.cargarHorarios(courseid);
@@ -351,7 +325,6 @@ export class AsistenciaComponent {
           return;
         }
 
-        // ✅ guardar dni + nombre
         this.setDocenteInfo(res);
 
         this.ensureFechaHoy();
@@ -366,10 +339,9 @@ export class AsistenciaComponent {
     });
   }
 
-  // ✅ se llama cuando cambias la fecha
   onFechaChange() {
     this.calcularSeccionesHabilitadasHoy();
-    this.aplicarBloqueoPorDia(); // ahora OCULTA
+    this.aplicarBloqueoPorDia();
     this.aplicarFechaSeleccionada();
   }
 
@@ -377,31 +349,24 @@ export class AsistenciaComponent {
     const headers = this.fechasMap.get(this.fechaSel) || [];
     this.fechaTieneRegistro = headers.length > 0;
 
-    // 👇 sección que estás trabajando (primera del curso)
     const c_grpcur = String(this.cursoSel?.seccion || '')
       .split(',')[0]
       .trim();
 
-    // ✅ auto-llenar tema si existe para esa fecha y esa sección
     const headerDeMiSeccion = headers.find((h) => h.c_grpcur === c_grpcur);
 
     if (headerDeMiSeccion?.c_tema) {
       this.indicador = headerDeMiSeccion.c_tema;
     } else {
-      // si no hay tema guardado para esa sección, no lo borres si ya estaba escribiendo
-      // (si quieres forzar limpiar, descomenta)
-      // this.indicador = '';
     }
 
-    // ids para detalle (puede venir 1 o varios, depende si manejas M1/M2)
     const ids = headers.map((h) => h.id_asistencia);
 
     if (ids.length > 0) {
       this.cargarDetalleAsistencias(ids);
     } else {
-      // limpiar checks si no hay registro en esa fecha
       for (const e of this.estudiantes as any[]) {
-        (e as any)._visible = (e as any)._visible !== false; // mantener visibilidad
+        (e as any)._visible = (e as any)._visible !== false;
         e.checked = false;
         e.estado = null;
       }
@@ -426,10 +391,9 @@ export class AsistenciaComponent {
           estado: null,
         }));
 
-        // por defecto visibles hasta que se calcule
         for (const e of this.estudiantes as any[]) e._visible = true;
 
-        this.aplicarBloqueoPorDia(); // ahora OCULTA
+        this.aplicarBloqueoPorDia();
         this.refreshCheckState();
       },
       error: () =>
@@ -466,7 +430,6 @@ export class AsistenciaComponent {
           return;
         }
 
-        // quitar duplicados
         const uniqMap = new Map<string, HorarioRow>();
         for (const h of rows) {
           const key = `${h.c_grpcur}|${h.n_numdia}|${h.hora_inicio}|${h.hora_fin}|${h.c_tipo}|${h.c_dnidoc}|${h.docente}`;
@@ -474,7 +437,6 @@ export class AsistenciaComponent {
         }
         this.horariosDocente = Array.from(uniqMap.values());
 
-        // agrupar M1, M2
         const group = new Map<
           string,
           { base: HorarioRow; secciones: Set<string> }
@@ -503,7 +465,7 @@ export class AsistenciaComponent {
           });
 
         this.calcularSeccionesHabilitadasHoy();
-        this.aplicarBloqueoPorDia(); // ahora OCULTA
+        this.aplicarBloqueoPorDia();
       },
       error: () => this.alert.warning('No se pudo cargar horarios', 'Error'),
     });
@@ -591,10 +553,8 @@ export class AsistenciaComponent {
       next: (data: any) => {
         const list = Array.isArray(data) ? data : [];
 
-        // ✅ reconstruir cache por id_asistencia
         this.detalleDbMap.clear();
 
-        // map codigo -> estado (para marcar UI)
         const mapEstado = new Map<string, EstadoAsistencia>();
 
         for (const x of list) {
@@ -616,7 +576,6 @@ export class AsistenciaComponent {
           else if (est === 'A') mapEstado.set(codStr, 'ASISTIO');
         }
 
-        // aplicar a UI
         for (const e of this.estudiantes as any[]) {
           if (e._visible === false) {
             e.checked = false;
@@ -706,11 +665,6 @@ export class AsistenciaComponent {
     this.indeterminate = checkedCount > 0 && checkedCount < list.length;
   }
 
-  // ✅ GUARDAR EN BACKEND (tb_asis_alum -> tb_asis_alum_det)
-  // ✅ GUARDAR EN BACKEND (tb_asis_alum -> tb_asis_alum_det)
-  // - Si ya existe cabecera (tb_asis_alum) para la fecha+sección => reusar id_asistencia
-  // - Si no existe => crear cabecera y usar id nuevo
-  // - Para evitar choque en detalle cuando ya existía => delete por PK y reinsert
   async guardarAsistencia() {
     const errores: string[] = [];
 
@@ -759,11 +713,8 @@ export class AsistenciaComponent {
       return;
     }
 
-    // ✅ ABRIR LOADER (recién aquí, cuando ya pasó validación)
-    this.alert.showSavingAsistencia?.(); // si lo creaste
-    // o: this.alert.showLoadingScreen('Guardando asistencia...');
+    this.alert.showSavingAsistencia?.();
 
-    // sección actual
     const c_grpcur = String(this.cursoSel?.seccion || '')
       .split(',')[0]
       .trim();
@@ -857,7 +808,6 @@ export class AsistenciaComponent {
         );
       }
 
-      // ✅ CERRAR LOADER antes de mostrar success (para que no se pisen)
       this.alert.close();
 
       this.alert.success(
@@ -870,16 +820,12 @@ export class AsistenciaComponent {
       if (this.courseidActivo) {
         this.cargarFechasRegistradas(this.courseidActivo);
       }
-
-      // this.cerrarModal();
     } catch (err) {
       console.error('guardarAsistencia error =>', err);
 
-      // ✅ CERRAR LOADER antes del warning/error
       this.alert.close();
       this.alert.warning('Ocurrió un error al guardar', 'Intenta nuevamente');
     } finally {
-      // ✅ backup: por si en algún flujo no se cerró arriba
       this.alert.close();
     }
   }

@@ -62,20 +62,6 @@ export class AlertService {
     });
   }
 
-  // success(message: string = 'Se actualizó'): void {
-  //   Swal.fire({
-  //     toast: true,
-  //     position: 'top-end',
-  //     icon: 'success',
-  //     title: message,
-  //     showConfirmButton: false,
-  //     timer: 2000,
-  //     timerProgressBar: true,
-  //   });
-  // }
-  // ==========================
-  // 🔄 GUARDADO DE HORARIOS
-  // ==========================
   showSaving(): void {
     Swal.fire({
       title: 'Guardando horarios...',
@@ -109,14 +95,6 @@ export class AlertService {
       },
     });
   }
-  // success(message: string, title: string = '¡Éxito!') {
-  //   Swal.fire({
-  //     title: title,
-  //     text: message,
-  //     icon: 'success',
-  //     confirmButtonText: 'OK',
-  //   });
-  // }
 
   saveError(error?: string): void {
     Swal.fire({
@@ -129,9 +107,6 @@ export class AlertService {
     });
   }
 
-  // ==========================
-  // ❌ ELIMINAR TODOS
-  // ==========================
   confirmDeleteAll(): Promise<boolean> {
     return Swal.fire({
       title: '¿Eliminar todos los horarios?',
@@ -176,9 +151,6 @@ export class AlertService {
     });
   }
 
-  // ==========================
-  // 🗑️ ELIMINAR UNO
-  // ==========================
   confirmDeleteOne(): Promise<boolean> {
     return Swal.fire({
       title: '¿Eliminar horario?',
@@ -223,9 +195,6 @@ export class AlertService {
     });
   }
 
-  // ==========================
-  // ✏️ ACTUALIZAR
-  // ==========================
   updateSuccess(): void {
     Swal.fire({
       icon: 'success',
@@ -246,9 +215,6 @@ export class AlertService {
     });
   }
 
-  // ==========================
-  // 🚫 SALIDA DURANTE GUARDADO
-  // ==========================
   confirmLeaveWhileSaving(): Promise<boolean> {
     return Swal.fire({
       title: 'Guardado en progreso',
@@ -262,15 +228,10 @@ export class AlertService {
     }).then((result) => result.isConfirmed);
   }
 
-  // ==========================
-  // 🔄 CIERRE GLOBAL
-  // ==========================
   close(): void {
     Swal.close();
   }
-  // ==========================
-  // ⚠️ ADVERTENCIAS (MODAL)
-  // ==========================
+
   warn(
     title: string = 'Atención',
     text: string = 'Revisa la información ingresada.',
@@ -280,14 +241,11 @@ export class AlertService {
       title,
       text,
       confirmButtonText: 'Entendido',
-      confirmButtonColor: '#f59e0b', // amarillo
+      confirmButtonColor: '#f59e0b',
       backdrop: true,
     });
   }
 
-  // ==========================
-  // 🗓️ TURNOS
-  // ==========================
   createTurnoSuccess(): void {
     Swal.fire({
       icon: 'success',
@@ -310,21 +268,18 @@ export class AlertService {
     });
   }
 
-  // Llama cuando comienza una solicitud
   iniciarSolicitud(): void {
     this.loadingSubject.next(true);
   }
 
-  // Llama cuando termina una solicitud
   finalizarSolicitud(): void {
     this.loadingSubject.next(false);
   }
 
-  // ❌ Alerta de error
   error(message: string, title: string = 'Oops...!') {
     Swal.fire({
       title: title,
-      html: message, // <--- acepta HTML
+      html: message,
       icon: 'error',
       confirmButtonText: 'OK',
     });
@@ -360,9 +315,6 @@ export class AlertService {
       cancelButtonText: 'Cancelar',
     }).then((result) => result.isConfirmed);
   }
-  // ==========================
-  // 🧁 TOAST SUAVE (NO BLOQUEANTE)
-  // ==========================
 
   toastSuccess(
     message: string = 'Acción completada correctamente',
@@ -387,7 +339,6 @@ export class AlertService {
     });
   }
 
-  // AlertService
   showSavingAsistencia(): void {
     Swal.fire({
       title: 'Guardando asistencia...',
