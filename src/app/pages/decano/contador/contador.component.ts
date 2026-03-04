@@ -165,6 +165,7 @@ export class ContadorComponent {
     { nomesp: 'TM TERAPIA FÍSICA Y REHAB', codesp: 'S5', codfac: 'S' },
     { nomesp: 'TM LAB. CLÍNICO Y ANAT. PAT', codesp: 'S6', codfac: 'S' },
     { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
+    { nomesp: 'TECNOLOGÍA MÉDICA EN OPTOMETRÍA', codesp: 'S8', codfac: 'S' },
   ];
 
   // Modifica el método aplicarFiltros() o crea uno nuevo

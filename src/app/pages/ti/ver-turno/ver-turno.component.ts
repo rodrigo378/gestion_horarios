@@ -56,6 +56,7 @@ export class VerTurnoComponent {
     { nomesp: 'TM TERAPIA FÍSICA Y REHAB', codesp: 'S5', codfac: 'S' },
     { nomesp: 'TM LAB. CLÍNICO Y ANAT. PAT', codesp: 'S6', codfac: 'S' },
     { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
+    { nomesp: 'TECNOLOGÍA MÉDICA EN OPTOMETRÍA', codesp: 'S8', codfac: 'S' },
   ];
   especialidadesFiltradas: any[] = [];
 
@@ -87,7 +88,7 @@ export class VerTurnoComponent {
   constructor(
     private turnoService: TurnoService,
     private router: Router,
-    private alertService: AlertService
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -143,7 +144,7 @@ export class VerTurnoComponent {
       case 'facultad':
         this.filtros.c_codfac = valor;
         this.especialidadesFiltradas = this.especialidades.filter(
-          (item) => item.codfac === valor
+          (item) => item.codfac === valor,
         );
         this.filtros.c_codesp = '';
         break;
@@ -199,10 +200,10 @@ export class VerTurnoComponent {
         this.filtros.exportacion === ''
           ? true
           : this.filtros.exportacion === 'exportado'
-          ? t.requiere_reexportacion === true
-          : this.filtros.exportacion === 'sin_exportar'
-          ? t.requiere_reexportacion === false
-          : false;
+            ? t.requiere_reexportacion === true
+            : this.filtros.exportacion === 'sin_exportar'
+              ? t.requiere_reexportacion === false
+              : false;
 
       return (
         coincidePeriodo &&
@@ -226,7 +227,7 @@ export class VerTurnoComponent {
 
   onAllChecked(value: boolean): void {
     this.listOfCurrentPageData.forEach((item) =>
-      this.onItemChecked(item.turno.id, value)
+      this.onItemChecked(item.turno.id, value),
     );
   }
 
@@ -293,7 +294,7 @@ export class VerTurnoComponent {
 
   isCursoCoincide(cod: string): boolean {
     return this.comparacion?.cursos?.coinciden?.some(
-      (c: any) => c.c_codcur === cod
+      (c: any) => c.c_codcur === cod,
     );
   }
 
@@ -335,7 +336,7 @@ export class VerTurnoComponent {
 
   isDocenteCoincide(dni: string): boolean {
     return this.comparacion?.docentes?.coinciden?.some(
-      (d: any) => d.dni === dni
+      (d: any) => d.dni === dni,
     );
   }
 

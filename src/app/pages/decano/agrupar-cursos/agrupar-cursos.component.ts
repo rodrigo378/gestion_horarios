@@ -46,6 +46,7 @@ export class AgruparCursosComponent {
     { nomesp: 'TM TERAPIA FÍSICA Y REHAB', codesp: 'S5', codfac: 'S' },
     { nomesp: 'TM LAB. CLÍNICO Y ANAT. PAT', codesp: 'S6', codfac: 'S' },
     { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
+    { nomesp: 'TECNOLOGÍA MÉDICA EN OPTOMETRÍA', codesp: 'S8', codfac: 'S' },
   ];
 
   especialidadesModal: { nomesp: string; codesp: string; codfac: string }[] = [
@@ -66,6 +67,7 @@ export class AgruparCursosComponent {
     { nomesp: 'TM TERAPIA FÍSICA Y REHAB', codesp: 'S5', codfac: 'S' },
     { nomesp: 'TM LAB. CLÍNICO Y ANAT. PAT', codesp: 'S6', codfac: 'S' },
     { nomesp: 'MEDICINA', codesp: 'S7', codfac: 'S' },
+    { nomesp: 'TECNOLOGÍA MÉDICA EN OPTOMETRÍA', codesp: 'S8', codfac: 'S' },
   ];
 
   cursosFiltrados: HR_Curso[] = [];
@@ -101,7 +103,7 @@ export class AgruparCursosComponent {
 
   constructor(
     private cursoService: CursoService,
-    private alertService: AlertService
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {}
@@ -122,7 +124,7 @@ export class AgruparCursosComponent {
         undefined,
         this.filtroBusqueda.trim(),
         skip,
-        take
+        take,
       )
       .subscribe((data) => {
         this.cursos = data.data;
@@ -164,7 +166,7 @@ export class AgruparCursosComponent {
         undefined,
         this.filtros.n_ciclo,
         undefined,
-        this.filtros.busqueda.trim()
+        this.filtros.busqueda.trim(),
       )
       .subscribe({
         next: (data) => {
@@ -178,7 +180,7 @@ export class AgruparCursosComponent {
         error: (error) => {
           console.error('Error al obtener cursos transversales', error);
           this.alertService.error(
-            'No se pudieron obtener los cursos transversales'
+            'No se pudieron obtener los cursos transversales',
           );
         },
         complete: () => {
@@ -193,14 +195,14 @@ export class AgruparCursosComponent {
 
   changeSelectFacultad() {
     this.especialidades = this.especialidades.filter(
-      (especialidad) => especialidad.codfac === this.selectFacultadad
+      (especialidad) => especialidad.codfac === this.selectFacultadad,
     );
     this.selectEspecialidad = '';
   }
 
   changeSelectFacultadModal() {
     this.especialidadesModal = this.especialidadesModal.filter(
-      (especialidad) => especialidad.codfac === this.filtros.c_codfac
+      (especialidad) => especialidad.codfac === this.filtros.c_codfac,
     );
 
     this.filtros.c_codesp = '';
@@ -289,7 +291,7 @@ export class AgruparCursosComponent {
 
   async confirmarEliminacionTransversal(padre_id: number) {
     const confirmado = this.alertService.confirm(
-      '¿Estás seguro de eliminar este grupo?\n\n⚠️ Esto eliminará todos los horarios asignados actualmente.'
+      '¿Estás seguro de eliminar este grupo?\n\n⚠️ Esto eliminará todos los horarios asignados actualmente.',
     );
 
     if (await confirmado) {
@@ -332,7 +334,7 @@ export class AgruparCursosComponent {
                       📅 <strong>${c.dia}</strong> — ⏰ ${c.hora_inicio} a ${c.hora_fin}
                     </div>
                   </div>
-                `
+                `,
               )
               .join('')}
           </div>
@@ -343,7 +345,7 @@ export class AgruparCursosComponent {
 
         this.alertService.error(
           mensajeHTML,
-          '⛔ No se puede eliminar el grupo'
+          '⛔ No se puede eliminar el grupo',
         );
       },
     });
@@ -357,7 +359,7 @@ export class AgruparCursosComponent {
 
   mostrarAlertaVencido() {
     this.alertService.error(
-      'La fecha de asignación ha caducado. Ya no puedes modificar este turno.'
+      'La fecha de asignación ha caducado. Ya no puedes modificar este turno.',
     );
   }
 }
