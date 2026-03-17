@@ -181,10 +181,16 @@
 
           <div class="full">
             <label>Indicador de Logro / Tema <span class="req">*</span></label>
-            <input
+            <!-- <input
               class="control"
               [(ngModel)]="indicador"
               placeholder="Escribe el tema..."
+            /> -->
+            <input
+              class="control"
+              [(ngModel)]="indicador"
+              [readonly]="temaBloqueado"
+              placeholder="Ingrese indicador de logro / tema"
             />
           </div>
         </div>
