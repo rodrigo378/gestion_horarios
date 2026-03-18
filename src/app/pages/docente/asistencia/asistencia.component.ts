@@ -23,6 +23,7 @@ interface EstudianteRow {
   curso: string;
   sec: string;
   esp: string;
+  plan: string;
   estudiante: string;
   checked: boolean;
   estado?: EstadoAsistencia | null;
@@ -42,7 +43,12 @@ interface HorarioRow {
 interface HorarioView extends HorarioRow {
   diaTexto: string;
 }
-type AsisHeader = { id_asistencia: number; c_tema: string; c_grpcur: string };
+
+type AsisHeader = {
+  id_asistencia: number;
+  c_tema: string;
+  c_grpcur: string;
+};
 
 @Component({
   selector: 'app-asistencia',
@@ -70,7 +76,6 @@ export class AsistenciaComponent {
   indicador = '';
 
   fechaServidor: string = '';
-
   docenteNombreCompleto: string = '';
 
   estudiantes: EstudianteRow[] = [];
@@ -83,6 +88,7 @@ export class AsistenciaComponent {
     { label: 'ASISTIÓ', value: 'ASISTIO' },
     { label: 'TARDANZA', value: 'TARDANZA' },
   ];
+
   detalleDbMap = new Map<number, Set<number>>();
 
   fechasLoading = false;
@@ -129,6 +135,13 @@ export class AsistenciaComponent {
     if (!/^\d+$/.test(s)) return null;
     const n = Number(s);
     return Number.isFinite(n) ? n : null;
+  }
+
+  private parseInteger(value: any): number | null {
+    const s = String(value ?? '').trim();
+    if (!/^\d+$/.test(s)) return null;
+    const n = Number(s);
+    return Number.isInteger(n) ? n : null;
   }
 
   private isoToYYYYMMDD(iso: any): string {
@@ -257,6 +270,17 @@ export class AsistenciaComponent {
               this.loadingCursos = false;
 
               const list = Array.isArray(data) ? data : [];
+
+              console.log(
+                '[CURSOS] planes raw =>',
+                list.map((x: any) => ({
+                  c_codcur: x?.c_codcur,
+                  n_codpla: x?.n_codpla,
+                  typeof_n_codpla: typeof x?.n_codpla,
+                  json_n_codpla: JSON.stringify(x?.n_codpla),
+                })),
+              );
+
               this.cursos = list.map((x: any) => ({
                 codCurso: String(x?.c_codcur ?? ''),
                 nombre: String(x?.c_nomcur ?? ''),
@@ -267,6 +291,16 @@ export class AsistenciaComponent {
                 seccion: String(x?.secciones ?? ''),
                 courseid_temp: x?.courseid_temp,
               }));
+
+              console.log(
+                '[CURSOS] planes mapeados =>',
+                this.cursos.map((c) => ({
+                  codCurso: c.codCurso,
+                  plan: c.plan,
+                  typeof_plan: typeof c.plan,
+                  json_plan: JSON.stringify(c.plan),
+                })),
+              );
 
               if (!this.cursos.length) {
                 this.alert.warning(
@@ -292,6 +326,17 @@ export class AsistenciaComponent {
   }
 
   abrirModalAsistencia(curso: CursoRow) {
+    console.log('[OPEN MODAL] curso recibido =>', curso);
+    console.log('[OPEN MODAL] curso.plan =>', curso?.plan);
+    console.log('[OPEN MODAL] typeof curso.plan =>', typeof curso?.plan);
+    console.log('[OPEN MODAL] plan trim =>', String(curso?.plan ?? '').trim());
+    console.log('[OPEN MODAL] Number(plan) =>', Number(curso?.plan));
+    console.log(
+      '[OPEN MODAL] Number.isInteger(Number(plan)) =>',
+      Number.isInteger(Number(curso?.plan)),
+    );
+    console.log('[OPEN MODAL] JSON plan =>', JSON.stringify(curso?.plan));
+
     this.cursoSel = curso;
     this.modalOpen = true;
 
@@ -351,7 +396,6 @@ export class AsistenciaComponent {
     const headers = this.fechasMap.get(this.fechaSel) || [];
     this.fechaTieneRegistro = headers.length > 0;
 
-    // ✅ siempre resetear al cambiar fecha
     this.indicador = '';
     this.temaBloqueado = false;
 
@@ -382,7 +426,6 @@ export class AsistenciaComponent {
       return;
     }
 
-    // ✅ solo una sección habilitada
     if (seccionesHoy.length === 1) {
       const sec = seccionesHoy[0];
       const headerDeEsaSeccion = headers.find(
@@ -412,7 +455,6 @@ export class AsistenciaComponent {
       return;
     }
 
-    // ✅ varias secciones habilitadas
     const headersDeMisSecciones = headers.filter((h) =>
       seccionesHoy.includes(String(h.c_grpcur).trim()),
     );
@@ -437,12 +479,10 @@ export class AsistenciaComponent {
         this.indicador,
       );
     } else if (temas.length > 1) {
-      // hay varios temas distintos: no autocompletar y no bloquear
       this.indicador = '';
       this.temaBloqueado = false;
       console.log('[FECHA] temas distintos por sección => indicador libre');
     } else {
-      // no hay tema registrado
       this.indicador = '';
       this.temaBloqueado = false;
       console.log('[FECHA] no hay tema registrado => indicador libre');
@@ -466,28 +506,43 @@ export class AsistenciaComponent {
       next: (data: any) => {
         const list = Array.isArray(data) ? data : [];
 
-        // ✅ LOG 1: muestra 10 primeros tal como llegan del backend
+        console.log('[MAT] alumno raw ejemplo =>', list[0]);
+
         console.log(
           '[MAT] RAW (10 primeros):',
           list.slice(0, 10).map((m: any) => ({
             c_codalu: m?.c_codalu,
-            SeccionCurso: m?.SeccionCurso,
             CodigoCurso: m?.CodigoCurso,
+            SeccionCurso: m?.SeccionCurso,
             Especialidad: m?.Especialidad,
+            PlanCurso: m?.PlanCurso,
           })),
         );
 
         this.estudiantes = list.map((m: any) => {
-          const secRaw = String(m?.SeccionCurso ?? '');
+          const cursoRaw = String(
+            m?.CodigoCurso ?? this.cursoSel?.codCurso ?? '',
+          ).trim();
 
-          // ✅ LOG 2 (opcional): por alumno (puede ser mucho en consola)
-          // console.log('[MAT] alumno =>', m?.c_codalu, 'secRaw=', JSON.stringify(secRaw));
+          const secRaw = String(m?.SeccionCurso ?? '').trim();
+
+          const espRaw = String(m?.Especialidad ?? '').trim();
+
+          const planRaw = String(
+            m?.PlanCurso ??
+              m?.n_codpla ??
+              m?.plan ??
+              m?.Plan ??
+              m?.CodPlan ??
+              '',
+          ).trim();
 
           return {
-            codigo: String(m?.c_codalu ?? ''),
-            curso: String(m?.CodigoCurso ?? this.cursoSel?.codCurso ?? ''),
+            codigo: String(m?.c_codalu ?? '').trim(),
+            curso: cursoRaw,
             sec: secRaw,
-            esp: String(m?.Especialidad ?? ''),
+            esp: espRaw,
+            plan: planRaw,
             estudiante:
               `${m?.paterno ?? ''} ${m?.materno ?? ''}, ${m?.nombres ?? ''}`
                 .replace(/\s+/g, ' ')
@@ -497,15 +552,35 @@ export class AsistenciaComponent {
           };
         });
 
-        // ✅ LOG 3: resumen por sección (conteo)
+        console.log(
+          '[MAT] MAPEADOS (10 primeros):',
+          this.estudiantes.slice(0, 10).map((e) => ({
+            codigo: e.codigo,
+            curso: e.curso,
+            sec: e.sec,
+            esp: e.esp,
+            plan: e.plan,
+          })),
+        );
+
         const resumen: Record<string, number> = {};
         for (const e of this.estudiantes) {
-          const k = String((e as any).sec ?? '').trim() || '(VACIO)';
+          const k = String(e.sec ?? '').trim() || '(VACIO)';
           resumen[k] = (resumen[k] ?? 0) + 1;
         }
         console.log('[MAT] RESUMEN secciones:', resumen);
 
-        // por defecto visibles hasta que se calcule
+        console.log(
+          '[MAT] RESUMEN curso-sec-esp-plan:',
+          this.estudiantes.slice(0, 20).map((e) => ({
+            codigo: e.codigo,
+            curso: e.curso,
+            sec: e.sec,
+            esp: e.esp,
+            plan: e.plan,
+          })),
+        );
+
         for (const e of this.estudiantes as any[]) e._visible = true;
 
         this.aplicarBloqueoPorDia();
@@ -541,6 +616,7 @@ export class AsistenciaComponent {
           .filter((h: HorarioRow) => h.c_dnidoc === dni);
 
         console.log('[HOR] rows (filtrados por dni) count=', rows.length);
+
         console.log(
           '[HOR] rows sample(10)=',
           rows.slice(0, 10).map((r) => ({
@@ -595,10 +671,7 @@ export class AsistenciaComponent {
             return String(a.c_grpcur).localeCompare(String(b.c_grpcur));
           });
 
-        // ✅ IMPORTANTE: aquí garantizamos que fechaSel exista antes de calcular habilitadas
         this.ensureFechaHoy();
-
-        // ✅ recalcular habilitadas con horarios ya cargados
         this.calcularSeccionesHabilitadasHoy();
 
         console.log(
@@ -606,7 +679,6 @@ export class AsistenciaComponent {
           Array.from(this.seccionesHabilitadasHoy || []),
         );
 
-        // ✅ aplicar bloqueo y luego reintentar setear tema/fecha
         this.aplicarBloqueoPorDia();
         this.aplicarFechaSeleccionada();
       },
@@ -620,8 +692,9 @@ export class AsistenciaComponent {
     const diaSel = this.yyyymmddToNumDia(this.fechaSel);
     const deEseDia = this.horariosDocente.filter((h) => h.n_numdia === diaSel);
 
-    for (const h of deEseDia)
+    for (const h of deEseDia) {
       this.seccionesHabilitadasHoy.add(String(h.c_grpcur).trim());
+    }
 
     const arr = Array.from(this.seccionesHabilitadasHoy).sort();
     this.seccionesHabilitadasHoyTexto = arr.join(', ');
@@ -742,6 +815,7 @@ export class AsistenciaComponent {
         this.alert.warning('No se pudo cargar detalle de asistencia', 'Error'),
     });
   }
+
   cerrarModal() {
     this.modalOpen = false;
     this.cursoSel = null;
@@ -766,7 +840,9 @@ export class AsistenciaComponent {
       return (
         (e.codigo || '').toLowerCase().includes(q) ||
         (e.estudiante || '').toLowerCase().includes(q) ||
-        (e.sec || '').toLowerCase().includes(q)
+        (e.sec || '').toLowerCase().includes(q) ||
+        (e.plan || '').toLowerCase().includes(q) ||
+        (e.curso || '').toLowerCase().includes(q)
       );
     });
   }
@@ -813,18 +889,19 @@ export class AsistenciaComponent {
   async guardarAsistencia() {
     const errores: string[] = [];
 
-    if (!this.indicador.trim())
+    if (!this.indicador.trim()) {
       errores.push('• Indicador de Logro / Tema es obligatorio.');
-    if (!this.fechaSel) errores.push('• Fecha es obligatoria.');
+    }
+    if (!this.fechaSel) {
+      errores.push('• Fecha es obligatoria.');
+    }
 
-    // ✅ Permitir fechas pasadas, pero no futuras
     if (this.fechaServidor && this.fechaSel > this.fechaServidor) {
       errores.push(
         `• No puedes registrar asistencia en una fecha futura. Fecha servidor: ${this.fechaServidor}.`,
       );
     }
 
-    // debe existir horario en la fecha seleccionada
     if (
       !this.seccionesHabilitadasHoy ||
       this.seccionesHabilitadasHoy.size === 0
@@ -834,9 +911,12 @@ export class AsistenciaComponent {
       );
     }
 
-    const marcados = this.estudiantesFiltrados.filter((e) => e.checked);
-    if (marcados.length === 0)
+    const visibles = this.estudiantesFiltrados;
+    const marcados = visibles.filter((e) => e.checked);
+
+    if (marcados.length === 0) {
       errores.push('• Selecciona al menos un estudiante habilitado.');
+    }
 
     const sinEstado = marcados.filter((e) => !e.estado);
     if (sinEstado.length > 0) {
@@ -849,42 +929,70 @@ export class AsistenciaComponent {
     const c_codmod = this.getCodMod();
 
     if (!n_codper) errores.push('• Periodo inválido.');
-    if (!this.cursoSel?.codCurso) errores.push('• Curso inválido.');
-    if (!this.cursoSel?.seccion) errores.push('• Sección inválida.');
-    if (!this.cursoSel?.espec) errores.push('• Especialidad inválida.');
-    if (!this.cursoSel?.plan) errores.push('• Plan inválido.');
     if (!this.docenteDni) errores.push('• DNI docente no encontrado.');
+
+    console.log(
+      '[SAVE] VISIBLES =>',
+      visibles.map((e) => ({
+        codigo: e.codigo,
+        curso: e.curso,
+        sec: e.sec,
+        esp: e.esp,
+        plan: e.plan,
+        checked: e.checked,
+        estado: e.estado,
+      })),
+    );
 
     console.log(
       '[SAVE] MARCADOS =>',
       marcados.map((e) => ({
         codigo: e.codigo,
-        sec: (e as any).sec,
-        sec_json: JSON.stringify((e as any).sec),
+        curso: e.curso,
+        sec: e.sec,
+        esp: e.esp,
+        plan: e.plan,
+        estado: e.estado,
       })),
     );
 
-    const porSeccion = new Map<string, EstudianteRow[]>();
-    for (const e of marcados) {
-      const sec = String((e as any).sec || '').trim();
-      if (!sec) continue;
-      if (!porSeccion.has(sec)) porSeccion.set(sec, []);
-      porSeccion.get(sec)!.push(e);
+    // ✅ agrupar por TODOS los visibles, no solo los marcados
+    const grupos = new Map<string, EstudianteRow[]>();
+
+    for (const e of visibles) {
+      const curso = String(e.curso || '').trim();
+      const sec = String(e.sec || '').trim();
+      const esp = String(e.esp || '').trim();
+      const plan = String(e.plan || '').trim();
+
+      if (!curso || !sec || !esp || !plan) {
+        console.warn('[SAVE] alumno descartado por datos incompletos =>', {
+          codigo: e.codigo,
+          curso,
+          sec,
+          esp,
+          plan,
+          original: e,
+        });
+        continue;
+      }
+
+      const key = `${curso}|${sec}|${esp}|${plan}`;
+
+      if (!grupos.has(key)) grupos.set(key, []);
+      grupos.get(key)!.push(e);
     }
 
-    if (porSeccion.size === 0) {
+    if (grupos.size === 0) {
       errores.push(
-        '• No se pudo determinar la sección de los estudiantes seleccionados.',
+        '• No se pudo determinar curso/sección/especialidad/plan de los alumnos habilitados.',
       );
     }
 
-    console.log('[SAVE] SECCIONES detectadas:', Array.from(porSeccion.keys()));
-    console.log(
-      '[SAVE] SECCIONES habilitadas HOY:',
-      Array.from(this.seccionesHabilitadasHoy || []),
-    );
+    console.log('[SAVE] GRUPOS detectados:', Array.from(grupos.keys()));
 
-    for (const sec of porSeccion.keys()) {
+    for (const key of grupos.keys()) {
+      const [, sec] = key.split('|');
       if (!this.seccionesHabilitadasHoy.has(sec)) {
         errores.push(
           `• No tienes horario para la sección ${sec} en la fecha seleccionada.`,
@@ -902,13 +1010,25 @@ export class AsistenciaComponent {
     try {
       const headersHoy = this.fechasMap.get(this.fechaSel) || [];
 
-      for (const [c_grpcur, alumnos] of porSeccion.entries()) {
-        console.log(
-          '[SAVE] LOOP sección:',
+      for (const [key, alumnosDelGrupo] of grupos.entries()) {
+        const [c_codcur, c_grpcur, c_codesp, n_codplaStr] = key.split('|');
+        const n_codpla = this.parseInteger(n_codplaStr);
+
+        if (n_codpla === null) {
+          throw new Error(`Plan inválido para el grupo ${key}`);
+        }
+
+        // ✅ solo los marcados del grupo
+        const alumnosMarcados = alumnosDelGrupo.filter((e) => e.checked);
+
+        console.log('[SAVE] LOOP grupo =>', {
+          c_codcur,
           c_grpcur,
-          'alumnos:',
-          alumnos.length,
-        );
+          c_codesp,
+          n_codpla,
+          totalGrupo: alumnosDelGrupo.length,
+          marcadosGrupo: alumnosMarcados.length,
+        });
 
         const existente = headersHoy.find(
           (h) => String(h.c_grpcur).trim() === String(c_grpcur).trim(),
@@ -918,14 +1038,14 @@ export class AsistenciaComponent {
           n_codper,
           c_codmod,
           c_codfac: 'S',
-          c_codesp: String(this.cursoSel?.espec || '').trim(),
-          c_codcur: String(this.cursoSel?.codCurso || '').trim(),
+          c_codesp: String(c_codesp).trim(),
+          c_codcur: String(c_codcur).trim(),
           c_grpcur: String(c_grpcur).trim(),
           c_dnidoc: String(this.docenteDni).trim(),
           d_fecha: this.fechaSel,
           d_fecha_registro: this.fechaSel,
           c_tema: this.indicador.trim(),
-          n_codpla: Number(this.cursoSel?.plan),
+          n_codpla: n_codpla,
           c_user_upd: 'FRONT',
           d_fecha_upd: `${this.fechaSel} ${this.nowHHmmss()}`,
         };
@@ -934,7 +1054,8 @@ export class AsistenciaComponent {
 
         let id_asistencia: number | null = existente?.id_asistencia ?? null;
 
-        if (!id_asistencia) {
+        // ✅ crear cabecera solo si hay al menos 1 marcado
+        if (!id_asistencia && alumnosMarcados.length > 0) {
           const r1 = await firstValueFrom(
             this.siguService.tbAsisAlumCreate(payloadCabecera, { wait: true }),
           );
@@ -942,13 +1063,20 @@ export class AsistenciaComponent {
           id_asistencia = r1?.result?.id_asistencia ?? null;
 
           if (!id_asistencia || id_asistencia <= 0) {
-            throw new Error(
-              `No se obtuvo id_asistencia para sección ${c_grpcur}`,
-            );
+            throw new Error(`No se obtuvo id_asistencia para grupo ${key}`);
           }
         }
 
-        const items = alumnos.map((e) => ({
+        // ✅ si no existe cabecera y no hay marcados, no hay nada que hacer
+        if (!id_asistencia) {
+          console.log(
+            '[SAVE] grupo sin id_asistencia y sin marcados, no se procesa =>',
+            key,
+          );
+          continue;
+        }
+
+        const items = alumnosMarcados.map((e) => ({
           id_asistencia: id_asistencia as number,
           c_codalu: Number(e.codigo),
           c_estado: this.toDbEstado(e.estado as EstadoAsistencia),
@@ -969,8 +1097,11 @@ export class AsistenciaComponent {
           if (!markedSet.has(cod)) toDelete.push(cod);
         }
 
+        console.log('[SAVE] existedSet =>', Array.from(existedSet));
+        console.log('[SAVE] markedSet =>', Array.from(markedSet));
         console.log('[SAVE] toDelete =>', toDelete);
 
+        // ✅ borra todos los que antes estaban y ahora ya no están
         for (const c_codalu of toDelete) {
           try {
             await firstValueFrom(
@@ -982,6 +1113,15 @@ export class AsistenciaComponent {
           } catch {
             // ignore
           }
+        }
+
+        // ✅ si ya no quedó nadie marcado en esa sección, no insertes nada
+        if (items.length === 0) {
+          console.log(
+            '[SAVE] grupo sin marcados, solo se eliminaron detalles =>',
+            key,
+          );
+          continue;
         }
 
         try {
@@ -1012,7 +1152,7 @@ export class AsistenciaComponent {
 
       this.alert.success(
         'Asistencia guardada',
-        `Se registró/actualizó correctamente para ${porSeccion.size} sección(es).`,
+        `Se registró/actualizó correctamente para ${grupos.size} grupo(s).`,
       );
 
       if (this.courseidActivo) {
