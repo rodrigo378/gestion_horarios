@@ -1161,7 +1161,7 @@ export class AsistenciaComponent {
 
       this.cerrarModal();
     } catch (err) {
-      console.error('guardarAsistencia error =>', err);
+      console.error('guardarAsistencia error 2 =>', err);
       this.alert.close();
       this.alert.warning('Ocurrió un error al guardar', 'Intenta nuevamente');
     } finally {
