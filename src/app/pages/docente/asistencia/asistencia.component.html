@@ -84,7 +84,9 @@
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <div class="modal-title">{{ modalTitle }}</div>
-        <button class="icon-btn" (click)="cerrarModal()">✕</button>
+        <button type="button" class="icon-btn" (click)="cerrarModal()">
+          ✕
+        </button>
       </div>
 
       <div class="modal-body">
@@ -146,7 +148,7 @@
                 <strong>{{ seccionesHabilitadasHoyTexto || "—" }}</strong>
               </div>
 
-              <div class="table-wrap">
+              <div class="table-wrap modal-table-wrap">
                 <table class="table table-sm">
                   <thead>
                     <tr>
@@ -212,8 +214,8 @@
           </div>
         </div>
 
-        <div class="table-wrap">
-          <table class="table table-sm">
+        <div class="table-wrap modal-table-wrap">
+          <table class="table table-sm modal-students-table">
             <thead>
               <tr>
                 <th style="width: 48px">#</th>
@@ -277,10 +279,16 @@
         </div>
 
         <div class="modal-actions">
-          <button class="btn btn-primary" (click)="guardarAsistencia()">
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="guardarAsistencia()"
+          >
             Guardar
           </button>
-          <button class="btn" (click)="cerrarModal()">Cancelar</button>
+          <button type="button" class="btn" (click)="cerrarModal()">
+            Cancelar
+          </button>
         </div>
       </div>
     </div>
