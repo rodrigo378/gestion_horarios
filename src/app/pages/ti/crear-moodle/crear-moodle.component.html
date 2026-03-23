@@ -302,19 +302,23 @@
                 </span>
               </div>
 
-              <nz-select
-                nzShowSearch
-                nzPlaceHolder="Buscar plantilla..."
-                [(ngModel)]="plantillaDefault"
-                class="w-full"
-                [nzDisabled]="isLoadingPlantillas || !plantillas.length"
-              >
-                <nz-option
-                  *ngFor="let p of plantillas"
-                  [nzValue]="p.id"
-                  [nzLabel]="p.label"
-                ></nz-option>
-              </nz-select>
+              <div class="nz-select-wrap">
+                <nz-select
+                  class="w-full-select"
+                  [(ngModel)]="plantillaDefault"
+                  nzShowSearch
+                  nzAllowClear
+                  nzPlaceHolder="Seleccione plantilla"
+                  [nzFilterOption]="filterPlantillas"
+                >
+                  <nz-option
+                    *ngFor="let p of plantillas"
+                    [nzValue]="p.id"
+                    [nzLabel]="p.label"
+                  >
+                  </nz-option>
+                </nz-select>
+              </div>
 
               <div *ngIf="plantillasError" class="text-xs text-rose-600 mt-1">
                 {{ plantillasError }}
@@ -390,12 +394,14 @@
 
                 <td class="p-3">
                   <nz-select
+                    class="w-full-select"
                     nzShowSearch
+                    nzAllowClear
                     nzPlaceHolder="Buscar plantilla..."
                     [ngModel]="plantillaDe(item.__id)"
                     (ngModelChange)="setPlantilla(item.__id, $event)"
-                    class="w-full"
                     [nzDisabled]="isLoadingPlantillas || !plantillas.length"
+                    [nzFilterOption]="filterPlantillas"
                   >
                     <nz-option
                       *ngFor="let p of plantillas"

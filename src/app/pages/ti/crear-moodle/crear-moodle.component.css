@@ -1,0 +1,37 @@
+.nz-select-wrap {
+  width: 100%;
+}
+
+:host ::ng-deep .w-full-select.ant-select {
+  width: 100%;
+}
+
+.w-full-select {
+  width: 100%;
+}
+
+:host ::ng-deep .w-full-select {
+  width: 100%;
+}
+
+:host ::ng-deep .w-full-select .ant-select-selector {
+  min-height: 38px;
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+  display: flex;
+  align-items: center;
+}
+
+:host ::ng-deep .w-full-select.ant-select {
+  width: 100%;
+}
+
+:host ::ng-deep .w-full-select .ant-select-selection-search-input {
+  height: 36px;
+}
+
+:host ::ng-deep .w-full-select .ant-select-selection-placeholder,
+:host ::ng-deep .w-full-select .ant-select-selection-item {
+  line-height: 36px;
+  font-size: 12px;
+}

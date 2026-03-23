@@ -14,7 +14,12 @@ import { Observable } from 'rxjs';
 
 type Especialidad = { codfac: string; codesp: string; nomesp: string };
 
-type PlantillaOption = { id: number; label: string };
+type PlantillaOption = {
+  id: number;
+  label: string;
+  shortname: string;
+  fullname: string;
+};
 
 type ItemUI = ContadorResult & {
   __id: number; // courseid_temp como number
@@ -139,7 +144,6 @@ export class CrearMoodleComponent implements OnInit {
     )
       .pipe(
         map((res: any) => {
-          // Soporta: res = []  o  res = { data: [] }
           const raw = res?.data ?? res;
           return Array.isArray(raw) ? (raw as MoodleCursoTemplate[]) : [];
         }),
@@ -149,12 +153,20 @@ export class CrearMoodleComponent implements OnInit {
         next: (arr: MoodleCursoTemplate[]) => {
           this.plantillas = arr
             .filter((x) => this.toNumber(x?.id) > 0)
-            .map((x) => ({
-              id: this.toNumber(x.id),
-              label: String(
-                x.displayname || x.fullname || x.shortname || `Curso ${x.id}`,
-              ),
-            }))
+            .map((x) => {
+              const shortname = String(x.shortname || '').trim();
+              const fullname = String(x.fullname || x.displayname || '').trim();
+
+              return {
+                id: this.toNumber(x.id),
+                shortname,
+                fullname,
+                label:
+                  shortname && fullname
+                    ? `${shortname} - (${fullname})`
+                    : shortname || fullname || `Curso ${x.id}`,
+              };
+            })
             .sort((a, b) => a.label.localeCompare(b.label));
 
           if (!this.plantillas.length) {
@@ -246,6 +258,31 @@ export class CrearMoodleComponent implements OnInit {
 
   onToggleSoloNegativos() {
     this.aplicarFiltros();
+  }
+
+  filterPlantillas = (input: string, option: any): boolean => {
+    const term = (input || '').toLowerCase().trim();
+
+    const label = String(option?.nzLabel || '').toLowerCase();
+    const shortname = String(option?.shortname || '').toLowerCase();
+    const fullname = String(option?.fullname || '').toLowerCase();
+
+    return (
+      label.includes(term) ||
+      shortname.includes(term) ||
+      fullname.includes(term)
+    );
+  };
+
+  searchPlantillaFn(term: string, item: PlantillaOption): boolean {
+    const t = (term || '').toLowerCase().trim();
+    if (!t) return true;
+
+    const shortname = (item.shortname || '').toLowerCase();
+    const fullname = (item.fullname || '').toLowerCase();
+    const label = (item.label || '').toLowerCase();
+
+    return shortname.includes(t) || fullname.includes(t) || label.includes(t);
   }
 
   aplicarFiltros() {
