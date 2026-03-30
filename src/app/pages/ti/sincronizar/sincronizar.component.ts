@@ -27,6 +27,8 @@ export class SincronizarComponent implements OnInit {
   ];
   selectedPeriodo: number = 20261;
 
+  sortColumn: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
   // ✅ selección
   selectedCourseIds = new Set<number>();
   allChecked = false;
@@ -50,6 +52,70 @@ export class SincronizarComponent implements OnInit {
     { label: 'TALLERES EXTRACURRICULARES (T)', value: 'T' },
   ];
 
+  sortBy(column: string) {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+
+    this.ordenarDatos();
+  }
+
+  private ordenarDatos() {
+    const dir = this.sortDirection === 'asc' ? 1 : -1;
+
+    this.contadorFiltrado = [...this.contadorFiltrado].sort(
+      (a: any, b: any) => {
+        const valA = this.getSortValue(a, this.sortColumn);
+        const valB = this.getSortValue(b, this.sortColumn);
+
+        if (valA < valB) return -1 * dir;
+        if (valA > valB) return 1 * dir;
+        return 0;
+      },
+    );
+  }
+
+  private getSortValue(item: any, column: string): any {
+    switch (column) {
+      case 'courseid_temp':
+        return this.toNumber(item.courseid_temp);
+
+      case 'c_nomcur':
+        return String(item.c_nomcur ?? '').toLowerCase();
+
+      case 'c_codcur':
+        return String(item.c_codcur ?? '').toLowerCase();
+
+      case 'c_codfac':
+        return String(item.c_codfac ?? '').toLowerCase();
+
+      case 'c_codesp':
+        return String(item.c_codesp ?? '').toLowerCase();
+
+      case 'secciones':
+        return String(item.secciones ?? '').toLowerCase();
+
+      case 'total_vacantes_tot':
+        return this.toNumber(item.total_vacantes_tot);
+
+      case 'total_vacantes_matriculados':
+        return this.toNumber(item.total_vacantes_matriculados);
+
+      case 'n_ciclo':
+        return this.toNumber(item.n_ciclo);
+
+      default:
+        return '';
+    }
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortColumn !== column) return '↕';
+    return this.sortDirection === 'asc' ? '↑' : '↓';
+  }
   ciclos = Array.from({ length: 10 }, (_, i) => String(i + 1));
 
   especialidades: Especialidad[] = [
@@ -303,6 +369,10 @@ export class SincronizarComponent implements OnInit {
 
       return pasaTexto && pasaFac && pasaEsp && pasaCiclo;
     });
+
+    if (this.sortColumn) {
+      this.ordenarDatos();
+    }
 
     this.updateCheckStatus();
   }

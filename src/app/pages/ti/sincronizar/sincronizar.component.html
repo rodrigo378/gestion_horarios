@@ -114,49 +114,66 @@
               </th>
 
               <th
-                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200 cursor-pointer select-none"
+                (click)="sortBy('courseid_temp')"
               >
-                courseid
+                courseid {{ getSortIcon("courseid_temp") }}
               </th>
+
               <th
-                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200 cursor-pointer select-none"
+                (click)="sortBy('c_nomcur')"
               >
-                Curso
+                Curso {{ getSortIcon("c_nomcur") }}
               </th>
+
               <th
-                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200 cursor-pointer select-none"
+                (click)="sortBy('c_codcur')"
               >
-                Código
+                Código {{ getSortIcon("c_codcur") }}
               </th>
+
               <th
-                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200 cursor-pointer select-none"
+                (click)="sortBy('c_codfac')"
               >
-                Facultad
+                Facultad {{ getSortIcon("c_codfac") }}
               </th>
+
               <th
-                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200 cursor-pointer select-none"
+                (click)="sortBy('c_codesp')"
               >
-                Especialidad
+                Especialidad {{ getSortIcon("c_codesp") }}
               </th>
+
               <th
-                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200 cursor-pointer select-none"
+                (click)="sortBy('secciones')"
               >
-                Secciones
+                Secciones {{ getSortIcon("secciones") }}
               </th>
+
               <th
-                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200 cursor-pointer select-none"
+                (click)="sortBy('total_vacantes_tot')"
               >
-                Vacantes Totales
+                Vacantes Totales {{ getSortIcon("total_vacantes_tot") }}
               </th>
+
               <th
-                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200 cursor-pointer select-none"
+                (click)="sortBy('total_vacantes_matriculados')"
               >
-                Matriculados
+                Matriculados {{ getSortIcon("total_vacantes_matriculados") }}
               </th>
+
               <th
-                class="p-3 font-semibold text-slate-900 border-b border-slate-200"
+                class="p-3 font-semibold text-slate-900 border-b border-slate-200 cursor-pointer select-none"
+                (click)="sortBy('n_ciclo')"
               >
-                Ciclo
+                Ciclo {{ getSortIcon("n_ciclo") }}
               </th>
             </tr>
           </thead>
