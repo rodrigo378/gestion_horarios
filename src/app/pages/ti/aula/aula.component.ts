@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { finalize } from 'rxjs/operators';
 import { AulaService } from '../../../services/aula.service';
 import { SiguService } from '../../../services/sigu.service';
 
@@ -21,31 +22,80 @@ export class AulaComponent implements OnInit {
   itemsPorPagina = 10;
   totalPaginas = 1;
 
+  cargando = true;
+  cargandoHorarios = false;
+  cargandoAulas = false;
+  actualizandoAula = false;
+
   constructor(
     private aulaService: AulaService,
     private siguService: SiguService,
   ) {}
 
   ngOnInit(): void {
+    this.cargarDatosIniciales();
+  }
+
+  cargarDatosIniciales() {
+    this.cargando = true;
+    this.cargandoHorarios = true;
+    this.cargandoAulas = true;
+
     this.getHorarios();
     this.getAulas();
   }
 
-  getHorarios() {
-    this.aulaService.gethorariosSigu().subscribe((data: any) => {
-      this.horarios = data.map((item: any) => ({
-        ...item,
-        aulaSeleccionada: item.id_aula || '',
-      }));
+  validarCargaCompleta() {
+    if (!this.cargandoHorarios && !this.cargandoAulas) {
+      this.cargando = false;
+    }
+  }
 
-      this.aplicarFiltros();
-    });
+  getHorarios() {
+    this.cargandoHorarios = true;
+
+    this.aulaService
+      .gethorariosSigu()
+      .pipe(
+        finalize(() => {
+          this.cargandoHorarios = false;
+          this.validarCargaCompleta();
+        }),
+      )
+      .subscribe({
+        next: (data: any) => {
+          this.horarios = data.map((item: any) => ({
+            ...item,
+            aulaSeleccionada: item.id_aula || '',
+          }));
+
+          this.aplicarFiltros();
+        },
+        error: (err: any) => {
+          console.error('Error al obtener horarios', err);
+        },
+      });
   }
 
   getAulas() {
-    this.siguService.getAulas().subscribe((data: any) => {
-      this.aulas = data;
-    });
+    this.cargandoAulas = true;
+
+    this.siguService
+      .getAulas()
+      .pipe(
+        finalize(() => {
+          this.cargandoAulas = false;
+          this.validarCargaCompleta();
+        }),
+      )
+      .subscribe({
+        next: (data: any) => {
+          this.aulas = data;
+        },
+        error: (err: any) => {
+          console.error('Error al obtener aulas', err);
+        },
+      });
   }
 
   aplicarFiltros() {
@@ -84,6 +134,7 @@ export class AulaComponent implements OnInit {
     this.totalPaginas = Math.ceil(
       this.horariosFiltrados.length / this.itemsPorPagina,
     );
+
     if (this.totalPaginas === 0) {
       this.totalPaginas = 1;
     }
@@ -111,69 +162,6 @@ export class AulaComponent implements OnInit {
     if (numero >= 1 && numero <= this.totalPaginas) {
       this.paginaActual = numero;
     }
-  }
-
-  get paginas(): number[] {
-    const paginas: number[] = [];
-    for (let i = 1; i <= this.totalPaginas; i++) {
-      paginas.push(i);
-    }
-    return paginas;
-  }
-
-  actualizarAula(item: any) {
-    const idAula = item.aulaSeleccionada ? Number(item.aulaSeleccionada) : 0;
-
-    const idsHorario = item.id_horarios
-      ? String(item.id_horarios)
-          .split(',')
-          .map((id: string) => Number(id.trim()))
-          .filter((id: number) => !!id)
-      : [];
-
-    console.log('id_horarios =>', idsHorario);
-    console.log('id_aula =>', idAula);
-
-    if (!idAula) {
-      console.warn('Debe seleccionar un aula');
-      return;
-    }
-
-    if (!idsHorario.length) {
-      console.warn('No hay id_horarios para actualizar');
-      return;
-    }
-
-    idsHorario.forEach((idHorario: number) => {
-      const payload = {
-        id_horario: idHorario,
-        id_aula: idAula,
-      };
-
-      console.log('payload =>', payload);
-
-      this.siguService.updateAula(payload).subscribe({
-        next: (resp: any) => {
-          console.log(
-            `Actualizado correctamente id_horario ${idHorario}`,
-            resp,
-          );
-        },
-        error: (err: any) => {
-          console.error(`Error al actualizar id_horario ${idHorario}`, err);
-        },
-      });
-    });
-
-    item.id_aula = idAula;
-  }
-
-  trackByHorario(index: number, item: any): any {
-    return item.id_horarios || item.courseid_temp || index;
-  }
-
-  trackByAula(index: number, aula: any): any {
-    return aula.id_aula || index;
   }
 
   get paginasVisibles(): (number | string)[] {
@@ -208,5 +196,79 @@ export class AulaComponent implements OnInit {
     paginas.push(total);
 
     return paginas;
+  }
+
+  actualizarAula(item: any) {
+    const idAula = item.aulaSeleccionada ? Number(item.aulaSeleccionada) : 0;
+
+    const idsHorario = item.id_horarios
+      ? String(item.id_horarios)
+          .split(',')
+          .map((id: string) => Number(id.trim()))
+          .filter((id: number) => !!id)
+      : [];
+
+    console.log('id_horarios =>', idsHorario);
+    console.log('id_aula =>', idAula);
+
+    if (!idAula) {
+      console.warn('Debe seleccionar un aula');
+      return;
+    }
+
+    if (!idsHorario.length) {
+      console.warn('No hay id_horarios para actualizar');
+      return;
+    }
+
+    this.actualizandoAula = true;
+
+    let completados = 0;
+    let huboError = false;
+
+    idsHorario.forEach((idHorario: number) => {
+      const payload = {
+        id_horario: idHorario,
+        id_aula: idAula,
+      };
+
+      console.log('payload =>', payload);
+
+      this.siguService
+        .updateAula(payload)
+        .pipe(
+          finalize(() => {
+            completados++;
+
+            if (completados === idsHorario.length) {
+              this.actualizandoAula = false;
+
+              if (!huboError) {
+                item.id_aula = idAula;
+              }
+            }
+          }),
+        )
+        .subscribe({
+          next: (resp: any) => {
+            console.log(
+              `Actualizado correctamente id_horario ${idHorario}`,
+              resp,
+            );
+          },
+          error: (err: any) => {
+            huboError = true;
+            console.error(`Error al actualizar id_horario ${idHorario}`, err);
+          },
+        });
+    });
+  }
+
+  trackByHorario(index: number, item: any): any {
+    return item.id_horarios || item.courseid_temp || index;
+  }
+
+  trackByAula(index: number, aula: any): any {
+    return aula.id_aula || index;
   }
 }

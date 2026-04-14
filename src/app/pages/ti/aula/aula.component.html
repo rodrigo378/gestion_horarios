@@ -1,3 +1,17 @@
+<div class="loading-overlay" *ngIf="cargando || actualizandoAula">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <h3>{{ cargando ? "Cargando datos..." : "Actualizando aula..." }}</h3>
+    <p>
+      {{
+        cargando
+          ? "Espere mientras se cargan horarios y aulas."
+          : "Espere mientras se guardan los cambios."
+      }}
+    </p>
+  </div>
+</div>
+
 <div class="page">
   <div class="card">
     <div class="card-header">
@@ -15,6 +29,7 @@
           placeholder="Buscar por nombre del curso"
           [(ngModel)]="filtroCurso"
           (input)="filtrarHorarios()"
+          [disabled]="cargando || actualizandoAula"
         />
       </div>
 
@@ -25,6 +40,7 @@
           placeholder="Buscar por sección"
           [(ngModel)]="filtroSeccion"
           (input)="filtrarHorarios()"
+          [disabled]="cargando || actualizandoAula"
         />
       </div>
 
@@ -35,12 +51,17 @@
           placeholder="Buscar por horario"
           [(ngModel)]="filtroHorario"
           (input)="filtrarHorarios()"
+          [disabled]="cargando || actualizandoAula"
         />
       </div>
 
       <div class="filter-group filter-btn">
         <label>&nbsp;</label>
-        <button class="btn btn-secondary" (click)="limpiarFiltros()">
+        <button
+          class="btn btn-secondary"
+          (click)="limpiarFiltros()"
+          [disabled]="cargando || actualizandoAula"
+        >
           Limpiar filtros
         </button>
       </div>
@@ -74,7 +95,11 @@
             <td>{{ item.horario || "Sin horario" }}</td>
             <td>{{ item.id_aula || "-" }}</td>
             <td>
-              <select [(ngModel)]="item.aulaSeleccionada" class="select-aula">
+              <select
+                [(ngModel)]="item.aulaSeleccionada"
+                class="select-aula"
+                [disabled]="cargando || actualizandoAula"
+              >
                 <option value="">Seleccione un aula</option>
                 <option
                   *ngFor="let aula of aulas; trackBy: trackByAula"
@@ -86,7 +111,11 @@
               </select>
             </td>
             <td>
-              <button class="btn btn-primary" (click)="actualizarAula(item)">
+              <button
+                class="btn btn-primary"
+                (click)="actualizarAula(item)"
+                [disabled]="cargando || actualizandoAula"
+              >
                 Actualizar
               </button>
             </td>
@@ -112,7 +141,7 @@
         <button
           class="btn-page"
           (click)="paginaAnterior()"
-          [disabled]="paginaActual === 1"
+          [disabled]="paginaActual === 1 || cargando || actualizandoAula"
         >
           Anterior
         </button>
@@ -123,6 +152,7 @@
             class="btn-page"
             [class.active]="pagina === paginaActual"
             (click)="irAPagina(+pagina)"
+            [disabled]="cargando || actualizandoAula"
           >
             {{ pagina }}
           </button>
@@ -131,10 +161,13 @@
             <span class="pagination-dots">...</span>
           </ng-template>
         </ng-container>
+
         <button
           class="btn-page"
           (click)="paginaSiguiente()"
-          [disabled]="paginaActual === totalPaginas"
+          [disabled]="
+            paginaActual === totalPaginas || cargando || actualizandoAula
+          "
         >
           Siguiente
         </button>
