@@ -71,6 +71,24 @@ export class SiguService {
     return this.http.get(`${this.apiUrl}/vacantes/20261`);
   }
 
+  getAulas() {
+    return this.http.get(`${this.apiUrl}/aula`);
+  }
+
+  updateAula(
+    payload: {
+      id_aula: number;
+      id_horario: number;
+    },
+    opts?: { wait?: boolean },
+  ) {
+    const wait = opts?.wait ? '1' : '0';
+    return this.http.patch<JobResponse>(
+      `${this.apiUrl}/tb_cur_grp_hor/update?wait=${wait}`,
+      payload,
+    );
+  }
+
   updateVacante(
     payload: {
       n_codper: number;

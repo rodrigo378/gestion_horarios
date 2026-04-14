@@ -12,13 +12,17 @@ export class AulaService {
 
   constructor(private http: HttpClient) {}
 
+  gethorariosSigu(): Observable<HR_Aula[]> {
+    return this.http.get<HR_Aula[]>(`${this.apiUrl}/sigu`);
+  }
+
   getAulas(): Observable<HR_Aula[]> {
     return this.http.get<HR_Aula[]>(this.apiUrl);
   }
 
   getAula(): Observable<HR_Aula[]> {
     return this.http.get<HR_Aula[]>(
-      `${this.apiUrl}/?horario=true&curso=true&docente=true&aula=true`
+      `${this.apiUrl}/?horario=true&curso=true&docente=true&aula=true`,
     );
   }
 

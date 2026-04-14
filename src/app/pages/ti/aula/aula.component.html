@@ -1,0 +1,144 @@
+<div class="page">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2>Gestión de Aulas por Horario</h2>
+        <p>Consulta horarios, busca registros y asigna aulas manualmente.</p>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label>Curso</label>
+        <input
+          type="text"
+          placeholder="Buscar por nombre del curso"
+          [(ngModel)]="filtroCurso"
+          (input)="filtrarHorarios()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Sección</label>
+        <input
+          type="text"
+          placeholder="Buscar por sección"
+          [(ngModel)]="filtroSeccion"
+          (input)="filtrarHorarios()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Horario</label>
+        <input
+          type="text"
+          placeholder="Buscar por horario"
+          [(ngModel)]="filtroHorario"
+          (input)="filtrarHorarios()"
+        />
+      </div>
+
+      <div class="filter-group filter-btn">
+        <label>&nbsp;</label>
+        <button class="btn btn-secondary" (click)="limpiarFiltros()">
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>ID Horario</th>
+            <th>Course ID</th>
+            <th>Curso</th>
+            <th>Sección</th>
+            <th>Ciclo</th>
+            <th>Horario</th>
+            <th>ID Aula</th>
+            <th>Seleccionar aula</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of horariosPaginados; trackBy: trackByHorario">
+            <td>{{ item.id_horarios || "-" }}</td>
+            <td class="course-id">{{ item.courseid_temp || "-" }}</td>
+            <td>{{ item.c_nomcur }}</td>
+            <td>
+              <span class="badge-section">{{ item.secciones }}</span>
+            </td>
+            <td>{{ item.n_ciclo }}</td>
+            <td>{{ item.horario || "Sin horario" }}</td>
+            <td>{{ item.id_aula || "-" }}</td>
+            <td>
+              <select [(ngModel)]="item.aulaSeleccionada" class="select-aula">
+                <option value="">Seleccione un aula</option>
+                <option
+                  *ngFor="let aula of aulas; trackBy: trackByAula"
+                  [value]="aula.id_aula"
+                >
+                  Aula {{ aula.c_codaula }} | Piso {{ aula.n_piso }} | Cap.
+                  {{ aula.n_capacidad }}
+                </option>
+              </select>
+            </td>
+            <td>
+              <button class="btn btn-primary" (click)="actualizarAula(item)">
+                Actualizar
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="horariosPaginados.length === 0">
+            <td colspan="9" class="empty-state">No se encontraron registros</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-container" *ngIf="horariosFiltrados.length > 0">
+      <div class="pagination-info">
+        Mostrando
+        {{ (paginaActual - 1) * itemsPorPagina + 1 }}
+        -
+        {{ (paginaActual - 1) * itemsPorPagina + horariosPaginados.length }}
+        de {{ horariosFiltrados.length }} registros
+      </div>
+
+      <div class="pagination-controls">
+        <button
+          class="btn-page"
+          (click)="paginaAnterior()"
+          [disabled]="paginaActual === 1"
+        >
+          Anterior
+        </button>
+
+        <ng-container *ngFor="let pagina of paginasVisibles">
+          <button
+            *ngIf="pagina !== '...'; else puntos"
+            class="btn-page"
+            [class.active]="pagina === paginaActual"
+            (click)="irAPagina(+pagina)"
+          >
+            {{ pagina }}
+          </button>
+
+          <ng-template #puntos>
+            <span class="pagination-dots">...</span>
+          </ng-template>
+        </ng-container>
+        <button
+          class="btn-page"
+          (click)="paginaSiguiente()"
+          [disabled]="paginaActual === totalPaginas"
+        >
+          Siguiente
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
