@@ -75,6 +75,10 @@ export class SiguService {
     return this.http.get(`${this.apiUrl}/aula`);
   }
 
+  gethorarioAula(id_aula: number) {
+    return this.http.get(`${this.apiUrl}/aula/${id_aula}`);
+  }
+
   updateAula(
     payload: {
       id_aula: number;

@@ -1,0 +1,167 @@
+<div class="contenedor-aulas">
+  <div class="hero-aulas">
+    <div class="hero-overlay"></div>
+
+    <div class="hero-contenido">
+      <div class="hero-badge">GESTIÓN DE AULAS</div>
+      <h2>Asignar Aula</h2>
+      <p>
+        Busca un aula, selecciónala y revisa su disponibilidad semanal de forma
+        visual y rápida.
+      </p>
+    </div>
+  </div>
+
+  <div class="panel-principal">
+    <div class="panel panel-busqueda">
+      <div class="panel-head">
+        <div>
+          <span class="panel-etiqueta">Búsqueda</span>
+          <h3>Selecciona un aula</h3>
+        </div>
+      </div>
+
+      <label class="label-titulo">Aula</label>
+
+      <div class="buscador-select">
+        <div class="input-wrapper">
+          <span class="input-icono">⌕</span>
+
+          <input
+            type="text"
+            [(ngModel)]="textoBusqueda"
+            (focus)="abrirDropdown()"
+            (input)="filtrarAulas(); dropdownAbierto = true"
+            placeholder="Buscar por código, piso, capacidad o pabellón"
+            class="input-buscador"
+          />
+
+          <button
+            *ngIf="textoBusqueda"
+            type="button"
+            class="btn-limpiar"
+            (click)="limpiarSeleccion()"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="dropdown-aulas" *ngIf="dropdownAbierto">
+          <div
+            class="dropdown-scroll"
+            *ngIf="aulasFiltradas.length > 0; else sinResultados"
+          >
+            <div
+              class="item-aula"
+              *ngFor="let aula of aulasFiltradas"
+              (click)="seleccionarAulaDesdeLista(aula)"
+            >
+              <div class="item-aula-superior">
+                <div class="item-aula-codigo">{{ aula.c_codaula }}</div>
+                <div class="item-aula-chip">{{ aula.n_capacidad }} cap.</div>
+              </div>
+
+              <div class="item-aula-detalle">
+                Piso {{ aula.n_piso }} · Pabellón {{ aula.id_pab }}
+              </div>
+
+              <div class="item-aula-extra">
+                {{ aula.c_detalle || "Sin detalle adicional" }}
+              </div>
+            </div>
+          </div>
+
+          <ng-template #sinResultados>
+            <div class="sin-resultados">No se encontraron aulas</div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel panel-info" *ngIf="aulaSeleccionada">
+      <div class="panel-head">
+        <div>
+          <span class="panel-etiqueta">Resumen</span>
+          <h3>Información del aula</h3>
+        </div>
+      </div>
+
+      <div class="aula-destacada">
+        <div class="aula-destacada-codigo">
+          {{ aulaSeleccionada.c_codaula }}
+        </div>
+        <div class="aula-destacada-texto">Aula seleccionada</div>
+      </div>
+
+      <div class="card-info-body">
+        <div class="dato dato-azul">
+          <span class="dato-label">Piso</span>
+          <span class="dato-valor">{{ aulaSeleccionada.n_piso }}</span>
+        </div>
+
+        <div class="dato dato-morado">
+          <span class="dato-label">Capacidad</span>
+          <span class="dato-valor">{{ aulaSeleccionada.n_capacidad }}</span>
+        </div>
+
+        <div class="dato dato-celeste">
+          <span class="dato-label">Pabellón</span>
+          <span class="dato-valor">{{ aulaSeleccionada.id_pab }}</span>
+        </div>
+
+        <div class="dato dato-grande">
+          <span class="dato-label">Detalle</span>
+          <span class="dato-valor">
+            {{ aulaSeleccionada.c_detalle || "Sin detalle" }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendario-panel" *ngIf="aulaSeleccionadaId">
+    <div class="calendario-top">
+      <div>
+        <span class="panel-etiqueta">Disponibilidad</span>
+        <h3>Horario semanal del aula</h3>
+        <p>Visualización de ocupación de lunes a domingo.</p>
+      </div>
+    </div>
+
+    <div class="grid-semana">
+      <div class="card-dia" *ngFor="let dia of diasSemana">
+        <div class="card-dia-head">
+          <span class="dia-corto">{{ dia.corto }}</span>
+          <span class="dia-nombre">{{ dia.nombre }}</span>
+        </div>
+
+        <div
+          class="card-dia-body"
+          *ngIf="tieneHorariosEnDia(dia.id); else sinHorario"
+        >
+          <div
+            class="bloque-horario"
+            *ngFor="let horario of obtenerHorariosPorDia(dia.id)"
+          >
+            <div class="bloque-linea"></div>
+
+            <div class="hora-principal">
+              {{ formatearRangoHorario(horario) }}
+            </div>
+
+            <div class="hora-secundaria">
+              Periodo académico {{ horario.n_codper }}
+            </div>
+          </div>
+        </div>
+
+        <ng-template #sinHorario>
+          <div class="sin-horario">
+            <div class="sin-horario-icono">○</div>
+            <span>Sin horarios</span>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

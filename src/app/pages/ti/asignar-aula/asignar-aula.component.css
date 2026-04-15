@@ -1,0 +1,500 @@
+.contenedor-aulas {
+  min-height: 100vh;
+  padding: 24px;
+  box-sizing: border-box;
+  background: #f6f8fb;
+  color: #1e293b;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* HERO */
+.hero-aulas {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+  padding: 32px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(255, 255, 255, 0.08),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(255, 255, 255, 0.06),
+      transparent 30%
+    );
+  pointer-events: none;
+}
+
+.hero-contenido {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero-contenido h2 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.hero-contenido p {
+  margin: 10px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* LAYOUT */
+.panel-principal {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.panel,
+.calendario-panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.panel {
+  padding: 24px;
+}
+
+.calendario-panel {
+  padding: 24px;
+}
+
+.panel-head,
+.calendario-top {
+  margin-bottom: 18px;
+}
+
+.panel-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.panel-head h3,
+.calendario-top h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.calendario-top p {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* BUSCADOR */
+.label-titulo {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.buscador-select {
+  position: relative;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-icono {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 15px;
+  pointer-events: none;
+}
+
+.input-buscador {
+  width: 100%;
+  height: 52px;
+  padding: 0 44px 0 42px;
+  border: 1px solid #dbe2ea;
+  border-radius: 16px;
+  background: #f8fafc;
+  font-size: 14px;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.25s ease;
+}
+
+.input-buscador:focus {
+  border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.btn-limpiar {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #334155;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 28px;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.btn-limpiar:hover {
+  background: #cbd5e1;
+}
+
+.dropdown-aulas {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.1);
+}
+
+.dropdown-scroll {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.item-aula {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #ffffff;
+}
+
+.item-aula:last-child {
+  border-bottom: none;
+}
+
+.item-aula:hover {
+  background: #f8fbff;
+}
+
+.item-aula-superior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.item-aula-codigo {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.item-aula-chip {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.item-aula-detalle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 4px;
+}
+
+.item-aula-extra {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.sin-resultados {
+  padding: 18px;
+  text-align: center;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* INFO AULA */
+.aula-destacada {
+  margin-bottom: 18px;
+  padding: 20px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: #ffffff;
+}
+
+.aula-destacada-codigo {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+
+.aula-destacada-texto {
+  font-size: 13px;
+  opacity: 0.88;
+  font-weight: 500;
+}
+
+.card-info-body {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.dato {
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.dato:hover {
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+}
+
+.dato-grande {
+  grid-column: span 2;
+}
+
+.dato-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.dato-valor {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* CALENDARIO */
+.grid-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 14px;
+}
+
+.card-dia {
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: #ffffff;
+  min-height: 240px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+  transition: all 0.2s ease;
+}
+
+.card-dia:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 24px rgba(15, 23, 42, 0.08);
+}
+
+.card-dia-head {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  text-align: center;
+  border-radius: 20px 20px 0 0;
+}
+
+.dia-corto {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.dia-nombre {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.card-dia-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bloque-horario {
+  padding: 12px 13px;
+  border-left: 4px solid #3b82f6;
+  border-radius: 14px;
+  background: #f8fbff;
+  border-top: 1px solid #e0ecff;
+  border-right: 1px solid #e0ecff;
+  border-bottom: 1px solid #e0ecff;
+}
+
+.bloque-linea {
+  display: none;
+}
+
+.hora-principal {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 4px;
+}
+
+.hora-secundaria {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.sin-horario {
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 13px;
+  text-align: center;
+  padding: 18px;
+}
+
+.sin-horario-icono {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  font-weight: 700;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1400px) {
+  .grid-semana {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .panel-principal {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-semana {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .contenedor-aulas {
+    padding: 16px;
+  }
+
+  .hero-aulas {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+
+  .hero-contenido h2 {
+    font-size: 26px;
+  }
+
+  .panel,
+  .calendario-panel {
+    border-radius: 18px;
+    padding: 18px;
+  }
+
+  .card-info-body {
+    grid-template-columns: 1fr;
+  }
+
+  .dato-grande {
+    grid-column: span 1;
+  }
+
+  .grid-semana {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .grid-semana {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-contenido h2 {
+    font-size: 22px;
+  }
+}

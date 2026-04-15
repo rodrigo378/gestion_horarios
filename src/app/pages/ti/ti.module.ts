@@ -36,6 +36,7 @@ import { SincronizarComponent } from './sincronizar/sincronizar.component';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { CrearMoodleComponent } from './crear-moodle/crear-moodle.component';
 import { AulaComponent } from './aula/aula.component';
+import { AsignarAulaComponent } from './asignar-aula/asignar-aula.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { AulaComponent } from './aula/aula.component';
     SincronizarComponent,
     CrearMoodleComponent,
     AulaComponent,
+    AsignarAulaComponent,
   ],
   imports: [
     PipesModule,
