@@ -20,9 +20,10 @@ export class VerTransversalComponent {
   totalCursos!: number;
 
   periodos: HR_Periodo[] = [
-    { n_codper: 20251, f_cierre: new Date() },
-    { n_codper: 20252, f_cierre: new Date() },
-    { n_codper: 20261, f_cierre: new Date() },
+    // { n_codper: 20251, f_cierre: new Date() },
+    // { n_codper: 20252, f_cierre: new Date() },
+    // { n_codper: 20261, f_cierre: new Date() },
+    { n_codper: 20262, f_cierre: new Date() },
   ];
 
   paginaActual: number = 1;
@@ -85,7 +86,7 @@ export class VerTransversalComponent {
   selectEspecialidad: string = '';
   selectModalidad: string = '';
   selectPlan: string = '2025';
-  selectPeriodo: number = 20261;
+  selectPeriodo: number = 20262;
   selectCiclo: string = '';
 
   arrayCheckboxCursos: number[] = [];

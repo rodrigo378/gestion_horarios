@@ -134,7 +134,7 @@ export class VerTurnosComponent implements OnInit {
   editCache: { [key: string]: { edit: boolean; data: HR_Turno } } = {};
 
   filtros = {
-    n_codper: 20261,
+    n_codper: 20262,
     c_codfac: '',
     c_codesp: '',
     c_codmod: '',
@@ -142,7 +142,11 @@ export class VerTurnosComponent implements OnInit {
     c_grpcur: '',
   };
 
-  periodos = [{ n_codper: 20251 }, { n_codper: 20261 }];
+  periodos = [
+    // { n_codper: 20251 },
+    // { n_codper: 20261 },
+    { n_codper: 20262 },
+  ];
   ciclos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   modalidades = [
