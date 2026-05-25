@@ -68,7 +68,7 @@ export class SiguService {
   // Vacantes
   // -------------------------
   getVacantes() {
-    return this.http.get(`${this.apiUrl}/vacantes/20261`);
+    return this.http.get(`${this.apiUrl}/vacantes/20262`);
   }
 
   getAulas() {

@@ -63,7 +63,7 @@ export class VerTurnoComponent {
   especialidadesFiltradas: any[] = [];
 
   filtros = {
-    n_codper: '20261',
+    n_codper: '20262',
     c_codfac: '',
     c_codesp: '',
     c_codmod: '',

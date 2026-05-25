@@ -222,7 +222,7 @@ export class ContadorComponent {
   //   });
   // }
   getContador() {
-    this.contadorService.getContador(20261).subscribe((data) => {
+    this.contadorService.getContador(20262).subscribe((data) => {
       this.contador = data;
       this.contadorFiltrado = data;
 

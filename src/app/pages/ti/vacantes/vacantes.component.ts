@@ -76,7 +76,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
   constructor(
     private siguServices: SiguService,
     private jobService: JobService,
-    private msg: NzMessageService
+    private msg: NzMessageService,
   ) {}
 
   ngOnInit(): void {
@@ -263,7 +263,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
     // 5) enqueue al backend (Nest)
     this.siguServices
       .updateVacante({
-        n_codper: 20261, // aquí tu periodo fijo (si aplica)
+        n_codper: 20262, // aquí tu periodo fijo (si aplica)
         c_codfac: row.c_codfac,
         c_codcur: row.c_codcur,
         c_grpcur: row.c_grpcur,
@@ -309,14 +309,14 @@ export class VacantesComponent implements OnInit, OnDestroy {
             catchError((err) => {
               console.error('Job status error =>', err);
               return of(null as unknown as JobResponse);
-            })
-          )
+            }),
+          ),
         ),
         // seguimos mientras no sea completed/failed; el true hace que emita el último estado también
         takeWhile((job) => {
           if (!job) return true;
           return job.state !== 'completed' && job.state !== 'failed';
-        }, true)
+        }, true),
       )
       .subscribe((job) => {
         // timeout manual
@@ -327,7 +327,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
           this.savingJobId = null;
           this.savingRowId = null;
           this.msg.warning(
-            'Sigue procesándose en segundo plano. Refresca en unos segundos.'
+            'Sigue procesándose en segundo plano. Refresca en unos segundos.',
           );
           this.jobPollingSub?.unsubscribe();
           return;
@@ -345,7 +345,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
           if (affected <= 0) {
             this.onJobFailed(
               rowId,
-              'El worker terminó pero no afectó filas (affectedRows=0).'
+              'El worker terminó pero no afectó filas (affectedRows=0).',
             );
             this.jobPollingSub?.unsubscribe();
             return;

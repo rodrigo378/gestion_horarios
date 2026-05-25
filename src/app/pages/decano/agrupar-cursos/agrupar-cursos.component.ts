@@ -22,7 +22,7 @@ export class AgruparCursosComponent {
   periodos: HR_Periodo[] = [
     // { n_codper: 20251, f_cierre: new Date() },
     // { n_codper: 20252, f_cierre: new Date() },
-    // { n_codper: 20261, f_cierre: new Date() },
+    // { n_codper: 20262, f_cierre: new Date() },
     { n_codper: 20262, f_cierre: new Date() },
   ];
 
@@ -95,7 +95,7 @@ export class AgruparCursosComponent {
   filtros = {
     c_codmod: '',
     n_codper: '2025',
-    periodo: 20261,
+    periodo: 20262,
     c_codfac: '',
     c_codesp: '',
     n_ciclo: 0,
@@ -233,7 +233,7 @@ export class AgruparCursosComponent {
     this.filtros = {
       c_codmod: '',
       n_codper: '2025',
-      periodo: 20261,
+      periodo: 20262,
       c_codfac: '',
       c_codesp: '',
       n_ciclo: 0,
@@ -276,7 +276,7 @@ export class AgruparCursosComponent {
           this.filtros = {
             c_codmod: '',
             n_codper: '2025',
-            periodo: 20261,
+            periodo: 20262,
             c_codfac: '',
             c_codesp: '',
             n_ciclo: 0,

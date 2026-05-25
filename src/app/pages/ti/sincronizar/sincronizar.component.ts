@@ -21,11 +21,11 @@ export class SincronizarComponent implements OnInit {
 
   // ✅ Periodo (n_codper)
   periodos = [
-    { label: '20261 (Activo)', value: 20261 },
+    { label: '20262 (Activo)', value: 20262 },
     { label: '20252', value: 20252 },
     { label: '20251', value: 20251 },
   ];
-  selectedPeriodo: number = 20261;
+  selectedPeriodo: number = 20262;
 
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';

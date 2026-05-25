@@ -144,7 +144,7 @@ export class VerTurnosComponent implements OnInit {
 
   periodos = [
     // { n_codper: 20251 },
-    // { n_codper: 20261 },
+    // { n_codper: 20262 },
     { n_codper: 20262 },
   ];
   ciclos = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -263,7 +263,7 @@ export class VerTurnosComponent implements OnInit {
         Validators.required,
       ],
       c_codesp: ['', Validators.required],
-      n_codper: [20261, Validators.required],
+      n_codper: [20262, Validators.required],
       c_grpcur: [[], Validators.required],
       n_ciclo: ['', Validators.required],
       c_codmod: ['', Validators.required],
@@ -541,7 +541,7 @@ export class VerTurnosComponent implements OnInit {
     this.formularioHorario.reset({
       c_codfac: facultadDefault,
       c_codesp: '',
-      n_codper: 20261,
+      n_codper: 20262,
       c_grpcur: [],
       n_ciclo: '',
       c_codmod: '',
@@ -624,7 +624,7 @@ export class VerTurnosComponent implements OnInit {
   }
 
   exportarExcel() {
-    this.contadorService.getContador(20261).subscribe((data) => {
+    this.contadorService.getContador(20262).subscribe((data) => {
       this.contadorFiltrado = data;
       if (!this.contadorFiltrado.length) {
         this.alertService.error('No hay datos para exportar.');

@@ -27,7 +27,7 @@
           >
             <nz-option nzValue="" nzLabel="Periodo"></nz-option>
             <nz-option nzValue="20251" nzLabel="20251"></nz-option>
-            <nz-option nzValue="20261" nzLabel="20261"></nz-option>
+            <nz-option nzValue="20262" nzLabel="20262"></nz-option>
           </nz-select>
 
           <nz-select
@@ -47,10 +47,10 @@
           >
             <nz-option nzValue="" nzLabel="Especialidad"></nz-option>
             @for (esp of especialidadesFiltradas; track esp.codesp) {
-            <nz-option
-              nzValue="{{ esp.codesp }}"
-              nzLabel="{{ esp.codesp }} - {{ esp.nomesp }}"
-            ></nz-option>
+              <nz-option
+                nzValue="{{ esp.codesp }}"
+                nzLabel="{{ esp.codesp }} - {{ esp.nomesp }}"
+              ></nz-option>
             }
           </nz-select>
 
@@ -150,72 +150,72 @@
               ></th>
 
               @for (column of listOfColumn; track column) {
-              <th [nzWidth]="column.nzWidth" class="font-semibold">
-                {{ column.title }}
-              </th>
+                <th [nzWidth]="column.nzWidth" class="font-semibold">
+                  {{ column.title }}
+                </th>
               }
             </tr>
           </thead>
 
           <tbody class="divide-y divide-slate-100">
             @for (data of editRowTable.data; track data) {
-            <tr class="hover:bg-slate-50 transition-colors">
-              <td
-                [nzChecked]="setOfCheckedId.has(data.turno.id)"
-                (nzCheckedChange)="onItemChecked(data.turno.id, $event)"
-              ></td>
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td
+                  [nzChecked]="setOfCheckedId.has(data.turno.id)"
+                  (nzCheckedChange)="onItemChecked(data.turno.id, $event)"
+                ></td>
 
-              <td>{{ data.turno.n_codper }}</td>
-              <td>{{ data.turno.n_codpla }}</td>
-              <td>{{ data.turno.c_codfac }}</td>
-              <td>{{ data.turno.c_codesp }}</td>
-              <td>{{ data.turno.c_grpcur }}</td>
-              <td>{{ data.turno.n_ciclo }}</td>
-              <td>{{ data.turno.requiere_reexportacion }}</td>
-              <td>{{ data.turno.c_nommod }}</td>
+                <td>{{ data.turno.n_codper }}</td>
+                <td>{{ data.turno.n_codpla }}</td>
+                <td>{{ data.turno.c_codfac }}</td>
+                <td>{{ data.turno.c_codesp }}</td>
+                <td>{{ data.turno.c_grpcur }}</td>
+                <td>{{ data.turno.n_ciclo }}</td>
+                <td>{{ data.turno.requiere_reexportacion }}</td>
+                <td>{{ data.turno.c_nommod }}</td>
 
-              <!-- ESTADO GENERAL -->
-              <td>
-                <span
-                  class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset uppercase"
-                  [ngClass]="getEstadoColor(getEstadoGeneral(data))"
-                >
-                  {{ getEstadoGeneral(data) }}
-                </span>
-              </td>
+                <!-- ESTADO GENERAL -->
+                <td>
+                  <span
+                    class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset uppercase"
+                    [ngClass]="getEstadoColor(getEstadoGeneral(data))"
+                  >
+                    {{ getEstadoGeneral(data) }}
+                  </span>
+                </td>
 
-              <td>
-                <span
-                  class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset uppercase"
-                  [ngClass]="{
-                    'bg-emerald-100 text-emerald-700 ring-emerald-600/20':
-                      data.turno.subido_sigu === true,
-                    'bg-slate-100 text-slate-600 ring-slate-400/20':
-                      data.turno.subido_sigu === false
-                  }"
-                >
-                  {{ data.turno.subido_sigu ? "true" : "false" }}
-                </span>
-              </td>
+                <td>
+                  <span
+                    class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset uppercase"
+                    [ngClass]="{
+                      'bg-emerald-100 text-emerald-700 ring-emerald-600/20':
+                        data.turno.subido_sigu === true,
+                      'bg-slate-100 text-slate-600 ring-slate-400/20':
+                        data.turno.subido_sigu === false,
+                    }"
+                  >
+                    {{ data.turno.subido_sigu ? "true" : "false" }}
+                  </span>
+                </td>
 
-              <td>
-                <button
-                  type="button"
-                  (click)="clickAsignarHorario(data.turno.id)"
-                  class="text-slate-700 hover:text-slate-900 transition-colors"
-                >
-                  <i class="fa-solid fa-calendar-days fa-2x"></i>
-                </button>
+                <td>
+                  <button
+                    type="button"
+                    (click)="clickAsignarHorario(data.turno.id)"
+                    class="text-slate-700 hover:text-slate-900 transition-colors"
+                  >
+                    <i class="fa-solid fa-calendar-days fa-2x"></i>
+                  </button>
 
-                <button
-                  type="button"
-                  (click)="clickCompararSigu(data.turno)"
-                  class="ml-3 text-blue-600 hover:text-blue-800 transition-colors"
-                >
-                  <i class="fa-solid fa-code-compare fa-xl"></i>
-                </button>
-              </td>
-            </tr>
+                  <button
+                    type="button"
+                    (click)="clickCompararSigu(data.turno)"
+                    class="ml-3 text-blue-600 hover:text-blue-800 transition-colors"
+                  >
+                    <i class="fa-solid fa-code-compare fa-xl"></i>
+                  </button>
+                </td>
+              </tr>
             }
           </tbody>
         </nz-table>
@@ -282,7 +282,7 @@
                     class="p-1 rounded"
                     [ngClass]="{
                       'bg-green-100 text-green-700': isCursoSoloHr(cod),
-                      'bg-blue-100 text-blue-700': isCursoCoincide(cod)
+                      'bg-blue-100 text-blue-700': isCursoCoincide(cod),
                     }"
                   >
                     {{ cod }} - {{ getCursoNombreHr(cod) }}
@@ -292,7 +292,7 @@
                     class="p-1 rounded"
                     [ngClass]="{
                       'bg-red-100 text-red-700': isCursoSoloSigu(cod),
-                      'bg-blue-100 text-blue-700': isCursoCoincide(cod)
+                      'bg-blue-100 text-blue-700': isCursoCoincide(cod),
                     }"
                   >
                     {{ getCursoNombreSigu(cod) }}
@@ -353,7 +353,7 @@
                     class="p-1 rounded"
                     [ngClass]="{
                       'bg-green-100 text-green-700': isDocenteSoloHr(dni),
-                      'bg-blue-100 text-blue-700': isDocenteCoincide(dni)
+                      'bg-blue-100 text-blue-700': isDocenteCoincide(dni),
                     }"
                   >
                     {{ dni }}
@@ -367,7 +367,7 @@
                     class="p-1 rounded"
                     [ngClass]="{
                       'bg-red-100 text-red-700': isDocenteSoloSigu(dni),
-                      'bg-blue-100 text-blue-700': isDocenteCoincide(dni)
+                      'bg-blue-100 text-blue-700': isDocenteCoincide(dni),
                     }"
                   >
                     {{ getNombreDocenteSigu(dni) }}

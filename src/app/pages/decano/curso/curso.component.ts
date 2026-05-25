@@ -68,7 +68,7 @@ export class CursoComponent implements OnInit {
 //     "turno_id": 4,
 //     "turno": {
 //         "id": 4,
-//         "n_codper": 20261,
+//         "n_codper": 20262,
 //         "n_codpla": 2025,
 //         "c_codfac": "E",
 //         "nom_fac": "FACULTAD DE INGENIERÍA Y NEGOCIOS",
@@ -87,7 +87,7 @@ export class CursoComponent implements OnInit {
 //         "permiso_aula": false,
 //         "permiso_horario": false,
 //         "periodo": {
-//             "n_codper": 20261,
+//             "n_codper": 20262,
 //             "f_cierre": "2025-11-19T10:31:15.000Z"
 //         }
 //     },
@@ -106,7 +106,7 @@ export class CursoComponent implements OnInit {
 //                 "turno_id": 4,
 //                 "turno": {
 //                     "id": 4,
-//                     "n_codper": 20261,
+//                     "n_codper": 20262,
 //                     "n_codpla": 2025,
 //                     "c_codfac": "E",
 //                     "nom_fac": "FACULTAD DE INGENIERÍA Y NEGOCIOS",

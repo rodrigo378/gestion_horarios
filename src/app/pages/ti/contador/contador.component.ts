@@ -229,7 +229,7 @@ export class ContadorComponent implements OnInit {
   //   });
   // }
   getContador() {
-    this.contadorService.getContador(20261).subscribe((data) => {
+    this.contadorService.getContador(20262).subscribe((data) => {
       this.contador = data;
       this.contadorFiltrado = data;
 
