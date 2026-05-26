@@ -183,7 +183,7 @@ export class AsignarHorarioComponent
     private horarioService: HorarioService,
     private alertService: AlertService,
     private docenteService: DocenteService,
-    private aulaService: AulaService
+    private aulaService: AulaService,
   ) {
     effect(() => {
       const user = this.ctx.userConfig()?.user;
@@ -193,11 +193,12 @@ export class AsignarHorarioComponent
           'ludmilia.samaniego@uma.edu.pe',
           'rodrigo.palomino@uma.edu.pe',
           'carlos.nicho@uma.edu.pe',
+          'marcelo.gonzales@uma.edu.pe',
         ];
 
         // 🧠 Verifica si el correo está en la lista (sin importar mayúsculas/minúsculas)
         const tienePermiso = permitidos.some(
-          (correo) => correo.toLowerCase() === user.email.toLowerCase()
+          (correo) => correo.toLowerCase() === user.email.toLowerCase(),
         );
 
         if (tienePermiso) {
@@ -370,7 +371,7 @@ export class AsignarHorarioComponent
   onEventClick(arg: any) {
     if (this.bloqueoTotal) {
       this.alertService.warn(
-        'Este turno fue exportado al SIGU y no puede modificarse.'
+        'Este turno fue exportado al SIGU y no puede modificarse.',
       );
       return;
     }
@@ -389,7 +390,7 @@ export class AsignarHorarioComponent
 
       // mostrar aviso
       this.alertService.warn(
-        'Este turno está exportado. Solo puedes actualizar el docente.'
+        'Este turno está exportado. Solo puedes actualizar el docente.',
       );
     }
 
@@ -432,7 +433,7 @@ export class AsignarHorarioComponent
     const maxParaEdicion = this.getHorasMaximasParaEdicion(
       codigo,
       tipo,
-      horas50
+      horas50,
     );
 
     this.eventoSeleccionado = e;
@@ -454,7 +455,7 @@ export class AsignarHorarioComponent
     const docenteId = ext['docente_id'] ?? null;
     if (docenteId) {
       const docenteEncontrado = this.docentesFiltrados.find(
-        (d) => d.id === docenteId
+        (d) => d.id === docenteId,
       );
       this.selectedDocente = docenteEncontrado || null;
     } else {
@@ -550,7 +551,7 @@ export class AsignarHorarioComponent
   private existeSolapeRango(
     start: Date,
     end: Date,
-    excludeEventId?: string
+    excludeEventId?: string,
   ): boolean {
     const api = this.calendarComponent?.getApi();
     if (!api) return false;
@@ -578,7 +579,7 @@ export class AsignarHorarioComponent
     // 🚫 BLOQUEO TOTAL → revertir inmediatamente
     if (this.bloqueoTotal) {
       this.alertService.warn(
-        'Este turno fue exportado al SIGU y no puede modificarse.'
+        'Este turno fue exportado al SIGU y no puede modificarse.',
       );
       arg.revert();
       return;
@@ -587,7 +588,7 @@ export class AsignarHorarioComponent
     // 🚫 SOLO DOCENTE → tampoco se permite mover el horario
     if (this.permitirSoloDocente) {
       this.alertService.warn(
-        'Este turno está exportado. Solo puedes actualizar el docente.'
+        'Este turno está exportado. Solo puedes actualizar el docente.',
       );
       arg.revert();
       return;
@@ -612,7 +613,7 @@ export class AsignarHorarioComponent
     const maxParaEdicion = this.getHorasMaximasParaEdicion(
       codigo,
       tipo,
-      horas50
+      horas50,
     );
 
     this.eventoSeleccionado = e;
@@ -634,7 +635,7 @@ export class AsignarHorarioComponent
     const docenteId = ext['docente_id'] ?? null;
     if (docenteId) {
       const docenteEncontrado = this.docentesFiltrados.find(
-        (d) => d.id === docenteId
+        (d) => d.id === docenteId,
       );
       this.selectedDocente = docenteEncontrado || null;
     } else {
@@ -657,12 +658,12 @@ export class AsignarHorarioComponent
         if (this.turno.permiso_docente) {
           this.permitirSoloDocente = true;
           this.alertService.warn(
-            'Este turno está exportado. Solo puedes actualizar el docente.'
+            'Este turno está exportado. Solo puedes actualizar el docente.',
           );
         } else {
           this.bloqueoTotal = true;
           this.alertService.warn(
-            'Este turno fue exportado al SIGU y no puede modificarse.'
+            'Este turno fue exportado al SIGU y no puede modificarse.',
           );
         }
       }
@@ -705,10 +706,10 @@ export class AsignarHorarioComponent
       c_codmod === 1
         ? 'Presencial'
         : c_codmod === 2
-        ? 'Semipresencial'
-        : c_codmod === 3
-        ? 'Virtual'
-        : '—';
+          ? 'Semipresencial'
+          : c_codmod === 3
+            ? 'Virtual'
+            : '—';
 
     const out: CursoCard[] = [];
     for (const item of data) {
@@ -781,7 +782,7 @@ export class AsignarHorarioComponent
         codigo: curso.c_codcur,
         tipo: curso.tipo === 'teoria' ? 'Teoría' : 'Práctica',
         n_horas: 1,
-        h_umaPlus: curso.tipo === 'teoria' ? curso.h_umaPlus ?? 0 : 0,
+        h_umaPlus: curso.tipo === 'teoria' ? (curso.h_umaPlus ?? 0) : 0,
         grupos_hijo: curso.grupos_hijos ?? [],
         c_nom_cur_area: curso.c_nom_cur_area, // ⭐ AÑADIDO
       },
@@ -808,11 +809,11 @@ export class AsignarHorarioComponent
 
       const start = this.buildDateFromCurrentWeek(
         this.normalizarDia(h.dia),
-        h.h_inicio
+        h.h_inicio,
       );
       const end = this.buildDateFromCurrentWeek(
         this.normalizarDia(h.dia),
-        h.h_fin
+        h.h_fin,
       );
 
       let color = isTeoria ? '#3788d8' : '#28a745';
@@ -839,10 +840,10 @@ export class AsignarHorarioComponent
         modalidadTxt === 'VIR'
           ? 'Virtual'
           : modalidadTxt === 'PRE'
-          ? 'Presencial'
-          : modalidadTxt === 'SEMIPRESENCIAL'
-          ? 'Semipresencial'
-          : modalidadTxt || '—';
+            ? 'Presencial'
+            : modalidadTxt === 'SEMIPRESENCIAL'
+              ? 'Semipresencial'
+              : modalidadTxt || '—';
 
       api.addEvent({
         id: `loaded-${h.id}`,
@@ -895,7 +896,7 @@ export class AsignarHorarioComponent
       this.alertService.warn(
         this.bloqueoTotal
           ? 'Este turno fue exportado al SIGU y no puede modificarse.'
-          : 'Este turno está exportado. Solo puedes actualizar el docente.'
+          : 'Este turno está exportado. Solo puedes actualizar el docente.',
       );
       info.event.remove();
       return;
@@ -920,14 +921,14 @@ export class AsignarHorarioComponent
 
     if (!this.boolTransversal && area === 'ESTUDIOS GENERALES') {
       this.alertService.warn(
-        'Los cursos de Estudios Generales no pueden asignarse.'
+        'Los cursos de Estudios Generales no pueden asignarse.',
       );
       return;
     }
 
     const horasDisp = this.getHorasDisponibles(
       dragData?.extendedProps?.codigo,
-      dragData?.extendedProps?.tipo
+      dragData?.extendedProps?.tipo,
     );
 
     if (!horasDisp || horasDisp <= 0) {
@@ -970,7 +971,7 @@ export class AsignarHorarioComponent
       this.cursoSeleccionado?.extendedProps?.grupos_hijo?.[0]?.tipo === 0
     ) {
       this.alertService.warn(
-        'No puedes crear horarios para cursos transversales.'
+        'No puedes crear horarios para cursos transversales.',
       );
       return;
     }
@@ -980,7 +981,7 @@ export class AsignarHorarioComponent
     if (isNaN(raw) || raw <= 0) raw = 0.5;
     if (raw > disp) {
       this.alertService.warn(
-        `No puedes asignar ${raw} hora(s). Solo quedan ${disp}.`
+        `No puedes asignar ${raw} hora(s). Solo quedan ${disp}.`,
       );
 
       this.horasAsignadas = disp > 0 ? disp : 1;
@@ -992,7 +993,7 @@ export class AsignarHorarioComponent
 
     const start = this.buildDateFromCurrentWeek(
       this.diaSeleccionado,
-      this.horaInicio
+      this.horaInicio,
     );
     const end = new Date(start);
     end.setMinutes(end.getMinutes() + aAsignar * 50);
@@ -1049,7 +1050,7 @@ export class AsignarHorarioComponent
         (c) =>
           c.c_codcur === codigoSnap &&
           ((tipoSnap === 'Teoría' && c.tipo === 'teoria') ||
-            (tipoSnap === 'Práctica' && c.tipo === 'practica'))
+            (tipoSnap === 'Práctica' && c.tipo === 'practica')),
       );
 
     const itemSnap =
@@ -1065,7 +1066,7 @@ export class AsignarHorarioComponent
     this.restarHorasDisponibles(
       this.cursoSeleccionado.extendedProps.codigo,
       this.cursoSeleccionado.extendedProps.tipo,
-      aAsignar
+      aAsignar,
     );
 
     this.modalHorasActivo = false;
@@ -1075,7 +1076,7 @@ export class AsignarHorarioComponent
   async confirmarEliminarTodosLosHorarios() {
     if (this.bloqueoTotal || this.permitirSoloDocente) {
       this.alertService.warn(
-        'No se puede eliminar horarios de un turno exportado.'
+        'No se puede eliminar horarios de un turno exportado.',
       );
       return;
     }
@@ -1239,14 +1240,14 @@ export class AsignarHorarioComponent
   private restarHorasDisponibles(
     codigo: string,
     tipo: 'Teoría' | 'Práctica',
-    nHoras: number
+    nHoras: number,
   ): void {
     const updater = (arr: CursoCard[]) => {
       const item = arr.find(
         (c) =>
           c.c_codcur === codigo &&
           ((tipo === 'Teoría' && c.tipo === 'teoria') ||
-            (tipo === 'Práctica' && c.tipo === 'practica'))
+            (tipo === 'Práctica' && c.tipo === 'practica')),
       );
       if (item) item.horasRestantes = Math.max(0, item.horasRestantes - nHoras);
     };
@@ -1256,14 +1257,14 @@ export class AsignarHorarioComponent
 
   private getHorasDisponibles(
     codigo: string,
-    tipo: 'Teoría' | 'Práctica'
+    tipo: 'Teoría' | 'Práctica',
   ): number {
     const finder = (arr: CursoCard[]) =>
       arr.find(
         (c) =>
           c.c_codcur === codigo &&
           ((tipo === 'Teoría' && c.tipo === 'teoria') ||
-            (tipo === 'Práctica' && c.tipo === 'practica'))
+            (tipo === 'Práctica' && c.tipo === 'practica')),
       )?.horasRestantes ?? 0;
 
     const h1 = finder(this.cursosPlan2023);
@@ -1309,7 +1310,7 @@ export class AsignarHorarioComponent
   private buildDateFromCurrentWeek(
     nombreDia: string,
     hhmm: string,
-    anchor?: Date
+    anchor?: Date,
   ): Date {
     const api = this.calendarComponent.getApi();
     const base = anchor ? new Date(anchor) : new Date(api.view.currentStart);
@@ -1352,7 +1353,7 @@ export class AsignarHorarioComponent
     }
 
     this.resultadosBusqueda = this.docentesFiltrados.filter((d: any) =>
-      (d.c_nomdoc || '').toLowerCase().includes(termino)
+      (d.c_nomdoc || '').toLowerCase().includes(termino),
     );
   }
 
@@ -1371,7 +1372,7 @@ export class AsignarHorarioComponent
   actualizarEvento() {
     if (this.bloqueoTotal) {
       this.alertService.warn(
-        'Este turno fue exportado al SIGU y no puede modificarse.'
+        'Este turno fue exportado al SIGU y no puede modificarse.',
       );
       return;
     }
@@ -1380,11 +1381,11 @@ export class AsignarHorarioComponent
       // ⚠️ Solo actualizar docente
       this.eventoSeleccionado.setExtendedProp(
         'docente_id',
-        this.selectedDocente?.id ?? 0
+        this.selectedDocente?.id ?? 0,
       );
       this.eventoSeleccionado.setExtendedProp(
         'docente_nombre',
-        this.selectedDocente?.c_nomdoc ?? ''
+        this.selectedDocente?.c_nomdoc ?? '',
       );
 
       this.guardarSoloEvento(this.eventoSeleccionado);
@@ -1418,12 +1419,12 @@ export class AsignarHorarioComponent
 
     console.log(
       '🟠 [ACTUALIZAR] Snapshot guardado con ->',
-      this.estadoAnteriorEvento.extendedProps['n_horas_asignadas']
+      this.estadoAnteriorEvento.extendedProps['n_horas_asignadas'],
     );
 
     console.log(
       '📦 EstadoAnterior guardado antes de modificar:',
-      this.estadoAnteriorEvento.extendedProps?.['n_horas_asignadas']
+      this.estadoAnteriorEvento.extendedProps?.['n_horas_asignadas'],
     );
 
     if (!this.modalidadSeleccionada) {
@@ -1443,7 +1444,7 @@ export class AsignarHorarioComponent
 
     if (rawNew > maxEdicion) {
       this.alertService.warn(
-        `No puedes asignar ${rawNew} hora(s). Solo permite hasta ${maxEdicion}.`
+        `No puedes asignar ${rawNew} hora(s). Solo permite hasta ${maxEdicion}.`,
       );
 
       this.horasAsignadas = maxEdicion;
@@ -1455,7 +1456,7 @@ export class AsignarHorarioComponent
     const start = this.buildDateFromCurrentWeek(
       this.diaSeleccionado,
       this.horaInicio,
-      this.modalAnchorWeekStart || undefined
+      this.modalAnchorWeekStart || undefined,
     );
     const end = new Date(start);
     end.setMinutes(end.getMinutes() + newHoras * 50);
@@ -1474,39 +1475,39 @@ export class AsignarHorarioComponent
     this.eventoSeleccionado.setEnd(end);
     this.eventoSeleccionado.setExtendedProp(
       'modalidad',
-      (this.modalidadSeleccionada || '').toLowerCase()
+      (this.modalidadSeleccionada || '').toLowerCase(),
     );
     this.eventoSeleccionado.setExtendedProp(
       'aula_id',
-      this.aulaSeleccionada ?? 0
+      this.aulaSeleccionada ?? 0,
     );
     this.eventoSeleccionado.setExtendedProp(
       'docente_id',
-      this.selectedDocente?.id ?? 0
+      this.selectedDocente?.id ?? 0,
     );
     this.eventoSeleccionado.setExtendedProp('n_horas_asignadas', newHoras);
 
     this.eventoSeleccionado.setExtendedProp(
       'docente_nombre',
-      this.selectedDocente?.c_nomdoc ?? ''
+      this.selectedDocente?.c_nomdoc ?? '',
     );
     this.eventoSeleccionado.setExtendedProp(
       'aula_nombre',
-      this.aulas.find((a) => a.id === this.aulaSeleccionada)?.c_codaula ?? ''
+      this.aulas.find((a) => a.id === this.aulaSeleccionada)?.c_codaula ?? '',
     );
 
     this.eventoSeleccionado.setExtendedProp(
       'docente_nombre',
-      this.selectedDocente?.c_nomdoc ?? ''
+      this.selectedDocente?.c_nomdoc ?? '',
     );
     this.eventoSeleccionado.setExtendedProp(
       'aula_nombre',
-      this.aulas.find((a) => a.id === this.aulaSeleccionada)?.c_codaula ?? ''
+      this.aulas.find((a) => a.id === this.aulaSeleccionada)?.c_codaula ?? '',
     );
 
     console.log(
       '🔴 [ACTUALIZAR] Justo antes de guardar evento ->',
-      this.eventoSeleccionado.extendedProps['n_horas_asignadas']
+      this.eventoSeleccionado.extendedProps['n_horas_asignadas'],
     );
 
     this.guardarSoloEvento(this.eventoSeleccionado);
@@ -1523,7 +1524,7 @@ export class AsignarHorarioComponent
       this.alertService.warn(
         this.bloqueoTotal
           ? 'Este turno fue exportado al SIGU y no puede modificarse.'
-          : 'Este turno está exportado. Solo puedes actualizar el docente.'
+          : 'Este turno está exportado. Solo puedes actualizar el docente.',
       );
       return;
     }
@@ -1555,7 +1556,7 @@ export class AsignarHorarioComponent
           (c) =>
             c.c_codcur === codigo &&
             ((tipo === 'Teoría' && c.tipo === 'teoria') ||
-              (tipo === 'Práctica' && c.tipo === 'practica'))
+              (tipo === 'Práctica' && c.tipo === 'practica')),
         );
         if (item) item.horasRestantes = Math.max(0, item.horasRestantes + nh);
       };
@@ -1566,7 +1567,7 @@ export class AsignarHorarioComponent
 
       this.alertService.success(
         'Horario eliminado',
-        'El horario temporal fue eliminado correctamente.'
+        'El horario temporal fue eliminado correctamente.',
       );
       this.modalHorasActivo = false;
       this.eventoSeleccionado = null;
@@ -1587,7 +1588,7 @@ export class AsignarHorarioComponent
             (c) =>
               c.c_codcur === codigo &&
               ((tipo === 'Teoría' && c.tipo === 'teoria') ||
-                (tipo === 'Práctica' && c.tipo === 'practica'))
+                (tipo === 'Práctica' && c.tipo === 'practica')),
           );
           if (item) item.horasRestantes = Math.max(0, item.horasRestantes + nh);
         };
@@ -1598,7 +1599,7 @@ export class AsignarHorarioComponent
         this.alertService.close();
         this.alertService.success(
           'Eliminar Horario',
-          'Horario eliminado correctamente.'
+          'Horario eliminado correctamente.',
         );
         this.modalHorasActivo = false;
         this.eventoSeleccionado = null;
@@ -1671,7 +1672,7 @@ export class AsignarHorarioComponent
             if (yaPersistido) {
               // 🔹 Guardar las horas que intentó asignar ANTES de revertir visualmente
               const horasIntentadas = Number(
-                e.extendedProps?.['n_horas_asignadas'] ?? 1
+                e.extendedProps?.['n_horas_asignadas'] ?? 1,
               );
 
               // 🔙 Revertimos el evento a su estado anterior (día, hora, aula, docente, etc.)
@@ -1705,7 +1706,7 @@ export class AsignarHorarioComponent
                       (c) =>
                         c.c_codcur === codigo &&
                         ((tipo === 'Teoría' && c.tipo === 'teoria') ||
-                          (tipo === 'Práctica' && c.tipo === 'practica'))
+                          (tipo === 'Práctica' && c.tipo === 'practica')),
                     );
                     if (item) item.horasRestantes = snap.horasRestantes;
                   };
@@ -1715,7 +1716,7 @@ export class AsignarHorarioComponent
               } catch (err) {
                 console.warn(
                   'No se pudo revertir las horas restantes tras conflicto:',
-                  err
+                  err,
                 );
               }
             } else {
@@ -1724,7 +1725,7 @@ export class AsignarHorarioComponent
               } catch (removeErr) {
                 console.warn(
                   'No se pudo eliminar el evento tras conflicto:',
-                  removeErr
+                  removeErr,
                 );
               }
             }
@@ -1808,25 +1809,25 @@ export class AsignarHorarioComponent
   private getHorasMaximasParaEdicion(
     codigo: string,
     tipo: 'Teoría' | 'Práctica',
-    asignadasEvento: number
+    asignadasEvento: number,
   ): number {
     return Math.max(
       0.5,
-      this.getHorasDisponibles(codigo, tipo) + (asignadasEvento || 0)
+      this.getHorasDisponibles(codigo, tipo) + (asignadasEvento || 0),
     );
   }
 
   private aplicarDeltaHorasRestantes(
     codigo: string,
     tipo: 'Teoría' | 'Práctica',
-    delta: number
+    delta: number,
   ): void {
     const apply = (arr: CursoCard[]) => {
       const item = arr.find(
         (c) =>
           c.c_codcur === codigo &&
           ((tipo === 'Teoría' && c.tipo === 'teoria') ||
-            (tipo === 'Práctica' && c.tipo === 'practica'))
+            (tipo === 'Práctica' && c.tipo === 'practica')),
       );
       if (item) {
         item.horasRestantes = Math.max(0, item.horasRestantes + delta);
@@ -1838,7 +1839,7 @@ export class AsignarHorarioComponent
 
   private getHorasAsignadasDeEventoSel(): number {
     const raw = Number(
-      this.eventoSeleccionado?.extendedProps?.['n_horas_asignadas']
+      this.eventoSeleccionado?.extendedProps?.['n_horas_asignadas'],
     );
 
     // Si viene mal, por defecto 0.5
@@ -1848,7 +1849,7 @@ export class AsignarHorarioComponent
   abrirGenerarCursosModal() {
     if (this.bloqueoTotal || this.permitirSoloDocente) {
       this.alertService.warn(
-        'Este turno fue exportado. No se pueden generar cursos.'
+        'Este turno fue exportado. No se pueden generar cursos.',
       );
       return;
     }
@@ -1882,7 +1883,7 @@ export class AsignarHorarioComponent
               this.genList = (plan || []).map((p: HR_Plan_Estudio_Curso) => {
                 const ya =
                   generados.find(
-                    (c: any) => c?.plan?.c_codcur === p.c_codcur
+                    (c: any) => c?.plan?.c_codcur === p.c_codcur,
                   ) ?? null;
                 return { ...p, cursoGenerado: ya };
               });
@@ -1936,10 +1937,10 @@ export class AsignarHorarioComponent
 
             const transformados = this.transformarCursos(this.cursos);
             this.cursosPlan2023 = transformados.filter(
-              (c) => c.n_codper === 2023
+              (c) => c.n_codper === 2023,
             );
             this.cursosPlan2025 = transformados.filter(
-              (c) => c.n_codper === 2025
+              (c) => c.n_codper === 2025,
             );
 
             this.cargarGenerables();
@@ -1976,7 +1977,7 @@ export class AsignarHorarioComponent
         this.alertService.close();
         this.alertService.success(
           'Curso eliminado',
-          'El curso fue eliminado correctamente.'
+          'El curso fue eliminado correctamente.',
         );
 
         this.turnoService.getTurno(this.turno_id).subscribe({
@@ -1986,10 +1987,10 @@ export class AsignarHorarioComponent
 
             const transformados = this.transformarCursos(this.cursos);
             this.cursosPlan2023 = transformados.filter(
-              (c) => c.n_codper === 2023
+              (c) => c.n_codper === 2023,
             );
             this.cursosPlan2025 = transformados.filter(
-              (c) => c.n_codper === 2025
+              (c) => c.n_codper === 2025,
             );
 
             this.cargarGenerables();
@@ -2019,14 +2020,14 @@ export class AsignarHorarioComponent
 
     if (this.bloqueoTotal) {
       this.alertService.warn(
-        'Este turno fue exportado al SIGU y no puede modificarse.'
+        'Este turno fue exportado al SIGU y no puede modificarse.',
       );
       return;
     }
 
     if (this.permitirSoloDocente) {
       this.alertService.warn(
-        'Este turno está exportado. Solo puedes actualizar el docente.'
+        'Este turno está exportado. Solo puedes actualizar el docente.',
       );
       return;
     }
@@ -2044,7 +2045,7 @@ export class AsignarHorarioComponent
 
     if (!this.aulas.length || !this.docentesFiltrados.length) {
       this.alertService.warn(
-        'Aulas o docentes aún no están cargados. Espera un momento.'
+        'Aulas o docentes aún no están cargados. Espera un momento.',
       );
       return;
     }
@@ -2066,7 +2067,7 @@ export class AsignarHorarioComponent
         codigo: curso.c_codcur,
         tipo: tipoTexto,
         n_horas: 1,
-        h_umaPlus: curso.tipo === 'teoria' ? curso.h_umaPlus ?? 0 : 0,
+        h_umaPlus: curso.tipo === 'teoria' ? (curso.h_umaPlus ?? 0) : 0,
         grupos_hijo: curso.grupos_hijos ?? [],
         c_nom_cur_area: curso.c_nom_cur_area, // ⭐ AGREGAR ESTO
       },
@@ -2105,7 +2106,7 @@ export class AsignarHorarioComponent
     // Busca el primer registro de grupo válido
     if (Array.isArray(curso.grupos_hijos) && curso.grupos_hijos.length > 0) {
       const grupo = curso.grupos_hijos.find(
-        (g: any) => g.tipo === 0 || g.tipo === 1
+        (g: any) => g.tipo === 0 || g.tipo === 1,
       );
       return grupo ? grupo.tipo : null;
     }
