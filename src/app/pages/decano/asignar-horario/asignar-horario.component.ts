@@ -194,6 +194,9 @@ export class AsignarHorarioComponent
           'rodrigo.palomino@uma.edu.pe',
           'carlos.nicho@uma.edu.pe',
           'marcelo.gonzales@uma.edu.pe',
+          'shirley.ahuanari@uma.edu.pe',
+          'giovani.lazo@uma.edu.pe',
+          'julio.villar@uma.edu.pe',
         ];
 
         // 🧠 Verifica si el correo está en la lista (sin importar mayúsculas/minúsculas)
