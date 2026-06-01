@@ -17,8 +17,11 @@ const routes: Routes = [
     path: '',
     component: LayoutComponent,
     children: [
+      // { path: 'docente', component: DocenteComponent },
+
       { path: 'docente', component: DocenteComponent },
       { path: 'plan-estudio', component: PlanCursosComponent },
+
       { path: 'turno', component: VerTurnoComponent },
       { path: 'generar/:turno_id', component: GenerarCursosComponent },
       { path: 'asignar/:turno_id', component: AsignarHorarioComponent },
