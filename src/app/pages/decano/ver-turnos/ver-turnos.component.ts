@@ -488,7 +488,6 @@ export class VerTurnosComponent implements OnInit {
     //   return;
     // }
 
-    // 🔓 Si tiene permiso docente o no está en reexportación → permitir
     const url = this.router
       .createUrlTree([`/coa/asignar/${data.id}`])
       .toString();

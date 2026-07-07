@@ -1,0 +1,103 @@
+<!-- horas-docente.component.html -->
+<div nz-row [nzGutter]="16" class="mb-3">
+  <div nz-col nzXs="24" nzMd="18">
+    <input
+      nz-input
+      placeholder="Buscar por DNI o nombre..."
+      [(ngModel)]="search"
+      (ngModelChange)="onSearchChange()"
+    />
+  </div>
+
+  <div nz-col nzXs="24" nzMd="6" class="text-right">
+    <button nz-button nzType="default" (click)="fetch()">Refrescar</button>
+  </div>
+</div>
+
+<nz-spin [nzSpinning]="loading">
+  <nz-table
+    #tbl
+    [nzData]="view"
+    [nzPageSize]="10"
+    [nzFrontPagination]="true"
+    nzSize="middle"
+  >
+    <thead>
+      <tr>
+        <th>DNI</th>
+        <th>Docente</th>
+        <th>Facultad</th>
+        <th style="width: 120px">H. mín</th>
+        <th style="width: 120px">H. máx</th>
+        <th style="width: 160px">Acción</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let d of tbl.data">
+        <td>{{ d.c_dnidoc }}</td>
+        <td>{{ d.c_nomdoc }}</td>
+        <td>{{ d.c_codfac }}</td>
+
+        <!-- H. mín -->
+        <td>
+          <ng-container *ngIf="!editCache[d.id]?.edit">
+            {{ d.h_min }}
+          </ng-container>
+          <input
+            *ngIf="editCache[d.id]?.edit"
+            nz-input
+            type="number"
+            min="0"
+            step="1"
+            [(ngModel)]="editCache[d.id].h_min"
+          />
+        </td>
+
+        <!-- H. máx -->
+        <td>
+          <ng-container *ngIf="!editCache[d.id]?.edit">
+            {{ d.h_max }}
+          </ng-container>
+          <input
+            *ngIf="editCache[d.id]?.edit"
+            nz-input
+            type="number"
+            min="0"
+            step="1"
+            [(ngModel)]="editCache[d.id].h_max"
+          />
+        </td>
+
+        <!-- Acciones -->
+        <td>
+          <ng-container *ngIf="!editCache[d.id]?.edit">
+            <button nz-button nzType="link" (click)="iniciarEdicion(d)">
+              Editar
+            </button>
+          </ng-container>
+
+          <ng-container *ngIf="editCache[d.id]?.edit">
+            <button
+              nz-button
+              nzType="link"
+              [nzLoading]="editCache[d.id].guardando"
+              (click)="guardar(d)"
+            >
+              Guardar
+            </button>
+            <button
+              nz-button
+              nzType="link"
+              nzDanger
+              [disabled]="editCache[d.id].guardando"
+              (click)="cancelarEdicion(d)"
+            >
+              Cancelar
+            </button>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-spin>

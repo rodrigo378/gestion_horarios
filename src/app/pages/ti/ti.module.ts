@@ -34,13 +34,16 @@ import { ContadorComponent } from './contador/contador.component';
 import { VacantesComponent } from './vacantes/vacantes.component';
 import { SincronizarComponent } from './sincronizar/sincronizar.component';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { CrearMoodleComponent } from './crear-moodle/crear-moodle.component';
 import { AulaComponent } from './aula/aula.component';
 import { AsignarAulaComponent } from './asignar-aula/asignar-aula.component';
+import { HorasDocenteComponent } from './horas-docente/horas-docente.component';
 
 @NgModule({
   declarations: [
     DocenteComponent,
+    HorasDocenteComponent,
     PlanCursosComponent,
     PeriodoComponent,
     VerTurnoComponent,
@@ -82,6 +85,7 @@ import { AsignarAulaComponent } from './asignar-aula/asignar-aula.component';
     NzSpinModule,
     NzTabsModule,
     NzCheckboxModule,
+    NzButtonModule,
   ],
 })
 export class TiModule {}

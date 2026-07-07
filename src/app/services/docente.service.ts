@@ -56,6 +56,15 @@ export class DocenteService {
     });
   }
 
+  updateHorasDocente(
+    docente_id: number,
+    horas: { h_min?: number; h_max?: number },
+  ): Observable<HR_Docente> {
+    return this.http.put<HR_Docente>(`${this.apiUrl}/${docente_id}`, horas, {
+      withCredentials: true,
+    });
+  }
+
   verificarDocente() {
     return this.http.get(`${this.apiUrl}/verificar`, {
       withCredentials: true,

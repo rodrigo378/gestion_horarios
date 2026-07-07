@@ -11,6 +11,7 @@ import { SincronizarComponent } from './sincronizar/sincronizar.component';
 import { CrearMoodleComponent } from './crear-moodle/crear-moodle.component';
 import { AulaComponent } from './aula/aula.component';
 import { AsignarAulaComponent } from './asignar-aula/asignar-aula.component';
+import { HorasDocenteComponent } from './horas-docente/horas-docente.component';
 
 const routes: Routes = [
   {
@@ -20,6 +21,7 @@ const routes: Routes = [
       // { path: 'docente', component: DocenteComponent },
 
       { path: 'docente', component: DocenteComponent },
+      { path: 'horas-docente', component: HorasDocenteComponent },
       { path: 'plan-estudio', component: PlanCursosComponent },
 
       { path: 'turno', component: VerTurnoComponent },
