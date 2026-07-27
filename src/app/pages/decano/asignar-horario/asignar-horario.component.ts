@@ -140,9 +140,8 @@ export class AsignarHorarioComponent
     initialView: 'timeGridWeek',
     locale: esLocale,
     firstDay: 1,
-    hiddenDays: [0],
     businessHours: {
-      daysOfWeek: [1, 2, 3, 4, 5, 6],
+      daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
       startTime: '08:00',
       endTime: '23:00',
     },
